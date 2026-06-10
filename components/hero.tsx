@@ -340,14 +340,14 @@ export function Hero() {
 
         {/* Hero text + buttons */}
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10 flex flex-col flex-1 w-full">
-          <div className="flex flex-col flex-1 justify-center items-center text-center pt-8 sm:pt-24 md:pt-28 pb-2 sm:pb-8">
+          <div className="flex flex-col flex-1 justify-center items-center text-center pt-12 sm:pt-24 md:pt-28 pb-3 sm:pb-8">
 
-            {/* Eyebrow badge — hidden on mobile to save space */}
+            {/* Eyebrow badge */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="hidden sm:block text-xs tracking-[0.2em] uppercase text-gold-deep font-bold mb-6"
+              className="text-xs tracking-[0.2em] uppercase text-gold-deep font-bold mb-2 sm:mb-6 block"
             >
               Trusted by 60,000+ Investors
             </motion.div>
@@ -356,19 +356,18 @@ export function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.05 }}
-              className="text-2xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.08] tracking-tight text-foreground text-balance mb-2 sm:mb-6"
+              className="text-3xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.05] tracking-tight text-foreground text-balance mb-3 sm:mb-6"
             >
               Stop switching apps.
               <br />
               <span className="text-burgundy">Start owning every market.</span>
             </motion.h1>
 
-            {/* Paragraph — hidden on mobile, chips bar below communicates the "what" */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="hidden sm:block text-xl lg:text-2xl text-muted-foreground leading-relaxed max-w-3xl mx-auto mb-10"
+              className="text-sm sm:text-xl lg:text-2xl text-muted-foreground leading-relaxed max-w-3xl mx-auto mb-5 sm:mb-10"
             >
               Stocks, F&O, Mutual Funds, IPOs, US Equities — one account, one flat fee.
               Zero delivery brokerage. Flat ₹17 for intraday & F&O.
@@ -378,11 +377,11 @@ export function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.15 }}
-              className="flex justify-center gap-3 mt-3 sm:mt-0"
+              className="flex justify-center gap-3"
             >
               <Button
                 size="lg"
-                className="bg-burgundy hover:bg-burgundy-deep text-white px-5 sm:px-10 h-10 sm:h-14 text-sm sm:text-base font-bold rounded-[5px] shadow-md shadow-burgundy/10"
+                className="bg-burgundy hover:bg-burgundy-deep text-white px-6 sm:px-10 h-12 sm:h-14 text-sm sm:text-base font-bold rounded-[5px] shadow-md shadow-burgundy/10"
               >
                 Open Free Account
                 <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
@@ -390,7 +389,7 @@ export function Hero() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-border text-foreground hover:bg-secondary px-5 sm:px-10 h-10 sm:h-14 text-sm sm:text-base font-bold rounded-[5px]"
+                className="border-border text-foreground hover:bg-secondary px-6 sm:px-10 h-12 sm:h-14 text-sm sm:text-base font-bold rounded-[5px]"
                 onClick={() => window.location.href = 'tel:02240808080'}
               >
                 <Phone className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
@@ -403,7 +402,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.25 }}
-              className="flex items-center gap-6 mt-3 sm:mt-10"
+              className="flex items-center gap-8 mt-4 sm:mt-10"
             >
               <div className="text-center">
                 <span className="block text-[10px] uppercase tracking-[0.18em] text-muted-foreground/50 font-semibold mb-0.5">built for</span>
@@ -459,7 +458,7 @@ export function Hero() {
           }
         `}</style>
 
-        <div className="relative z-10 w-full bg-burgundy py-3 sm:py-5">
+        <div className="relative z-10 w-full bg-burgundy py-5">
 
           {/* Desktop view: Stationary single line */}
           <motion.div
@@ -512,17 +511,17 @@ export function Hero() {
                 return (
                   <div
                     key={`${product.title}-${index}`}
-                    className="chip-border flex items-center gap-1.5 px-3 py-1.5 rounded-full shrink-0"
+                    className="chip-border flex items-center gap-2.5 px-5 py-2 rounded-full shrink-0"
                     style={{ animationDelay: `${(index % products.length) * 0.28}s` }}
                   >
-                    <div className="w-5 h-5 rounded-full flex items-center justify-center bg-white/15">
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center bg-white/15">
                       {CustomIcon ? (
-                        <CustomIcon color="#ffffff" size={11} />
+                        <CustomIcon color="#ffffff" size={15} />
                       ) : Icon ? (
-                        <Icon className="h-3 w-3 text-white" strokeWidth={2.2} />
+                        <Icon className="h-3.5 w-3.5 text-white" strokeWidth={2.2} />
                       ) : null}
                     </div>
-                    <span className="text-xs font-semibold text-white/90 tracking-tight whitespace-nowrap">
+                    <span className="text-sm font-semibold text-white/90 tracking-tight whitespace-nowrap pr-1">
                       {product.title}
                     </span>
                   </div>
