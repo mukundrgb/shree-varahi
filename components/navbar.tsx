@@ -6,6 +6,7 @@ import { Search, Menu, X, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SearchPopup } from "./search-popup"
 import Link from "next/link"
+import Image from "next/image"
 
 const tradeMenu = [
   { title: "Trading App", desc: "Mobile-first trading experience", icon: "📱" },
@@ -71,14 +72,14 @@ export function Navbar() {
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-[5px] bg-burgundy/10">
-                <svg viewBox="0 0 40 40" className="h-6 w-6 text-burgundy">
-                  <path
-                    fill="currentColor"
-                    d="M20 2C11.16 2 4 9.16 4 18c0 4.42 1.79 8.42 4.69 11.31L20 38l11.31-8.69C34.21 26.42 36 22.42 36 18c0-8.84-7.16-16-16-16zm0 4c2.21 0 4 1.79 4 4s-1.79 4-4 4-4-1.79-4-4 1.79-4 4-4zm0 24c-4.42 0-8-3.58-8-8 0-2.65 2.15-4.8 4.8-4.8h6.4c2.65 0 4.8 2.15 4.8 4.8 0 4.42-3.58 8-8 8z"
-                  />
-                </svg>
-              </div>
+              <Image
+                src="/favicon.jpg"
+                alt="Shree Varahi"
+                width={40}
+                height={40}
+                className="rounded-[5px] object-contain"
+                priority
+              />
               <div className="flex flex-col">
                 <span className="text-lg font-bold text-foreground leading-tight">
                   Shree Varahi

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Manrope, DM_Sans, DM_Mono, Cormorant_Garamond } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { ScrollProgress } from '@/components/scroll-progress'
 import './globals.css'
 
 const manrope = Manrope({
@@ -35,6 +36,10 @@ export const metadata: Metadata = {
   title: 'Shree Varahi | 31 Years of Trust. One Powerful Platform.',
   description: 'Trade stocks, F&O, mutual funds, IPOs, and US equities with Shree Varahi by Lakshmishree Investment & Securities Ltd. ₹0 delivery, ₹17 flat brokerage. SEBI registered since 1993.',
   keywords: ['trading platform', 'stocks', 'F&O', 'mutual funds', 'IPO', 'demat account', 'Lakshmishree', 'SEBI registered'],
+  icons: {
+    icon: '/favicon.jpg',
+    apple: '/apple-icon.png',
+  },
   openGraph: {
     title: 'Shree Varahi | 31 Years of Trust. One Powerful Platform.',
     description: 'Trade with confidence. SEBI registered since 1993. 60,000+ active investors trust us.',
@@ -50,6 +55,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${manrope.variable} ${dmSans.variable} ${dmMono.variable} ${cormorant.variable} bg-background`}>
       <body className="font-sans antialiased bg-background text-foreground">
+        <ScrollProgress />
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

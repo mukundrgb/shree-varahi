@@ -196,7 +196,30 @@ export function Footer() {
           <p className="text-sm text-white/60">
             © 2026 Shree Varahi — Lakshmishree Investment & Securities Ltd.
           </p>
-          <p className="text-sm text-white/60">Made with care in India</p>
+          <p className="text-sm text-white/50 flex flex-col items-center sm:items-end gap-0.5 leading-relaxed">
+            <span className="flex items-center gap-1.5">
+              built with
+              <svg
+                viewBox="0 0 24 24"
+                className="w-[15px] h-[15px] fill-white"
+                style={{ animation: "footer-heartbeat 1.2s ease-in-out infinite" }}
+                aria-hidden="true"
+              >
+                <path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z" />
+              </svg>
+              love
+            </span>
+            <span>for the trader, the saver, the dreamer — built in India</span>
+          </p>
+          <style>{`
+            @keyframes footer-heartbeat {
+              0%, 100% { transform: scale(1);    }
+              14%       { transform: scale(1.3);  }
+              28%       { transform: scale(1);    }
+              42%       { transform: scale(1.18); }
+              56%       { transform: scale(1);    }
+            }
+          `}</style>
         </div>
       </div>
 

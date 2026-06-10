@@ -39,7 +39,7 @@ export function AppPromoSection() {
           </span>
 
           {/* Heading */}
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-foreground leading-tight">
+          <h2 className="text-2xl sm:text-5xl lg:text-5xl font-black text-foreground leading-tight">
             Trade & Invest on the <br className="hidden sm:inline" />
             <span className="text-burgundy">Shree Varahi App.</span>
           </h2>
