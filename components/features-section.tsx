@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Zap, Globe, BarChart3, LineChart, Shield, TrendingUp } from "lucide-react"
- 
+     
 const features = [
   {
     id: "speed",
