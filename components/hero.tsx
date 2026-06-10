@@ -340,14 +340,14 @@ export function Hero() {
 
         {/* Hero text + buttons */}
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10 flex flex-col flex-1 w-full">
-          <div className="flex flex-col flex-1 justify-center items-center text-center pt-20 sm:pt-24 md:pt-28 pb-8">
+          <div className="flex flex-col flex-1 justify-center items-center text-center pt-12 sm:pt-24 md:pt-28 pb-3 sm:pb-8">
 
             {/* Eyebrow badge */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="text-xs tracking-[0.2em] uppercase text-gold-deep font-bold mb-6 block"
+              className="text-xs tracking-[0.2em] uppercase text-gold-deep font-bold mb-2 sm:mb-6 block"
             >
               Trusted by 60,000+ Investors
             </motion.div>
@@ -356,7 +356,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.05 }}
-              className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.05] tracking-tight text-foreground text-balance mb-6"
+              className="text-3xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.05] tracking-tight text-foreground text-balance mb-3 sm:mb-6"
             >
               Stop switching apps.
               <br />
@@ -367,7 +367,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-lg sm:text-xl lg:text-2xl text-muted-foreground leading-relaxed max-w-3xl mx-auto mb-10"
+              className="text-sm sm:text-xl lg:text-2xl text-muted-foreground leading-relaxed max-w-3xl mx-auto mb-5 sm:mb-10"
             >
               Stocks, F&O, Mutual Funds, IPOs, US Equities — one account, one flat fee.
               Zero delivery brokerage. Flat ₹17 for intraday & F&O.
@@ -402,7 +402,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.25 }}
-              className="flex items-center gap-8 mt-10"
+              className="flex items-center gap-8 mt-4 sm:mt-10"
             >
               <div className="text-center">
                 <span className="block text-[10px] uppercase tracking-[0.18em] text-muted-foreground/50 font-semibold mb-0.5">built for</span>
