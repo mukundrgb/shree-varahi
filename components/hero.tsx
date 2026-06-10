@@ -1,296 +1,513 @@
 "use client"
 
-import { useRef } from "react"
-import Image from "next/image"
-import { motion, useScroll, useTransform } from "framer-motion"
+import { useState } from "react"
+import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Play } from "lucide-react"
+import { 
+  ArrowRight, 
+  Phone, 
+  TrendingUp, 
+  PieChart, 
+  Landmark, 
+  RotateCcw, 
+  Target, 
+  Layers, 
+  Box 
+} from "lucide-react"
+import { AppPromoSection } from "@/components/app-promo-section"
 
-export function Hero() {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  })
 
-  const tabletTilt = useTransform(scrollYProgress, [0, 0.5], [-32, 0])
-  const screenOpacity = useTransform(scrollYProgress, [0.25, 0.6], [0.25, 1])
+/* ── Custom globe SVG — richer than the Lucide default ── */
+function GlobeMarketIcon({ color, size = 26 }: { color: string; size?: number }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="none" aria-hidden="true">
+      {/* Outer globe circle */}
+      <circle cx="12" cy="12" r="9.5" stroke={color} strokeWidth="1.4" />
+      {/* Equator */}
+      <ellipse cx="12" cy="12" rx="9.5" ry="3.2" stroke={color} strokeWidth="1.1" />
+      {/* Upper parallel ~30° N */}
+      <ellipse cx="12" cy="8.2" rx="7.8" ry="2.2" stroke={color} strokeWidth="0.7" opacity="0.55" />
+      {/* Lower parallel ~30° S */}
+      <ellipse cx="12" cy="15.8" rx="7.8" ry="2.2" stroke={color} strokeWidth="0.7" opacity="0.55" />
+      {/* Prime meridian (vertical ellipse, very narrow) */}
+      <ellipse cx="12" cy="12" rx="2.2" ry="9.5" stroke={color} strokeWidth="0.9" />
+      {/* 60° meridian */}
+      <ellipse cx="12" cy="12" rx="6" ry="9.5" stroke={color} strokeWidth="0.6" opacity="0.45" />
+      {/* Poles — top & bottom caps */}
+      <line x1="12" y1="2.5" x2="12" y2="21.5" stroke={color} strokeWidth="0.9" opacity="0.3" />
+      {/* Small pin dot — focal point representing the globe */}
+      <circle cx="12" cy="12" r="1.5" fill={color} opacity="0.7" />
+    </svg>
+  )
+}
+
+type Ticker = { symbol: string; flag: string; name: string }
+
+type Product = {
+  icon?: React.ElementType
+  customIcon?: React.FC<{ color: string; size?: number }>
+  title: string
+  description: string
+  detail: string
+  badge: string
+  badgeColor: string
+  accentColor: string
+  bgHover: string
+  tickers?: Ticker[]
+}
+
+const products: Product[] = [
+  {
+    icon: TrendingUp,
+    title: "Stocks",
+    description: "Buy and hold with zero brokerage on every delivery trade.",
+    detail: "NSE & BSE listed equities, real-time quotes, margin trading facility.",
+    badge: "₹17 Delivery",
+    badgeColor: "bg-profit/15 text-profit",
+    accentColor: "#059669",
+    bgHover: "rgba(5,150,105,0.04)",
+  },
+  {
+    icon: PieChart,
+    title: "Futures & Options",
+    description: "Trade derivatives with advanced tools and live Greeks.",
+    detail: "Option chain, strategy builder, real-time IV, one-click rollover.",
+    badge: "₹17 Flat",
+    badgeColor: "bg-burgundy/10 text-burgundy",
+    accentColor: "#8B0D19",
+    bgHover: "rgba(139,13,25,0.04)",
+  },
+  {
+    icon: Landmark,
+    title: "Mutual Funds",
+    description: "Zero commission. Keep every rupee of your return.",
+    detail: "5,000+ funds, SIP, STP, SWP, goal-based investing in one click.",
+    badge: "Direct Plans",
+    badgeColor: "bg-gold/20 text-gold-deep",
+    accentColor: "#B8924A",
+    bgHover: "rgba(217,178,124,0.06)",
+  },
+  {
+    icon: RotateCcw,
+    title: "SIP Auto-Invest",
+    description: "Systematic investing from ₹100/month. Fully automated.",
+    detail: "Auto-debit, pause/resume anytime, step-up SIP, smart triggers.",
+    badge: "From ₹100",
+    badgeColor: "bg-profit/15 text-profit",
+    accentColor: "#059669",
+    bgHover: "rgba(5,150,105,0.04)",
+  },
+  {
+    icon: Target,
+    title: "IPO",
+    description: "Apply for upcoming IPOs in two taps via UPI. Free.",
+    detail: "UPI mandate, GMP tracker, allotment status, ASBA support.",
+    badge: "₹0 Application",
+    badgeColor: "bg-profit/15 text-profit",
+    accentColor: "#059669",
+    bgHover: "rgba(5,150,105,0.04)",
+  },
+  {
+    icon: Layers,
+    title: "ETF",
+    description: "Instant diversification at the lowest cost.",
+    detail: "Gold ETFs, index ETFs, sectoral ETFs — live on-exchange prices.",
+    badge: "Low Cost",
+    badgeColor: "bg-gold/20 text-gold-deep",
+    accentColor: "#B8924A",
+    bgHover: "rgba(217,178,124,0.06)",
+  },
+  {
+    icon: Box,
+    title: "Commodities MCX",
+    description: "Trade gold, silver, and crude oil on MCX. Live prices.",
+    detail: "All MCX contracts, commodity options, live LME rates, hedging tools.",
+    badge: "₹17 Flat",
+    badgeColor: "bg-burgundy/10 text-burgundy",
+    accentColor: "#8B0D19",
+    bgHover: "rgba(139,13,25,0.04)",
+  },
+  {
+    customIcon: GlobeMarketIcon,
+    title: "US Stocks",
+    description: "Trade US stocks directly from India.",
+    detail: "Invest in Apple, Tesla, Google, and 5,000+ US equities with ease.",
+    badge: "Global Access",
+    badgeColor: "bg-gold/20 text-gold-deep",
+    accentColor: "#B8924A",
+    bgHover: "rgba(217,178,124,0.06)",
+  },
+]
+
+function ProductCard({ product, index }: { product: Product; index: number }) {
+  const [hovered, setHovered] = useState(false)
+  const Icon = product.icon
+  const CustomIcon = product.customIcon
 
   return (
-    <section
-      ref={containerRef}
-      className="relative bg-background"
-      style={{ height: "220vh" }}
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.04, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: hovered ? product.bgHover : "white",
+        borderColor: hovered ? product.accentColor : "var(--border)",
+        transition: "background 0.2s, border-color 0.2s, box-shadow 0.2s",
+        boxShadow: hovered
+          ? `0 6px 16px rgba(0,0,0,0.04)`
+          : "0 1px 3px rgba(0,0,0,0.01)",
+      }}
+      className="group relative border rounded-[5px] p-6 cursor-pointer overflow-hidden flex flex-col justify-between min-h-[220px]"
     >
-      {/* Sticky container */}
-      <div className="sticky top-0 min-h-screen flex flex-col items-center overflow-hidden">
-        {/* Background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {/* Accent top line indicator */}
+      <div
+        className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[5px] transition-transform duration-300 origin-left"
+        style={{
+          background: `linear-gradient(90deg, ${product.accentColor}, ${product.accentColor}66)`,
+          transform: hovered ? "scaleX(1)" : "scaleX(0)",
+        }}
+      />
+
+      <div>
+        {/* Card Header */}
+        <div className="flex items-start justify-between mb-5">
           <div
-            className="absolute inset-0 opacity-[0.02]"
+            className="w-12 h-12 rounded-[5px] flex items-center justify-center"
             style={{
-              backgroundImage: `linear-gradient(to right, #1A1A1A 1px, transparent 1px), linear-gradient(to bottom, #1A1A1A 1px, transparent 1px)`,
-              backgroundSize: "60px 60px",
+              background: hovered ? `${product.accentColor}20` : `${product.accentColor}12`,
+              transition: "background 0.2s",
             }}
-          />
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-gold/5 rounded-full blur-[150px]" />
-
-          {/* Candlestick + line chart — decorative background */}
-          <svg
-            viewBox="0 0 1400 400"
-            preserveAspectRatio="xMidYMid slice"
-            className="absolute inset-0 w-full h-full opacity-[0.09]"
-            aria-hidden="true"
           >
-            <defs>
-              <linearGradient id="heroChartGradient" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor="#D9B27C" stopOpacity="0.18" />
-                <stop offset="100%" stopColor="#D9B27C" stopOpacity="0" />
-              </linearGradient>
-            </defs>
-
-            {/* Grid lines */}
-            {[80, 160, 240, 320].map((y) => (
-              <line key={y} x1="0" y1={y} x2="1400" y2={y} stroke="#D9B27C" strokeWidth="0.5" opacity="0.6" />
-            ))}
-            {[175, 350, 525, 700, 875, 1050, 1225].map((x) => (
-              <line key={x} x1={x} y1="0" x2={x} y2="400" stroke="#D9B27C" strokeWidth="0.3" opacity="0.3" />
-            ))}
-
-            {/* Candlesticks — bullish=gold, bearish=burgundy */}
-            {([
-              [30,  338, 328, 346, 322, 1],
-              [80,  330, 323, 337, 318, 1],
-              [130, 325, 320, 332, 314, 1],
-              [180, 320, 334, 316, 340, 0],
-              [230, 336, 313, 340, 308, 1],
-              [280, 315, 294, 320, 288, 1],
-              [330, 296, 308, 292, 313, 0],
-              [380, 310, 280, 315, 275, 1],
-              [430, 282, 263, 288, 258, 1],
-              [475, 265, 278, 261, 284, 0],
-              [520, 280, 256, 284, 251, 1],
-              [568, 258, 240, 263, 235, 1],
-              [615, 242, 252, 238, 257, 0],
-              [660, 254, 226, 259, 221, 1],
-              [705, 228, 212, 233, 207, 1],
-              [748, 214, 222, 210, 228, 0],
-              [795, 224, 200, 229, 195, 1],
-              [845, 202, 185, 207, 180, 1],
-              [892, 187, 196, 183, 201, 0],
-              [940, 198, 175, 203, 170, 1],
-              [988, 177, 160, 182, 155, 1],
-              [1033,162, 170, 158, 175, 0],
-              [1078,172, 148, 177, 143, 1],
-              [1125,150, 134, 155, 129, 1],
-              [1170,136, 145, 132, 150, 0],
-              [1218,147, 122, 152, 117, 1],
-              [1265,124, 112, 129, 107, 1],
-              [1312,114, 122, 110, 127, 0],
-              [1358,124, 100, 129, 95,  1],
-              [1395,102,  92, 107,  88, 1],
-            ] as [number,number,number,number,number,number][]).map(([x, open, close, high, low, bull], i) => {
-              const color = bull ? "#D9B27C" : "#8B0D19"
-              const fillOpacity = bull ? 0.35 : 0.4
-              const bodyTop = Math.min(open, close)
-              const bodyH = Math.max(2, Math.abs(close - open))
-              return (
-                <g key={i}>
-                  <line x1={x} y1={high} x2={x} y2={low} stroke={color} strokeWidth="1" />
-                  <rect
-                    x={x - 10}
-                    y={bodyTop}
-                    width="20"
-                    height={bodyH}
-                    fill={bull ? `rgba(217,178,124,${fillOpacity})` : `rgba(139,13,25,${fillOpacity})`}
-                    stroke={color}
-                    strokeWidth="1"
-                  />
-                </g>
-              )
-            })}
-
-            {/* Area fill under main trend */}
-            <path
-              d="M0,340 L60,328 L120,318 L160,335 L210,312 L260,295 L310,305 L360,282 L410,265 L450,278 L500,255 L555,238 L600,248 L650,225 L700,210 L745,222 L800,200 L855,183 L900,194 L950,175 L1000,158 L1045,168 L1100,148 L1150,132 L1195,142 L1250,122 L1300,110 L1350,118 L1400,98 L1400,400 L0,400 Z"
-              fill="url(#heroChartGradient)"
-            />
-
-            {/* Main trending line on top */}
-            <polyline
-              points="0,340 60,328 120,318 160,335 210,312 260,295 310,305 360,282 410,265 450,278 500,255 555,238 600,248 650,225 700,210 745,222 800,200 855,183 900,194 950,175 1000,158 1045,168 1100,148 1150,132 1195,142 1250,122 1300,110 1350,118 1400,98"
-              fill="none"
-              stroke="#D9B27C"
-              strokeWidth="2"
-            />
-          </svg>
-        </div>
-
-        {/* Main content */}
-        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 lg:pt-32">
-          {/* Text */}
-          <div className="text-center mb-10 lg:mb-14">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-cream border border-gold/20 rounded-full mb-6"
-            >
-              <span className="w-2 h-2 bg-profit rounded-full animate-pulse" />
-              <span className="text-xs tracking-wide uppercase text-foreground/70 font-medium">
-                Trusted by 60,000+ Investors
-              </span>
-            </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-4xl sm:text-5xl lg:text-7xl font-bold leading-[1.1] tracking-tight text-foreground text-balance mb-6"
-            >
-              31 Years of Trust.
-              <br />
-              <span className="text-burgundy">One Powerful Platform.</span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-8"
-            >
-              Trade stocks, F&O, mutual funds, IPOs, and US equities — all from one
-              account. Zero delivery brokerage. Flat Rs.17 for intraday & F&O.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-wrap justify-center gap-4"
-            >
-              <Button
-                size="lg"
-                className="bg-burgundy hover:bg-burgundy-deep text-white px-8 h-12 text-base rounded-[5px] shadow-lg shadow-burgundy/20"
-              >
-                Open Free Account
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-border text-foreground hover:bg-secondary px-8 h-12 text-base rounded-[5px]"
-              >
-                <Play className="mr-2 h-4 w-4" />
-                Watch Demo
-              </Button>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1, duration: 0.6 }}
-              className="flex flex-col items-center gap-2 mt-8"
-            >
-              <span className="text-xs text-muted-foreground uppercase tracking-widest">
-                Scroll to explore
-              </span>
-              <div className="w-6 h-10 border-2 border-muted-foreground/30 rounded-full flex justify-center pt-2">
-                <motion.div
-                  animate={{ y: [0, 10, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                  className="w-1.5 h-1.5 bg-gold rounded-full"
-                />
-              </div>
-            </motion.div>
+            {CustomIcon ? (
+              <CustomIcon color={product.accentColor} />
+            ) : Icon ? (
+              <Icon className="h-6 w-6" style={{ color: product.accentColor }} />
+            ) : null}
           </div>
 
-          {/* Tablet mockup */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="relative w-full max-w-[800px] mx-auto pb-20 lg:pb-28"
-            style={{ perspective: "1600px", perspectiveOrigin: "50% 60%" }}
+          <span
+            className={`text-[10px] font-bold px-2.5 py-1 rounded-[5px] ${product.badgeColor}`}
           >
-            {/* Rotating tablet wrapper */}
-            <motion.div
-              style={{
-                rotateX: tabletTilt,
-                transformOrigin: "center bottom",
-              }}
-              className="relative"
+            {product.badge}
+          </span>
+        </div>
+
+        {/* Title */}
+        <h4 className="font-extrabold text-foreground text-lg sm:text-xl mb-1.5">{product.title}</h4>
+
+        {/* Description */}
+        <p className="text-sm text-muted-foreground/90 leading-relaxed mb-4">{product.description}</p>
+      </div>
+
+      {/* Detail or mini-action link on hover */}
+      <div className="flex items-center gap-1.5 text-xs font-bold text-burgundy opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <span>Explore</span>
+        <ArrowRight className="h-3.5 w-3.5" />
+      </div>
+    </motion.div>
+  )
+}
+
+export function Hero() {
+  return (
+    <section className="relative bg-cream overflow-hidden">
+      
+      {/* Background Decorative Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        {/* Grid pattern overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `linear-gradient(to right, #1A1A1A 1px, transparent 1px), linear-gradient(to bottom, #1A1A1A 1px, transparent 1px)`,
+            backgroundSize: "65px 65px",
+            maskImage: "linear-gradient(to bottom, black 60%, transparent 95%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 60%, transparent 95%)",
+          }}
+        />
+        
+        {/* Soft atmospheric glow blobs */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[850px] h-[850px] bg-gold/5 rounded-full blur-[140px]" />
+        <div
+          className="absolute top-0 left-0 w-[500px] h-[500px] rounded-full"
+          style={{
+            background: "radial-gradient(circle, rgba(139,13,25,0.04) 0%, transparent 70%)",
+            filter: "blur(50px)",
+          }}
+        />
+        <div
+          className="absolute bottom-1/3 right-0 w-[500px] h-[500px] rounded-full"
+          style={{
+            background: "radial-gradient(circle, rgba(184,146,74,0.06) 0%, transparent 70%)",
+            filter: "blur(50px)",
+          }}
+        />
+
+        {/* Candlestick + line chart SVG — covers top half area */}
+        <svg
+          viewBox="0 0 1400 400"
+          preserveAspectRatio="xMidYMid slice"
+          className="absolute top-0 left-0 w-full h-[600px] sm:h-[750px] md:h-[900px] opacity-[0.09]"
+          aria-hidden="true"
+        >
+          <defs>
+            <linearGradient id="heroChartGradient" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor="#D9B27C" stopOpacity="0.18" />
+              <stop offset="100%" stopColor="#D9B27C" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+
+          {/* Grid lines */}
+          {[80, 160, 240, 320].map((y) => (
+            <line key={y} x1="0" y1={y} x2="1400" y2={y} stroke="#D9B27C" strokeWidth="0.5" opacity="0.6" />
+          ))}
+          {[175, 350, 525, 700, 875, 1050, 1225].map((x) => (
+            <line key={x} x1={x} y1="0" x2={x} y2="400" stroke="#D9B27C" strokeWidth="0.3" opacity="0.3" />
+          ))}
+
+          {/* Candlesticks — bullish=gold, bearish=burgundy */}
+          {([
+            [30,  338, 328, 346, 322, 1],
+            [80,  330, 323, 337, 318, 1],
+            [130, 325, 320, 332, 314, 1],
+            [180, 320, 334, 316, 340, 0],
+            [230, 336, 313, 340, 308, 1],
+            [280, 315, 294, 320, 288, 1],
+            [330, 296, 308, 292, 313, 0],
+            [380, 310, 280, 315, 275, 1],
+            [430, 282, 263, 288, 258, 1],
+            [475, 265, 278, 261, 284, 0],
+            [520, 280, 256, 284, 251, 1],
+            [568, 258, 240, 263, 235, 1],
+            [615, 242, 252, 238, 257, 0],
+            [660, 254, 226, 259, 221, 1],
+            [705, 228, 212, 233, 207, 1],
+            [748, 214, 222, 210, 228, 0],
+            [795, 224, 200, 229, 195, 1],
+            [845, 202, 185, 207, 180, 1],
+            [892, 187, 196, 183, 201, 0],
+            [940, 198, 175, 203, 170, 1],
+            [988, 177, 160, 182, 155, 1],
+            [1033,162, 170, 158, 175, 0],
+            [1078,172, 148, 177, 143, 1],
+            [1125,150, 134, 155, 129, 1],
+            [1170,136, 145, 132, 150, 0],
+            [1218,147, 122, 152, 117, 1],
+            [1265,124, 112, 129, 107, 1],
+            [1312,114, 122, 110, 127, 0],
+            [1358,124, 100, 129, 95,  1],
+            [1395,102,  92, 107,  88, 1],
+          ] as [number,number,number,number,number,number][]).map(([x, open, close, high, low, bull], i) => {
+            const color = bull ? "#D9B27C" : "#8B0D19"
+            const fillOpacity = bull ? 0.35 : 0.4
+            const bodyTop = Math.min(open, close)
+            const bodyH = Math.max(2, Math.abs(close - open))
+            return (
+              <g key={i}>
+                <line x1={x} y1={high} x2={x} y2={low} stroke={color} strokeWidth="1" />
+                <rect
+                  x={x - 10}
+                  y={bodyTop}
+                  width="20"
+                  height={bodyH}
+                  fill={bull ? `rgba(217,178,124,${fillOpacity})` : `rgba(139,13,25,${fillOpacity})`}
+                  stroke={color}
+                  strokeWidth="1"
+                />
+              </g>
+            )
+          })}
+
+          {/* Area fill under main trend */}
+          <path
+            d="M0,340 L60,328 L120,318 L160,335 L210,312 L260,295 L310,305 L360,282 L410,265 L450,278 L500,255 L555,238 L600,248 L650,225 L700,210 L745,222 L800,200 L855,183 L900,194 L950,175 L1000,158 L1045,168 L1100,148 L1150,132 L1195,142 L1250,122 L1300,110 L1350,118 L1400,98 L1400,400 L0,400 Z"
+            fill="url(#heroChartGradient)"
+          />
+
+          {/* Main trending line on top */}
+          <polyline
+            points="0,340 60,328 120,318 160,335 210,312 260,295 310,305 360,282 410,265 450,278 500,255 555,238 600,248 650,225 700,210 745,222 800,200 855,183 900,194 950,175 1000,158 1045,168 1100,148 1150,132 1195,142 1250,122 1300,110 1350,118 1400,98"
+            fill="none"
+            stroke="#D9B27C"
+            strokeWidth="2"
+          />
+        </svg>
+      </div>
+
+      {/* Main Hero Container */}
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10">
+        
+        {/* ── TOP HALF: Hero text content ── */}
+        <div className="flex flex-col justify-center items-center text-center pt-24 sm:pt-32 md:pt-40 ">
+          
+          {/* Eyebrow badge without background or border */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-xs tracking-[0.2em] uppercase text-gold-deep font-bold mb-6 block"
+          >
+            Trusted by 60,000+ Investors
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.05 }}
+            className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.05] tracking-tight text-foreground text-balance mb-6"
+          >
+            31 Years of Trust.
+            <br />
+            <span className="text-burgundy">One Powerful Platform.</span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-lg sm:text-xl lg:text-2xl text-muted-foreground leading-relaxed max-w-3xl mx-auto mb-10"
+          >
+            Trade stocks, F&O, mutual funds, IPOs, and US equities — all from one
+            account. Zero delivery brokerage. Flat ₹17 for intraday & F&O.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.15 }}
+            className="flex flex-wrap justify-center gap-4"
+          >
+            <Button
+              size="lg"
+              className="bg-burgundy hover:bg-burgundy-deep text-white px-10 h-14 text-base font-bold rounded-[5px] shadow-md shadow-burgundy/10"
             >
-              {/* Side buttons — outside the overflow:hidden body */}
-              {/* Power button — right short edge */}
-              <div className="absolute right-[-3px] top-[22%] w-[3px] h-10 bg-zinc-500/70 rounded-r-[2px]" />
-              {/* Volume up — left short edge */}
-              <div className="absolute left-[-3px] top-[20%] w-[3px] h-7 bg-zinc-500/70 rounded-l-[2px]" />
-              {/* Volume down — left short edge */}
-              <div className="absolute left-[-3px] top-[33%] w-[3px] h-7 bg-zinc-500/70 rounded-l-[2px]" />
+              Open Free Account
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-border text-foreground hover:bg-secondary px-10 h-14 text-base font-bold rounded-[5px]"
+              onClick={() => window.location.href = 'tel:02240808080'}
+            >
+              <Phone className="mr-2 h-5 w-5" />
+              Call Now
+            </Button>
+          </motion.div>
 
-              {/* Tablet body */}
-              <div
-                className="relative rounded-[28px] overflow-hidden"
-                style={{
-                  background:
-                    "linear-gradient(155deg, #e8e8ed 0%, #d4d4d9 50%, #c2c2c7 100%)",
-                  padding: "10px 12px 12px",
-                  boxShadow:
-                    "0 0 0 1px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.12)",
-                }}
-              >
-                {/* Top bezel — camera */}
-                <div className="flex justify-center items-center h-5 mb-1">
-                  <div className="flex items-center gap-1.5">
-                    <div
-                      className="w-[6px] h-[6px] rounded-full bg-zinc-600/80"
-                      style={{
-                        boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1)",
-                      }}
-                    />
-                    <div className="w-10 h-[4px] rounded-full bg-zinc-700/40" />
-                  </div>
-                </div>
-
-                {/* Screen — inner black bezel + display */}
-                <div
-                  className="rounded-[18px] overflow-hidden"
-                  style={{ background: "#111111", padding: "3px" }}
+          {/* ── Service Capsules row (before AppPromoSection) ── */}
+          {/* Desktop view: Stationary single line */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="hidden lg:flex flex-row items-center justify-center gap-3 max-w-7xl mx-auto mt-12 pb-6"
+          >
+            {products.map((product) => {
+              const Icon = product.icon
+              const CustomIcon = product.customIcon
+              return (
+                <motion.div
+                  key={product.title}
+                  whileHover={{ 
+                    y: -2,
+                    borderColor: product.accentColor,
+                    backgroundColor: product.bgHover,
+                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.03)"
+                  }}
+                  className="flex items-center gap-2.5 px-5 py-2 rounded-full bg-white border border-border shadow-[0_1px_2px_rgba(0,0,0,0.01)] cursor-pointer transition-all duration-300"
                 >
                   <div
-                    className="relative rounded-[16px] overflow-hidden"
-                    style={{ aspectRatio: "4/3" }}
+                    className="w-7 h-7 rounded-full flex items-center justify-center"
+                    style={{
+                      background: `${product.accentColor}12`,
+                    }}
                   >
-                    <Image
-                      src="/xero-billing-dashboard.png"
-                      alt="Trading dashboard"
-                      fill
-                      className="object-cover object-left-top"
-                      priority
-                    />
+                    {CustomIcon ? (
+                      <CustomIcon color={product.accentColor} size={15} />
+                    ) : Icon ? (
+                      <Icon className="h-3.5 w-3.5" style={{ color: product.accentColor }} strokeWidth={2.2} />
+                    ) : null}
                   </div>
-                </div>
-
-                {/* Bottom bezel — home bar */}
-                <div className="flex justify-center items-center h-5 mt-1">
-                  <div className="w-24 h-[3px] bg-zinc-400/35 rounded-full" />
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Drop shadow under tablet */}
-            <div
-              className="absolute left-1/2 -translate-x-1/2 rounded-[50%]"
-              style={{
-                bottom: "-16px",
-                width: "65%",
-                height: "20px",
-                background:
-                  "radial-gradient(ellipse, rgba(0,0,0,0.22) 0%, transparent 70%)",
-              }}
-            />
+                  <span className="text-sm font-semibold text-foreground/90 tracking-tight whitespace-nowrap pr-1">
+                    {product.title}
+                  </span>
+                </motion.div>
+              )
+            })}
           </motion.div>
+
+          {/* Mobile/Tablet view: Seamless infinite scrolling marquee */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex lg:hidden w-full overflow-hidden py-2 mt-8 pb-6 relative [mask-image:linear-gradient(to_right,transparent_0%,white_15%,white_85%,transparent_100%)] -mx-4 px-4"
+          >
+            <motion.div
+              animate={{ x: ["0%", "-50%"] }}
+              transition={{
+                ease: "linear",
+                duration: 22,
+                repeat: Infinity,
+              }}
+              className="flex gap-3 shrink-0 pr-3"
+            >
+              {[...products, ...products].map((product, index) => {
+                const Icon = product.icon
+                const CustomIcon = product.customIcon
+                return (
+                  <div
+                    key={`${product.title}-${index}`}
+                    className="flex items-center gap-2.5 px-5 py-2 rounded-full bg-white border border-border shadow-[0_1px_2px_rgba(0,0,0,0.01)] shrink-0"
+                  >
+                    <div
+                      className="w-7 h-7 rounded-full flex items-center justify-center"
+                      style={{
+                        background: `${product.accentColor}12`,
+                      }}
+                    >
+                      {CustomIcon ? (
+                        <CustomIcon color={product.accentColor} size={15} />
+                      ) : Icon ? (
+                        <Icon className="h-3.5 w-3.5" style={{ color: product.accentColor }} strokeWidth={2.2} />
+                      ) : null}
+                    </div>
+                    <span className="text-sm font-semibold text-foreground/90 tracking-tight whitespace-nowrap pr-1">
+                      {product.title}
+                    </span>
+                  </div>
+                )
+              })}
+            </motion.div>
+          </motion.div>
+        </div>
+
+        <AppPromoSection />
+
+        {/* ── BOTTOM HALF: Product selection grid below the main hero content ── */}
+        <div className="relative mt-12 pb-24 z-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <p className="text-sm tracking-[0.2em] uppercase text-gold-deep font-extrabold mb-4">
+              Complete Investment Suite
+            </p>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-foreground text-balance">
+              Every market. <span className="text-burgundy">One account.</span>
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {products.map((product, index) => (
+              <ProductCard key={product.title} product={product} index={index} />
+            ))}
+          </div>
         </div>
       </div>
     </section>

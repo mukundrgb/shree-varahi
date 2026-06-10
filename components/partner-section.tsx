@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button"
 import { Building2, Users, BookOpen, Percent, Headphones, Smartphone } from "lucide-react"
 
 const benefits = [
-  { icon: Smartphone, text: "Shree Varahi technology platform" },
-  { icon: Building2, text: "31 years of brand trust" },
-  { icon: BookOpen, text: "In-house research access for your clients" },
-  { icon: Percent, text: "Competitive revenue sharing" },
-  { icon: Headphones, text: "Dedicated branch support & training" },
-  { icon: Users, text: "₹0 client onboarding (digital e-KYC)" },
+  { icon: Smartphone, text: "Shree Varahi Technology Platform — Full trading platform for your clients. No tech costs." },
+  { icon: Building2, text: "31 Years of Brand Trust — Leverage three decades of SEBI-registered credibility." },
+  { icon: BookOpen, text: "In-House Research Access — Daily calls and webinars for your clients. Included." },
+  { icon: Percent, text: "Competitive Revenue Sharing — Transparent monthly payouts. Grow together." },
+  { icon: Headphones, text: "Dedicated Branch Support — Training, onboarding, marketing materials." },
+  { icon: Users, text: "₹0 Client Onboarding — Digital e-KYC. Clients open accounts in minutes." },
 ]
 
 const professions = [
@@ -41,7 +41,7 @@ export function PartnerSection() {
   return (
     <section className="bg-cream py-16 lg:py-24">
       {/* Section divider */}
-      <div className="h-px bg-gradient-to-r from-transparent via-gold to-transparent mb-16" />
+      {/* <div className="h-px bg-gradient-to-r from-transparent via-gold to-transparent mb-16" /> */}
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -51,14 +51,17 @@ export function PartnerSection() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <p className="text-xs tracking-[0.2em] uppercase text-gold-deep font-semibold mb-4">
+          <p className="text-sm tracking-[0.2em] uppercase text-gold-deep font-extrabold mb-4 block">
             Partner Program
           </p>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-balance">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-foreground text-balance">
             Grow with Lakshmishree.
             <br />
             <span className="text-burgundy">Build your own brokerage business.</span>
           </h2>
+          <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+            Join India&apos;s 31-year-old broker as a franchise partner. Get the technology, brand, research support — you focus on growth.
+          </p>
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">

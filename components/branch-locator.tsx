@@ -38,7 +38,7 @@ export function BranchLocator() {
   return (
     <section className="bg-background py-16 lg:py-24">
       {/* Section divider */}
-      <div className="h-px bg-gradient-to-r from-transparent via-gold to-transparent mb-16" />
+      {/* <div className="h-px bg-gradient-to-r from-transparent via-gold to-transparent mb-16" /> */}
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -48,10 +48,10 @@ export function BranchLocator() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <p className="text-xs tracking-[0.2em] uppercase text-gold-deep font-semibold mb-4">
+          <p className="text-sm tracking-[0.2em] uppercase text-gold-deep font-extrabold mb-4 block">
             Find Us Near You
           </p>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-balance mb-3">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-foreground text-balance mb-3">
             We are <span className="text-burgundy">where you are.</span>
           </h2>
           <p className="text-muted-foreground">

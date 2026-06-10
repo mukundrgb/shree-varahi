@@ -5,8 +5,8 @@ import { ProductsSection } from "@/components/products-section"
 import { TraderInvestorSection } from "@/components/trader-investor-section"
 import { OptionStrategyBuilder } from "@/components/option-strategy-builder"
 import { MTFSection } from "@/components/mtf-section"
+import { ValuestocksSection } from "@/components/valuestocks-section"
 import { BrokerageSection } from "@/components/brokerage-section"
-import { TrustSection } from "@/components/trust-section"
 import { KnowledgeSection } from "@/components/knowledge-section"
 import { BranchLocator } from "@/components/branch-locator"
 import { PartnerSection } from "@/components/partner-section"
@@ -14,22 +14,24 @@ import { FAQSection } from "@/components/faq-section"
 import { FinalCTA } from "@/components/final-cta"
 import { Footer } from "@/components/footer"
 import { MobileStickyBar } from "@/components/mobile-sticky-bar"
+import { AppPromoSection } from "@/components/app-promo-section"
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
       <Hero />
-      <FeaturesSection />
-      <ProductsSection />
+      {/* <FeaturesSection /> */}
+      {/* <ProductsSection /> */}
+      {/* <AppPromoSection /> */}
       <TraderInvestorSection />
-      <OptionStrategyBuilder />
+      {/* <OptionStrategyBuilder /> */}
       <MTFSection />
+      <ValuestocksSection />
       <BrokerageSection />
-      <TrustSection />
       <KnowledgeSection />
       <BranchLocator />
-      <PartnerSection />
+      {/* <PartnerSection /> */}
       <FAQSection />
       <FinalCTA />
       <Footer />

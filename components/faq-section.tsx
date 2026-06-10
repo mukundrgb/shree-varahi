@@ -11,37 +11,37 @@ const faqData = {
       a: "We charge a flat ₹17 per executed order for all intraday equity, F&O, and commodities trades. This is one of the lowest in the industry.",
     },
     {
-      q: "Is equity delivery really free?",
-      a: "Yes! We charge ₹0 brokerage on all equity delivery trades. Hold stocks for the long term without any brokerage costs.",
+      q: "Is equity delivery really free — no hidden charges?",
+      a: "Yes. We charge ₹0 brokerage on all equity delivery trades, forever. No hidden charges, no conditions. Hold stocks for the long term without any brokerage costs.",
     },
     {
       q: "What are the MTF interest rates?",
       a: "MTF interest rates start from 0.049% per day (approximately 18% per annum). Rates may vary based on the stock and duration.",
     },
     {
-      q: "How does the option strategy builder work?",
-      a: "Our strategy builder lets you select pre-built strategies like Bull Call Spread, Iron Condor, etc., or create custom multi-leg strategies. You can visualize the payoff graph before execution.",
-    },
-    {
-      q: "Can I trade US stocks from India?",
-      a: "Yes! With our Global Investing feature, you can invest in 5000+ US stocks like Apple, Tesla, Google directly from your Shree Varahi account.",
+      q: "Can I trade US stocks from India via Shree Varahi?",
+      a: "Yes! With our Global Investing feature, you can invest in 5000+ US stocks like Apple, Tesla, Google directly from your Shree Varahi account. No additional paperwork needed.",
     },
     {
       q: "What are the IPO application charges?",
       a: "IPO applications are completely free on Shree Varahi. We don&apos;t charge anything for applying to IPOs through our platform.",
     },
+    {
+      q: "What advanced order types do you support?",
+      a: "We support GTT (Good Till Triggered), OCO (One Cancels Other), AMO (After Market Orders), CO (Cover Orders), and BO (Bracket Orders) — giving you full control over every trade.",
+    },
   ],
   "Account & Products": [
     {
-      q: "How do I open a demat account?",
+      q: "How do I open a Shree Varahi demat account?",
       a: "You can open a demat account in under 10 minutes with our digital e-KYC process. You&apos;ll need your Aadhaar, PAN, and a selfie. It&apos;s completely free to open.",
     },
     {
-      q: "How do I set up a SIP?",
-      a: "Go to Invest > SIP in the app or web platform. Choose your stocks or mutual funds, set the amount (minimum ₹100), and select the frequency. It&apos;s automated after that.",
+      q: "How do I set up a SIP in stocks or mutual funds?",
+      a: "Go to Invest &gt; SIP in the app or web platform. Choose your stocks or mutual funds, set the amount (minimum ₹100), and select the frequency. It&apos;s automated after that.",
     },
     {
-      q: "Is Shree Varahi SEBI registered?",
+      q: "Is Lakshmishree SEBI registered?",
       a: "Yes, Lakshmishree Investment & Securities Ltd is SEBI registered since 1993. We are members of NSE, BSE, MCX, and CDSL depository participant.",
     },
     {
@@ -81,7 +81,7 @@ export function FAQSection() {
   return (
     <section className="bg-background py-16 lg:py-24">
       {/* Section divider */}
-      <div className="h-px bg-gradient-to-r from-transparent via-gold to-transparent mb-16" />
+      {/* <div className="h-px bg-gradient-to-r from-transparent via-gold to-transparent mb-16" /> */}
 
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -91,10 +91,10 @@ export function FAQSection() {
           viewport={{ once: true }}
           className="text-center mb-10"
         >
-          <p className="text-xs tracking-[0.2em] uppercase text-gold-deep font-semibold mb-4">
+          <p className="text-sm tracking-[0.2em] uppercase text-gold-deep font-extrabold mb-4 block">
             FAQ
           </p>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-balance">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-foreground text-balance">
             Your questions. <span className="text-burgundy">Clear answers.</span>
           </h2>
         </motion.div>
@@ -186,7 +186,7 @@ export function FAQSection() {
             className="inline-flex items-center gap-2 text-burgundy hover:text-burgundy-deep transition-colors font-medium"
           >
             <MessageCircle className="h-4 w-4 text-gold" />
-            <span>Chat with us</span>
+            <span>Still have questions? Chat with us</span>
           </a>
         </motion.div>
       </div>

@@ -4,6 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  color-scheme: light;
   /* Shree Varahi - Clean Modern Palette */
   --background: #FFFFFF;
   --foreground: #1A1A1A;
@@ -212,4 +213,30 @@ label[for],
 .sticky-card {
   position: sticky;
   top: 100px;
+}
+
+/* Corner-bracket badge — full bottom baseline + short corner ticks only */
+.badge-bracket {
+  position: relative;
+  border-bottom: 1px solid rgba(217, 178, 124, 0.45);
+}
+
+.badge-bracket::before,
+.badge-bracket::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  height: 8px;   /* ~25% of badge height — vertical tick */
+  width: 10px;   /* ~10% of badge width — horizontal tick */
+  border-top: 1px solid rgba(217, 178, 124, 0.45);
+}
+
+.badge-bracket::before {
+  left: 0;
+  border-left: 1px solid rgba(217, 178, 124, 0.45);
+}
+
+.badge-bracket::after {
+  right: 0;
+  border-right: 1px solid rgba(217, 178, 124, 0.45);
 }

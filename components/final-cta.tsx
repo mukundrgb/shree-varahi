@@ -34,7 +34,7 @@ export function FinalCTA() {
       </div>
 
       {/* Section divider */}
-      <div className="h-px bg-gradient-to-r from-transparent via-gold to-transparent mb-16" />
+      {/* <div className="h-px bg-gradient-to-r from-transparent via-gold to-transparent mb-16" /> */}
 
       <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -45,12 +45,12 @@ export function FinalCTA() {
             viewport={{ once: true }}
             className="space-y-6"
           >
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight">
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-foreground text-balance">
               {"Your wealth's next chapter starts "}
               <span className="text-burgundy">here.</span>
             </h2>
             <p className="text-lg text-muted-foreground">
-              Join 60,000+ investors who trust Shree Varahi for their trading and investment needs. 
+              Join 60,000+ investors who trust Shree Varahi for their trading and investment needs.{" "}
               Open your account in under 10 minutes. Start with ₹0.
             </p>
 

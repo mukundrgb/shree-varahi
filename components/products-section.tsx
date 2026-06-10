@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, TrendingUp, PieChart, Landmark, RotateCcw, Target, Layers, Box } from "lucide-react"
 
@@ -50,7 +50,7 @@ const products: Product[] = [
     title: "Stocks",
     description: "Buy and hold with zero brokerage on every delivery trade.",
     detail: "NSE & BSE listed equities, real-time quotes, margin trading facility.",
-    badge: "₹0 Delivery",
+    badge: "₹17 Delivery",
     badgeColor: "bg-profit/15 text-profit",
     accentColor: "#059669",
     bgHover: "rgba(5,150,105,0.04)",
@@ -58,7 +58,7 @@ const products: Product[] = [
   {
     icon: PieChart,
     title: "Futures & Options",
-    description: "Trade derivatives with advanced tools and Greeks display.",
+    description: "Trade derivatives with advanced tools and live Greeks.",
     detail: "Option chain, strategy builder, real-time IV, one-click rollover.",
     badge: "₹17 Flat",
     badgeColor: "bg-burgundy/10 text-burgundy",
@@ -68,7 +68,7 @@ const products: Product[] = [
   {
     icon: Landmark,
     title: "Mutual Funds",
-    description: "Direct plans with zero commission. Keep every rupee of return.",
+    description: "Zero commission. Keep every rupee of your return.",
     detail: "5,000+ funds, SIP, STP, SWP, goal-based investing in one click.",
     badge: "Direct Plans",
     badgeColor: "bg-gold/20 text-gold-deep",
@@ -78,7 +78,7 @@ const products: Product[] = [
   {
     icon: RotateCcw,
     title: "SIP Auto-Invest",
-    description: "Systematic investing from ₹100/month. Set it and forget it.",
+    description: "Systematic investing from ₹100/month. Fully automated.",
     detail: "Auto-debit, pause/resume anytime, step-up SIP, smart triggers.",
     badge: "From ₹100",
     badgeColor: "bg-profit/15 text-profit",
@@ -88,7 +88,7 @@ const products: Product[] = [
   {
     icon: Target,
     title: "IPO",
-    description: "Apply for upcoming IPOs in two taps. Completely free.",
+    description: "Apply for upcoming IPOs in two taps via UPI. Free.",
     detail: "UPI mandate, GMP tracker, allotment status, ASBA support.",
     badge: "₹0 Application",
     badgeColor: "bg-profit/15 text-profit",
@@ -98,7 +98,7 @@ const products: Product[] = [
   {
     icon: Layers,
     title: "ETF",
-    description: "Exchange traded funds for instant diversification at low cost.",
+    description: "Instant diversification at the lowest cost.",
     detail: "Gold ETFs, index ETFs, sectoral ETFs — live on-exchange prices.",
     badge: "Low Cost",
     badgeColor: "bg-gold/20 text-gold-deep",
@@ -108,7 +108,7 @@ const products: Product[] = [
   {
     icon: Box,
     title: "Commodities MCX",
-    description: "Trade gold, silver, and crude oil on MCX.",
+    description: "Trade gold, silver, and crude oil on MCX. Live prices.",
     detail: "All MCX contracts, commodity options, live LME rates, hedging tools.",
     badge: "₹17 Flat",
     badgeColor: "bg-burgundy/10 text-burgundy",
@@ -118,17 +118,12 @@ const products: Product[] = [
   {
     customIcon: GlobeMarketIcon,
     title: "US Stocks",
-    description: "Trade US, Korean & Japanese stocks directly from India.",
-    detail: "Fractional shares · live prices · ₹ → $ in one tap · 3,000+ stocks",
+    description: "Trade US stocks directly from India.",
+    detail: "Invest in Apple, Tesla, Google, and 5,000+ US equities with ease.",
     badge: "Global Access",
     badgeColor: "bg-gold/20 text-gold-deep",
     accentColor: "#B8924A",
     bgHover: "rgba(217,178,124,0.06)",
-    tickers: [
-      { symbol: "AMZN",  flag: "🇺🇸", name: "Amazon" },
-      { symbol: "005930", flag: "🇰🇷", name: "Samsung" },
-      { symbol: "7203",   flag: "🇯🇵", name: "Toyota" },
-    ],
   },
 ]
 
@@ -147,13 +142,13 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
       onMouseLeave={() => setHovered(false)}
       style={{
         background: hovered ? product.bgHover : "white",
-        transition: "background 0.3s, box-shadow 0.3s, transform 0.3s",
-        transform: hovered ? "translateY(-8px)" : "translateY(0)",
+        borderColor: hovered ? product.accentColor : "var(--border)",
+        transition: "background 0.3s, border-color 0.3s, box-shadow 0.3s",
         boxShadow: hovered
-          ? `0 16px 40px -8px rgba(0,0,0,0.12), 0 0 0 1.5px ${product.accentColor}33`
-          : "0 1px 4px rgba(0,0,0,0.04)",
+          ? `0 4px 12px rgba(0,0,0,0.05)`
+          : "0 1px 4px rgba(0,0,0,0.02)",
       }}
-      className="group relative border border-border rounded-[5px] p-5 cursor-pointer overflow-hidden flex flex-col"
+      className="group relative border rounded-[5px] p-5 cursor-pointer overflow-hidden flex flex-col"
     >
       {/* Accent bar — slides in on hover */}
       <div
@@ -166,9 +161,7 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
 
       {/* Top row */}
       <div className="flex items-start justify-between mb-4">
-        <motion.div
-          animate={{ scale: hovered ? 1.12 : 1, rotate: hovered ? -4 : 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        <div
           className="w-11 h-11 rounded-[5px] flex items-center justify-center"
           style={{
             background: hovered ? `${product.accentColor}20` : `${product.accentColor}12`,
@@ -180,11 +173,10 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
           ) : Icon ? (
             <Icon className="h-5 w-5" style={{ color: product.accentColor }} />
           ) : null}
-        </motion.div>
+        </div>
 
         <span
-          className={`text-[10px] font-semibold px-2.5 py-1 rounded-[5px] ${product.badgeColor} transition-all duration-200`}
-          style={{ transform: hovered ? "scale(1.05)" : "scale(1)", display: "inline-block" }}
+          className={`text-[10px] font-semibold px-2.5 py-1 rounded-[5px] ${product.badgeColor}`}
         >
           {product.badge}
         </span>
@@ -195,60 +187,6 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
 
       {/* Description */}
       <p className="text-sm text-muted-foreground leading-relaxed">{product.description}</p>
-
-      {/* Ticker chips — always visible for US Stocks */}
-      {product.tickers && (
-        <div className="flex flex-wrap gap-1.5 mt-3">
-          {product.tickers.map((t) => (
-            <span
-              key={t.symbol}
-              className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-1 rounded-[4px]"
-              style={{
-                background: `${product.accentColor}12`,
-                color: product.accentColor,
-                border: `1px solid ${product.accentColor}28`,
-              }}
-            >
-              <span>{t.flag}</span>
-              <span>{t.symbol}</span>
-            </span>
-          ))}
-        </div>
-      )}
-
-      {/* Detail row — slides in on hover */}
-      <AnimatePresence>
-        {hovered && (
-          <motion.div
-            initial={{ opacity: 0, height: 0, marginTop: 0 }}
-            animate={{ opacity: 1, height: "auto", marginTop: 10 }}
-            exit={{ opacity: 0, height: 0, marginTop: 0 }}
-            transition={{ duration: 0.22, ease: "easeOut" }}
-            className="overflow-hidden"
-          >
-            <p className="text-xs leading-relaxed" style={{ color: product.accentColor }}>
-              {product.detail}
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Learn more — slides in on hover */}
-      <AnimatePresence>
-        {hovered && (
-          <motion.div
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 6 }}
-            transition={{ duration: 0.18 }}
-            className="flex items-center gap-1 mt-3 text-xs font-semibold"
-            style={{ color: product.accentColor }}
-          >
-            Learn more
-            <ArrowRight className="h-3 w-3" />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.div>
   )
 }
@@ -257,7 +195,7 @@ export function ProductsSection() {
   return (
     <section className="bg-background py-16 lg:py-24">
       {/* Section divider */}
-      <div className="h-px bg-gradient-to-r from-transparent via-gold to-transparent mb-16" />
+      {/* <div className="h-px bg-gradient-to-r from-transparent via-gold to-transparent mb-16" /> */}
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -273,6 +211,9 @@ export function ProductsSection() {
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-balance">
             Every market. <span className="text-gold-deep">One account.</span>
           </h2>
+          <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+            From intraday to long-term SIPs — every asset class in one place, backed by 31 years of trust.
+          </p>
         </motion.div>
 
         {/* Products Grid */}

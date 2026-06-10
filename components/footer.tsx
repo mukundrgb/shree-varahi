@@ -64,18 +64,17 @@ const socials = [
 export function Footer() {
   return (
     <footer
-      className="relative overflow-hidden"
+      className="relative overflow-hidden bg-burgundy text-white"
       style={{
-        background:
-          "linear-gradient(168deg, #1C0B10 0%, #130709 42%, #0D0506 100%)",
+        borderTop: "1px solid rgba(255, 255, 255, 0.15)",
       }}
     >
-      {/* Burgundy atmospheric glow — top center */}
+      {/* Gold atmospheric glow — top center */}
       <div
         className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse at center top, rgba(139,13,25,0.22) 0%, transparent 65%)",
+            "radial-gradient(ellipse at center top, rgba(217,178,124,0.08) 0%, transparent 65%)",
         }}
       />
 
@@ -91,7 +90,7 @@ export function Footer() {
           {/* Brand column */}
           <div className="col-span-2 md:col-span-3 lg:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-[5px] bg-gold/10">
+              <div className="flex h-10 w-10 items-center justify-center rounded-[5px] bg-white/10">
                 <svg viewBox="0 0 40 40" className="h-6 w-6 text-gold">
                   <path
                     fill="currentColor"
@@ -101,13 +100,13 @@ export function Footer() {
               </div>
               <div>
                 <span className="text-lg font-bold text-white">Shree Varahi</span>
-                <span className="block text-[10px] text-gold font-medium">
+                <span className="block text-[10px] text-gold-champagne font-semibold">
                   by Lakshmishree
                 </span>
               </div>
             </Link>
 
-            <p className="text-sm text-white/45 mb-5 max-w-xs leading-relaxed">
+            <p className="text-sm text-white/70 mb-5 max-w-xs leading-relaxed">
               Trading & investment platform by Lakshmishree Investment &
               Securities Ltd. SEBI registered since 1993.
             </p>
@@ -118,7 +117,7 @@ export function Footer() {
                   key={s.name}
                   href="#"
                   aria-label={s.name}
-                  className="w-8 h-8 rounded-[5px] bg-white/5 hover:bg-gold/15 flex items-center justify-center text-white/40 hover:text-gold transition-all duration-200"
+                  className="w-8 h-8 rounded-[5px] bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/80 hover:text-white transition-all duration-200"
                 >
                   <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
                     <path d={s.path} />
@@ -131,7 +130,7 @@ export function Footer() {
           {/* Link columns */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h4 className="font-bold text-white/90 mb-4 text-sm tracking-wide">
+              <h4 className="font-bold text-white mb-4 text-sm tracking-wide">
                 {category}
               </h4>
               <ul className="space-y-[10px]">
@@ -139,7 +138,7 @@ export function Footer() {
                   <li key={link}>
                     <a
                       href="#"
-                      className="text-sm text-white/40 hover:text-gold transition-colors duration-150"
+                      className="text-sm text-white/70 hover:text-gold-champagne transition-colors duration-150"
                     >
                       {link}
                     </a>
@@ -153,12 +152,12 @@ export function Footer() {
         {/* Exchange logos */}
         <div
           className="flex flex-wrap justify-center items-center gap-6 lg:gap-10 mt-12 py-8"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
+          style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}
         >
           {exchangeLogos.map((logo) => (
             <span
               key={logo}
-              className="text-sm font-bold text-white/20 hover:text-gold/50 transition-colors duration-150 cursor-default"
+              className="text-sm font-bold text-white/40 hover:text-gold transition-colors duration-150 cursor-default"
             >
               {logo}
             </span>
@@ -167,14 +166,14 @@ export function Footer() {
 
         {/* Disclaimer */}
         <div
-          className="mt-8 p-4 rounded-[5px] text-xs text-white/32 leading-relaxed"
+          className="mt-8 p-4 rounded-[5px] text-xs text-white/60 leading-relaxed"
           style={{
-            background: "rgba(255,255,255,0.025)",
-            border: "1px solid rgba(255,255,255,0.05)",
+            background: "rgba(0,0,0,0.2)",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
           }}
         >
           <p className="mb-2">
-            <strong className="text-white/48">Disclaimer:</strong> Investments
+            <strong className="text-white/90">Disclaimer:</strong> Investments
             in securities market are subject to market risks, read all the
             related documents carefully before investing. Brokerage will not
             exceed the SEBI prescribed limit. Registration granted by SEBI and
@@ -192,19 +191,19 @@ export function Footer() {
         {/* Copyright row */}
         <div
           className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 pt-8"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
+          style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}
         >
-          <p className="text-sm text-white/32">
+          <p className="text-sm text-white/60">
             © 2026 Shree Varahi — Lakshmishree Investment & Securities Ltd.
           </p>
-          <p className="text-sm text-white/32">Made with care in India</p>
+          <p className="text-sm text-white/60">Made with care in India</p>
         </div>
       </div>
 
       {/* ── Large marquee — SHREE VARAHI ── */}
       <div
         className="overflow-hidden"
-        style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}
+        style={{ borderTop: "1px solid rgba(255, 255, 255, 0.1)" }}
       >
         {/* 4 copies, animate -25% = exactly one copy width → seamless */}
         <motion.div
@@ -221,7 +220,7 @@ export function Footer() {
                   fontSize: "clamp(56px, 11vw, 152px)",
                   lineHeight: 0.88,
                   paddingRight: "5vw",
-                  WebkitTextStroke: "1px rgba(217,178,124,0.38)",
+                  WebkitTextStroke: "1px rgba(255, 255, 255, 0.12)",
                   WebkitTextFillColor: "transparent",
                   color: "transparent",
                   letterSpacing: "0.04em",
@@ -234,7 +233,7 @@ export function Footer() {
                 style={{
                   fontSize: "clamp(24px, 4vw, 56px)",
                   color: "#D9B27C",
-                  opacity: 0.16,
+                  opacity: 0.5,
                   paddingRight: "5vw",
                 }}
               >

@@ -1,198 +1,232 @@
 "use client"
 
-import { useState } from "react"
 import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Play, Clock, ArrowRight, User } from "lucide-react"
+import { ChevronRight, ArrowLeft, ArrowRight } from "lucide-react"
 
-const categories = ["All", "Beginner", "Options & F&O", "Investing", "Market Analysis", "Webinars"]
-
-const articles = [
+const knowledgeOptions = [
   {
-    category: "Beginner",
-    title: "Complete Guide to Opening a Demat Account",
-    excerpt: "Everything you need to know about starting your investment journey with a demat account.",
-    readTime: "5 min read",
-    type: "article",
+    title: "Knowledge Desk",
+    desc: "Structured lessons for every level of investor, from opening your first demat account to mastering F&O strategies.",
   },
   {
-    category: "Options & F&O",
-    title: "Understanding the Option Chain",
-    excerpt: "Learn to read Greeks, OI, and IV to make informed F&O trading decisions.",
-    readTime: "8 min read",
-    type: "article",
+    title: "Market News",
+    desc: "Stay updated with live market developments, earnings updates, policy changes, and sector-specific news curated daily.",
   },
   {
-    category: "Investing",
-    title: "SIP in Stocks vs Mutual Funds",
-    excerpt: "Which SIP strategy is right for your wealth creation goals?",
-    readTime: "6 min read",
-    type: "article",
-  },
-  {
-    category: "Webinars",
-    title: "Market Outlook with Prakash Gaba",
-    excerpt: "Recorded session: Technical analysis and trading strategies for the current market.",
-    readTime: "45 min",
-    type: "video",
+    title: "Blog & Research",
+    desc: "In-depth articles, trade ideas, and market analysis written by Lakshmishree's in-house research team and expert contributors.",
   },
 ]
 
 export function KnowledgeSection() {
-  const [activeCategory, setActiveCategory] = useState("All")
-
   return (
-    <section className="bg-cream py-16 lg:py-24">
-      {/* Section divider */}
-      <div className="h-px bg-gradient-to-r from-transparent via-gold to-transparent mb-16" />
+    <section className="relative bg-white py-16 lg:py-24 overflow-hidden border-t border-slate-100">
+      {/* Background grid details */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        {/* Soft grid background */}
+        <div 
+          className="absolute inset-0 opacity-[0.015]" 
+          style={{ 
+            backgroundImage: 'radial-gradient(#B8924A 1.2px, transparent 1.2px)', 
+            backgroundSize: '28px 28px' 
+          }} 
+        />
+      </div>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-8"
-        >
-          <p className="text-xs tracking-[0.2em] uppercase text-gold-deep font-semibold mb-4">
-            Knowledge Center
-          </p>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-balance">
-            Learn. Understand. <span className="text-gold-deep">Invest with confidence.</span>
-          </h2>
-        </motion.div>
-
-        {/* Category Pills */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="flex flex-wrap justify-center gap-2 mb-10"
-        >
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setActiveCategory(category)}
-              className={`px-4 py-2 rounded-[5px] text-sm font-semibold transition-all ${
-                activeCategory === category
-                  ? "bg-burgundy text-primary-foreground"
-                  : "bg-white border border-border text-foreground hover:border-gold"
-              }`}
-            >
-              {category}
-            </button>
-          ))}
-        </motion.div>
-
-        {/* Featured Webinar */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="bg-white border-2 border-gold rounded-[5px] p-6 lg:p-8 mb-8"
-        >
-          <div className="grid lg:grid-cols-2 gap-6 items-center">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-loss opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-loss"></span>
-                </span>
-                <span className="text-xs font-semibold text-loss uppercase tracking-wider">
-                  Live Webinar
-                </span>
-              </div>
-              <h3 className="text-2xl lg:text-3xl font-bold mb-3">
-                Market Outlook & Trading Strategies
-              </h3>
-              <p className="text-muted-foreground mb-4">
-                Join our weekly live session with market experts. Learn technical analysis, 
-                swing trading setups, and F&O strategies for the week ahead.
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          
+          {/* Left Column: Content + Interactive List */}
+          <div className="lg:col-span-6 space-y-8">
+            <div className="space-y-4 text-left">
+              <h2 className="text-4xl sm:text-5xl font-black text-slate-800 leading-[1.15] tracking-tight uppercase">
+                Learn with <br />
+                <span className="text-burgundy">Shree Varahi.</span>
+              </h2>
+              <p className="text-sm sm:text-base text-slate-500 leading-relaxed max-w-lg">
+                Markets made simple explore expert knowledge, daily news, and in-depth research all in one place.
               </p>
-              <p className="text-sm text-gold-deep font-medium mb-6">
-                Every Saturday, 10:00 AM IST
-              </p>
-              <Button className="bg-burgundy hover:bg-burgundy-deep text-primary-foreground rounded-[5px]">
-                Register Free
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
             </div>
-            
-            {/* Speaker Card */}
-            <div className="flex justify-center lg:justify-end">
-              <div className="bg-secondary border border-border rounded-[5px] p-5 max-w-xs">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 rounded-full bg-gold/20 flex items-center justify-center">
-                    <User className="h-8 w-8 text-gold" />
+
+            {/* List Cards */}
+            <div className="space-y-4">
+              {knowledgeOptions.map((opt, index) => (
+                <motion.div
+                  key={opt.title}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.08, duration: 0.4 }}
+                  whileHover={{ y: -2 }}
+                  className="group w-full bg-white border border-slate-100 rounded-[12px] p-5 flex items-center justify-between gap-6 cursor-pointer shadow-[0_2px_8px_rgba(0,0,0,0.01)] hover:shadow-md hover:border-slate-200 transition-all duration-300"
+                >
+                  <div className="space-y-1 flex-1 text-left">
+                    <h3 className="text-base sm:text-lg font-bold text-slate-800 group-hover:text-burgundy transition-colors duration-250">
+                      {opt.title}
+                    </h3>
+                    <p className="text-[13px] text-slate-500 leading-relaxed">
+                      {opt.desc}
+                    </p>
                   </div>
-                  <div>
-                    <h4 className="font-bold">Prakash Gaba</h4>
-                    <p className="text-xs text-muted-foreground">Market Expert & Technical Analyst</p>
-                  </div>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  25+ years of market experience. Regular contributor to CNBC-TV18 and ET Now.
-                </p>
-              </div>
+                  
+                  {/* Chevron Right */}
+                  <ChevronRight className="h-5 w-5 text-slate-400 group-hover:text-burgundy group-hover:translate-x-0.5 transition-all duration-200 shrink-0" />
+                </motion.div>
+              ))}
             </div>
           </div>
-        </motion.div>
 
-        {/* Knowledge Cards Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {articles.map((article, index) => (
-            <motion.div
-              key={article.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ y: -6 }}
-              className="bg-white border border-border rounded-[5px] overflow-hidden cursor-pointer hover:shadow-md hover:border-gold/50 transition-all"
-            >
-              {/* Image placeholder with gradient */}
-              <div className="h-32 bg-gradient-to-br from-burgundy/20 to-gold/20 relative">
-                {article.type === "video" && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm">
-                      <Play className="h-5 w-5 text-burgundy ml-0.5" />
+          {/* Right Column: Premium Vector-Style Mockup Illustration */}
+          <div className="lg:col-span-6 flex items-center justify-center">
+            <div className="relative w-full max-w-[500px] aspect-[4/3] select-none">
+              
+              {/* Back Pinkish/Reddish Glow Circle */}
+              <div className="absolute -left-4 top-1/4 w-[160px] h-[160px] sm:w-[200px] sm:h-[200px] rounded-full bg-red-100/30 pointer-events-none blur-3xl z-0" />
+              <div className="absolute -left-1 top-[18%] w-[130px] h-[130px] rounded-full bg-burgundy/[0.03] border border-burgundy/[0.05] z-0" />
+              
+              {/* Floating Star highlights */}
+              <motion.div 
+                animate={{ scale: [1, 1.2, 1], rotate: [0, 45, 0] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute right-12 -top-6 text-gold z-20"
+              >
+                <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24">
+                  <path d="M12 2l2.4 7.4h7.6l-6.2 4.5 2.4 7.4-6.2-4.5-6.2 4.5 2.4-7.4-6.2-4.5h7.6z" />
+                </svg>
+              </motion.div>
+              <motion.div 
+                animate={{ scale: [1, 1.3, 1] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                className="absolute left-6 bottom-16 text-blue-400 z-20"
+              >
+                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                  <path d="M12 2l2.4 7.4h7.6l-6.2 4.5 2.4 7.4-6.2-4.5-6.2 4.5 2.4-7.4-6.2-4.5h7.6z" />
+                </svg>
+              </motion.div>
+
+              {/* Floating Badge Stack / Cluster */}
+              <div className="absolute -left-6 sm:-left-10 top-1/4 z-25 flex flex-col gap-3">
+                {/* Quote Badge */}
+                <motion.div 
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white border border-[#FFEAEA] shadow-md flex items-center justify-center"
+                >
+                  <span className="text-xl sm:text-2xl font-serif font-black text-loss">“</span>
+                </motion.div>
+                {/* Chat Message Bubble Badge */}
+                <motion.div 
+                  animate={{ y: [0, 4, 0] }}
+                  transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                  className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white border border-[#E8F3FF] shadow-md flex items-center justify-center"
+                >
+                  <svg className="w-4.5 h-4.5 text-blue-500 fill-blue-500/10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                  </svg>
+                </motion.div>
+                {/* Chain Link Badge */}
+                <motion.div 
+                  animate={{ y: [0, -3, 0] }}
+                  transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
+                  className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white border border-gold/20 shadow-md flex items-center justify-center"
+                >
+                  <svg className="w-4.5 h-4.5 text-gold-deep" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  </svg>
+                </motion.div>
+              </div>
+
+              {/* Main Desktop Browser Window Mockup */}
+              <div className="absolute w-[90%] left-[8%] sm:left-[10%] top-[8%] h-[84%] bg-white rounded-[16px] border border-border shadow-[0_25px_60px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col z-10">
+                {/* Browser Top Bar */}
+                <div className="h-10 px-4 bg-slate-50 border-b border-border flex items-center justify-between shrink-0">
+                  {/* Traffic Light Dots */}
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                  </div>
+                  {/* Back / Forward Controls */}
+                  <div className="flex items-center gap-3">
+                    <ArrowLeft className="h-3.5 w-3.5 text-muted-foreground/45" />
+                    <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/45" />
+                  </div>
+                  <div className="w-20" /> {/* Spacer */}
+                </div>
+
+                {/* Browser Body Area */}
+                <div className="flex-1 p-5 flex flex-col justify-between bg-white overflow-hidden space-y-4">
+                  {/* Inner Mockup Cards Grid */}
+                  <div className="grid grid-cols-2 gap-4 flex-1 items-stretch">
+                    {/* Left Inner Card: Bar Chart */}
+                    <div className="bg-[#FAF9F5] border border-border/80 rounded-[12px] p-3 flex flex-col justify-between">
+                      <span className="text-[9px] font-extrabold text-gold-deep tracking-wider uppercase">PERFORMANCE</span>
+                      {/* Vertical bars */}
+                      <div className="flex items-end justify-between gap-1 h-16 pt-3 px-2">
+                        <div className="w-2.5 bg-gold/30 rounded-t-sm h-[30%]" />
+                        <div className="w-2.5 bg-burgundy/80 rounded-t-sm h-[65%]" />
+                        <div className="w-2.5 bg-gold rounded-t-sm h-[50%]" />
+                        <div className="w-2.5 bg-gold-deep rounded-t-sm h-[80%]" />
+                        <div className="w-2.5 bg-burgundy/30 rounded-t-sm h-[45%]" />
+                      </div>
+                      {/* Slider Control Handle */}
+                      <div className="w-full h-1 bg-border/60 rounded-full relative mt-2 flex items-center">
+                        <div className="absolute left-2/3 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-gold border border-white shadow-sm" />
+                      </div>
+                    </div>
+
+                    {/* Right Inner Card: Pie Chart */}
+                    <div className="bg-[#FAF9F5] border border-border/80 rounded-[12px] p-3 flex flex-col justify-between items-center text-center">
+                      <span className="text-[9px] font-extrabold text-burgundy tracking-wider uppercase block w-full text-left">ALLOCATION</span>
+                      {/* SVG Pie Chart Mock */}
+                      <div className="relative w-16 h-16 my-2 shrink-0 flex items-center justify-center">
+                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 32 32">
+                          <circle cx="16" cy="16" r="14" fill="none" stroke="#E5E7EB" strokeWidth="4" />
+                          <circle cx="16" cy="16" r="14" fill="none" stroke="#D9B27C" strokeWidth="4" strokeDasharray="35 100" />
+                          <circle cx="16" cy="16" r="14" fill="none" stroke="#8B0D19" strokeWidth="4" strokeDasharray="25 100" strokeDashoffset="-35" />
+                          <circle cx="16" cy="16" r="14" fill="none" stroke="#10B981" strokeWidth="4" strokeDasharray="20 100" strokeDashoffset="-60" />
+                        </svg>
+                      </div>
+                      <div className="flex gap-2 text-[8px] font-semibold text-muted-foreground shrink-0">
+                        <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-gold" />Stocks</span>
+                        <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 rounded-full bg-burgundy" />F&amp;O</span>
+                      </div>
                     </div>
                   </div>
-                )}
-              </div>
-              <div className="p-4">
-                <span className="inline-block text-[10px] font-semibold px-2 py-1 rounded-[5px] bg-gold/20 text-gold-deep mb-2">
-                  {article.category}
-                </span>
-                <h4 className="font-bold mb-2 line-clamp-2">{article.title}</h4>
-                <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
-                  {article.excerpt}
-                </p>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Clock className="h-3 w-3" />
-                  <span>{article.readTime}</span>
+
+                  {/* Horizontal Skeleton Lines at bottom */}
+                  <div className="space-y-2 pt-2 border-t border-border/40 shrink-0">
+                    <div className="h-2 w-3/4 bg-slate-100 rounded-full" />
+                    <div className="h-2 w-1/2 bg-slate-100 rounded-full" />
+                  </div>
                 </div>
               </div>
-            </motion.div>
-          ))}
-        </div>
 
-        {/* CTAs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="flex flex-wrap justify-center gap-4 mt-10"
-        >
-          <Button variant="outline" className="border-border text-foreground hover:bg-secondary rounded-[5px]">
-            Browse all lessons
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-          <Button variant="outline" className="border-border text-foreground hover:bg-secondary rounded-[5px]">
-            Watch recorded webinars
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        </motion.div>
+              {/* Overlapping Gold Coins (Bottom Right) */}
+              <div className="absolute right-0 sm:right-2 bottom-0 translate-y-[20%] flex items-center z-30">
+                {/* Coin 1 */}
+                <motion.div 
+                  animate={{ y: [0, -3, 0] }}
+                  transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut" }}
+                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-gold via-gold-deep to-gold border-[3px] border-white shadow-[0_8px_20px_rgba(184,146,74,0.35)] flex items-center justify-center text-white font-extrabold text-xl sm:text-2xl select-none"
+                >
+                  ₹
+                </motion.div>
+                {/* Coin 2 */}
+                <motion.div 
+                  animate={{ y: [0, 3, 0] }}
+                  transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-gold via-gold-deep to-gold border-[3px] border-white shadow-[0_8px_16px_rgba(184,146,74,0.3)] flex items-center justify-center text-white font-extrabold text-lg sm:text-xl select-none -ml-4"
+                >
+                  ₹
+                </motion.div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
       </div>
     </section>
   )
