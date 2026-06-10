@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { motion } from "framer-motion"
 
 const footerLinks = {
@@ -90,14 +91,13 @@ export function Footer() {
           {/* Brand column */}
           <div className="col-span-2 md:col-span-3 lg:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-[5px] bg-white/10">
-                <svg viewBox="0 0 40 40" className="h-6 w-6 text-gold">
-                  <path
-                    fill="currentColor"
-                    d="M20 2C11.16 2 4 9.16 4 18c0 4.42 1.79 8.42 4.69 11.31L20 38l11.31-8.69C34.21 26.42 36 22.42 36 18c0-8.84-7.16-16-16-16z"
-                  />
-                </svg>
-              </div>
+              <Image
+                src="/favicon.jpg"
+                alt="Shree Varahi"
+                width={40}
+                height={40}
+                className="rounded-[5px] object-contain"
+              />
               <div>
                 <span className="text-lg font-bold text-white">Shree Varahi</span>
                 <span className="block text-[10px] text-gold-champagne font-semibold">

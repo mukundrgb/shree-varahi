@@ -377,22 +377,22 @@ export function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.15 }}
-              className="flex flex-wrap justify-center gap-4"
+              className="flex justify-center gap-3"
             >
               <Button
                 size="lg"
-                className="bg-burgundy hover:bg-burgundy-deep text-white px-10 h-14 text-base font-bold rounded-[5px] shadow-md shadow-burgundy/10"
+                className="bg-burgundy hover:bg-burgundy-deep text-white px-6 sm:px-10 h-12 sm:h-14 text-sm sm:text-base font-bold rounded-[5px] shadow-md shadow-burgundy/10"
               >
                 Open Free Account
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                className="border-border text-foreground hover:bg-secondary px-10 h-14 text-base font-bold rounded-[5px]"
+                className="border-border text-foreground hover:bg-secondary px-6 sm:px-10 h-12 sm:h-14 text-sm sm:text-base font-bold rounded-[5px]"
                 onClick={() => window.location.href = 'tel:02240808080'}
               >
-                <Phone className="mr-2 h-5 w-5" />
+                <Phone className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                 Call Now
               </Button>
             </motion.div>
