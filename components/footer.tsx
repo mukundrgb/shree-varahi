@@ -4,40 +4,45 @@ import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
 
-const footerLinks = {
+type FooterLink = {
+  name: string
+  href: string
+}
+
+const footerLinks: Record<string, FooterLink[]> = {
   Trade: [
-    "Trading App",
-    "Web Terminal",
-    "Options Trader",
-    "Algo & API",
-    "Stocks Intraday",
-    "Futures",
-    "Commodities",
+    { name: "Trading App", href: "#" },
+    { name: "Web Terminal", href: "#" },
+    { name: "Options Trader", href: "/futures-options" },
+    { name: "Algo & API", href: "#" },
+    { name: "Stocks Intraday", href: "#" },
+    { name: "Futures", href: "/futures-options" },
+    { name: "Commodities", href: "#" },
   ],
   Invest: [
-    "Stocks Delivery",
-    "Mutual Funds",
-    "SIP",
-    "IPO",
-    "ETF",
-    "US Stocks",
-    "Digital Gold",
+    { name: "Stocks Delivery", href: "#" },
+    { name: "Mutual Funds", href: "#" },
+    { name: "SIP", href: "#" },
+    { name: "IPO", href: "#" },
+    { name: "ETF", href: "#" },
+    { name: "US Stocks", href: "/#global-investing" },
+    { name: "Digital Gold", href: "#" },
   ],
   "Markets & Tools": [
-    "Stock Screener",
-    "Option Chain",
-    "Strategy Builder",
-    "Market News",
-    "Research Reports",
-    "Webinars",
+    { name: "Stock Screener", href: "#" },
+    { name: "Option Chain", href: "/futures-options" },
+    { name: "Strategy Builder", href: "/futures-options" },
+    { name: "Market News", href: "#" },
+    { name: "Research Reports", href: "#" },
+    { name: "Webinars", href: "#" },
   ],
   Company: [
-    "About Us",
-    "Careers",
-    "Press",
-    "Branch Locator",
-    "Partner Program",
-    "Contact Us",
+    { name: "About Us", href: "#" },
+    { name: "Careers", href: "#" },
+    { name: "Press", href: "#" },
+    { name: "Branch Locator", href: "#" },
+    { name: "Partner Program", href: "#" },
+    { name: "Contact Us", href: "#" },
   ],
 }
 
@@ -135,13 +140,13 @@ export function Footer() {
               </h4>
               <ul className="space-y-[10px]">
                 {links.map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
+                  <li key={link.name}>
+                    <Link
+                      href={link.href}
                       className="text-sm text-white/70 hover:text-gold-champagne transition-colors duration-150"
                     >
-                      {link}
-                    </a>
+                      {link.name}
+                    </Link>
                   </li>
                 ))}
               </ul>

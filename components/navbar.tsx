@@ -2,34 +2,68 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Search, Menu, X, ChevronDown } from "lucide-react"
+import { 
+  Search, 
+  Menu, 
+  X, 
+  ChevronDown, 
+  PieChart, 
+  TrendingUp, 
+  Landmark, 
+  RotateCcw, 
+  Target, 
+  Layers, 
+  Box 
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SearchPopup } from "./search-popup"
 import Link from "next/link"
 import Image from "next/image"
 
-const tradeMenu = [
-  { title: "Trading App", desc: "Mobile-first trading experience", icon: "📱" },
-  { title: "Web Terminal", desc: "Professional desktop platform", icon: "💻" },
-  { title: "Options Trader", desc: "Advanced F&O strategies", icon: "📊" },
-  { title: "Algo & API", desc: "Automate your trading", icon: "⚡" },
-  { title: "Global Investing", desc: "Trade US stocks directly", icon: "🌍" },
-  { title: "Stocks Intraday", desc: "Same-day trading", icon: "📈" },
-  { title: "Futures", desc: "Derivatives trading", icon: "📉" },
-  { title: "MTF", desc: "4× buying power", icon: "💪" },
-  { title: "Commodities", desc: "MCX trading", icon: "🥇" },
-  { title: "Stock Screener", desc: "Find opportunities", icon: "🔍" },
+function GlobeMarketIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="9.5" stroke="currentColor" strokeWidth="1.4" />
+      <ellipse cx="12" cy="12" rx="9.5" ry="3.2" stroke="currentColor" strokeWidth="1.1" />
+      <ellipse cx="12" cy="8.2" rx="7.8" ry="2.2" stroke="currentColor" strokeWidth="0.7" opacity="0.55" />
+      <ellipse cx="12" cy="15.8" rx="7.8" ry="2.2" stroke="currentColor" strokeWidth="0.7" opacity="0.55" />
+      <ellipse cx="12" cy="12" rx="2.2" ry="9.5" stroke="currentColor" strokeWidth="0.9" />
+      <ellipse cx="12" cy="12" rx="6" ry="9.5" stroke="currentColor" strokeWidth="0.6" opacity="0.45" />
+      <line x1="12" y1="2.5" x2="12" y2="21.5" stroke="currentColor" strokeWidth="0.9" opacity="0.3" />
+      <circle cx="12" cy="12" r="1.5" fill="currentColor" opacity="0.7" />
+    </svg>
+  )
+}
+
+type MenuItem = {
+  title: string
+  desc: string
+  icon: React.ReactNode
+  href: string
+}
+
+const tradeMenu: MenuItem[] = [
+  { title: "Trading App", desc: "Mobile-first trading experience", icon: "📱", href: "#" },
+  { title: "Web Terminal", desc: "Professional desktop platform", icon: "💻", href: "#" },
+  { title: "Options Trader", desc: "Advanced F&O strategies", icon: <PieChart className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/futures-options" },
+  { title: "Algo & API", desc: "Automate your trading", icon: "⚡", href: "#" },
+  { title: "Global Investing", desc: "Trade US stocks directly", icon: <GlobeMarketIcon className="h-5 w-5 text-burgundy" />, href: "/#global-investing" },
+  { title: "Stocks Intraday", desc: "Same-day trading", icon: <TrendingUp className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
+  { title: "Futures", desc: "Derivatives trading", icon: <PieChart className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/futures-options" },
+  { title: "MTF", desc: "4× buying power", icon: "💪", href: "#" },
+  { title: "Commodities", desc: "MCX trading", icon: <Box className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
+  { title: "Stock Screener", desc: "Find opportunities", icon: "🔍", href: "#" },
 ]
 
-const investMenu = [
-  { title: "Stocks Delivery", desc: "₹0 brokerage forever", icon: "💎" },
-  { title: "Mutual Funds", desc: "Direct plans, zero commission", icon: "📁" },
-  { title: "SIP", desc: "Start from ₹100", icon: "🔄" },
-  { title: "IPO", desc: "Apply for free", icon: "🎯" },
-  { title: "ETF", desc: "Exchange traded funds", icon: "📊" },
-  { title: "NFO", desc: "New fund offers", icon: "🆕" },
-  { title: "Digital Gold", desc: "24K gold from ₹1", icon: "✨" },
-  { title: "Global Investing", desc: "US stocks & ETFs", icon: "🌎" },
+const investMenu: MenuItem[] = [
+  { title: "Stocks Delivery", desc: "₹0 brokerage forever", icon: <TrendingUp className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
+  { title: "Mutual Funds", desc: "Direct plans, zero commission", icon: <Landmark className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
+  { title: "SIP", desc: "Start from ₹100", icon: <RotateCcw className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
+  { title: "IPO", desc: "Apply for free", icon: <Target className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
+  { title: "ETF", desc: "Exchange traded funds", icon: <Layers className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
+  { title: "NFO", desc: "New fund offers", icon: "🆕", href: "#" },
+  { title: "Digital Gold", desc: "24K gold from ₹1", icon: "✨", href: "#" },
+  { title: "Global Investing", desc: "US stocks & ETFs", icon: <GlobeMarketIcon className="h-5 w-5 text-burgundy" />, href: "/#global-investing" },
 ]
 
 export function Navbar() {
@@ -115,10 +149,10 @@ export function Navbar() {
                           {(item === "Trade" ? tradeMenu : investMenu).map((menuItem) => (
                             <Link
                               key={menuItem.title}
-                              href="#"
+                              href={menuItem.href}
                               className="flex items-start gap-3 rounded-[5px] p-3 hover:bg-secondary transition-colors"
                             >
-                              <span className="text-xl">{menuItem.icon}</span>
+                              <span className="text-xl flex items-center justify-center h-6 w-6">{menuItem.icon}</span>
                               <div>
                                 <div className="font-medium text-foreground text-sm">
                                   {menuItem.title}

@@ -15,6 +15,7 @@ import {
   Box 
 } from "lucide-react"
 import { AppPromoSection } from "@/components/app-promo-section"
+import Link from "next/link"
 
 
 /* ── Custom globe SVG — richer than the Lucide default ── */
@@ -54,6 +55,7 @@ type Product = {
   accentColor: string
   bgHover: string
   tickers?: Ticker[]
+  href?: string
 }
 
 const products: Product[] = [
@@ -76,6 +78,7 @@ const products: Product[] = [
     badgeColor: "bg-burgundy/10 text-burgundy",
     accentColor: "#8B0D19",
     bgHover: "rgba(139,13,25,0.04)",
+    href: "/futures-options",
   },
   {
     icon: Landmark,
@@ -136,6 +139,7 @@ const products: Product[] = [
     badgeColor: "bg-gold/20 text-gold-deep",
     accentColor: "#B8924A",
     bgHover: "rgba(217,178,124,0.06)",
+    href: "/#global-investing",
   },
 ]
 
@@ -144,7 +148,7 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
   const Icon = product.icon
   const CustomIcon = product.customIcon
 
-  return (
+  const cardContent = (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -209,6 +213,16 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
       </div>
     </motion.div>
   )
+
+  if (product.href) {
+    return (
+      <Link href={product.href} className="block h-full">
+        {cardContent}
+      </Link>
+    )
+  }
+
+  return cardContent
 }
 
 export function Hero() {
@@ -470,9 +484,9 @@ export function Hero() {
             {products.map((product, index) => {
               const Icon = product.icon
               const CustomIcon = product.customIcon
-              return (
+              
+              const chip = (
                 <motion.div
-                  key={product.title}
                   whileHover={{ y: -2, scale: 1.04 }}
                   transition={{ duration: 0.18 }}
                   className="chip-border flex items-center gap-2.5 px-5 py-2 rounded-full cursor-pointer"
@@ -489,6 +503,20 @@ export function Hero() {
                     {product.title}
                   </span>
                 </motion.div>
+              )
+
+              if (product.href) {
+                return (
+                  <Link key={product.title} href={product.href} className="flex items-center">
+                    {chip}
+                  </Link>
+                )
+              }
+
+              return (
+                <div key={product.title} className="flex items-center">
+                  {chip}
+                </div>
               )
             })}
           </motion.div>
@@ -508,12 +536,8 @@ export function Hero() {
               {[...products, ...products].map((product, index) => {
                 const Icon = product.icon
                 const CustomIcon = product.customIcon
-                return (
-                  <div
-                    key={`${product.title}-${index}`}
-                    className="chip-border flex items-center gap-2.5 px-5 py-2 rounded-full shrink-0"
-                    style={{ animationDelay: `${(index % products.length) * 0.28}s` }}
-                  >
+                const chipContent = (
+                  <>
                     <div className="w-7 h-7 rounded-full flex items-center justify-center bg-white/15">
                       {CustomIcon ? (
                         <CustomIcon color="#ffffff" size={15} />
@@ -524,6 +548,29 @@ export function Hero() {
                     <span className="text-sm font-semibold text-white/90 tracking-tight whitespace-nowrap pr-1">
                       {product.title}
                     </span>
+                  </>
+                )
+
+                if (product.href) {
+                  return (
+                    <Link
+                      key={`${product.title}-${index}`}
+                      href={product.href}
+                      className="chip-border flex items-center gap-2.5 px-5 py-2 rounded-full shrink-0 cursor-pointer"
+                      style={{ animationDelay: `${(index % products.length) * 0.28}s` }}
+                    >
+                      {chipContent}
+                    </Link>
+                  )
+                }
+
+                return (
+                  <div
+                    key={`${product.title}-${index}`}
+                    className="chip-border flex items-center gap-2.5 px-5 py-2 rounded-full shrink-0"
+                    style={{ animationDelay: `${(index % products.length) * 0.28}s` }}
+                  >
+                    {chipContent}
                   </div>
                 )
               })}

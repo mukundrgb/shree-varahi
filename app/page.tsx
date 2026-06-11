@@ -3,6 +3,7 @@ import { Hero } from "@/components/hero"
 import { FeaturesSection } from "@/components/features-section"
 import { ProductsSection } from "@/components/products-section"
 import { TraderInvestorSection } from "@/components/trader-investor-section"
+import { GlobalInvestingSection } from "@/components/global-investing-section"
 import { OptionStrategyBuilder } from "@/components/option-strategy-builder"
 import { MTFSection } from "@/components/mtf-section"
 import { ValuestocksSection } from "@/components/valuestocks-section"
@@ -24,6 +25,7 @@ export default function Home() {
       {/* <FeaturesSection /> */}
       {/* <ProductsSection /> */}
       {/* <AppPromoSection /> */}
+      <GlobalInvestingSection />
       <TraderInvestorSection />
       {/* <OptionStrategyBuilder /> */}
       <MTFSection />
