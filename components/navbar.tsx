@@ -68,7 +68,7 @@ export function Navbar() {
         }`}
         style={{ borderBottom: "1px solid var(--border)" }}
       >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
@@ -141,11 +141,13 @@ export function Navbar() {
             <div className="hidden lg:flex items-center gap-3">
               <button 
                 onClick={() => setSearchOpen(true)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-[5px] bg-secondary hover:bg-beige transition-colors text-sm text-muted-foreground"
+                className="flex items-center justify-between w-[280px] xl:w-[340px] h-10 px-4 rounded-[6px] bg-cream border border-border hover:border-gold/40 hover:bg-beige/35 hover:shadow-[0_2px_8px_rgba(217,178,124,0.06)] transition-all text-xs text-slate-500 font-medium"
               >
-                <Search className="h-4 w-4" />
-                <span>Search</span>
-                <kbd className="ml-2 px-1.5 py-0.5 rounded-[3px] bg-background border border-border text-[10px]">⌘K</kbd>
+                <div className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
+                  <Search className="h-3.5 w-3.5 shrink-0" />
+                  <span className="overflow-hidden text-ellipsis whitespace-nowrap">Search Stocks,Mutuals Funds, ETFs...</span>
+                </div>
+                <kbd className="px-1.5 py-0.5 rounded-[3px] bg-background border border-border text-[9px] font-sans font-normal shrink-0">⌘K</kbd>
               </button>
               <Button variant="ghost" className="text-foreground hover:text-burgundy rounded-[5px]">
                 Login
