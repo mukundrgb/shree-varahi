@@ -48,7 +48,7 @@ const tradeMenu: MenuItem[] = [
   { title: "Options Trader", desc: "Advanced F&O strategies", icon: <PieChart className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/futures-options" },
   { title: "Algo & API", desc: "Automate your trading", icon: "⚡", href: "#" },
   { title: "Global Investing", desc: "Trade US stocks directly", icon: <GlobeMarketIcon className="h-5 w-5 text-burgundy" />, href: "/#global-investing" },
-  { title: "Stocks Intraday", desc: "Same-day trading", icon: <TrendingUp className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
+  { title: "Stocks Intraday", desc: "Same-day trading", icon: <TrendingUp className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/stocks" },
   { title: "Futures", desc: "Derivatives trading", icon: <PieChart className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/futures-options" },
   { title: "MTF", desc: "4× buying power", icon: "💪", href: "#" },
   { title: "Commodities", desc: "MCX trading", icon: <Box className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
@@ -56,7 +56,7 @@ const tradeMenu: MenuItem[] = [
 ]
 
 const investMenu: MenuItem[] = [
-  { title: "Stocks Delivery", desc: "₹0 brokerage forever", icon: <TrendingUp className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
+  { title: "Stocks Delivery", desc: "₹0 brokerage forever", icon: <TrendingUp className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/stocks" },
   { title: "Mutual Funds", desc: "Direct plans, zero commission", icon: <Landmark className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
   { title: "SIP", desc: "Start from ₹100", icon: <RotateCcw className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
   { title: "IPO", desc: "Apply for free", icon: <Target className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },

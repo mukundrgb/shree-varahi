@@ -136,6 +136,43 @@ export default function FuturesOptionsPage() {
   // ── 8. FAQ STATE ──
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null)
 
+  // ── 10. MARKETS TAB STATE ──
+  type MarketsTabKey = "Index F&O" | "Stock F&O" | "Commodity F&O"
+  const [marketsTab, setMarketsTab] = useState<MarketsTabKey>("Index F&O")
+
+  const marketsData: Record<MarketsTabKey, { icon: string; name: string; price: number; change: number; changePct: number }[]> = {
+    "Index F&O": [
+      { icon: "📈", name: "NIFTY 50",       price: niftyPrice,     change: niftyChange,     changePct: niftyChange / niftyPrice * 100 },
+      { icon: "🏦", name: "BANK NIFTY",     price: bankNiftyPrice, change: -120.40,          changePct: -0.24 },
+      { icon: "💹", name: "FINNIFTY",       price: 23812.50,       change: 45.30,            changePct: 0.19 },
+      { icon: "📊", name: "MIDCAP NIFTY",   price: 52340.25,       change: -215.80,          changePct: -0.41 },
+      { icon: "🌐", name: "SENSEX",         price: 76820.40,       change: 183.60,           changePct: 0.24 },
+      { icon: "🔷", name: "NIFTY NEXT 50",  price: 67421.00,       change: -98.50,           changePct: -0.15 },
+      { icon: "📉", name: "NIFTY IT",       price: 35218.75,       change: 312.40,           changePct: 0.89 },
+      { icon: "💰", name: "NIFTY PSU BANK", price: 5812.30,        change: -41.20,           changePct: -0.70 },
+    ],
+    "Stock F&O": [
+      { icon: "🛢️", name: "RELIANCE",      price: reliancePrice,  change: 12.30,            changePct: 0.42 },
+      { icon: "💻", name: "TCS",           price: 3840.40,        change: -28.60,           changePct: -0.74 },
+      { icon: "🔵", name: "INFY",          price: 1485.00,        change: 18.50,            changePct: 1.26 },
+      { icon: "🏧", name: "HDFC BANK",     price: 1620.80,        change: -9.40,            changePct: -0.58 },
+      { icon: "🚗", name: "TATA MOTORS",   price: 952.10,         change: 32.60,            changePct: 3.55 },
+      { icon: "⚡", name: "ADANI GREEN",   price: 1842.35,        change: -54.80,           changePct: -2.89 },
+      { icon: "🏗️", name: "L&T",          price: 3315.50,        change: 47.20,            changePct: 1.44 },
+      { icon: "💊", name: "SUN PHARMA",    price: 1741.20,        change: -23.10,           changePct: -1.31 },
+    ],
+    "Commodity F&O": [
+      { icon: "🥇", name: "GOLD",         price: goldPrice,      change: -1520,            changePct: -2.06 },
+      { icon: "🥈", name: "SILVER",       price: 87420,          change: -1840,            changePct: -2.06 },
+      { icon: "🛢️", name: "CRUDE OIL",   price: crudePrice,     change: -48,              changePct: -0.74 },
+      { icon: "🔥", name: "NATURAL GAS",  price: 296.80,         change: -4.80,            changePct: -1.59 },
+      { icon: "🟤", name: "COPPER",       price: 812.35,         change: -4.15,            changePct: -0.51 },
+      { icon: "⚙️", name: "NICKEL",      price: 1736.40,        change: -21.20,           changePct: -1.21 },
+      { icon: "🔩", name: "ZINC",         price: 362.95,         change: -2.55,            changePct: -0.70 },
+      { icon: "🌾", name: "COTTON",       price: 58200,          change: 420,              changePct: 0.73 },
+    ],
+  }
+
   // ── 9. SMS CTA STATE ──
   const [smsNum, setSmsNum] = useState("")
   const [smsStatus, setSmsStatus] = useState<"idle" | "sending" | "sent">("idle")
@@ -666,89 +703,75 @@ export default function FuturesOptionsPage() {
 
       {/* ── SECTION 3: WHAT YOU CAN TRADE (MARKETS) ── */}
       <section className="bg-cream py-20 lg:py-28 overflow-hidden border-b border-border/50">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-            
-            {/* Left Column: Headline */}
-            <div className="lg:col-span-5 space-y-6 text-center lg:text-left">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
-                Markets
-              </span>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground uppercase tracking-tight leading-tight">
-                One platform. <br />
-                <span className="text-burgundy">Every F&amp;O market.</span>
-              </h2>
-              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md mx-auto lg:mx-0 font-medium">
-                Trade across indices, stocks, and commodities - all from a single account.
-              </p>
-            </div>
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
-            {/* Right Column: Custom live contract cards */}
-            <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-6">
-              {[
-                {
-                  label: "Index F&O",
-                  desc: "Trade Nifty 50, Bank Nifty, Finnifty, and Midcap Nifty options and futures. High liquidity, tight spreads, weekly and monthly expiries.",
-                  tag: "Index Contracts",
-                  contracts: [
-                    { name: "NIFTY JUN FUT", price: niftyPrice },
-                    { name: "BANKNIFTY JUN FUT", price: bankNiftyPrice }
-                  ]
-                },
-                {
-                  label: "Stock F&O",
-                  desc: "Access futures and options on 200+ individual stocks listed on NSE. Build directional and hedged positions on names you know.",
-                  tag: "200+ Equities",
-                  contracts: [
-                    { name: "RELIANCE JUN FUT", price: reliancePrice },
-                    { name: "TCS JUN FUT", price: 3840.40 }
-                  ]
-                },
-                {
-                  label: "Commodity F&O",
-                  desc: "Trade futures on Gold, Silver, Crude Oil, Copper, and Natural Gas on MCX. Diversify beyond equity markets.",
-                  tag: "MCX Commodities",
-                  contracts: [
-                    { name: "GOLD JUN FUT", price: goldPrice },
-                    { name: "CRUDE OIL JUN FUT", price: crudePrice }
-                  ]
-                }
-              ].map((m, idx) => (
-                <div 
-                  key={idx}
-                  className="bg-white border border-border/80 rounded-[16px] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.01)] hover:border-gold/30 transition-all duration-300 flex flex-col justify-between min-h-[260px]"
+          {/* Centered Header */}
+          <div className="text-center mb-10 space-y-3">
+            <p className="text-sm tracking-[0.2em] uppercase text-gold-deep font-extrabold block">
+              Markets
+            </p>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground leading-tight text-balance">
+              The Complete{" "}
+              <span className="text-burgundy">F&amp;O Trading Experience</span>
+            </h2>
+            <p className="text-sm text-muted-foreground max-w-xl mx-auto">
+              Trade across indices, stocks, and commodities — all from a single account.
+            </p>
+          </div>
+
+          {/* Tab Switcher */}
+          <div className="flex justify-center mb-10">
+            <div className="inline-flex bg-background border border-border rounded-[8px] p-1 gap-1">
+              {(["Index F&O", "Stock F&O", "Commodity F&O"] as const).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setMarketsTab(tab)}
+                  className={`px-5 py-2 rounded-[6px] text-sm font-bold transition-all duration-200 cursor-pointer ${
+                    marketsTab === tab
+                      ? "bg-burgundy text-white shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
+                  }`}
                 >
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-[4px] bg-gold-deep/10 text-gold-deep border border-gold-deep/15 tracking-wider">
-                        {m.tag}
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-black text-foreground uppercase">{m.label}</h3>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed">{m.desc}</p>
-                  </div>
-
-                  {/* Mock live ticker inside cards */}
-                  <div className="space-y-2 mt-6 pt-4 border-t border-slate-100 font-mono text-[11px]">
-                    <span className="text-[9px] uppercase font-bold text-slate-400 block tracking-wide">Live Feed</span>
-                    {m.contracts.map((contract, cIdx) => (
-                      <div key={cIdx} className="flex justify-between items-center py-1 bg-cream/50 px-2 rounded border border-border/30">
-                        <span className="text-slate-500 font-sans font-bold text-[9px]">{contract.name}</span>
-                        <span className="font-extrabold text-slate-800">
-                          ₹{typeof contract.price === 'number' ? contract.price.toLocaleString("en-IN", { minimumFractionDigits: contract.price > 10000 ? 0 : 2 }) : contract.price}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                  {tab}
+                </button>
               ))}
             </div>
-
           </div>
+
+          {/* Instrument Cards Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {marketsData[marketsTab].map((item, idx) => {
+              const isPos = item.change >= 0
+              return (
+                <motion.div
+                  key={`${marketsTab}-${idx}`}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.04, duration: 0.3 }}
+                  className="bg-white border border-border/70 rounded-[12px] p-4 hover:border-gold/40 hover:shadow-[0_4px_20px_rgba(184,146,74,0.06)] transition-all duration-300 group cursor-pointer"
+                >
+                  {/* Icon */}
+                  <div className="text-2xl mb-3">{item.icon}</div>
+                  {/* Name */}
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">{item.name}</p>
+                  {/* Price */}
+                  <p className="text-base font-black text-foreground font-mono">
+                    {item.price.toLocaleString("en-IN", { minimumFractionDigits: item.price > 10000 ? 0 : 2 })}
+                  </p>
+                  {/* Change */}
+                  <p className={`text-[11px] font-bold mt-0.5 font-mono ${isPos ? "text-profit" : "text-loss"}`}>
+                    {isPos ? "+" : ""}{item.change.toFixed(2)} ({isPos ? "+" : ""}{item.changePct.toFixed(2)}%) {isPos ? "▲" : "▼"}
+                  </p>
+                </motion.div>
+              )
+            })}
+          </div>
+
+
 
         </div>
       </section>
+
 
       {/* ── SECTIONS 4 & 5: DYNAMIC OPTIONS vs FUTURES ADVANCED WORKSPACES ── */}
       <section className="bg-white py-20 lg:py-28 overflow-hidden border-b border-border/50">

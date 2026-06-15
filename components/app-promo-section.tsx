@@ -99,7 +99,7 @@ export function AppPromoSection() {
             className="relative w-[260px] sm:w-[300px] lg:w-[330px] select-none"
           >
             <img 
-              src="https://shreevarahi.com/wp-content/uploads/2025/12/shree-varahi-3.png"
+              src="https://cdni.iconscout.com/illustration/premium/thumb/finance-help-via-mutual-fund-business-illustration-svg-download-png-3667389.png"
               alt="Shree Varahi Mobile App"
               className="w-full h-auto object-contain filter drop-shadow-[0_25px_50px_rgba(0,0,0,0.15)]"
               draggable="false"

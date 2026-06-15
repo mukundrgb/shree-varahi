@@ -68,6 +68,7 @@ const products: Product[] = [
     badgeColor: "bg-profit/15 text-profit",
     accentColor: "#059669",
     bgHover: "rgba(5,150,105,0.04)",
+    href: "/stocks",
   },
   {
     icon: PieChart,

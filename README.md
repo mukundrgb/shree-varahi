@@ -6,18 +6,19 @@ Marketing and product website for **Shree Varahi by Lakshmishree Investment & Se
 
 ## Tech Stack
 
-| Layer | Choice |
-|---|---|
-| Framework | Next.js 16 (App Router) |
-| Language | TypeScript 5.7 |
-| Styling | Tailwind CSS v4 |
-| Animation | Framer Motion |
-| Components | Radix UI + shadcn/ui |
-| Fonts | Manrope (headings), DM Sans (body), DM Mono (numbers) |
-| Analytics | Vercel Analytics |
-| Package Manager | pnpm |
+| Layer           | Choice                                                |
+| --------------- | ----------------------------------------------------- |
+| Framework       | Next.js 16 (App Router)                               |
+| Language        | TypeScript 5.7                                        |
+| Styling         | Tailwind CSS v4                                       |
+| Animation       | Framer Motion                                         |
+| Components      | Radix UI + shadcn/ui                                  |
+| Fonts           | Manrope (headings), DM Sans (body), DM Mono (numbers) |
+| Analytics       | Vercel Analytics                                      |
+| Package Manager | pnpm                                                  |
 
 ### Brand Tokens (CSS variables)
+
 - `burgundy` — primary CTA color (`#8B0D19`)
 - `gold` / `gold-deep` — accent color (`#D9B27C`)
 - `cream` — warm background sections
@@ -85,74 +86,74 @@ All pages share the `<Navbar />` and `<Footer />` from the homepage layout.
 
 ### Trade Pages (`/trade/...`)
 
-| Route | Page | Key Sections |
-|---|---|---|
-| `/trade/trading-app` | Trading App | App features, screenshots, download links (iOS/Android) |
-| `/trade/web-terminal` | Web Terminal | Platform walkthrough, charts demo, feature list |
-| `/trade/options-trader` | Options Trader | Option chain UI, strategy builder, Greeks explainer |
-| `/trade/algo-api` | Algo & API | API docs preview, Python/JS SDK snippets, rate limits, use cases |
-| `/trade/intraday` | Stocks Intraday | Intraday tools, margin info, circuit filters |
-| `/trade/futures` | Futures | Contract specs, margin calculator, rollover guide |
-| `/trade/mtf` | Margin Trading Facility | Full dedicated MTF page (expand homepage section) |
-| `/trade/commodities` | Commodities MCX | MCX product list, gold/silver/crude, timing |
-| `/trade/global-investing` | Global Investing | US stocks access, remittance flow, FEMA LRS info |
-| `/trade/stock-screener` | Stock Screener | Filter UI mockup, parameter list |
+| Route                     | Page                    | Key Sections                                                     |
+| ------------------------- | ----------------------- | ---------------------------------------------------------------- |
+| `/trade/trading-app`      | Trading App             | App features, screenshots, download links (iOS/Android)          |
+| `/trade/web-terminal`     | Web Terminal            | Platform walkthrough, charts demo, feature list                  |
+| `/trade/options-trader`   | Options Trader          | Option chain UI, strategy builder, Greeks explainer              |
+| `/trade/algo-api`         | Algo & API              | API docs preview, Python/JS SDK snippets, rate limits, use cases |
+| `/trade/intraday`         | Stocks Intraday         | Intraday tools, margin info, circuit filters                     |
+| `/trade/futures`          | Futures                 | Contract specs, margin calculator, rollover guide                |
+| `/trade/mtf`              | Margin Trading Facility | Full dedicated MTF page (expand homepage section)                |
+| `/trade/commodities`      | Commodities MCX         | MCX product list, gold/silver/crude, timing                      |
+| `/trade/global-investing` | Global Investing        | US stocks access, remittance flow, FEMA LRS info                 |
+| `/trade/stock-screener`   | Stock Screener          | Filter UI mockup, parameter list                                 |
 
 ### Invest Pages (`/invest/...`)
 
-| Route | Page | Key Sections |
-|---|---|---|
-| `/invest/stocks` | Stocks Delivery | ₹0 brokerage hero, long-term investing pitch, CDSL info |
-| `/invest/mutual-funds` | Mutual Funds | Direct vs regular, top funds, SIP entry point |
-| `/invest/sip` | SIP Auto-Invest | SIP calculator, step setup, fund categories |
-| `/invest/ipo` | IPO | Upcoming IPOs table, how to apply, GMP tracker |
-| `/invest/etf` | ETF | ETF types, index funds, low-cost pitch |
-| `/invest/nfo` | NFO | New Fund Offers, AMC list, NFO calendar |
-| `/invest/digital-gold` | Digital Gold | 24K gold from ₹1, storage info, buy/sell flow |
-| `/invest/us-stocks` | US Stocks | Same as `/trade/global-investing` (can share) |
+| Route                  | Page            | Key Sections                                            |
+| ---------------------- | --------------- | ------------------------------------------------------- |
+| `/invest/stocks`       | Stocks Delivery | ₹0 brokerage hero, long-term investing pitch, CDSL info |
+| `/invest/mutual-funds` | Mutual Funds    | Direct vs regular, top funds, SIP entry point           |
+| `/invest/sip`          | SIP Auto-Invest | SIP calculator, step setup, fund categories             |
+| `/invest/ipo`          | IPO             | Upcoming IPOs table, how to apply, GMP tracker          |
+| `/invest/etf`          | ETF             | ETF types, index funds, low-cost pitch                  |
+| `/invest/nfo`          | NFO             | New Fund Offers, AMC list, NFO calendar                 |
+| `/invest/digital-gold` | Digital Gold    | 24K gold from ₹1, storage info, buy/sell flow           |
+| `/invest/us-stocks`    | US Stocks       | Same as `/trade/global-investing` (can share)           |
 
 ### Markets & Tools (`/markets/...`)
 
-| Route | Page | Key Sections |
-|---|---|---|
-| `/markets` | Markets Overview | Index tiles (Nifty, Sensex, BankNifty, Gold, Crude), market status |
-| `/markets/screener` | Stock Screener | Filter UI: sector, market cap, PE, volume, technicals |
-| `/markets/option-chain` | Option Chain | Live chain table, OI chart, PCR, max pain |
-| `/markets/strategy-builder` | Strategy Builder | Multi-leg builder, payoff graph, pre-built strategies |
-| `/markets/news` | Market News | News feed by category, source attribution |
+| Route                       | Page             | Key Sections                                                       |
+| --------------------------- | ---------------- | ------------------------------------------------------------------ |
+| `/markets`                  | Markets Overview | Index tiles (Nifty, Sensex, BankNifty, Gold, Crude), market status |
+| `/markets/screener`         | Stock Screener   | Filter UI: sector, market cap, PE, volume, technicals              |
+| `/markets/option-chain`     | Option Chain     | Live chain table, OI chart, PCR, max pain                          |
+| `/markets/strategy-builder` | Strategy Builder | Multi-leg builder, payoff graph, pre-built strategies              |
+| `/markets/news`             | Market News      | News feed by category, source attribution                          |
 
 ### Research (`/research/...`)
 
-| Route | Page | Key Sections |
-|---|---|---|
-| `/research` | Research Hub | Landing with featured report + upcoming webinar |
-| `/research/reports` | Research Reports | Daily/weekly reports grid, download CTAs |
-| `/research/webinars` | Webinars | Upcoming + recorded sessions, speaker profiles |
+| Route                | Page             | Key Sections                                    |
+| -------------------- | ---------------- | ----------------------------------------------- |
+| `/research`          | Research Hub     | Landing with featured report + upcoming webinar |
+| `/research/reports`  | Research Reports | Daily/weekly reports grid, download CTAs        |
+| `/research/webinars` | Webinars         | Upcoming + recorded sessions, speaker profiles  |
 
 ### Knowledge (`/knowledge/...`)
 
-| Route | Page | Key Sections |
-|---|---|---|
-| `/knowledge` | Knowledge Center | Expand homepage section into full hub |
-| `/knowledge/[slug]` | Article Detail | MDX article, reading time, category, related articles |
+| Route               | Page             | Key Sections                                          |
+| ------------------- | ---------------- | ----------------------------------------------------- |
+| `/knowledge`        | Knowledge Center | Expand homepage section into full hub                 |
+| `/knowledge/[slug]` | Article Detail   | MDX article, reading time, category, related articles |
 
 ### Company Pages
 
-| Route | Page | Key Sections |
-|---|---|---|
-| `/about` | About Us | Lakshmishree history (1993), founders, timeline, mission |
-| `/careers` | Careers | Open roles, culture, benefits, apply form |
-| `/press` | Press | Media mentions, press kit download, brand assets |
-| `/branches` | Branch Locator | Map + city-wise branch list, address/contact |
-| `/partner` | Partner Program | Sub-broker info, revenue sharing, onboarding steps |
-| `/contact` | Contact Us | Form + helpline (022-4080-8080) + email + chat widget |
+| Route       | Page            | Key Sections                                             |
+| ----------- | --------------- | -------------------------------------------------------- |
+| `/about`    | About Us        | Lakshmishree history (1993), founders, timeline, mission |
+| `/careers`  | Careers         | Open roles, culture, benefits, apply form                |
+| `/press`    | Press           | Media mentions, press kit download, brand assets         |
+| `/branches` | Branch Locator  | Map + city-wise branch list, address/contact             |
+| `/partner`  | Partner Program | Sub-broker info, revenue sharing, onboarding steps       |
+| `/contact`  | Contact Us      | Form + helpline (022-4080-8080) + email + chat widget    |
 
 ### Auth & Account
 
-| Route | Page | Notes |
-|---|---|---|
+| Route           | Page              | Notes                                     |
+| --------------- | ----------------- | ----------------------------------------- |
 | `/open-account` | Open Free Account | e-KYC flow landing — Aadhaar, PAN, selfie |
-| `/login` | Login | Redirect to app or inline form |
+| `/login`        | Login             | Redirect to app or inline form            |
 
 ---
 
