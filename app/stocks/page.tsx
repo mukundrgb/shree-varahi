@@ -639,7 +639,7 @@ export default function StocksPage() {
             }
             .chip-border {
               background:
-                linear-gradient(rgba(120, 10, 22, 0.9), rgba(120, 10, 22, 0.9)) padding-box,
+                linear-gradient(rgba(255, 0, 0, 0.9), rgba(255, 0, 0, 0.9)) padding-box,
                 conic-gradient(
                   from var(--chip-angle),
                   transparent      0%,
@@ -653,7 +653,7 @@ export default function StocksPage() {
             }
             .chip-border:hover {
               background:
-                linear-gradient(rgba(140, 14, 26, 0.95), rgba(140, 14, 26, 0.95)) padding-box,
+                linear-gradient(rgba(204, 0, 0, 0.95), rgba(204, 0, 0, 0.95)) padding-box,
                 conic-gradient(
                   from var(--chip-angle),
                   transparent      0%,

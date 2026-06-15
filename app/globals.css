@@ -15,8 +15,8 @@
   --popover: #FFFFFF;
   --popover-foreground: #1A1A1A;
   
-  /* Primary - Burgundy */
-  --primary: #8B0D19;
+  /* Primary - Red */
+  --primary: #FF0000;
   --primary-foreground: #FFFFFF;
   
   /* Secondary - Light Gray */
@@ -41,8 +41,8 @@
   --ring: #D9B27C;
   
   /* Custom Colors */
-  --burgundy: #8B0D19;
-  --burgundy-deep: #6D0712;
+  --burgundy: #FF0000;
+  --burgundy-deep: #CC0000;
   --gold: #D9B27C;
   --gold-champagne: #E7C79B;
   --gold-deep: #B8924A;
@@ -61,8 +61,8 @@
   --font-mono: var(--font-dm-mono), monospace;
   
   /* Custom brand colors for Tailwind */
-  --color-burgundy: #8B0D19;
-  --color-burgundy-deep: #6D0712;
+  --color-burgundy: #FF0000;
+  --color-burgundy-deep: #CC0000;
   --color-gold: #D9B27C;
   --color-gold-champagne: #E7C79B;
   --color-gold-deep: #B8924A;

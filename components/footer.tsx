@@ -248,7 +248,7 @@ export function Footer() {
                   fontSize: "clamp(56px, 11vw, 152px)",
                   lineHeight: 0.88,
                   paddingRight: "5vw",
-                  WebkitTextStroke: "1px rgba(255, 255, 255, 0.12)",
+                  WebkitTextStroke: "1.5px rgba(255, 255, 255, 0.30)",
                   WebkitTextFillColor: "transparent",
                   color: "transparent",
                   letterSpacing: "0.04em",
