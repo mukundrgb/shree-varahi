@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import {
   ArrowRight,
@@ -39,8 +40,32 @@ function GlobeMarketIcon({ color, size = 26 }: { color: string; size?: number })
 }
 
 /* ── Promo slides ── */
-const promoSlides = [
+type TextSlide = {
+  kind: "text"
+  badge: string
+  badgeColor: string
+  headline: string
+  headlineSub: string
+  body: string
+  bg: [string, string]
+  accent: string
+  Icon: React.ElementType
+  stat: string
+  statLabel: string
+}
+type ImageSlide = {
+  kind: "image"
+  src: string
+  badge: string
+  label: string
+  sublabel: string
+  href: string
+}
+type PromoSlide = TextSlide | ImageSlide
+
+const promoSlides: PromoSlide[] = [
   {
+    kind: "text",
     badge: "ZERO BROKERAGE",
     badgeColor: "#059669",
     headline: "₹0",
@@ -53,6 +78,15 @@ const promoSlides = [
     statLabel: "Delivery brokerage",
   },
   {
+    kind: "image",
+    src: "/mtf-banner.png",
+    badge: "MARGIN TRADING",
+    label: "Trade with 4× leverage",
+    sublabel: "Margin Trading Facility — up to 4× on eligible stocks",
+    href: "/",
+  },
+  {
+    kind: "text",
     badge: "FLAT FEE",
     badgeColor: "#FF0000",
     headline: "₹17",
@@ -65,18 +99,15 @@ const promoSlides = [
     statLabel: "Per order, any size",
   },
   {
-    badge: "MUTUAL FUNDS",
-    badgeColor: "#B8924A",
-    headline: "5,000+",
-    headlineSub: "Direct Funds",
-    body: "Zero commission. Direct plans only. Keep every rupee of your return.",
-    bg: ["#140f02", "#241a04"],
-    accent: "#D9B27C",
-    Icon: Landmark,
-    stat: "0% commission",
-    statLabel: "On all mutual funds",
+    kind: "image",
+    src: "/global-investing-lisl.png",
+    badge: "GLOBAL INVESTING",
+    label: "Invest in US Stocks",
+    sublabel: "Apple, Tesla, Google & 5,000+ US equities from India",
+    href: "/#global-investing",
   },
   {
+    kind: "text",
     badge: "QUICK START",
     badgeColor: "#6366f1",
     headline: "15 min",
@@ -404,82 +435,99 @@ function PromoSlider() {
             animate="center"
             exit="exit"
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute inset-0 p-8 flex flex-col justify-between"
-            style={{
-              background: `linear-gradient(145deg, ${slide.bg[0]} 0%, ${slide.bg[1]} 100%)`,
-            }}
+            className="absolute inset-0"
           >
-            {/* Decorative radial glow */}
-            <div
-              className="absolute top-0 right-0 w-[280px] h-[280px] rounded-full pointer-events-none"
-              style={{
-                background: `radial-gradient(circle, ${slide.accent}18 0%, transparent 70%)`,
-                filter: "blur(30px)",
-              }}
-            />
-
-            {/* Decorative grid */}
-            <div
-              className="absolute inset-0 opacity-[0.04] pointer-events-none"
-              style={{
-                backgroundImage: `linear-gradient(${slide.accent} 1px, transparent 1px), linear-gradient(90deg, ${slide.accent} 1px, transparent 1px)`,
-                backgroundSize: "40px 40px",
-              }}
-            />
-
-            {/* Decorative large number background */}
-            <div
-              className="absolute right-4 bottom-16 text-[130px] font-black leading-none pointer-events-none select-none"
-              style={{ color: slide.accent, opacity: 0.06 }}
-            >
-              {slide.headline}
-            </div>
-
-            {/* Top: badge + icon */}
-            <div className="relative z-10 flex items-start justify-between">
-              <span
-                className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-[4px]"
-                style={{ background: `${slide.badgeColor}22`, color: slide.accent, border: `1px solid ${slide.accent}30` }}
-              >
-                {slide.badge}
-              </span>
+            {slide.kind === "image" ? (
+              /* ── Image slide ── */
+              <Link href={slide.href} className="block w-full h-full relative">
+                <Image
+                  src={slide.src}
+                  alt={slide.label}
+                  fill
+                  className="object-cover object-center"
+                  priority={active === 1 || active === 3}
+                />
+                {/* Bottom label overlay */}
+                <div className="absolute bottom-0 left-0 right-0 px-6 py-5"
+                  style={{ background: "linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%)" }}>
+                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60 mb-1 block">
+                    {slide.badge}
+                  </span>
+                  <p className="text-white font-black text-lg leading-tight">{slide.label}</p>
+                  <p className="text-white/55 text-[11px] font-medium mt-0.5">{slide.sublabel}</p>
+                </div>
+              </Link>
+            ) : (
+              /* ── Text slide ── */
               <div
-                className="w-11 h-11 rounded-[8px] flex items-center justify-center"
-                style={{ background: `${slide.accent}18`, border: `1px solid ${slide.accent}25` }}
+                className="w-full h-full p-8 flex flex-col justify-between"
+                style={{ background: `linear-gradient(145deg, ${slide.bg[0]} 0%, ${slide.bg[1]} 100%)` }}
               >
-                <slide.Icon className="w-5 h-5" style={{ color: slide.accent }} strokeWidth={1.8} />
-              </div>
-            </div>
+                {/* Decorative radial glow */}
+                <div
+                  className="absolute top-0 right-0 w-[280px] h-[280px] rounded-full pointer-events-none"
+                  style={{ background: `radial-gradient(circle, ${slide.accent}18 0%, transparent 70%)`, filter: "blur(30px)" }}
+                />
+                {/* Decorative grid */}
+                <div
+                  className="absolute inset-0 opacity-[0.04] pointer-events-none"
+                  style={{
+                    backgroundImage: `linear-gradient(${slide.accent} 1px, transparent 1px), linear-gradient(90deg, ${slide.accent} 1px, transparent 1px)`,
+                    backgroundSize: "40px 40px",
+                  }}
+                />
+                {/* Decorative large number */}
+                <div
+                  className="absolute right-4 bottom-16 text-[130px] font-black leading-none pointer-events-none select-none"
+                  style={{ color: slide.accent, opacity: 0.06 }}
+                >
+                  {slide.headline}
+                </div>
 
-            {/* Center: headline */}
-            <div className="relative z-10">
-              <div
-                className="text-[64px] font-black leading-none tracking-tight mb-1"
-                style={{ color: slide.accent }}
-              >
-                {slide.headline}
-              </div>
-              <div className="text-[18px] font-extrabold text-white/80 mb-4 leading-tight">
-                {slide.headlineSub}
-              </div>
-              <p className="text-[13px] text-white/45 leading-relaxed max-w-[260px] font-medium">
-                {slide.body}
-              </p>
-            </div>
+                {/* Top: badge + icon */}
+                <div className="relative z-10 flex items-start justify-between">
+                  <span
+                    className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-[4px]"
+                    style={{ background: `${slide.badgeColor}22`, color: slide.accent, border: `1px solid ${slide.accent}30` }}
+                  >
+                    {slide.badge}
+                  </span>
+                  <div
+                    className="w-11 h-11 rounded-[8px] flex items-center justify-center"
+                    style={{ background: `${slide.accent}18`, border: `1px solid ${slide.accent}25` }}
+                  >
+                    <slide.Icon className="w-5 h-5" style={{ color: slide.accent }} strokeWidth={1.8} />
+                  </div>
+                </div>
 
-            {/* Bottom: stat pill */}
-            <div className="relative z-10">
-              <div
-                className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-[6px]"
-                style={{ background: `${slide.accent}12`, border: `1px solid ${slide.accent}20` }}
-              >
-                <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: slide.accent }} />
-                <div>
-                  <span className="text-[15px] font-black" style={{ color: slide.accent }}>{slide.stat}</span>
-                  <span className="text-[11px] text-white/40 ml-2 font-medium">{slide.statLabel}</span>
+                {/* Center: headline */}
+                <div className="relative z-10">
+                  <div className="text-[64px] font-black leading-none tracking-tight mb-1" style={{ color: slide.accent }}>
+                    {slide.headline}
+                  </div>
+                  <div className="text-[18px] font-extrabold text-white/80 mb-4 leading-tight">
+                    {slide.headlineSub}
+                  </div>
+                  <p className="text-[13px] text-white/45 leading-relaxed max-w-[260px] font-medium">
+                    {slide.body}
+                  </p>
+                </div>
+
+                {/* Bottom: stat pill */}
+                <div className="relative z-10">
+                  <div
+                    className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-[6px]"
+                    style={{ background: `${slide.accent}12`, border: `1px solid ${slide.accent}20` }}
+                  >
+                    <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: slide.accent }} />
+                    <div>
+                      <span className="text-[15px] font-black" style={{ color: slide.accent }}>{slide.stat}</span>
+                      <span className="text-[11px] text-white/40 ml-2 font-medium">{slide.statLabel}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
