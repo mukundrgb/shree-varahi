@@ -418,10 +418,7 @@ function PromoSlider() {
   return (
     <div className="flex flex-col gap-4">
       {/* Card */}
-      <div
-        className="relative rounded-[12px] overflow-hidden"
-        style={{ height: "420px" }}
-      >
+      <div className="relative rounded-[12px] overflow-hidden aspect-[4/3]">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={active}
