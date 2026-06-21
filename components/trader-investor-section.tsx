@@ -1,8 +1,9 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { Check } from "lucide-react"
+import { Check, ChevronDown, ChevronUp, BarChart2, LineChart } from "lucide-react"
 
 const traderFeatures = [
   "5× Intraday Leverage — Trade with up to 5× your capital on NSE & BSE stocks.",
@@ -30,28 +31,209 @@ const investorFeatures = [
   "Long-term Capital Gains Tracker — Stay on top of your tax liability year-round.",
 ]
 
+const PREVIEW_COUNT = 4
+
+/* ── Trader image placeholder ── */
+function TraderImagePlaceholder() {
+  return (
+    <div
+      className="relative w-full rounded-[8px] overflow-hidden mb-8 flex items-center justify-center"
+      style={{
+        height: "180px",
+        background: "linear-gradient(135deg, rgba(139,13,25,0.06) 0%, rgba(139,13,25,0.03) 100%)",
+        border: "1px dashed rgba(139,13,25,0.22)",
+      }}
+    >
+      {/* Decorative mini chart SVG */}
+      <svg
+        viewBox="0 0 240 80"
+        className="absolute inset-0 w-full h-full opacity-[0.12]"
+        preserveAspectRatio="xMidYMid slice"
+        aria-hidden="true"
+      >
+        {[20, 40, 60].map((y) => (
+          <line key={y} x1="0" y1={y} x2="240" y2={y} stroke="#8B0D19" strokeWidth="0.5" />
+        ))}
+        <polyline
+          points="0,65 30,55 60,60 90,40 120,45 150,25 180,30 210,15 240,20"
+          fill="none"
+          stroke="#8B0D19"
+          strokeWidth="1.5"
+        />
+        <polyline
+          points="0,65 30,55 60,60 90,40 120,45 150,25 180,30 210,15 240,20 240,80 0,80"
+          fill="rgba(139,13,25,0.08)"
+        />
+        {[
+          [90, 40, 55], [150, 25, 38], [210, 15, 28],
+        ].map(([x, y, bodyTop]) => (
+          <g key={x}>
+            <line x1={x} y1={y - 6} x2={x} y2={y + 8} stroke="#8B0D19" strokeWidth="0.8" />
+            <rect x={x - 4} y={bodyTop} width="8" height="8" fill="rgba(139,13,25,0.4)" stroke="#8B0D19" strokeWidth="0.6" />
+          </g>
+        ))}
+      </svg>
+
+      {/* Center icon + label */}
+      <div className="relative z-10 flex flex-col items-center gap-2">
+        <div
+          className="w-12 h-12 rounded-[8px] flex items-center justify-center"
+          style={{ background: "rgba(139,13,25,0.08)", border: "1px solid rgba(139,13,25,0.2)" }}
+        >
+          <BarChart2 className="w-6 h-6 text-burgundy" strokeWidth={1.5} />
+        </div>
+        <span className="text-[11px] font-semibold" style={{ color: "rgba(139,13,25,0.5)" }}>
+          Trading Dashboard Preview
+        </span>
+      </div>
+    </div>
+  )
+}
+
+/* ── Investor image placeholder ── */
+function InvestorImagePlaceholder() {
+  return (
+    <div
+      className="relative w-full rounded-[8px] overflow-hidden mb-8 flex items-center justify-center"
+      style={{
+        height: "180px",
+        background: "linear-gradient(135deg, rgba(184,146,74,0.07) 0%, rgba(217,178,124,0.03) 100%)",
+        border: "1px dashed rgba(184,146,74,0.3)",
+      }}
+    >
+      {/* Decorative growth chart */}
+      <svg
+        viewBox="0 0 240 80"
+        className="absolute inset-0 w-full h-full opacity-[0.13]"
+        preserveAspectRatio="xMidYMid slice"
+        aria-hidden="true"
+      >
+        {[20, 40, 60].map((y) => (
+          <line key={y} x1="0" y1={y} x2="240" y2={y} stroke="#B8924A" strokeWidth="0.5" />
+        ))}
+        <polyline
+          points="0,70 40,65 80,55 120,48 160,35 200,22 240,12"
+          fill="none"
+          stroke="#B8924A"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <polyline
+          points="0,70 40,65 80,55 120,48 160,35 200,22 240,12 240,80 0,80"
+          fill="rgba(184,146,74,0.1)"
+        />
+        {[40, 120, 200].map((x, i) => (
+          <circle key={x} cx={x} cy={[65, 48, 22][i]} r="3" fill="rgba(184,146,74,0.5)" stroke="#B8924A" strokeWidth="0.8" />
+        ))}
+      </svg>
+
+      {/* Center icon + label */}
+      <div className="relative z-10 flex flex-col items-center gap-2">
+        <div
+          className="w-12 h-12 rounded-[8px] flex items-center justify-center"
+          style={{ background: "rgba(184,146,74,0.1)", border: "1px solid rgba(184,146,74,0.3)" }}
+        >
+          <LineChart className="w-6 h-6 text-gold-deep" strokeWidth={1.5} />
+        </div>
+        <span className="text-[11px] font-semibold" style={{ color: "rgba(184,146,74,0.6)" }}>
+          Portfolio Growth Preview
+        </span>
+      </div>
+    </div>
+  )
+}
+
+/* ── Feature list with read more/less ── */
+function FeatureList({
+  features,
+  accent,
+  accentBg,
+  accentBorder,
+  checkColor,
+  headingColor,
+}: {
+  features: string[]
+  accent: string
+  accentBg: string
+  accentBorder: string
+  checkColor: string
+  headingColor: string
+}) {
+  const [expanded, setExpanded] = useState(false)
+  const visible = expanded ? features : features.slice(0, PREVIEW_COUNT)
+  const hidden = features.length - PREVIEW_COUNT
+
+  return (
+    <div className="mb-8 flex-1">
+      <ul className="space-y-3">
+        {visible.map((feature) => {
+          const parts = feature.split(" — ")
+          const heading = parts.length > 1 ? parts.slice(0, -1).join(" — ") : feature
+          const desc = parts.length > 1 ? parts[parts.length - 1] : ""
+          return (
+            <li key={feature} className="flex items-start gap-3">
+              <div
+                className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
+                style={{ background: accentBg, border: `1px solid ${accentBorder}` }}
+              >
+                <Check className="h-2.5 w-2.5" style={{ color: checkColor }} />
+              </div>
+              <span className="text-sm text-foreground/75 leading-relaxed">
+                <strong className="font-bold" style={{ color: headingColor }}>{heading}</strong>
+                {desc && <span className="text-foreground/70"> — {desc}</span>}
+              </span>
+            </li>
+          )
+        })}
+      </ul>
+
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            key="extra"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
+          />
+        )}
+      </AnimatePresence>
+
+      <button
+        onClick={() => setExpanded((e) => !e)}
+        className="mt-4 flex items-center gap-1.5 text-[13px] font-bold transition-colors cursor-pointer"
+        style={{ color: accent }}
+      >
+        {expanded ? (
+          <>
+            <ChevronUp className="w-4 h-4" />
+            Read less
+          </>
+        ) : (
+          <>
+            <ChevronDown className="w-4 h-4" />
+            Read more <span className="font-normal opacity-60">({hidden} more features)</span>
+          </>
+        )}
+      </button>
+    </div>
+  )
+}
+
 export function TraderInvestorSection() {
   return (
     <section className="relative py-16 lg:py-24 overflow-hidden bg-gradient-to-b from-cream via-cream to-background">
 
-      {/* Soft background blobs — light, not dark */}
       <div
         className="absolute top-0 left-0 w-[500px] h-[500px] rounded-full pointer-events-none"
-        style={{
-          background: "radial-gradient(circle, rgba(139,13,25,0.07) 0%, transparent 70%)",
-          filter: "blur(48px)",
-        }}
+        style={{ background: "radial-gradient(circle, rgba(139,13,25,0.07) 0%, transparent 70%)", filter: "blur(48px)" }}
       />
       <div
         className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full pointer-events-none"
-        style={{
-          background: "radial-gradient(circle, rgba(184,146,74,0.09) 0%, transparent 70%)",
-          filter: "blur(48px)",
-        }}
+        style={{ background: "radial-gradient(circle, rgba(184,146,74,0.09) 0%, transparent 70%)", filter: "blur(48px)" }}
       />
-
-      {/* Top divider */}
-      {/* <div className="h-px bg-gradient-to-r from-transparent via-gold to-transparent mb-16" /> */}
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
@@ -76,7 +258,7 @@ export function TraderInvestorSection() {
         {/* Dual Cards */}
         <div className="grid lg:grid-cols-2 gap-6">
 
-          {/* ── Trader Card (burgundy glass) ── */}
+          {/* ── Trader Card ── */}
           <motion.div
             initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -93,68 +275,37 @@ export function TraderInvestorSection() {
               transition: "transform 0.3s ease, box-shadow 0.3s ease",
             }}
           >
-            {/* Burgundy shimmer top line */}
-            <div
-              className="h-[2px] w-full"
-              style={{
-                background: "linear-gradient(90deg, transparent, #8B0D19, rgba(139,13,25,0.4), transparent)",
-              }}
-            />
+            <div className="h-[2px] w-full" style={{ background: "linear-gradient(90deg, transparent, #8B0D19, rgba(139,13,25,0.4), transparent)" }} />
 
             <div className="p-8 lg:p-10 flex flex-col flex-1">
-              {/* Badge */}
               <span
                 className="inline-block self-start text-[10px] tracking-widest uppercase font-bold px-3 py-1.5 rounded-[4px] mb-6"
-                style={{
-                  background: "rgba(139,13,25,0.08)",
-                  border: "1px solid rgba(139,13,25,0.2)",
-                  color: "#8B0D19",
-                }}
+                style={{ background: "rgba(139,13,25,0.08)", border: "1px solid rgba(139,13,25,0.2)", color: "#8B0D19" }}
               >
                 For Active Traders
               </span>
 
-              <h3 className="text-2xl lg:text-3xl font-bold mb-1 text-foreground">
-                Built for speed.
-              </h3>
-              <h3 className="text-2xl lg:text-3xl font-bold mb-8 text-burgundy">
-                Built for F&amp;O.
-              </h3>
+              <h3 className="text-2xl lg:text-3xl font-bold mb-1 text-foreground">Built for speed. <span className="text-2xl lg:text-3xl font-bold mb-6 text-burgundy">Built for F&amp;O.</span></h3>
+              
 
-              <ul className="space-y-3 mb-10 flex-1">
-                {traderFeatures.map((feature) => {
-                  const parts = feature.split(" — ")
-                  const heading = parts.length > 1 ? parts.slice(0, -1).join(" — ") : feature
-                  const desc = parts.length > 1 ? parts[parts.length - 1] : ""
-                  return (
-                    <li key={feature} className="flex items-start gap-3">
-                      <div
-                        className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-                        style={{
-                          background: "rgba(139,13,25,0.08)",
-                          border: "1px solid rgba(139,13,25,0.25)",
-                        }}
-                      >
-                        <Check className="h-2.5 w-2.5 text-burgundy" />
-                      </div>
-                      <span className="text-sm text-foreground/75 leading-relaxed">
-                        <strong className="font-bold text-burgundy">{heading}</strong>
-                        {desc && <span className="text-foreground/70"> — {desc}</span>}
-                      </span>
-                    </li>
-                  )
-                })}
-              </ul>
+              <TraderImagePlaceholder />
 
-              <Button
-                className="self-start rounded-[6px] bg-burgundy hover:bg-burgundy-deep text-white"
-              >
+              <FeatureList
+                features={traderFeatures}
+                accent="#8B0D19"
+                accentBg="rgba(139,13,25,0.08)"
+                accentBorder="rgba(139,13,25,0.25)"
+                checkColor="#8B0D19"
+                headingColor="#8B0D19"
+              />
+
+              <Button className="self-start rounded-[6px] bg-burgundy hover:bg-burgundy-deep text-white">
                 Start Trading Now
               </Button>
             </div>
           </motion.div>
 
-          {/* ── Investor Card (gold glass) ── */}
+          {/* ── Investor Card ── */}
           <motion.div
             initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -171,67 +322,34 @@ export function TraderInvestorSection() {
               transition: "transform 0.3s ease, box-shadow 0.3s ease",
             }}
           >
-            {/* Gold shimmer top line */}
-            <div
-              className="h-[2px] w-full"
-              style={{
-                background: "linear-gradient(90deg, transparent, #B8924A, rgba(217,178,124,0.5), transparent)",
-              }}
-            />
+            <div className="h-[2px] w-full" style={{ background: "linear-gradient(90deg, transparent, #B8924A, rgba(217,178,124,0.5), transparent)" }} />
 
             <div className="p-8 lg:p-10 flex flex-col flex-1">
-              {/* Badge */}
               <span
                 className="inline-block self-start text-[10px] tracking-widest uppercase font-bold px-3 py-1.5 rounded-[4px] mb-6"
-                style={{
-                  background: "rgba(184,146,74,0.10)",
-                  border: "1px solid rgba(184,146,74,0.3)",
-                  color: "#8C6A2F",
-                }}
+                style={{ background: "rgba(184,146,74,0.10)", border: "1px solid rgba(184,146,74,0.3)", color: "#8C6A2F" }}
               >
                 For Long-term Investors
               </span>
 
-              <h3 className="text-2xl lg:text-3xl font-bold mb-1 text-foreground">
-                Grow wealth.
-              </h3>
-              <h3 className="text-2xl lg:text-3xl font-bold mb-8 text-gold-deep">
-                No brokerage.
-              </h3>
+              <h3 className="text-2xl lg:text-3xl font-bold mb-1 text-foreground">Grow wealth.</h3>
+              <h3 className="text-2xl lg:text-3xl font-bold mb-6 text-gold-deep">No brokerage.</h3>
 
-              <ul className="space-y-3 mb-10 flex-1">
-                {investorFeatures.map((feature) => {
-                  const parts = feature.split(" — ")
-                  const heading = parts.length > 1 ? parts.slice(0, -1).join(" — ") : feature
-                  const desc = parts.length > 1 ? parts[parts.length - 1] : ""
-                  return (
-                    <li key={feature} className="flex items-start gap-3">
-                      <div
-                        className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-                        style={{
-                          background: "rgba(184,146,74,0.10)",
-                          border: "1px solid rgba(184,146,74,0.35)",
-                        }}
-                      >
-                        <Check className="h-2.5 w-2.5 text-gold-deep" />
-                      </div>
-                      <span className="text-sm text-foreground/75 leading-relaxed">
-                        <strong className="font-bold text-gold-deep">{heading}</strong>
-                        {desc && <span className="text-foreground/70"> — {desc}</span>}
-                      </span>
-                    </li>
-                  )
-                })}
-              </ul>
+              <InvestorImagePlaceholder />
+
+              <FeatureList
+                features={investorFeatures}
+                accent="#8C6A2F"
+                accentBg="rgba(184,146,74,0.10)"
+                accentBorder="rgba(184,146,74,0.35)"
+                checkColor="#B8924A"
+                headingColor="#8C6A2F"
+              />
 
               <Button
                 variant="outline"
                 className="self-start rounded-[6px]"
-                style={{
-                  border: "1px solid rgba(184,146,74,0.45)",
-                  color: "#8C6A2F",
-                  background: "rgba(184,146,74,0.07)",
-                }}
+                style={{ border: "1px solid rgba(184,146,74,0.45)", color: "#8C6A2F", background: "rgba(184,146,74,0.07)" }}
               >
                 Start Investing Now
               </Button>
