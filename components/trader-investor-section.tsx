@@ -332,8 +332,7 @@ export function TraderInvestorSection() {
                 For Long-term Investors
               </span>
 
-              <h3 className="text-2xl lg:text-3xl font-bold mb-1 text-foreground">Grow wealth.</h3>
-              <h3 className="text-2xl lg:text-3xl font-bold mb-6 text-gold-deep">No brokerage.</h3>
+              <h3 className="text-2xl lg:text-3xl font-bold mb-6 text-foreground">Grow wealth. <span className="text-gold-deep">No brokerage.</span></h3>
 
               <InvestorImagePlaceholder />
 
