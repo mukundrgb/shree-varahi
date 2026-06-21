@@ -1,49 +1,96 @@
 "use client"
 
-import { useState } from "react"
-import { motion } from "framer-motion"
+import { useState, useEffect } from "react"
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { 
-  ArrowRight, 
-  Phone, 
-  TrendingUp, 
-  PieChart, 
-  Landmark, 
-  RotateCcw, 
-  Target, 
-  Layers, 
-  Box 
+import {
+  ArrowRight,
+  Phone,
+  TrendingUp,
+  PieChart,
+  Landmark,
+  RotateCcw,
+  Target,
+  Layers,
+  Box,
+  Zap,
+  BarChart2,
+  Users,
+  Shield,
+  CheckCircle2,
 } from "lucide-react"
 import { AppPromoSection } from "@/components/app-promo-section"
 import Link from "next/link"
 
-
-/* ── Custom globe SVG — richer than the Lucide default ── */
+/* ── Custom globe SVG ── */
 function GlobeMarketIcon({ color, size = 26 }: { color: string; size?: number }) {
   return (
     <svg viewBox="0 0 24 24" width={size} height={size} fill="none" aria-hidden="true">
-      {/* Outer globe circle */}
       <circle cx="12" cy="12" r="9.5" stroke={color} strokeWidth="1.4" />
-      {/* Equator */}
       <ellipse cx="12" cy="12" rx="9.5" ry="3.2" stroke={color} strokeWidth="1.1" />
-      {/* Upper parallel ~30° N */}
       <ellipse cx="12" cy="8.2" rx="7.8" ry="2.2" stroke={color} strokeWidth="0.7" opacity="0.55" />
-      {/* Lower parallel ~30° S */}
       <ellipse cx="12" cy="15.8" rx="7.8" ry="2.2" stroke={color} strokeWidth="0.7" opacity="0.55" />
-      {/* Prime meridian (vertical ellipse, very narrow) */}
       <ellipse cx="12" cy="12" rx="2.2" ry="9.5" stroke={color} strokeWidth="0.9" />
-      {/* 60° meridian */}
       <ellipse cx="12" cy="12" rx="6" ry="9.5" stroke={color} strokeWidth="0.6" opacity="0.45" />
-      {/* Poles — top & bottom caps */}
       <line x1="12" y1="2.5" x2="12" y2="21.5" stroke={color} strokeWidth="0.9" opacity="0.3" />
-      {/* Small pin dot — focal point representing the globe */}
       <circle cx="12" cy="12" r="1.5" fill={color} opacity="0.7" />
     </svg>
   )
 }
 
-type Ticker = { symbol: string; flag: string; name: string }
+/* ── Promo slides ── */
+const promoSlides = [
+  {
+    badge: "ZERO BROKERAGE",
+    badgeColor: "#059669",
+    headline: "₹0",
+    headlineSub: "on Delivery",
+    body: "Buy and hold stocks with absolutely zero brokerage — forever. No hidden charges.",
+    bg: ["#071410", "#0d2418"],
+    accent: "#4ade80",
+    Icon: TrendingUp,
+    stat: "₹0 forever",
+    statLabel: "Delivery brokerage",
+  },
+  {
+    badge: "FLAT FEE",
+    badgeColor: "#FF0000",
+    headline: "₹17",
+    headlineSub: "Intraday & F&O",
+    body: "Trade any size lot — just ₹17 per executed order. No percentage, no surprises.",
+    bg: ["#150404", "#260808"],
+    accent: "#ff6b6b",
+    Icon: BarChart2,
+    stat: "₹17 flat",
+    statLabel: "Per order, any size",
+  },
+  {
+    badge: "MUTUAL FUNDS",
+    badgeColor: "#B8924A",
+    headline: "5,000+",
+    headlineSub: "Direct Funds",
+    body: "Zero commission. Direct plans only. Keep every rupee of your return.",
+    bg: ["#140f02", "#241a04"],
+    accent: "#D9B27C",
+    Icon: Landmark,
+    stat: "0% commission",
+    statLabel: "On all mutual funds",
+  },
+  {
+    badge: "QUICK START",
+    badgeColor: "#6366f1",
+    headline: "15 min",
+    headlineSub: "Account Opening",
+    body: "Paperless, Aadhaar-based KYC. Be investment-ready in under 15 minutes.",
+    bg: ["#07070f", "#0f0f1e"],
+    accent: "#818cf8",
+    Icon: Zap,
+    stat: "3.25 Cr+",
+    statLabel: "Investors trust us",
+  },
+]
 
+type Ticker = { symbol: string; flag: string; name: string }
 type Product = {
   icon?: React.ElementType
   customIcon?: React.FC<{ color: string; size?: number }>
@@ -144,6 +191,7 @@ const products: Product[] = [
   },
 ]
 
+/* ── Product card ── */
 function ProductCard({ product, index }: { product: Product; index: number }) {
   const [hovered, setHovered] = useState(false)
   const Icon = product.icon
@@ -161,13 +209,10 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
         background: hovered ? product.bgHover : "white",
         borderColor: hovered ? product.accentColor : "var(--border)",
         transition: "background 0.2s, border-color 0.2s, box-shadow 0.2s",
-        boxShadow: hovered
-          ? `0 6px 16px rgba(0,0,0,0.04)`
-          : "0 1px 3px rgba(0,0,0,0.01)",
+        boxShadow: hovered ? `0 6px 16px rgba(0,0,0,0.04)` : "0 1px 3px rgba(0,0,0,0.01)",
       }}
       className="group relative border rounded-[5px] p-6 cursor-pointer overflow-hidden flex flex-col justify-between min-h-[220px]"
     >
-      {/* Accent top line indicator */}
       <div
         className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[5px] transition-transform duration-300 origin-left"
         style={{
@@ -175,9 +220,7 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
           transform: hovered ? "scaleX(1)" : "scaleX(0)",
         }}
       />
-
       <div>
-        {/* Card Header */}
         <div className="flex items-start justify-between mb-5">
           <div
             className="w-12 h-12 rounded-[5px] flex items-center justify-center"
@@ -186,28 +229,13 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
               transition: "background 0.2s",
             }}
           >
-            {CustomIcon ? (
-              <CustomIcon color={product.accentColor} />
-            ) : Icon ? (
-              <Icon className="h-6 w-6" style={{ color: product.accentColor }} />
-            ) : null}
+            {CustomIcon ? <CustomIcon color={product.accentColor} /> : Icon ? <Icon className="h-6 w-6" style={{ color: product.accentColor }} /> : null}
           </div>
-
-          <span
-            className={`text-[10px] font-bold px-2.5 py-1 rounded-[5px] ${product.badgeColor}`}
-          >
-            {product.badge}
-          </span>
+          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-[5px] ${product.badgeColor}`}>{product.badge}</span>
         </div>
-
-        {/* Title */}
         <h4 className="font-extrabold text-foreground text-lg sm:text-xl mb-1.5">{product.title}</h4>
-
-        {/* Description */}
         <p className="text-sm text-muted-foreground/90 leading-relaxed mb-4">{product.description}</p>
       </div>
-
-      {/* Detail or mini-action link on hover */}
       <div className="flex items-center gap-1.5 text-xs font-bold text-burgundy opacity-0 group-hover:opacity-100 transition-opacity duration-200">
         <span>Explore</span>
         <ArrowRight className="h-3.5 w-3.5" />
@@ -216,25 +244,276 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
   )
 
   if (product.href) {
-    return (
-      <Link href={product.href} className="block h-full">
-        {cardContent}
-      </Link>
-    )
+    return <Link href={product.href} className="block h-full">{cardContent}</Link>
+  }
+  return cardContent
+}
+
+/* ── Floating hanging icon ── */
+interface FloatingIconDef {
+  Icon: React.ElementType
+  color: string
+  bg: string
+  border: string
+  top: string
+  left?: string
+  right?: string
+  depth: number
+  dur: number
+  delay: number
+  rot: number
+  stringH: number
+}
+
+function FloatingIcon({ Icon, color, bg, border, top, left, right, depth, dur, delay, rot, stringH }: FloatingIconDef) {
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
+  const sX = useSpring(mouseX, { stiffness: 55, damping: 22 })
+  const sY = useSpring(mouseY, { stiffness: 55, damping: 22 })
+  const pX = useTransform(sX, (v) => v * depth)
+  const pY = useTransform(sY, (v) => v * depth * 0.55)
+
+  useEffect(() => {
+    const fn = (e: MouseEvent) => {
+      mouseX.set((e.clientX / window.innerWidth - 0.5) * 28)
+      mouseY.set((e.clientY / window.innerHeight - 0.5) * 28)
+    }
+    window.addEventListener("mousemove", fn, { passive: true })
+    return () => window.removeEventListener("mousemove", fn)
+  }, [mouseX, mouseY])
+
+  return (
+    <motion.div
+      className="absolute"
+      style={{ top, ...(right ? { right } : { left }), x: pX, y: pY }}
+      initial={{ opacity: 0, scale: 0.5 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <motion.div
+        className="flex flex-col items-center"
+        animate={{ y: [0, -9, 0], rotate: [rot, rot + 2.5, rot] }}
+        transition={{ duration: dur, repeat: Infinity, ease: "easeInOut", delay }}
+      >
+        {/* String */}
+        <div
+          style={{
+            width: 1,
+            height: stringH,
+            background: `linear-gradient(to bottom, transparent, ${color}55)`,
+            marginBottom: 3,
+          }}
+        />
+        {/* Icon card */}
+        <div
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 10,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: bg,
+            border: `1px solid ${border}`,
+            boxShadow: `0 5px 16px ${color}1a, 0 1px 3px rgba(0,0,0,0.06)`,
+          }}
+        >
+          <Icon style={{ width: 20, height: 20, color, strokeWidth: 1.6 }} />
+        </div>
+        {/* Hanging shadow dot */}
+        <div
+          style={{
+            width: 22,
+            height: 5,
+            borderRadius: "50%",
+            marginTop: 6,
+            background: `radial-gradient(ellipse at center, ${color}22 0%, transparent 70%)`,
+          }}
+        />
+      </motion.div>
+    </motion.div>
+  )
+}
+
+const FLOATING_ICONS_LEFT: FloatingIconDef[] = [
+  { Icon: TrendingUp, color: "#059669", bg: "rgba(5,150,105,0.09)",    border: "rgba(5,150,105,0.22)",    top: "13%", left: "2%",   depth: 0.7, dur: 3.6, delay: 0.2, rot: -4, stringH: 42 },
+  { Icon: PieChart,   color: "#CC0000", bg: "rgba(204,0,0,0.08)",      border: "rgba(204,0,0,0.2)",       top: "31%", left: "5.5%", depth: 1.1, dur: 3.0, delay: 0.8, rot:  5, stringH: 30 },
+  { Icon: BarChart2,  color: "#B8924A", bg: "rgba(184,146,74,0.11)",   border: "rgba(184,146,74,0.28)",   top: "51%", left: "1.5%", depth: 0.9, dur: 4.2, delay: 1.4, rot: -3, stringH: 46 },
+  { Icon: Shield,     color: "#6366f1", bg: "rgba(99,102,241,0.09)",   border: "rgba(99,102,241,0.22)",   top: "69%", left: "4.5%", depth: 1.2, dur: 3.3, delay: 1.0, rot:  5, stringH: 30 },
+  { Icon: Target,     color: "#f59e0b", bg: "rgba(245,158,11,0.09)",   border: "rgba(245,158,11,0.22)",   top: "84%", left: "2.5%", depth: 0.8, dur: 3.8, delay: 2.0, rot: -4, stringH: 36 },
+]
+
+const FLOATING_ICONS_RIGHT: FloatingIconDef[] = [
+  { Icon: Landmark,   color: "#2563EB", bg: "rgba(37,99,235,0.09)",    border: "rgba(37,99,235,0.22)",    top: "11%", right: "2.5%", depth: 0.8, dur: 3.9, delay: 0.5, rot:  4, stringH: 40 },
+  { Icon: Zap,        color: "#7C3AED", bg: "rgba(124,58,237,0.09)",   border: "rgba(124,58,237,0.22)",   top: "30%", right: "5%",   depth: 1.0, dur: 3.2, delay: 1.1, rot: -5, stringH: 32 },
+  { Icon: Layers,     color: "#0D9488", bg: "rgba(13,148,136,0.09)",   border: "rgba(13,148,136,0.22)",   top: "50%", right: "1.5%", depth: 1.3, dur: 4.0, delay: 0.4, rot:  3, stringH: 44 },
+  { Icon: RotateCcw,  color: "#D97706", bg: "rgba(217,119,6,0.09)",    border: "rgba(217,119,6,0.22)",    top: "68%", right: "4%",   depth: 0.9, dur: 3.5, delay: 1.6, rot: -4, stringH: 34 },
+  { Icon: Users,      color: "#DB2777", bg: "rgba(219,39,119,0.08)",   border: "rgba(219,39,119,0.22)",   top: "83%", right: "2%",   depth: 1.1, dur: 3.7, delay: 0.9, rot:  5, stringH: 38 },
+]
+
+function FloatingIcons() {
+  return (
+    <div className="hidden md:block absolute inset-0 pointer-events-none z-[5]">
+      {FLOATING_ICONS_LEFT.map((def, i) => (
+        <FloatingIcon key={`l${i}`} {...def} />
+      ))}
+      {FLOATING_ICONS_RIGHT.map((def, i) => (
+        <FloatingIcon key={`r${i}`} {...def} />
+      ))}
+    </div>
+  )
+}
+
+/* ── Promotional Slider ── */
+function PromoSlider() {
+  const [active, setActive] = useState(0)
+  const [direction, setDirection] = useState(1)
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setDirection(1)
+      setActive((s) => (s + 1) % promoSlides.length)
+    }, 4000)
+    return () => clearInterval(t)
+  }, [])
+
+  const go = (i: number) => {
+    setDirection(i > active ? 1 : -1)
+    setActive(i)
   }
 
-  return cardContent
+  const slide = promoSlides[active]
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Card */}
+      <div
+        className="relative rounded-[12px] overflow-hidden"
+        style={{ height: "420px" }}
+      >
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div
+            key={active}
+            custom={direction}
+            variants={{
+              enter: (d: number) => ({ opacity: 0, x: d * 40 }),
+              center: { opacity: 1, x: 0 },
+              exit: (d: number) => ({ opacity: 0, x: d * -40 }),
+            }}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute inset-0 p-8 flex flex-col justify-between"
+            style={{
+              background: `linear-gradient(145deg, ${slide.bg[0]} 0%, ${slide.bg[1]} 100%)`,
+            }}
+          >
+            {/* Decorative radial glow */}
+            <div
+              className="absolute top-0 right-0 w-[280px] h-[280px] rounded-full pointer-events-none"
+              style={{
+                background: `radial-gradient(circle, ${slide.accent}18 0%, transparent 70%)`,
+                filter: "blur(30px)",
+              }}
+            />
+
+            {/* Decorative grid */}
+            <div
+              className="absolute inset-0 opacity-[0.04] pointer-events-none"
+              style={{
+                backgroundImage: `linear-gradient(${slide.accent} 1px, transparent 1px), linear-gradient(90deg, ${slide.accent} 1px, transparent 1px)`,
+                backgroundSize: "40px 40px",
+              }}
+            />
+
+            {/* Decorative large number background */}
+            <div
+              className="absolute right-4 bottom-16 text-[130px] font-black leading-none pointer-events-none select-none"
+              style={{ color: slide.accent, opacity: 0.06 }}
+            >
+              {slide.headline}
+            </div>
+
+            {/* Top: badge + icon */}
+            <div className="relative z-10 flex items-start justify-between">
+              <span
+                className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-[4px]"
+                style={{ background: `${slide.badgeColor}22`, color: slide.accent, border: `1px solid ${slide.accent}30` }}
+              >
+                {slide.badge}
+              </span>
+              <div
+                className="w-11 h-11 rounded-[8px] flex items-center justify-center"
+                style={{ background: `${slide.accent}18`, border: `1px solid ${slide.accent}25` }}
+              >
+                <slide.Icon className="w-5 h-5" style={{ color: slide.accent }} strokeWidth={1.8} />
+              </div>
+            </div>
+
+            {/* Center: headline */}
+            <div className="relative z-10">
+              <div
+                className="text-[64px] font-black leading-none tracking-tight mb-1"
+                style={{ color: slide.accent }}
+              >
+                {slide.headline}
+              </div>
+              <div className="text-[18px] font-extrabold text-white/80 mb-4 leading-tight">
+                {slide.headlineSub}
+              </div>
+              <p className="text-[13px] text-white/45 leading-relaxed max-w-[260px] font-medium">
+                {slide.body}
+              </p>
+            </div>
+
+            {/* Bottom: stat pill */}
+            <div className="relative z-10">
+              <div
+                className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-[6px]"
+                style={{ background: `${slide.accent}12`, border: `1px solid ${slide.accent}20` }}
+              >
+                <CheckCircle2 className="w-4 h-4 flex-shrink-0" style={{ color: slide.accent }} />
+                <div>
+                  <span className="text-[15px] font-black" style={{ color: slide.accent }}>{slide.stat}</span>
+                  <span className="text-[11px] text-white/40 ml-2 font-medium">{slide.statLabel}</span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Dot pagination */}
+      <div className="flex items-center justify-center gap-2">
+        {promoSlides.map((_, i) => (
+          <button key={i} onClick={() => go(i)} className="p-1 group">
+            <motion.div
+              className="h-1.5 rounded-full"
+              animate={{
+                width: i === active ? 24 : 6,
+                backgroundColor: i === active ? "#FF0000" : "rgba(26,26,26,0.18)",
+              }}
+              transition={{ duration: 0.28, ease: "easeOut" }}
+            />
+          </button>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 export function Hero() {
   return (
     <>
-      {/* ── SECTION 1: Hero heading + buttons ── */}
-      <section className="relative bg-cream overflow-hidden min-h-screen flex flex-col">
+      {/* ── Hero Section ── */}
+      <section className="relative bg-cream overflow-hidden">
 
-        {/* Background Decorative Elements */}
+        {/* Floating hanging icons — desktop & tablet only */}
+        <FloatingIcons />
+
+        {/* Background decorations */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          {/* Grid pattern overlay */}
           <div
             className="absolute inset-0 opacity-[0.03]"
             style={{
@@ -244,285 +523,154 @@ export function Hero() {
               WebkitMaskImage: "linear-gradient(to bottom, black 60%, transparent 95%)",
             }}
           />
-
-          {/* Soft atmospheric glow blobs */}
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[850px] h-[850px] bg-gold/5 rounded-full blur-[140px]" />
+          <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-gold/[0.04] rounded-full blur-[120px]" />
           <div
             className="absolute top-0 left-0 w-[500px] h-[500px] rounded-full"
-            style={{
-              background: "radial-gradient(circle, rgba(139,13,25,0.04) 0%, transparent 70%)",
-              filter: "blur(50px)",
-            }}
+            style={{ background: "radial-gradient(circle, rgba(139,13,25,0.04) 0%, transparent 70%)", filter: "blur(50px)" }}
           />
           <div
             className="absolute bottom-1/3 right-0 w-[500px] h-[500px] rounded-full"
-            style={{
-              background: "radial-gradient(circle, rgba(184,146,74,0.06) 0%, transparent 70%)",
-              filter: "blur(50px)",
-            }}
+            style={{ background: "radial-gradient(circle, rgba(184,146,74,0.05) 0%, transparent 70%)", filter: "blur(50px)" }}
           />
-
-          {/* Candlestick + line chart SVG — covers top half area */}
-          <svg
-            viewBox="0 0 1400 400"
-            preserveAspectRatio="xMidYMid slice"
-            className="absolute top-0 left-0 w-full h-[600px] sm:h-[750px] md:h-[900px] opacity-[0.09]"
-            aria-hidden="true"
-          >
-            <defs>
-              <linearGradient id="heroChartGradient" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor="#D9B27C" stopOpacity="0.18" />
-                <stop offset="100%" stopColor="#D9B27C" stopOpacity="0" />
-              </linearGradient>
-            </defs>
-
-            {/* Grid lines */}
-            {[80, 160, 240, 320].map((y) => (
-              <line key={y} x1="0" y1={y} x2="1400" y2={y} stroke="#D9B27C" strokeWidth="0.5" opacity="0.6" />
-            ))}
-            {[175, 350, 525, 700, 875, 1050, 1225].map((x) => (
-              <line key={x} x1={x} y1="0" x2={x} y2="400" stroke="#D9B27C" strokeWidth="0.3" opacity="0.3" />
-            ))}
-
-            {/* Candlesticks — bullish=gold, bearish=burgundy */}
-            {([
-              [30,  338, 328, 346, 322, 1],
-              [80,  330, 323, 337, 318, 1],
-              [130, 325, 320, 332, 314, 1],
-              [180, 320, 334, 316, 340, 0],
-              [230, 336, 313, 340, 308, 1],
-              [280, 315, 294, 320, 288, 1],
-              [330, 296, 308, 292, 313, 0],
-              [380, 310, 280, 315, 275, 1],
-              [430, 282, 263, 288, 258, 1],
-              [475, 265, 278, 261, 284, 0],
-              [520, 280, 256, 284, 251, 1],
-              [568, 258, 240, 263, 235, 1],
-              [615, 242, 252, 238, 257, 0],
-              [660, 254, 226, 259, 221, 1],
-              [705, 228, 212, 233, 207, 1],
-              [748, 214, 222, 210, 228, 0],
-              [795, 224, 200, 229, 195, 1],
-              [845, 202, 185, 207, 180, 1],
-              [892, 187, 196, 183, 201, 0],
-              [940, 198, 175, 203, 170, 1],
-              [988, 177, 160, 182, 155, 1],
-              [1033,162, 170, 158, 175, 0],
-              [1078,172, 148, 177, 143, 1],
-              [1125,150, 134, 155, 129, 1],
-              [1170,136, 145, 132, 150, 0],
-              [1218,147, 122, 152, 117, 1],
-              [1265,124, 112, 129, 107, 1],
-              [1312,114, 122, 110, 127, 0],
-              [1358,124, 100, 129, 95,  1],
-              [1395,102,  92, 107,  88, 1],
-            ] as [number,number,number,number,number,number][]).map(([x, open, close, high, low, bull], i) => {
-              const color = bull ? "#D9B27C" : "#8B0D19"
-              const fillOpacity = bull ? 0.35 : 0.4
-              const bodyTop = Math.min(open, close)
-              const bodyH = Math.max(2, Math.abs(close - open))
-              return (
-                <g key={i}>
-                  <line x1={x} y1={high} x2={x} y2={low} stroke={color} strokeWidth="1" />
-                  <rect
-                    x={x - 10}
-                    y={bodyTop}
-                    width="20"
-                    height={bodyH}
-                    fill={bull ? `rgba(217,178,124,${fillOpacity})` : `rgba(139,13,25,${fillOpacity})`}
-                    stroke={color}
-                    strokeWidth="1"
-                  />
-                </g>
-              )
-            })}
-
-            {/* Area fill under main trend */}
-            <path
-              d="M0,340 L60,328 L120,318 L160,335 L210,312 L260,295 L310,305 L360,282 L410,265 L450,278 L500,255 L555,238 L600,248 L650,225 L700,210 L745,222 L800,200 L855,183 L900,194 L950,175 L1000,158 L1045,168 L1100,148 L1150,132 L1195,142 L1250,122 L1300,110 L1350,118 L1400,98 L1400,400 L0,400 Z"
-              fill="url(#heroChartGradient)"
-            />
-
-            {/* Main trending line on top */}
-            <polyline
-              points="0,340 60,328 120,318 160,335 210,312 260,295 310,305 360,282 410,265 450,278 500,255 555,238 600,248 650,225 700,210 745,222 800,200 855,183 900,194 950,175 1000,158 1045,168 1100,148 1150,132 1195,142 1250,122 1300,110 1350,118 1400,98"
-              fill="none"
-              stroke="#D9B27C"
-              strokeWidth="2"
-            />
-          </svg>
         </div>
 
-        {/* Hero text + buttons */}
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10 flex flex-col flex-1 w-full">
-          <div className="flex flex-col flex-1 justify-center items-center text-center pt-12 sm:pt-24 md:pt-28 pb-3 sm:pb-8">
+        {/* ── 2-Column Hero Layout ── */}
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-[60fr_40fr] gap-8 xl:gap-16 items-center min-h-[calc(100vh-68px)] py-16 sm:py-20 lg:py-0">
 
-            {/* Eyebrow badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="text-xs tracking-[0.2em] uppercase text-gold-deep font-bold mb-2 sm:mb-6 block"
-            >
-              Trusted by 60,000+ Investors
-            </motion.div>
+            {/* ── Left: Text Content (60%) ── */}
+            <div className="flex flex-col justify-center lg:py-28">
 
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.05 }}
-              className="text-3xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-[1.05] tracking-tight text-foreground text-balance mb-3 sm:mb-6"
-            >
-              Stop switching apps.
-              <br />
-              <span className="text-burgundy">Start owning every market.</span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-sm sm:text-xl lg:text-2xl text-muted-foreground leading-relaxed max-w-3xl mx-auto mb-5 sm:mb-10"
-            >
-              Stocks, F&O, Mutual Funds, IPOs, US Equities — one account, one flat fee.
-              Zero delivery brokerage. Flat ₹17 for intraday & F&O.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.15 }}
-              className="flex justify-center gap-3"
-            >
-              <Button
-                size="lg"
-                className="bg-burgundy hover:bg-burgundy-deep text-white px-6 sm:px-10 h-12 sm:h-14 text-sm sm:text-base font-bold rounded-[5px] shadow-md shadow-burgundy/10"
+              {/* Eyebrow */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="text-[11px] tracking-[0.22em] uppercase text-gold-deep font-black mb-5 flex items-center gap-2"
               >
-                Open Free Account
-                <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-border text-foreground hover:bg-secondary px-6 sm:px-10 h-12 sm:h-14 text-sm sm:text-base font-bold rounded-[5px]"
-                onClick={() => window.location.href = 'tel:02240808080'}
-              >
-                <Phone className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                Call Now
-              </Button>
-            </motion.div>
+                <span className="w-5 h-px bg-gold-deep inline-block" />
+                Trusted by 3.25 Crore+ Investors
+              </motion.div>
 
-            {/* Built for row */}
+              {/* Headline */}
+              <motion.h1
+                initial={{ opacity: 0, y: 22 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.06 }}
+                className="text-4xl sm:text-5xl lg:text-6xl xl:text-[68px] font-black leading-[1.05] tracking-tight text-foreground mb-5"
+              >
+                Stop switching apps.
+                <br />
+                <span className="text-burgundy">Own every market.</span>
+              </motion.h1>
+
+              {/* Subtitle */}
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.12 }}
+                className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-[520px] mb-8"
+              >
+                Stocks, F&amp;O, Mutual Funds, IPOs, US Equities — one account, one flat fee.
+                Zero delivery brokerage. Flat ₹17 for intraday &amp; F&amp;O.
+              </motion.p>
+
+              {/* Buttons */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.18 }}
+                className="flex flex-wrap gap-3 mb-10"
+              >
+                <Link href="/signup/register">
+                  <Button
+                    size="lg"
+                    className="bg-burgundy hover:bg-burgundy-deep text-white px-8 h-13 text-sm font-bold rounded-[5px] shadow-md shadow-burgundy/10"
+                  >
+                    Open Free Account
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-border text-foreground hover:bg-secondary px-8 h-13 text-sm font-bold rounded-[5px]"
+                  onClick={() => window.location.href = "tel:02240808080"}
+                >
+                  <Phone className="mr-2 h-4 w-4" />
+                  Call Now
+                </Button>
+              </motion.div>
+
+              {/* Trust pills */}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.26 }}
+                className="flex flex-wrap items-center gap-6"
+              >
+                {[
+                  { Icon: Shield, text: "SEBI Registered" },
+                  { Icon: Users, text: "Active Traders" },
+                  { Icon: CheckCircle2, text: "ISO/IEC 27001:2022" },
+                ].map(({ Icon, text }) => (
+                  <div key={text} className="flex items-center gap-2 text-[13px] font-semibold text-muted-foreground">
+                    <Icon className="w-4 h-4 text-gold-deep" />
+                    {text}
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+
+            {/* ── Right: Promo Slider (40%) ── */}
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.25 }}
-              className="flex items-center gap-8 mt-4 sm:mt-10"
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="hidden lg:block lg:py-28"
             >
-              <div className="text-center">
-                <span className="block text-[10px] uppercase tracking-[0.18em] text-muted-foreground/50 font-semibold mb-0.5">built for</span>
-                <span className="block text-sm font-extrabold text-foreground tracking-tight">Active Traders</span>
-              </div>
-              <div className="w-px h-8 bg-border" />
-              <div className="text-center">
-                <span className="block text-[10px] uppercase tracking-[0.18em] text-muted-foreground/50 font-semibold mb-0.5">built for</span>
-                <span className="block text-sm font-extrabold text-foreground tracking-tight">Long Term Investors</span>
-              </div>
+              <PromoSlider />
             </motion.div>
 
           </div>
-
-          {/* ── Service chips — full-width primary bar, always in viewport ── */}
         </div>
-        {/* CSS for animated conic-gradient border */}
-        <style>{`
-          @property --chip-angle {
-            syntax: '<angle>';
-            initial-value: 0deg;
-            inherits: false;
-          }
-          @keyframes chip-border-spin {
-            to { --chip-angle: 360deg; }
-          }
-          .chip-border {
-            background:
-              linear-gradient(rgba(255, 0, 0, 0.9), rgba(255, 0, 0, 0.9)) padding-box,
-              conic-gradient(
-                from var(--chip-angle),
-                transparent      0%,
-                rgba(217,178,124,0.85) 18%,
-                rgba(255,245,220,1)    28%,
-                rgba(217,178,124,0.85) 38%,
-                transparent      55%
-              ) border-box;
-            border: 1.5px solid transparent;
-            animation: chip-border-spin 3.5s linear infinite;
-          }
-          .chip-border:hover {
-            background:
-              linear-gradient(rgba(204, 0, 0, 0.95), rgba(204, 0, 0, 0.95)) padding-box,
-              conic-gradient(
-                from var(--chip-angle),
-                transparent      0%,
-                rgba(217,178,124,1)    18%,
-                rgba(255,245,220,1)    28%,
-                rgba(217,178,124,1)    38%,
-                transparent      55%
-              ) border-box;
-            animation-duration: 2s;
-          }
-        `}</style>
 
         <div className="relative z-10 w-full bg-burgundy py-5">
-
-          {/* Desktop view: Stationary single line */}
+          {/* Desktop: stationary row */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="hidden lg:flex flex-row items-center justify-center gap-3 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+            className="hidden lg:flex flex-row items-center justify-center gap-2.5 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
           >
-            {products.map((product, index) => {
+            {products.map((product) => {
               const Icon = product.icon
               const CustomIcon = product.customIcon
-              
               const chip = (
                 <motion.div
-                  whileHover={{ y: -2, scale: 1.04 }}
+                  whileHover={{ y: -2, scale: 1.03 }}
                   transition={{ duration: 0.18 }}
-                  className="chip-border flex items-center gap-2.5 px-5 py-2 rounded-full cursor-pointer"
-                  style={{ animationDelay: `${index * 0.28}s` }}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full cursor-pointer"
+                  style={{
+                    background: "rgba(217,178,124,0.18)",
+                    border: "1px solid rgba(217,178,124,0.42)",
+                  }}
                 >
-                  <div className="w-7 h-7 rounded-full flex items-center justify-center bg-white/15">
-                    {CustomIcon ? (
-                      <CustomIcon color="#ffffff" size={15} />
-                    ) : Icon ? (
-                      <Icon className="h-3.5 w-3.5 text-white" strokeWidth={2.2} />
-                    ) : null}
+                  <div
+                    className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{ background: "rgba(217,178,124,0.22)" }}
+                  >
+                    {CustomIcon ? <CustomIcon color="#FFE8C0" size={13} /> : Icon ? <Icon className="h-3 w-3" style={{ color: "#FFE8C0" }} strokeWidth={2.2} /> : null}
                   </div>
-                  <span className="text-sm font-semibold text-white/90 tracking-tight whitespace-nowrap pr-1">
-                    {product.title}
-                  </span>
+                  <span className="text-[13px] font-semibold whitespace-nowrap" style={{ color: "#FFE8C0" }}>{product.title}</span>
                 </motion.div>
               )
-
-              if (product.href) {
-                return (
-                  <Link key={product.title} href={product.href} className="flex items-center">
-                    {chip}
-                  </Link>
-                )
-              }
-
-              return (
-                <div key={product.title} className="flex items-center">
-                  {chip}
-                </div>
-              )
+              if (product.href) return <Link key={product.title} href={product.href} className="flex items-center">{chip}</Link>
+              return <div key={product.title} className="flex items-center">{chip}</div>
             })}
           </motion.div>
 
-          {/* Mobile/Tablet view: Seamless infinite scrolling marquee */}
+          {/* Mobile: infinite marquee */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -537,54 +685,40 @@ export function Hero() {
               {[...products, ...products].map((product, index) => {
                 const Icon = product.icon
                 const CustomIcon = product.customIcon
+                const chipStyle = {
+                  background: "rgba(217,178,124,0.18)",
+                  border: "1px solid rgba(217,178,124,0.42)",
+                }
                 const chipContent = (
                   <>
-                    <div className="w-7 h-7 rounded-full flex items-center justify-center bg-white/15">
-                      {CustomIcon ? (
-                        <CustomIcon color="#ffffff" size={15} />
-                      ) : Icon ? (
-                        <Icon className="h-3.5 w-3.5 text-white" strokeWidth={2.2} />
-                      ) : null}
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(217,178,124,0.22)" }}>
+                      {CustomIcon ? <CustomIcon color="#FFE8C0" size={13} /> : Icon ? <Icon className="h-3 w-3" style={{ color: "#FFE8C0" }} strokeWidth={2.2} /> : null}
                     </div>
-                    <span className="text-sm font-semibold text-white/90 tracking-tight whitespace-nowrap pr-1">
-                      {product.title}
-                    </span>
+                    <span className="text-[13px] font-semibold whitespace-nowrap" style={{ color: "#FFE8C0" }}>{product.title}</span>
                   </>
                 )
-
                 if (product.href) {
                   return (
-                    <Link
-                      key={`${product.title}-${index}`}
-                      href={product.href}
-                      className="chip-border flex items-center gap-2.5 px-5 py-2 rounded-full shrink-0 cursor-pointer"
-                      style={{ animationDelay: `${(index % products.length) * 0.28}s` }}
-                    >
+                    <Link key={`${product.title}-${index}`} href={product.href} className="flex items-center gap-2 px-4 py-2 rounded-full shrink-0 cursor-pointer" style={chipStyle}>
                       {chipContent}
                     </Link>
                   )
                 }
-
                 return (
-                  <div
-                    key={`${product.title}-${index}`}
-                    className="chip-border flex items-center gap-2.5 px-5 py-2 rounded-full shrink-0"
-                    style={{ animationDelay: `${(index % products.length) * 0.28}s` }}
-                  >
+                  <div key={`${product.title}-${index}`} className="flex items-center gap-2 px-4 py-2 rounded-full shrink-0" style={chipStyle}>
                     {chipContent}
                   </div>
                 )
               })}
             </motion.div>
           </motion.div>
-
         </div>
       </section>
 
       {/* App Promo */}
       <AppPromoSection />
 
-      {/* ── Product selection grid ── */}
+      {/* ── Product Grid ── */}
       <section className="relative bg-cream pt-[100px] pb-24">
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-20">
           <motion.div
@@ -593,9 +727,7 @@ export function Hero() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <p className="text-sm tracking-[0.2em] uppercase text-gold-deep font-extrabold mb-4">
-              Complete Investment Suite
-            </p>
+            <p className="text-sm tracking-[0.2em] uppercase text-gold-deep font-extrabold mb-4">Complete Investment Suite</p>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-foreground text-balance">
               Every market. <span className="text-burgundy">One account.</span>
             </h2>

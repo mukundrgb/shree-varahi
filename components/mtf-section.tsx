@@ -1,88 +1,147 @@
 "use client"
 
-import { useState } from "react"
-import { motion } from "framer-motion"
+import { useState, useRef, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Search, X, ArrowRight, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
-import { ArrowRight } from "lucide-react"
 
-const mtfStocks = [
-  {
-    symbol: "RELIANCE",
-    name: "Reliance Industries",
-    price: "₹2,945",
-    multiplier: "4x",
-    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWTGFkpxCrNG0cRha8m9eOpuCnCRF_VpZIegPT-uCQBA&s=10"
-  },
-  {
-    symbol: "TCS",
-    name: "Tata Consultancy Services",
-    price: "₹4,125",
-    multiplier: "4x",
-    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3jyL-_GIcHEv--3hXY93fKoutCPT9tbBav0zaB1K7gg&s=10"
-  },
-  {
-    symbol: "HDFC BANK",
-    name: "HDFC Bank Ltd",
-    price: "₹1,687",
-    multiplier: "4x",
-    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7vULsjoU9yt1cruUVnJvyLbNy7fvTCUwct-j-WeJ2yQ&s"
-  },
-  {
-    symbol: "INFY",
-    name: "Infosys Ltd",
-    price: "₹1,845",
-    multiplier: "4x",
-    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeOWNptMRwg6QS02x3tJc584QwG_JhR81T5jzOopcK6A&s=10"
-  },
-  {
-    symbol: "ICICI BANK",
-    name: "ICICI Bank Ltd",
-    price: "₹1,234",
-    multiplier: "4x",
-    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5m2uMHmF09cJ-O6Vv0t6h2JvCuo-JzEHaAysXW7zxzw&s=10"
-  },
-  {
-    symbol: "BAJAJ FIN",
-    name: "Bajaj Finance Ltd",
-    price: "₹7,234",
-    multiplier: "2x",
-    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqosrP39UAARYjxe_TbibZYSQf9xK6phJU4uFvH-zLgA&s=10"
-  },
+/* ─── Types & Data ─── */
+
+type Stock = {
+  symbol: string
+  name: string
+  price: number
+  mtfRatio: number   // 2 | 3 | 4
+  sector: string
+  color: string      // avatar bg
+}
+
+const ALL_STOCKS: Stock[] = [
+  // 4x stocks
+  { symbol: "RELIANCE",     name: "Reliance Industries Ltd",      price: 2945,  mtfRatio: 4, sector: "Energy",   color: "#F97316" },
+  { symbol: "TCS",          name: "Tata Consultancy Services",    price: 4125,  mtfRatio: 4, sector: "IT",       color: "#6366F1" },
+  { symbol: "HDFC BANK",    name: "HDFC Bank Ltd",                price: 1687,  mtfRatio: 4, sector: "Banking",  color: "#2563EB" },
+  { symbol: "INFOSYS",      name: "Infosys Ltd",                  price: 1845,  mtfRatio: 4, sector: "IT",       color: "#6366F1" },
+  { symbol: "ICICI BANK",   name: "ICICI Bank Ltd",               price: 1234,  mtfRatio: 4, sector: "Banking",  color: "#2563EB" },
+  { symbol: "SBI",          name: "State Bank of India",          price: 825,   mtfRatio: 4, sector: "Banking",  color: "#2563EB" },
+  { symbol: "ITC",          name: "ITC Ltd",                      price: 462,   mtfRatio: 4, sector: "FMCG",    color: "#7C3AED" },
+  { symbol: "L&T",          name: "Larsen & Toubro Ltd",          price: 3890,  mtfRatio: 4, sector: "Infra",   color: "#0891B2" },
+  { symbol: "AXIS BANK",    name: "Axis Bank Ltd",                price: 1178,  mtfRatio: 4, sector: "Banking",  color: "#2563EB" },
+  { symbol: "HCL TECH",     name: "HCL Technologies Ltd",         price: 1678,  mtfRatio: 4, sector: "IT",       color: "#6366F1" },
+  { symbol: "NTPC",         name: "NTPC Ltd",                     price: 356,   mtfRatio: 4, sector: "Power",   color: "#D97706" },
+  { symbol: "POWER GRID",   name: "Power Grid Corporation",       price: 312,   mtfRatio: 4, sector: "Power",   color: "#D97706" },
+  { symbol: "M&M",          name: "Mahindra & Mahindra Ltd",      price: 2345,  mtfRatio: 4, sector: "Auto",    color: "#0D9488" },
+  { symbol: "MARUTI",       name: "Maruti Suzuki India Ltd",      price: 12456, mtfRatio: 4, sector: "Auto",    color: "#0D9488" },
+  { symbol: "BHARTI AIRTEL",name: "Bharti Airtel Ltd",            price: 1876,  mtfRatio: 4, sector: "Telecom", color: "#0891B2" },
+  // 3x stocks
+  { symbol: "WIPRO",        name: "Wipro Ltd",                    price: 565,   mtfRatio: 3, sector: "IT",       color: "#6366F1" },
+  { symbol: "BAJAJ FIN",    name: "Bajaj Finance Ltd",            price: 7234,  mtfRatio: 3, sector: "NBFC",    color: "#DB2777" },
+  { symbol: "TATA MOTORS",  name: "Tata Motors Ltd",              price: 1012,  mtfRatio: 3, sector: "Auto",    color: "#0D9488" },
+  { symbol: "KOTAK BANK",   name: "Kotak Mahindra Bank",          price: 1958,  mtfRatio: 3, sector: "Banking",  color: "#2563EB" },
+  { symbol: "ASIAN PAINTS", name: "Asian Paints Ltd",             price: 2456,  mtfRatio: 3, sector: "Consumer", color: "#7C3AED" },
+  { symbol: "TITAN",        name: "Titan Company Ltd",            price: 3678,  mtfRatio: 3, sector: "Consumer", color: "#7C3AED" },
+  { symbol: "SUN PHARMA",   name: "Sun Pharmaceutical Ltd",       price: 1534,  mtfRatio: 3, sector: "Pharma",  color: "#059669" },
+  { symbol: "NESTLE",       name: "Nestlé India Ltd",             price: 2345,  mtfRatio: 3, sector: "FMCG",    color: "#7C3AED" },
+  { symbol: "COAL INDIA",   name: "Coal India Ltd",               price: 456,   mtfRatio: 3, sector: "Mining",  color: "#78716C" },
+  { symbol: "BRITANNIA",    name: "Britannia Industries Ltd",     price: 5432,  mtfRatio: 3, sector: "FMCG",    color: "#7C3AED" },
+  // 2x stocks
+  { symbol: "ADANI PORTS",  name: "Adani Ports & SEZ Ltd",        price: 1256,  mtfRatio: 2, sector: "Infra",   color: "#0891B2" },
+  { symbol: "ADANI ENT",    name: "Adani Enterprises Ltd",        price: 2890,  mtfRatio: 2, sector: "Congl.",  color: "#0891B2" },
+  { symbol: "ZOMATO",       name: "Zomato Ltd",                   price: 245,   mtfRatio: 2, sector: "Tech",    color: "#EF4444" },
 ]
+
+const POPULAR: string[] = [
+  "RELIANCE", "TCS", "HDFC BANK", "INFOSYS",
+  "ICICI BANK", "SBI", "WIPRO", "BAJAJ FIN", "TATA MOTORS", "L&T",
+]
+
+/* ─── Helpers ─── */
+
+const fmt = (n: number) => "₹" + n.toLocaleString("en-IN")
+
+function StockAvatar({ stock, size = 32 }: { stock: Stock; size?: number }) {
+  const initials = stock.symbol.replace(/[^A-Z]/g, "").slice(0, 2)
+  return (
+    <div
+      className="flex items-center justify-center rounded-full flex-shrink-0 font-black text-white select-none"
+      style={{ width: size, height: size, background: stock.color, fontSize: size * 0.35 }}
+    >
+      {initials}
+    </div>
+  )
+}
+
+function RatioBadge({ ratio }: { ratio: number }) {
+  const styles =
+    ratio === 4 ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+    ratio === 3 ? "bg-blue-50 text-blue-700 border-blue-200" :
+                  "bg-amber-50 text-amber-700 border-amber-200"
+  return (
+    <span className={`text-[11px] font-bold px-2 py-0.5 rounded-[4px] border ${styles} whitespace-nowrap`}>
+      {ratio}x MTF
+    </span>
+  )
+}
+
+/* ─── Main Component ─── */
+
 export function MTFSection() {
-  const [capital, setCapital] = useState(50000)
-  const [multiplier, setMultiplier] = useState(4)
-  
+  const [capital, setCapital] = useState(100000)
+  const [selected, setSelected] = useState<Stock>(ALL_STOCKS[0])
+  const [query, setQuery] = useState("")
+  const [open, setOpen] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
+
+  const results = query.trim().length > 0
+    ? ALL_STOCKS.filter(s =>
+        s.symbol.toLowerCase().includes(query.toLowerCase()) ||
+        s.name.toLowerCase().includes(query.toLowerCase())
+      ).slice(0, 7)
+    : []
+
+  const popularStocks = ALL_STOCKS.filter(s => POPULAR.includes(s.symbol))
+
+  const multiplier = selected.mtfRatio
   const buyingPower = capital * multiplier
-  const fundingRequired = capital * (multiplier - 1)
+  const funding = capital * (multiplier - 1)
 
-  const circumference = 219.9
-  const maxCapital = 500000
-  const capitalRatio = Math.min(capital, maxCapital) / maxCapital
-  
-  const capArc = (circumference * capitalRatio) / multiplier
-  const fundArc = (circumference * capitalRatio * (multiplier - 1)) / multiplier
-  const gap = capital > 0 ? 1.5 : 0
-  const capDash = `${Math.max(0, capArc - gap)} ${circumference}`
-  const fundDash = `${Math.max(0, fundArc - gap)} ${circumference}`
-  const fundOffset = -capArc
+  /* Donut math */
+  const C = 219.9
+  const ratio = Math.min(capital, 500000) / 500000
+  const capArc = (C * ratio) / multiplier
+  const fundArc = (C * ratio * (multiplier - 1)) / multiplier
+  const g = capital > 0 ? 1.5 : 0
+  const capDash  = `${Math.max(0, capArc  - g)} ${C}`
+  const fundDash = `${Math.max(0, fundArc - g)} ${C}`
 
-  const handleCapitalChange = (valStr: string) => {
-    const numericVal = parseInt(valStr.replace(/[^0-9]/g, ""), 10)
-    if (!isNaN(numericVal)) {
-      setCapital(Math.min(numericVal, 1000000))
-    } else if (valStr === "" || valStr === "₹") {
-      setCapital(0)
+  /* Click-outside to close dropdown */
+  useEffect(() => {
+    const fn = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
     }
+    document.addEventListener("mousedown", fn)
+    return () => document.removeEventListener("mousedown", fn)
+  }, [])
+
+  const handleSelect = (stock: Stock) => {
+    setSelected(stock)
+    setQuery("")
+    setOpen(false)
+  }
+
+  const handleCapitalChange = (raw: string) => {
+    const n = parseInt(raw.replace(/[^0-9]/g, ""), 10)
+    if (!isNaN(n)) setCapital(Math.min(n, 1000000))
+    else if (raw === "" || raw === "₹") setCapital(0)
   }
 
   return (
     <section className="bg-background py-16 lg:py-24">
-      {/* Section divider */}
-      {/* <div className="h-px bg-gradient-to-r from-transparent via-gold to-transparent mb-16" /> */}
-
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -94,269 +153,298 @@ export function MTFSection() {
             Margin Trading Facility
           </p>
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-foreground text-balance">
-            Turn ₹ X into <span className="text-burgundy">₹ 4X</span> buying power.
+            Search any stock.{" "}
+            <span className="text-burgundy">See your MTF power.</span>
           </h2>
           <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-            Shree Varahi&apos;s MTF lets you trade with up to 4× your capital across 1,700+ eligible stocks. More buying power. Same account. Zero extra paperwork.
+            Different stocks qualify for different MTF limits. Pick a stock below and instantly see how much buying power Shree Varahi unlocks for you.
           </p>
         </motion.div>
 
-        {/* Calculator Card Container */}
+        {/* Calculator Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="bg-white border border-border rounded-[8px] overflow-hidden shadow-sm max-w-5xl mx-auto"
+          className="max-w-5xl mx-auto"
         >
-          {/* Header of Calculator */}
-          <div className="bg-cream/40 px-6 py-4 border-b border-border/60">
-            <h3 className="font-bold text-xl text-foreground">MTF Calculator</h3>
-            <p className="text-xs text-muted-foreground mt-1">
-              Estimate the total buying power and funding provided by Shree Varahi based on your capital and leverage.
-            </p>
-          </div>
+          <div className="bg-white border border-border rounded-[8px] shadow-sm">
 
-          {/* Calculator Grid */}
-          <div className="grid md:grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-border">
-            {/* Left side: Inputs */}
-            <div className="p-6 sm:p-8 space-y-6">
-              <div className="grid sm:grid-cols-2 gap-4">
-                {/* Input 1: Your Capital */}
-                <div className="relative border border-border/80 focus-within:border-burgundy focus-within:ring-1 focus-within:ring-burgundy/30 transition-all rounded-[6px] flex items-center h-[90px] bg-white">
-                  <div className="w-14 h-full flex items-center justify-center border-r border-border/50 text-foreground/60 text-lg font-medium bg-secondary/10">
-                    ₹
-                  </div>
-                  <div className="flex-1 flex flex-col justify-center px-3">
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-widest text-center font-bold mb-1">
-                      Your Capital
-                    </span>
+            {/* Card header */}
+            <div className="bg-cream/40 px-6 py-4 border-b border-border/60 rounded-t-[8px]">
+              <h3 className="font-bold text-xl text-foreground">MTF Calculator</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Select a stock to see the exact margin trading facility available — different stocks have different MTF limits.
+              </p>
+            </div>
+
+            {/* Two-column layout */}
+            <div className="grid lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-border">
+
+              {/* ── LEFT: Capital + Stock Selector ── */}
+              <div className="p-6 sm:p-8 space-y-6">
+
+                {/* Capital input */}
+                <div>
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold mb-2 block">
+                    Your Capital
+                  </span>
+                  <div className="relative border border-border/80 focus-within:border-burgundy focus-within:ring-1 focus-within:ring-burgundy/20 transition-all rounded-[6px] flex items-center h-[72px] bg-white">
+                    <div className="w-12 h-full flex items-center justify-center border-r border-border/50 text-foreground/50 text-lg font-bold bg-secondary/10 rounded-l-[6px]">
+                      ₹
+                    </div>
                     <input
                       type="text"
                       value={capital === 0 ? "" : capital.toLocaleString("en-IN")}
                       onChange={(e) => handleCapitalChange(e.target.value)}
-                      className="text-2xl font-bold text-foreground text-center focus:outline-none w-full bg-transparent p-0"
+                      className="flex-1 text-2xl font-bold text-foreground text-center focus:outline-none bg-transparent px-3"
+                      placeholder="0"
                     />
                   </div>
-                </div>
 
-                {/* Display 2: Total Buying Power */}
-                <div className="relative border border-border/80 bg-secondary/5 rounded-[6px] flex items-center h-[90px]">
-                  <div className="w-14 h-full flex items-center justify-center border-r border-border/50 text-foreground/50 text-lg font-medium bg-secondary/10">
-                    ₹
-                  </div>
-                  <div className="flex-1 flex flex-col justify-center px-3">
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-widest text-center font-bold mb-1">
-                      Total Buying Power ({multiplier}x)
-                    </span>
-                    <div className="text-2xl font-bold text-burgundy text-center">
-                      {buyingPower.toLocaleString("en-IN")}
+                  {/* Slider */}
+                  <div className="mt-4 space-y-2">
+                    <Slider
+                      value={[capital]}
+                      onValueChange={(v) => setCapital(v[0])}
+                      min={5000}
+                      max={500000}
+                      step={5000}
+                      className="[&_[role=slider]]:bg-burgundy [&_[role=slider]]:border-burgundy [&_[role=slider]]:h-5 [&_[role=slider]]:w-5"
+                    />
+                    <div className="flex justify-between text-xs text-muted-foreground font-medium">
+                      <span>₹5,000</span>
+                      <span>₹5,00,000</span>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Multiplier Selector */}
-              <div>
-                <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold mb-2 block">
-                  Select Leverage Multiplier
-                </span>
-                <div className="grid grid-cols-3 gap-2 bg-secondary/40 p-1 rounded-[6px]">
-                  {[2, 3, 4].map((m) => (
-                    <button
-                      key={m}
-                      type="button"
-                      onClick={() => setMultiplier(m)}
-                      className={`py-1.5 text-xs sm:text-sm font-bold rounded-[4px] transition-all cursor-pointer ${
-                        multiplier === m
-                          ? "bg-burgundy text-white shadow-xs"
-                          : "text-foreground/75 hover:bg-secondary/60"
-                      }`}
-                    >
-                      {m}x Leverage
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Slider for capital */}
-              <div className="space-y-4 pt-2">
-                <div className="flex justify-between items-center text-sm font-semibold">
-                  <span className="text-muted-foreground font-medium">Adjust Capital</span>
-                  <span className="text-foreground font-mono bg-cream px-2 py-0.5 rounded border border-border/60">
-                    ₹{capital.toLocaleString("en-IN")}
+                {/* Stock Selector */}
+                <div>
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold mb-2 block">
+                    Select Stock to Check MTF
                   </span>
-                </div>
-                <Slider
-                  value={[capital]}
-                  onValueChange={(val) => setCapital(val[0])}
-                  min={5000}
-                  max={500000}
-                  step={5000}
-                  className="[&_[role=slider]]:bg-burgundy [&_[role=slider]]:border-burgundy [&_[role=slider]]:h-5 [&_[role=slider]]:w-5"
-                />
-                <div className="flex justify-between text-xs text-muted-foreground font-medium">
-                  <span>₹5,000</span>
-                  <span>₹5,00,000</span>
-                </div>
-              </div>
-            </div>
 
-            {/* Right side: Leverage Donut Visual & Legend */}
-            <div className="p-6 sm:p-8 flex flex-col justify-center bg-secondary/[0.02]">
-              <div className="text-center lg:text-left mb-6">
-                <span className="text-xs text-muted-foreground uppercase tracking-widest font-bold block">
-                  MTF Leverage
-                </span>
-                <span className="text-4xl font-extrabold text-foreground mt-1 block">
-                  {multiplier}.0x Buying Power
-                </span>
-              </div>
+                  {/* Search box + dropdown */}
+                  <div className="relative mb-3" ref={searchRef}>
+                    <div className={`flex items-center gap-2 border rounded-[6px] px-3 h-10 bg-white transition-all ${open || query ? "border-burgundy ring-1 ring-burgundy/20" : "border-border/80"}`}>
+                      <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                      <input
+                        type="text"
+                        value={query}
+                        onChange={(e) => { setQuery(e.target.value); setOpen(true) }}
+                        onFocus={() => setOpen(true)}
+                        placeholder="Search stock e.g. Infosys, HDFC..."
+                        className="flex-1 text-[13px] focus:outline-none bg-transparent text-foreground placeholder:text-muted-foreground/50"
+                      />
+                      {query && (
+                        <button onClick={() => { setQuery(""); setOpen(false) }} className="text-muted-foreground hover:text-foreground">
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
 
-              {/* Donut and Legend container */}
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-8 sm:gap-12">
-                {/* SVG Donut */}
-                <div className="relative w-36 h-36 flex-shrink-0">
-                  <svg width="144" height="144" viewBox="0 0 100 100" className="transform -rotate-90">
-                    {/* Background Circle */}
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="35"
-                      fill="transparent"
-                      stroke="#E5E5E5"
-                      strokeWidth="16"
-                    />
-                    {/* Funding (Burgundy) arc */}
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="35"
-                      fill="transparent"
-                      stroke="var(--color-burgundy)"
-                      strokeWidth="16"
-                      strokeDasharray={fundDash}
-                      strokeDashoffset={fundOffset}
-                      className="transition-all duration-300 ease-out"
-                    />
-                    {/* Capital (Gold) arc */}
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="35"
-                      fill="transparent"
-                      stroke="var(--color-gold)"
-                      strokeWidth="16"
-                      strokeDasharray={capDash}
-                      strokeDashoffset="0"
-                      className="transition-all duration-300 ease-out"
-                    />
-                  </svg>
-                </div>
-
-                {/* Legend list */}
-                <div className="space-y-4 w-full sm:w-auto">
-                  {/* Legend 1: Capital */}
-                  <div className="border-l-[4px] border-gold pl-3">
-                    <span className="text-xs text-muted-foreground block font-medium">
-                      Your Capital ({(100 / multiplier).toFixed(0)}%)
-                    </span>
-                    <span className="text-lg font-bold text-foreground block mt-0.5">
-                      ₹{capital.toLocaleString("en-IN")}
-                    </span>
+                    {/* Search dropdown */}
+                    <AnimatePresence>
+                      {open && results.length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -4 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute z-50 top-[calc(100%+4px)] left-0 right-0 bg-white border border-border rounded-[6px] shadow-lg overflow-hidden"
+                        >
+                          {results.map((stock) => (
+                            <button
+                              key={stock.symbol}
+                              onMouseDown={() => handleSelect(stock)}
+                              className={`w-full flex items-center gap-3 px-3 py-2.5 hover:bg-secondary/40 transition-colors text-left ${selected.symbol === stock.symbol ? "bg-burgundy/5" : ""}`}
+                            >
+                              <StockAvatar stock={stock} size={28} />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-[13px] font-bold text-foreground leading-none">{stock.symbol}</p>
+                                <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{stock.name}</p>
+                              </div>
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                <span className="text-[12px] font-semibold text-foreground">{fmt(stock.price)}</span>
+                                <RatioBadge ratio={stock.mtfRatio} />
+                              </div>
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
 
-                  {/* Legend 2: Funding */}
-                  <div className="border-l-[4px] border-burgundy pl-3">
-                    <span className="text-xs text-muted-foreground block font-medium">
-                      Shree Varahi Funding ({Math.round(100 * (multiplier - 1) / multiplier)}%)
-                    </span>
-                    <span className="text-lg font-bold text-burgundy block mt-0.5">
-                      ₹{fundingRequired.toLocaleString("en-IN")}
-                    </span>
+                  {/* Popular chips */}
+                  <div className="flex flex-wrap gap-1.5">
+                    {popularStocks.map((stock) => (
+                      <button
+                        key={stock.symbol}
+                        onClick={() => handleSelect(stock)}
+                        className={`flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-[4px] border transition-all ${
+                          selected.symbol === stock.symbol
+                            ? "bg-burgundy text-white border-burgundy shadow-sm"
+                            : "bg-secondary/30 text-foreground/70 border-border hover:border-burgundy/40 hover:bg-secondary/60"
+                        }`}
+                      >
+                        <span
+                          className="inline-block w-2 h-2 rounded-full flex-shrink-0"
+                          style={{ background: selected.symbol === stock.symbol ? "rgba(255,255,255,0.7)" : stock.color }}
+                        />
+                        {stock.symbol}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>
+
+              {/* ── RIGHT: Selected Stock + Result ── */}
+              <div className="p-6 sm:p-8 flex flex-col gap-6">
+
+                {/* Selected stock card */}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={selected.symbol}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="rounded-[6px] border border-border bg-secondary/10 p-3.5 flex items-center gap-3"
+                  >
+                    <StockAvatar stock={selected} size={40} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="font-black text-[15px] text-foreground leading-none">{selected.symbol}</p>
+                        <RatioBadge ratio={selected.mtfRatio} />
+                      </div>
+                      <p className="text-[12px] text-muted-foreground mt-1 truncate">{selected.name}</p>
+                      <p className="text-[12px] font-semibold text-foreground mt-0.5">{fmt(selected.price)} / share</p>
+                    </div>
+                    <div className="flex-shrink-0 text-right">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                      <p className="text-[9px] text-emerald-600 font-bold mt-0.5 uppercase tracking-wide">MTF Eligible</p>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+
+                {/* Donut + Legend */}
+                <div className="flex items-center gap-6 sm:gap-10">
+                  {/* SVG Donut */}
+                  <div className="relative w-32 h-32 flex-shrink-0">
+                    <svg width="128" height="128" viewBox="0 0 100 100" className="transform -rotate-90">
+                      <circle cx="50" cy="50" r="35" fill="transparent" stroke="#E5E5E5" strokeWidth="16" />
+                      <circle
+                        cx="50" cy="50" r="35" fill="transparent"
+                        stroke="var(--color-burgundy)" strokeWidth="16"
+                        strokeDasharray={fundDash}
+                        strokeDashoffset={-capArc}
+                        className="transition-all duration-500 ease-out"
+                      />
+                      <circle
+                        cx="50" cy="50" r="35" fill="transparent"
+                        stroke="var(--color-gold)" strokeWidth="16"
+                        strokeDasharray={capDash}
+                        strokeDashoffset="0"
+                        className="transition-all duration-500 ease-out"
+                      />
+                    </svg>
+                    {/* Center label */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="text-2xl font-black text-foreground leading-none">{multiplier}x</span>
+                      <span className="text-[9px] text-muted-foreground font-semibold mt-0.5">buying power</span>
+                    </div>
+                  </div>
+
+                  {/* Legend */}
+                  <div className="space-y-4 flex-1">
+                    <div className="border-l-[3px] border-gold pl-3">
+                      <span className="text-[11px] text-muted-foreground block font-medium">
+                        Your Capital ({Math.round(100 / multiplier)}%)
+                      </span>
+                      <AnimatePresence mode="wait">
+                        <motion.span
+                          key={capital}
+                          initial={{ opacity: 0.5 }}
+                          animate={{ opacity: 1 }}
+                          className="text-xl font-black text-foreground block mt-0.5"
+                        >
+                          {fmt(capital)}
+                        </motion.span>
+                      </AnimatePresence>
+                    </div>
+                    <div className="border-l-[3px] border-burgundy pl-3">
+                      <span className="text-[11px] text-muted-foreground block font-medium">
+                        Varahi Funding ({Math.round(100 * (multiplier - 1) / multiplier)}%)
+                      </span>
+                      <AnimatePresence mode="wait">
+                        <motion.span
+                          key={`${capital}-${multiplier}`}
+                          initial={{ opacity: 0.5 }}
+                          animate={{ opacity: 1 }}
+                          className="text-xl font-black text-burgundy block mt-0.5"
+                        >
+                          {fmt(funding)}
+                        </motion.span>
+                      </AnimatePresence>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Total buying power highlight */}
+                <div className="rounded-[6px] p-4 flex items-center justify-between" style={{ background: "linear-gradient(135deg, rgba(255,0,0,0.06) 0%, rgba(217,178,124,0.08) 100%)", border: "1px solid rgba(255,0,0,0.12)" }}>
+                  <div>
+                    <p className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">Total Buying Power</p>
+                    <AnimatePresence mode="wait">
+                      <motion.p
+                        key={`${capital}-${multiplier}-bp`}
+                        initial={{ opacity: 0.4, scale: 0.97 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.25 }}
+                        className="text-3xl font-black text-burgundy mt-0.5"
+                      >
+                        {fmt(buyingPower)}
+                      </motion.p>
+                    </AnimatePresence>
+                    <p className="text-[11px] text-muted-foreground mt-1">
+                      on {fmt(capital)} capital in <span className="font-semibold text-foreground">{selected.symbol}</span>
+                    </p>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <div className="text-4xl font-black" style={{ color: "#FF0000", opacity: 0.15 }}>{multiplier}x</div>
+                  </div>
+                </div>
+              </div>
             </div>
+
+            {/* Bottom CTA */}
+            <div className="bg-cream/50 border-t border-border rounded-b-[8px] flex flex-col md:flex-row items-center justify-between p-6 gap-6">
+              <div className="flex items-center gap-4">
+                <div className="bg-white border border-border rounded-[8px] p-3 flex flex-col items-center justify-center w-16 h-16 shadow-xs flex-shrink-0">
+                  <span className="text-xl font-extrabold text-burgundy">₹0</span>
+                  <span className="text-[9px] font-bold text-muted-foreground uppercase text-center mt-0.5 leading-none">Interest*</span>
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm text-foreground leading-tight">Zero Interest for First 30 Days</h4>
+                  <p className="text-xs text-muted-foreground mt-1 max-w-xs">
+                    Get interest-free MTF funding on eligible stocks for the first 30 days. 1,700+ stocks available.
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto max-w-sm">
+                <div className="flex items-center border border-border rounded-[5px] bg-white h-11 px-3 focus-within:border-burgundy focus-within:ring-1 focus-within:ring-burgundy/20 transition-all flex-1">
+                  <span className="text-sm font-semibold text-muted-foreground mr-2 border-r border-border/80 pr-2">+91</span>
+                  <input type="tel" placeholder="Enter Mobile No." className="bg-transparent text-sm font-medium w-full focus:outline-none placeholder:text-muted-foreground/60" />
+                </div>
+                <Button className="bg-burgundy hover:bg-burgundy-deep text-white font-semibold rounded-[5px] h-11 px-6 whitespace-nowrap">
+                  Start Trading
+                </Button>
+              </div>
+            </div>
+
           </div>
 
-          {/* Bottom Banner */}
-          <div className="bg-cream/60 border-t border-border flex flex-col md:flex-row items-center justify-between p-6 gap-6">
-            {/* Left promo */}
-            <div className="flex items-center gap-4 w-full md:w-auto">
-              <div className="bg-white border border-border/80 rounded-[8px] p-3 flex flex-col items-center justify-center w-20 h-20 shadow-xs flex-shrink-0">
-                <span className="text-3xl font-extrabold text-burgundy">₹0</span>
-                <span className="text-[9px] font-bold text-muted-foreground uppercase text-center mt-0.5 leading-none">
-                  Interest*
-                </span>
-              </div>
-              <div>
-                <h4 className="font-bold text-base text-foreground leading-tight">
-                  Zero Interest on MTF Funding
-                </h4>
-                <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-                  Get interest-free funding on eligible MTF stocks for the first 30 days of your trade.
-                </p>
-              </div>
-            </div>
-
-            {/* Right Form */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto max-w-md">
-              <div className="relative flex items-center border border-border rounded-[5px] bg-white h-11 px-3 focus-within:border-burgundy focus-within:ring-1 focus-within:ring-burgundy/30 transition-all flex-1">
-                <span className="text-sm font-semibold text-muted-foreground mr-2 border-r border-border/80 pr-2">
-                  +91
-                </span>
-                <input
-                  type="tel"
-                  placeholder="Enter Your Mobile No."
-                  className="bg-transparent text-sm font-medium w-full focus:outline-none placeholder:text-muted-foreground/60"
-                />
-              </div>
-              <Button className="bg-burgundy hover:bg-burgundy-deep text-primary-foreground font-semibold rounded-[5px] h-11 px-6 whitespace-nowrap shadow-sm hover:shadow-md transition-all">
-                Start Trading
-              </Button>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* MTF Eligible Stocks */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-16"
-        >
-          <h3 className="text-2xl lg:text-3xl font-extrabold mb-8 text-center text-foreground">Popular MTF Stocks</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {mtfStocks.map((stock, index) => (
-              <motion.div
-                key={stock.symbol}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
-                whileHover={{ y: -4 }}
-                className="bg-white border border-border rounded-[8px] p-4 flex items-center gap-3 cursor-pointer hover:shadow-md hover:border-gold/50 transition-all"
-              >
-                <div className="w-10 h-10 rounded-full border border-border bg-white flex items-center justify-center p-1.5 overflow-hidden flex-shrink-0">
-                  <img
-                    src={stock.logo}
-                    alt={`${stock.symbol} Logo`}
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-sm text-foreground truncate">{stock.symbol}</p>
-                  <p className="text-[10px] text-muted-foreground truncate leading-none mt-0.5">{stock.name}</p>
-                </div>
-                <div className="text-right flex-shrink-0">
-                  <p className="font-bold text-sm text-foreground">{stock.price}</p>
-                  <span className="inline-block mt-0.5 text-[9px] font-bold px-1.5 py-0.5 rounded-[4px] bg-burgundy/10 text-burgundy">
-                    {stock.multiplier}
-                  </span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          {/* View all link */}
           <p className="text-center mt-6">
             <a href="#" className="text-sm text-burgundy hover:underline inline-flex items-center gap-1 font-semibold">
               View all 1,700+ MTF eligible stocks

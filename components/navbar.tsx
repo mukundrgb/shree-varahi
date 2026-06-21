@@ -57,9 +57,8 @@ const tradeMenu: MenuItem[] = [
 
 const investMenu: MenuItem[] = [
   { title: "Stocks Delivery", desc: "₹0 brokerage forever", icon: <TrendingUp className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/stocks" },
-  { title: "Mutual Funds", desc: "Direct plans, zero commission", icon: <Landmark className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
-  { title: "SIP", desc: "Start from ₹100", icon: <RotateCcw className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
-  { title: "IPO", desc: "Apply for free", icon: <Target className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
+  { title: "Mutual Funds", desc: "Direct plans, zero commission", icon: <Landmark className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/mutual-funds" },
+  { title: "IPO", desc: "Apply for free", icon: <Target className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/ipo" },
   { title: "ETF", desc: "Exchange traded funds", icon: <Layers className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
   { title: "NFO", desc: "New fund offers", icon: "🆕", href: "#" },
   { title: "Digital Gold", desc: "24K gold from ₹1", icon: "✨", href: "#" },
@@ -183,11 +182,11 @@ export function Navbar() {
                 </div>
                 <kbd className="px-1.5 py-0.5 rounded-[3px] bg-background border border-border text-[9px] font-sans font-normal shrink-0">⌘K</kbd>
               </button>
-              <Button variant="ghost" className="text-foreground hover:text-burgundy rounded-[5px]">
-                Login
+              <Button variant="ghost" className="text-foreground hover:text-burgundy rounded-[5px]" asChild>
+                <Link href="/login">Login</Link>
               </Button>
-              <Button className="bg-burgundy hover:bg-burgundy-deep text-primary-foreground rounded-[5px]">
-                Open Free Account
+              <Button className="bg-burgundy hover:bg-burgundy-deep text-primary-foreground rounded-[5px]" asChild>
+                <Link href="/signup/register">Open Free Account</Link>
               </Button>
             </div>
 
@@ -252,11 +251,11 @@ export function Navbar() {
                   ))}
                 </div>
                 <div className="p-4 border-t border-border space-y-3">
-                  <Button variant="outline" className="w-full border-border text-foreground rounded-[5px]">
-                    Login
+                  <Button variant="outline" className="w-full border-border text-foreground rounded-[5px]" asChild>
+                    <Link href="/login">Login</Link>
                   </Button>
-                  <Button className="w-full bg-burgundy hover:bg-burgundy-deep text-primary-foreground rounded-[5px]">
-                    Open Free Account
+                  <Button className="w-full bg-burgundy hover:bg-burgundy-deep text-primary-foreground rounded-[5px]" asChild>
+                    <Link href="/signup/register">Open Free Account</Link>
                   </Button>
                 </div>
               </div>

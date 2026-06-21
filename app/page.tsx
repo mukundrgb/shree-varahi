@@ -8,6 +8,7 @@ import { OptionStrategyBuilder } from "@/components/option-strategy-builder"
 import { MTFSection } from "@/components/mtf-section"
 import { ValuestocksSection } from "@/components/valuestocks-section"
 import { BrokerageSection } from "@/components/brokerage-section"
+import { CalculatorSection } from "@/components/calculator-section"
 import { KnowledgeSection } from "@/components/knowledge-section"
 import { BranchLocator } from "@/components/branch-locator"
 import { PartnerSection } from "@/components/partner-section"
@@ -25,12 +26,13 @@ export default function Home() {
       {/* <FeaturesSection /> */}
       {/* <ProductsSection /> */}
       {/* <AppPromoSection /> */}
+      <BrokerageSection />
       <GlobalInvestingSection />
       <TraderInvestorSection />
       {/* <OptionStrategyBuilder /> */}
       <MTFSection />
       <ValuestocksSection />
-      <BrokerageSection />
+      <CalculatorSection />
       <KnowledgeSection />
       <BranchLocator />
       {/* <PartnerSection /> */}
