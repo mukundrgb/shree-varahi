@@ -444,15 +444,6 @@ function PromoSlider() {
                   className="object-cover object-center"
                   priority={active === 1 || active === 3}
                 />
-                {/* Bottom label overlay */}
-                <div className="absolute bottom-0 left-0 right-0 px-6 py-5"
-                  style={{ background: "linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%)" }}>
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60 mb-1 block">
-                    {slide.badge}
-                  </span>
-                  <p className="text-white font-black text-lg leading-tight">{slide.label}</p>
-                  <p className="text-white/55 text-[11px] font-medium mt-0.5">{slide.sublabel}</p>
-                </div>
               </Link>
             ) : (
               /* ── Text slide ── */
