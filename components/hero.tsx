@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import {
   ArrowRight,
@@ -436,13 +435,12 @@ function PromoSlider() {
           >
             {slide.kind === "image" ? (
               /* ── Image slide ── */
-              <Link href={slide.href} className="block w-full h-full relative">
-                <Image
+              <Link href={slide.href} className="block w-full h-full">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                   src={slide.src}
                   alt={slide.label}
-                  fill
-                  className="object-cover object-center"
-                  priority={active === 1 || active === 3}
+                  className="absolute inset-0 w-full h-full object-cover object-center"
                 />
               </Link>
             ) : (
