@@ -505,20 +505,22 @@ export default function MutualFundsPage() {
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-0 border border-border rounded-[6px] overflow-hidden bg-cream/50 w-fit mb-5">
-            {EXPLORER_TABS.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => switchTab(tab.id)}
-                className={`px-4 py-2.5 text-[12px] font-bold transition-all duration-200 whitespace-nowrap ${
-                  activeTab === tab.id
-                    ? "bg-burgundy text-white"
-                    : "text-muted-foreground hover:text-foreground hover:bg-white/60"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+          <div className="overflow-x-auto mb-5" style={{ scrollbarWidth: "none" }}>
+            <div className="flex gap-0 border border-border rounded-[6px] overflow-hidden bg-cream/50 w-fit">
+              {EXPLORER_TABS.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => switchTab(tab.id)}
+                  className={`px-4 py-2.5 text-[12px] font-bold transition-all duration-200 whitespace-nowrap ${
+                    activeTab === tab.id
+                      ? "bg-burgundy text-white"
+                      : "text-muted-foreground hover:text-foreground hover:bg-white/60"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Filters */}

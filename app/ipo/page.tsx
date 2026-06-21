@@ -720,27 +720,29 @@ export default function IpoPage() {
             {/* LEFT: Tabs + IPO listings */}
             <div>
               {/* Tabs */}
-              <div className="flex gap-0 border border-border rounded-[6px] overflow-hidden bg-cream/50 w-fit mb-6">
-                {([
-                  { id: "open",     label: "Open Now",       dot: true  },
-                  { id: "upcoming", label: "Upcoming IPOs",  dot: false },
-                  { id: "closed",   label: "Recently Closed",dot: false },
-                ] as const).map((t) => (
-                  <button
-                    key={t.id}
-                    onClick={() => setTab(t.id)}
-                    className={`px-5 py-2.5 text-[12px] font-bold transition-all duration-200 whitespace-nowrap flex items-center gap-2 ${
-                      tab === t.id
-                        ? "bg-burgundy text-white"
-                        : "text-muted-foreground hover:text-foreground hover:bg-white/60"
-                    }`}
-                  >
-                    {t.dot && (
-                      <span className={`w-1.5 h-1.5 rounded-full ${tab === t.id ? "bg-white animate-pulse" : "bg-profit animate-pulse"}`} />
-                    )}
-                    {t.label}
-                  </button>
-                ))}
+              <div className="overflow-x-auto mb-6" style={{ scrollbarWidth: "none" }}>
+                <div className="flex gap-0 border border-border rounded-[6px] overflow-hidden bg-cream/50 w-fit">
+                  {([
+                    { id: "open",     label: "Open Now",       dot: true  },
+                    { id: "upcoming", label: "Upcoming IPOs",  dot: false },
+                    { id: "closed",   label: "Recently Closed",dot: false },
+                  ] as const).map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => setTab(t.id)}
+                      className={`px-5 py-2.5 text-[12px] font-bold transition-all duration-200 whitespace-nowrap flex items-center gap-2 ${
+                        tab === t.id
+                          ? "bg-burgundy text-white"
+                          : "text-muted-foreground hover:text-foreground hover:bg-white/60"
+                      }`}
+                    >
+                      {t.dot && (
+                        <span className={`w-1.5 h-1.5 rounded-full ${tab === t.id ? "bg-white animate-pulse" : "bg-profit animate-pulse"}`} />
+                      )}
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <AnimatePresence mode="wait">
