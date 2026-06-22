@@ -201,7 +201,7 @@ export function KnowledgeSection() {
           {/* ── LEFT: Heading + Cards ── */}
           <div className="lg:col-span-5 space-y-8">
             <div className="space-y-4">
-              <h2 className="text-4xl sm:text-5xl font-black text-slate-800 leading-[1.15] tracking-tight uppercase">
+              <h2 className="text-4xl sm:text-5xl font-black text-slate-800 leading-[1.15] tracking-tight">
                 Learn with <br />
                 <span className="text-burgundy">Shree Varahi.</span>
               </h2>

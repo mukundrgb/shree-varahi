@@ -152,7 +152,7 @@ export function MTFSection() {
           <p className="text-sm tracking-[0.2em] uppercase text-gold-deep font-extrabold mb-4 block">
             Margin Trading Facility
           </p>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-foreground text-balance">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black leading-tight text-foreground text-balance">
             Search any stock.{" "}
             <span className="text-burgundy">See your MTF power.</span>
           </h2>
@@ -168,10 +168,10 @@ export function MTFSection() {
           viewport={{ once: true }}
           className="max-w-5xl mx-auto"
         >
-          <div className="bg-white border border-border rounded-[8px] shadow-sm">
+          <div className="bg-white border border-border rounded-[8px] shadow-sm overflow-hidden">
 
             {/* Card header */}
-            <div className="bg-cream/40 px-6 py-4 border-b border-border/60 rounded-t-[8px]">
+            <div className="bg-cream/40 px-4 sm:px-6 py-3 sm:py-4 border-b border-border/60 rounded-t-[8px]">
               <h3 className="font-bold text-xl text-foreground">MTF Calculator</h3>
               <p className="text-xs text-muted-foreground mt-0.5">
                 Select a stock to see the exact margin trading facility available — different stocks have different MTF limits.
