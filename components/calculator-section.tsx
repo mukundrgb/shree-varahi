@@ -148,7 +148,7 @@ function CalcIllustration() {
 
 export function CalculatorSection() {
   return (
-    <section className="py-14 lg:py-20" style={{ background: "#F7F4F0" }}>
+    <section className="py-14 lg:py-20 overflow-hidden" style={{ background: "#F7F4F0" }}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 16 }}

@@ -139,7 +139,7 @@ export function MTFSection() {
   }
 
   return (
-    <section className="bg-background py-16 lg:py-24">
+    <section className="bg-background py-16 lg:py-24 overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
@@ -182,7 +182,7 @@ export function MTFSection() {
             <div className="grid lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-border">
 
               {/* ── LEFT: Capital + Stock Selector ── */}
-              <div className="p-6 sm:p-8 space-y-6">
+              <div className="p-5 sm:p-8 space-y-6">
 
                 {/* Capital input */}
                 <div>
@@ -300,7 +300,7 @@ export function MTFSection() {
               </div>
 
               {/* ── RIGHT: Selected Stock + Result ── */}
-              <div className="p-6 sm:p-8 flex flex-col gap-6">
+              <div className="p-5 sm:p-8 flex flex-col gap-5">
 
                 {/* Selected stock card */}
                 <AnimatePresence mode="wait">
@@ -310,16 +310,16 @@ export function MTFSection() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.2 }}
-                    className="rounded-[6px] border border-border bg-secondary/10 p-3.5 flex items-center gap-3"
+                    className="rounded-[6px] border border-border bg-secondary/10 p-3 flex items-center gap-3"
                   >
-                    <StockAvatar stock={selected} size={40} />
+                    <StockAvatar stock={selected} size={36} />
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="font-black text-[15px] text-foreground leading-none">{selected.symbol}</p>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <p className="font-black text-[14px] text-foreground leading-none">{selected.symbol}</p>
                         <RatioBadge ratio={selected.mtfRatio} />
                       </div>
-                      <p className="text-[12px] text-muted-foreground mt-1 truncate">{selected.name}</p>
-                      <p className="text-[12px] font-semibold text-foreground mt-0.5">{fmt(selected.price)} / share</p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{selected.name}</p>
+                      <p className="text-[11px] font-semibold text-foreground mt-0.5">{fmt(selected.price)} / share</p>
                     </div>
                     <div className="flex-shrink-0 text-right">
                       <CheckCircle2 className="w-4 h-4 text-emerald-500" />
@@ -328,11 +328,11 @@ export function MTFSection() {
                   </motion.div>
                 </AnimatePresence>
 
-                {/* Donut + Legend */}
-                <div className="flex items-center gap-6 sm:gap-10">
-                  {/* SVG Donut */}
-                  <div className="relative w-32 h-32 flex-shrink-0">
-                    <svg width="128" height="128" viewBox="0 0 100 100" className="transform -rotate-90">
+                {/* Donut + Legend — stacked on mobile, side-by-side on sm+ */}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 lg:gap-10">
+                  {/* SVG Donut — responsive size */}
+                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 mx-auto sm:mx-0">
+                    <svg width="100%" height="100%" viewBox="0 0 100 100" className="transform -rotate-90">
                       <circle cx="50" cy="50" r="35" fill="transparent" stroke="#E5E5E5" strokeWidth="16" />
                       <circle
                         cx="50" cy="50" r="35" fill="transparent"
@@ -349,40 +349,41 @@ export function MTFSection() {
                         className="transition-all duration-500 ease-out"
                       />
                     </svg>
-                    {/* Center label */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-2xl font-black text-foreground leading-none">{multiplier}x</span>
-                      <span className="text-[9px] text-muted-foreground font-semibold mt-0.5">buying power</span>
+                      <span className="text-xl sm:text-2xl font-black text-foreground leading-none">{multiplier}x</span>
+                      <span className="text-[8px] sm:text-[9px] text-muted-foreground font-semibold mt-0.5">buying power</span>
                     </div>
                   </div>
 
-                  {/* Legend */}
-                  <div className="space-y-4 flex-1">
+                  {/* Legend — 2-col grid on mobile, stacked on sm+ */}
+                  <div className="grid grid-cols-2 sm:flex sm:flex-col gap-3 sm:gap-4 flex-1">
                     <div className="border-l-[3px] border-gold pl-3">
-                      <span className="text-[11px] text-muted-foreground block font-medium">
-                        Your Capital ({Math.round(100 / multiplier)}%)
+                      <span className="text-[10px] text-muted-foreground block font-medium leading-snug">
+                        Your Capital
+                        <span className="text-muted-foreground/60 ml-1">({Math.round(100 / multiplier)}%)</span>
                       </span>
                       <AnimatePresence mode="wait">
                         <motion.span
                           key={capital}
                           initial={{ opacity: 0.5 }}
                           animate={{ opacity: 1 }}
-                          className="text-xl font-black text-foreground block mt-0.5"
+                          className="text-base sm:text-xl font-black text-foreground block mt-0.5"
                         >
                           {fmt(capital)}
                         </motion.span>
                       </AnimatePresence>
                     </div>
                     <div className="border-l-[3px] border-burgundy pl-3">
-                      <span className="text-[11px] text-muted-foreground block font-medium">
-                        Varahi Funding ({Math.round(100 * (multiplier - 1) / multiplier)}%)
+                      <span className="text-[10px] text-muted-foreground block font-medium leading-snug">
+                        Varahi Funding
+                        <span className="text-muted-foreground/60 ml-1">({Math.round(100 * (multiplier - 1) / multiplier)}%)</span>
                       </span>
                       <AnimatePresence mode="wait">
                         <motion.span
                           key={`${capital}-${multiplier}`}
                           initial={{ opacity: 0.5 }}
                           animate={{ opacity: 1 }}
-                          className="text-xl font-black text-burgundy block mt-0.5"
+                          className="text-base sm:text-xl font-black text-burgundy block mt-0.5"
                         >
                           {fmt(funding)}
                         </motion.span>
@@ -392,48 +393,48 @@ export function MTFSection() {
                 </div>
 
                 {/* Total buying power highlight */}
-                <div className="rounded-[6px] p-4 flex items-center justify-between" style={{ background: "linear-gradient(135deg, rgba(255,0,0,0.06) 0%, rgba(217,178,124,0.08) 100%)", border: "1px solid rgba(255,0,0,0.12)" }}>
-                  <div>
-                    <p className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">Total Buying Power</p>
+                <div className="rounded-[6px] p-4 flex items-center justify-between gap-2" style={{ background: "linear-gradient(135deg, rgba(255,0,0,0.06) 0%, rgba(217,178,124,0.08) 100%)", border: "1px solid rgba(255,0,0,0.12)" }}>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Total Buying Power</p>
                     <AnimatePresence mode="wait">
                       <motion.p
                         key={`${capital}-${multiplier}-bp`}
                         initial={{ opacity: 0.4, scale: 0.97 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.25 }}
-                        className="text-3xl font-black text-burgundy mt-0.5"
+                        className="text-2xl sm:text-3xl font-black text-burgundy mt-0.5"
                       >
                         {fmt(buyingPower)}
                       </motion.p>
                     </AnimatePresence>
-                    <p className="text-[11px] text-muted-foreground mt-1">
-                      on {fmt(capital)} capital in <span className="font-semibold text-foreground">{selected.symbol}</span>
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      on {fmt(capital)} in <span className="font-semibold text-foreground">{selected.symbol}</span>
                     </p>
                   </div>
-                  <div className="text-right flex-shrink-0">
-                    <div className="text-4xl font-black" style={{ color: "#FF0000", opacity: 0.15 }}>{multiplier}x</div>
+                  <div className="flex-shrink-0 text-right">
+                    <div className="text-3xl sm:text-4xl font-black" style={{ color: "#FF0000", opacity: 0.15 }}>{multiplier}x</div>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Bottom CTA */}
-            <div className="bg-cream/50 border-t border-border rounded-b-[8px] flex flex-col md:flex-row items-center justify-between p-6 gap-6">
-              <div className="flex items-center gap-4">
-                <div className="bg-white border border-border rounded-[8px] p-3 flex flex-col items-center justify-center w-16 h-16 shadow-xs flex-shrink-0">
-                  <span className="text-xl font-extrabold text-burgundy">₹0</span>
-                  <span className="text-[9px] font-bold text-muted-foreground uppercase text-center mt-0.5 leading-none">Interest*</span>
+            <div className="bg-cream/50 border-t border-border rounded-b-[8px] flex flex-col gap-4 p-5 sm:p-6">
+              <div className="flex items-start gap-3">
+                <div className="bg-white border border-border rounded-[8px] p-2.5 flex flex-col items-center justify-center w-14 h-14 sm:w-16 sm:h-16 shadow-xs flex-shrink-0">
+                  <span className="text-lg sm:text-xl font-extrabold text-burgundy">₹0</span>
+                  <span className="text-[8px] sm:text-[9px] font-bold text-muted-foreground uppercase text-center mt-0.5 leading-none">Interest*</span>
                 </div>
-                <div>
+                <div className="flex-1 min-w-0">
                   <h4 className="font-bold text-sm text-foreground leading-tight">Zero Interest for First 30 Days</h4>
-                  <p className="text-xs text-muted-foreground mt-1 max-w-xs">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Get interest-free MTF funding on eligible stocks for the first 30 days. 1,700+ stocks available.
                   </p>
                 </div>
               </div>
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto max-w-sm">
+              <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
                 <div className="flex items-center border border-border rounded-[5px] bg-white h-11 px-3 focus-within:border-burgundy focus-within:ring-1 focus-within:ring-burgundy/20 transition-all flex-1">
-                  <span className="text-sm font-semibold text-muted-foreground mr-2 border-r border-border/80 pr-2">+91</span>
+                  <span className="text-sm font-semibold text-muted-foreground mr-2 border-r border-border/80 pr-2 flex-shrink-0">+91</span>
                   <input type="tel" placeholder="Enter Mobile No." className="bg-transparent text-sm font-medium w-full focus:outline-none placeholder:text-muted-foreground/60" />
                 </div>
                 <Button className="bg-burgundy hover:bg-burgundy-deep text-white font-semibold rounded-[5px] h-11 px-6 whitespace-nowrap">

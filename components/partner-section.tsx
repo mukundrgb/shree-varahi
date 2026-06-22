@@ -39,7 +39,7 @@ export function PartnerSection() {
   }
 
   return (
-    <section className="bg-cream py-16 lg:py-24">
+    <section className="bg-cream py-16 lg:py-24 overflow-hidden">
       {/* Section divider */}
       {/* <div className="h-px bg-gradient-to-r from-transparent via-gold to-transparent mb-16" /> */}
 

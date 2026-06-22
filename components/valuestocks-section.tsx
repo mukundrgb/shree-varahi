@@ -281,7 +281,7 @@ export function ValuestocksSection() {
   const [activeStep, setActiveStep] = useState(0)
 
   return (
-    <section className="bg-gradient-to-b from-background via-cream to-background py-16 lg:py-24">
+    <section className="bg-gradient-to-b from-background via-cream to-background py-16 lg:py-24 overflow-hidden">
 
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

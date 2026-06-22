@@ -361,7 +361,7 @@ function StackingCard({
 
 export function FeaturesSection() {
   return (
-    <section className="relative bg-secondary/30 z-10">
+    <section className="relative bg-secondary/30 z-10 overflow-hidden">
       <div className="h-px bg-gradient-to-r from-transparent via-gold to-transparent" />
 
       <div className="py-16 lg:py-24">
