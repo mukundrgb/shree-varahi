@@ -367,21 +367,23 @@ export default function Nifty50Page() {
                 <div className="px-5 py-3.5 border-b border-border">
                   <h2 className="text-sm font-bold text-foreground">Historical Returns</h2>
                 </div>
-                <div className="grid grid-cols-7 divide-x divide-border">
-                  {RETURNS.map((r) => (
-                    <div key={r.p} className="flex flex-col items-center py-5 px-2 gap-2">
-                      <span className="text-[11px] font-semibold text-muted-foreground">{r.p}</span>
-                      <span
-                        className={`text-sm font-black rounded-[4px] px-2 py-0.5 tabular-nums ${
-                          r.v >= 0
-                            ? "text-emerald-700 bg-emerald-50"
-                            : "text-red-600 bg-red-50"
-                        }`}
-                      >
-                        {r.v >= 0 ? "+" : ""}{r.v.toFixed(2)}%
-                      </span>
-                    </div>
-                  ))}
+                <div className="overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+                  <div className="grid divide-x divide-border" style={{ gridTemplateColumns: "repeat(7, minmax(90px, 1fr))" }}>
+                    {RETURNS.map((r) => (
+                      <div key={r.p} className="flex flex-col items-center py-5 px-2 gap-2">
+                        <span className="text-[11px] font-semibold text-muted-foreground whitespace-nowrap">{r.p}</span>
+                        <span
+                          className={`text-sm font-black rounded-[4px] px-2 py-0.5 tabular-nums ${
+                            r.v >= 0
+                              ? "text-emerald-700 bg-emerald-50"
+                              : "text-red-600 bg-red-50"
+                          }`}
+                        >
+                          {r.v >= 0 ? "+" : ""}{r.v.toFixed(2)}%
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
 

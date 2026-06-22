@@ -53,7 +53,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${manrope.variable} ${dmSans.variable} ${dmMono.variable} ${cormorant.variable} bg-background overflow-x-hidden`}>
+    <html lang="en" className={`${manrope.variable} ${dmSans.variable} ${dmMono.variable} ${cormorant.variable} bg-background`}>
       <body className="font-sans antialiased bg-background text-foreground overflow-x-hidden">
         <ScrollProgress />
         {children}

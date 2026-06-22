@@ -232,26 +232,21 @@ function MarketTabsSection() {
 
   return (
     <div>
-      {/* Tab bar */}
-      <div className="overflow-x-auto scrollbar-hide" style={{ borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
-        <div className="flex min-w-max max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Tab bar — pill chips */}
+      <div className="overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+        <div className="flex gap-1.5 min-w-max max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           {marketTabs.map((t) => (
             <button
               key={t.id}
               onClick={() => { setActive(t.id); setExpanded(false) }}
-              className={`relative flex-shrink-0 px-4 py-3.5 text-[13px] font-semibold transition-colors duration-150 ${
-                active === t.id ? "text-white" : "text-white/70 hover:text-white"
+              className={`relative flex-shrink-0 px-3 py-1 rounded-full text-[11px] font-bold whitespace-nowrap transition-all duration-150 ${
+                active === t.id
+                  ? "text-[#D9B27C] bg-white/10"
+                  : "text-white/55 hover:text-white/85 hover:bg-white/[0.06]"
               }`}
+              style={active === t.id ? { boxShadow: "inset 0 0 0 1px rgba(217,178,124,0.4)" } : {}}
             >
               {t.label}
-              {active === t.id && (
-                <motion.div
-                  layoutId="tab-underline"
-                  className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full"
-                  style={{ background: "#D9B27C" }}
-                  transition={{ duration: 0.22, ease: "easeOut" }}
-                />
-              )}
             </button>
           ))}
         </div>
