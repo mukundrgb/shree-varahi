@@ -199,7 +199,7 @@ export default function Nifty50Page() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-background pt-16">
+      <main className="min-h-screen bg-background pt-16 overflow-hidden">
 
         {/* ── Breadcrumb ──────────────────────────────────────────────── */}
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-5">
@@ -216,7 +216,7 @@ export default function Nifty50Page() {
 
         {/* ── Hero ────────────────────────────────────────────────────── */}
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-5">
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5">
 
             {/* Left: name + price */}
             <div>
@@ -231,27 +231,27 @@ export default function Nifty50Page() {
 
               <h1 className="text-2xl lg:text-3xl font-black text-foreground tracking-tight">NIFTY 50</h1>
 
-              <div className="flex items-baseline flex-wrap gap-3 mt-2">
-                <span className="text-4xl lg:text-5xl font-black text-foreground tracking-tight tabular-nums">
+              <div className="flex items-baseline flex-wrap gap-2 mt-2">
+                <span className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight tabular-nums">
                   {PRICE.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                 </span>
-                <div className={`flex items-center gap-1 font-bold ${isPos ? "text-emerald-600" : "text-red-500"}`}>
+                <div className={`flex items-center gap-1 font-bold text-base ${isPos ? "text-emerald-600" : "text-red-500"}`}>
                   {isPos
-                    ? <ArrowUpRight   className="w-5 h-5" />
-                    : <ArrowDownRight className="w-5 h-5" />
+                    ? <ArrowUpRight   className="w-4 h-4" />
+                    : <ArrowDownRight className="w-4 h-4" />
                   }
-                  <span className="text-lg">{isPos ? "+" : ""}{CHANGE.toFixed(2)}</span>
-                  <span className="text-base">({isPos ? "+" : ""}{CHANGE_PCT.toFixed(2)}%)</span>
+                  <span>{isPos ? "+" : ""}{CHANGE.toFixed(2)}</span>
+                  <span className="text-sm">({isPos ? "+" : ""}{CHANGE_PCT.toFixed(2)}%)</span>
                 </div>
               </div>
 
               <p className="text-xs text-muted-foreground mt-1.5">
-                19 Jun 2026 · 15:30 IST · National Stock Exchange · Prices in INR
+                19 Jun 2026 · 15:30 IST · NSE · Prices in INR
               </p>
             </div>
 
             {/* Right: breadth + 52W bar + CTA */}
-            <div className="flex flex-col items-start lg:items-end gap-4">
+            <div className="flex flex-col items-start lg:items-end gap-3">
 
               {/* Breadth pills */}
               <div className="flex items-center gap-2 flex-wrap">
@@ -303,7 +303,7 @@ export default function Nifty50Page() {
             style={{ scrollbarWidth: "none" }}
           >
             {KEY_STATS.map((s) => (
-              <div key={s.label} className="flex flex-col items-center px-5 py-3 min-w-[100px] shrink-0">
+              <div key={s.label} className="flex flex-col items-center px-4 py-3 min-w-[90px] shrink-0">
                 <span className="text-[10px] text-muted-foreground font-semibold whitespace-nowrap">{s.label}</span>
                 <span className="text-sm font-bold text-foreground mt-0.5 whitespace-nowrap tabular-nums">{s.value}</span>
               </div>
@@ -313,64 +313,71 @@ export default function Nifty50Page() {
 
         {/* ── Main grid: content + sidebar ─────────────────────────────── */}
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mt-6 pb-20">
-          <div className="grid lg:grid-cols-[1fr_340px] gap-6 items-start">
+          <div className="grid lg:grid-cols-[1fr_340px] gap-5 items-start">
 
             {/* ── LEFT ── */}
-            <div className="space-y-5">
+            <div className="space-y-4">
 
               {/* Price chart */}
               <div className="border border-border rounded-[8px] bg-background overflow-hidden">
-                <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
+
+                {/* Chart header — stacks on mobile */}
+                <div className="px-4 sm:px-5 py-3 border-b border-border space-y-2 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
                   <div className="flex items-center gap-3">
                     <h2 className="text-sm font-bold text-foreground">Price Chart</h2>
                     <span className={`text-xs font-bold tabular-nums ${chartPositive ? "text-emerald-600" : "text-red-500"}`}>
                       {chartPositive ? "+" : ""}{chartReturn.toFixed(2)}%
                     </span>
                   </div>
-                  <div className="flex items-center gap-0.5 bg-secondary rounded-[5px] p-0.5">
-                    {TIMEFRAMES.map((t) => (
-                      <button
-                        key={t}
-                        onClick={() => setTf(t)}
-                        className={`px-3 py-1 text-[11px] font-bold rounded-[4px] transition-all ${
-                          tf === t
-                            ? "bg-burgundy text-white"
-                            : "text-muted-foreground hover:text-foreground"
-                        }`}
-                      >
-                        {t}
-                      </button>
-                    ))}
+                  {/* Scrollable timeframe picker */}
+                  <div className="overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+                    <div className="flex items-center gap-0.5 bg-secondary rounded-[5px] p-0.5 w-fit">
+                      {TIMEFRAMES.map((t) => (
+                        <button
+                          key={t}
+                          onClick={() => setTf(t)}
+                          className={`px-2.5 sm:px-3 py-1 text-[11px] font-bold rounded-[4px] transition-all whitespace-nowrap ${
+                            tf === t
+                              ? "bg-burgundy text-white"
+                              : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          {t}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <div className="px-2 py-3 h-[250px]">
+
+                <div className="px-2 py-3 h-[220px] sm:h-[250px]">
                   <IndexChart data={CHART_DATA[tf]} positive={chartPositive} />
                 </div>
-                <div className="flex items-center justify-between px-5 py-2.5 border-t border-border bg-secondary/20">
-                  <span className="text-[10px] text-muted-foreground">
-                    Open: <strong className="text-foreground">23,991.20</strong>
-                  </span>
-                  <span className="text-[10px] text-muted-foreground">
-                    High: <strong className="text-foreground">24,047.20</strong>
-                  </span>
-                  <span className="text-[10px] text-muted-foreground">
-                    Low: <strong className="text-foreground">23,901.90</strong>
-                  </span>
-                  <span className="text-[10px] text-muted-foreground">
-                    Close: <strong className="text-foreground">24,013.10</strong>
-                  </span>
+
+                {/* Chart footer — 2×2 on mobile, 4-col on sm+ */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-border border-t border-border bg-secondary/20">
+                  {[
+                    { label: "Open",  val: "23,991.20" },
+                    { label: "High",  val: "24,047.20" },
+                    { label: "Low",   val: "23,901.90" },
+                    { label: "Close", val: "24,013.10" },
+                  ].map((item, i) => (
+                    <div key={item.label} className={`px-3 sm:px-5 py-2 ${i === 1 ? "border-t sm:border-t-0 border-border" : ""} ${i === 3 ? "border-t sm:border-t-0 border-border" : ""}`}>
+                      <span className="text-[10px] text-muted-foreground block">{item.label}</span>
+                      <strong className="text-[11px] text-foreground tabular-nums">{item.val}</strong>
+                    </div>
+                  ))}
                 </div>
               </div>
 
               {/* Historical returns */}
               <div className="border border-border rounded-[8px] bg-background overflow-hidden">
-                <div className="px-5 py-3.5 border-b border-border">
+                <div className="px-4 sm:px-5 py-3 border-b border-border">
                   <h2 className="text-sm font-bold text-foreground">Historical Returns</h2>
                 </div>
                 <div className="overflow-x-auto" style={{ scrollbarWidth: "none" }}>
-                  <div className="grid divide-x divide-border" style={{ gridTemplateColumns: "repeat(7, minmax(90px, 1fr))" }}>
+                  <div className="grid divide-x divide-border" style={{ gridTemplateColumns: "repeat(7, minmax(72px, 1fr))", minWidth: "504px" }}>
                     {RETURNS.map((r) => (
-                      <div key={r.p} className="flex flex-col items-center py-5 px-2 gap-2">
+                      <div key={r.p} className="flex flex-col items-center py-4 px-2 gap-1.5">
                         <span className="text-[11px] font-semibold text-muted-foreground whitespace-nowrap">{r.p}</span>
                         <span
                           className={`text-sm font-black rounded-[4px] px-2 py-0.5 tabular-nums ${
@@ -389,19 +396,19 @@ export default function Nifty50Page() {
 
               {/* Top 10 Holdings */}
               <div className="border border-border rounded-[8px] bg-background overflow-hidden">
-                <div className="px-5 py-3.5 border-b border-border flex items-center justify-between">
+                <div className="px-4 sm:px-5 py-3 border-b border-border flex items-center justify-between">
                   <h2 className="text-sm font-bold text-foreground">Top Holdings</h2>
-                  <span className="text-[11px] text-muted-foreground font-medium">Top 10 of 50 stocks · NSE</span>
+                  <span className="text-[11px] text-muted-foreground font-medium">Top 10 of 50 · NSE</span>
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="w-full">
+                  <table className="w-full min-w-[420px]">
                     <thead>
                       <tr className="border-b border-border bg-secondary/30">
-                        <th className="text-left text-[11px] font-bold text-muted-foreground px-5 py-2.5 w-8">#</th>
-                        <th className="text-left text-[11px] font-bold text-muted-foreground px-4 py-2.5">Company</th>
-                        <th className="text-left text-[11px] font-bold text-muted-foreground px-4 py-2.5">Sector</th>
-                        <th className="text-right text-[11px] font-bold text-muted-foreground px-5 py-2.5">Weight</th>
-                        <th className="text-right text-[11px] font-bold text-muted-foreground px-5 py-2.5">Today</th>
+                        <th className="text-left text-[11px] font-bold text-muted-foreground px-3 sm:px-5 py-2.5 w-8">#</th>
+                        <th className="text-left text-[11px] font-bold text-muted-foreground px-3 sm:px-4 py-2.5">Company</th>
+                        <th className="text-left text-[11px] font-bold text-muted-foreground px-3 sm:px-4 py-2.5 hidden sm:table-cell">Sector</th>
+                        <th className="text-right text-[11px] font-bold text-muted-foreground px-3 sm:px-5 py-2.5">Weight</th>
+                        <th className="text-right text-[11px] font-bold text-muted-foreground px-3 sm:px-5 py-2.5">Today</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -411,24 +418,24 @@ export default function Nifty50Page() {
                           className="border-b border-border/50 hover:bg-secondary/30 transition-colors cursor-pointer"
                           onClick={() => window.location.href = `/stocks/${c.ticker.toLowerCase()}`}
                         >
-                          <td className="px-5 py-3 text-xs text-muted-foreground">{i + 1}</td>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2.5">
+                          <td className="px-3 sm:px-5 py-2.5 text-xs text-muted-foreground">{i + 1}</td>
+                          <td className="px-3 sm:px-4 py-2.5">
+                            <div className="flex items-center gap-2">
                               <TickerBadge ticker={c.ticker} index={i} />
-                              <div>
-                                <div className="text-xs font-bold text-foreground leading-tight hover:text-burgundy transition-colors">{c.name}</div>
+                              <div className="min-w-0">
+                                <div className="text-xs font-bold text-foreground leading-tight truncate max-w-[120px] sm:max-w-none">{c.name}</div>
                                 <div className="text-[10px] text-muted-foreground mt-0.5">{c.ticker}</div>
                               </div>
                             </div>
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-3 sm:px-4 py-2.5 hidden sm:table-cell">
                             <span className="text-[11px] font-semibold bg-secondary text-muted-foreground px-2 py-0.5 rounded-[4px]">
                               {c.sector}
                             </span>
                           </td>
-                          <td className="px-5 py-3">
-                            <div className="flex items-center justify-end gap-2">
-                              <div className="w-16 h-1.5 bg-secondary rounded-full overflow-hidden">
+                          <td className="px-3 sm:px-5 py-2.5">
+                            <div className="flex items-center justify-end gap-1.5">
+                              <div className="w-10 sm:w-16 h-1.5 bg-secondary rounded-full overflow-hidden hidden sm:block">
                                 <div
                                   className="h-full rounded-full bg-burgundy"
                                   style={{ width: `${(c.weight / 10.32) * 100}%` }}
@@ -439,7 +446,7 @@ export default function Nifty50Page() {
                               </span>
                             </div>
                           </td>
-                          <td className="px-5 py-3 text-right">
+                          <td className="px-3 sm:px-5 py-2.5 text-right">
                             <span
                               className={`text-xs font-bold tabular-nums ${
                                 c.chg >= 0 ? "text-emerald-600" : "text-red-500"
@@ -457,12 +464,12 @@ export default function Nifty50Page() {
 
               {/* Sector Weightage */}
               <div className="border border-border rounded-[8px] bg-background overflow-hidden">
-                <div className="px-5 py-3.5 border-b border-border">
+                <div className="px-4 sm:px-5 py-3 border-b border-border">
                   <h2 className="text-sm font-bold text-foreground">Sector Weightage</h2>
                 </div>
 
                 {/* Stacked bar */}
-                <div className="px-5 pt-4 pb-3">
+                <div className="px-4 sm:px-5 pt-4 pb-3">
                   <div className="flex rounded-[4px] overflow-hidden h-5 gap-px">
                     {SECTORS.map((s) => (
                       <div
@@ -475,13 +482,13 @@ export default function Nifty50Page() {
                   </div>
                 </div>
 
-                <div className="px-5 pb-5 grid grid-cols-2 gap-x-8 gap-y-3">
+                <div className="px-4 sm:px-5 pb-5 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5">
                   {SECTORS.map((s) => (
-                    <div key={s.name} className="flex items-center gap-2.5">
+                    <div key={s.name} className="flex items-center gap-2">
                       <div className="w-2.5 h-2.5 rounded-[2px] shrink-0" style={{ backgroundColor: s.color }} />
                       <span className="text-xs text-muted-foreground flex-1 truncate">{s.name}</span>
                       <div className="flex items-center gap-1.5 shrink-0">
-                        <div className="w-14 h-1 bg-secondary rounded-full overflow-hidden">
+                        <div className="w-12 sm:w-14 h-1 bg-secondary rounded-full overflow-hidden">
                           <div
                             className="h-full rounded-full"
                             style={{ width: `${(s.weight / 28.4) * 100}%`, backgroundColor: s.color }}
@@ -497,7 +504,7 @@ export default function Nifty50Page() {
               </div>
 
               {/* About */}
-              <div className="border border-border rounded-[8px] bg-background p-5">
+              <div className="border border-border rounded-[8px] bg-background p-4 sm:p-5">
                 <h2 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
                   <Info className="w-4 h-4 text-burgundy" />
                   About Nifty 50
@@ -520,10 +527,10 @@ export default function Nifty50Page() {
             </div>
 
             {/* ── RIGHT SIDEBAR ── */}
-            <div className="space-y-5">
+            <div className="space-y-4">
 
               {/* Market Breadth */}
-              <div className="border border-border rounded-[8px] bg-background p-5">
+              <div className="border border-border rounded-[8px] bg-background p-4 sm:p-5">
                 <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
                   <Activity className="w-4 h-4 text-burgundy" />
                   Market Breadth
@@ -558,13 +565,13 @@ export default function Nifty50Page() {
 
               {/* Technical Signals */}
               <div className="border border-border rounded-[8px] bg-background overflow-hidden">
-                <div className="px-5 py-3.5 border-b border-border flex items-center gap-2">
+                <div className="px-4 sm:px-5 py-3 border-b border-border flex items-center gap-2">
                   <BarChart2 className="w-4 h-4 text-burgundy" />
                   <h3 className="text-sm font-bold text-foreground">Technical Signals</h3>
                 </div>
                 <div className="divide-y divide-border/50">
                   {TECHNICALS.map((t) => (
-                    <div key={t.label} className="flex items-center justify-between px-5 py-2.5">
+                    <div key={t.label} className="flex items-center justify-between px-4 sm:px-5 py-2.5">
                       <div className="flex items-baseline gap-2">
                         <span className="text-xs font-semibold text-foreground">{t.label}</span>
                         <span className="text-[11px] text-muted-foreground tabular-nums">{t.value}</span>
@@ -583,9 +590,7 @@ export default function Nifty50Page() {
                     </div>
                   ))}
                 </div>
-
-                {/* Summary pills */}
-                <div className="px-5 py-3 border-t border-border bg-secondary/20 flex items-center gap-2">
+                <div className="px-4 sm:px-5 py-3 border-t border-border bg-secondary/20 flex items-center gap-2">
                   <span className="text-[10px] font-semibold text-muted-foreground">Overall:</span>
                   <span className="text-[11px] font-black bg-red-50 text-red-600 border border-red-100 px-2 py-0.5 rounded-[3px]">
                     Bearish
@@ -595,7 +600,7 @@ export default function Nifty50Page() {
 
               {/* Related Indices */}
               <div className="border border-border rounded-[8px] bg-background overflow-hidden">
-                <div className="px-5 py-3.5 border-b border-border">
+                <div className="px-4 sm:px-5 py-3 border-b border-border">
                   <h3 className="text-sm font-bold text-foreground">Related Indices</h3>
                 </div>
                 <div className="divide-y divide-border/50">
@@ -603,7 +608,7 @@ export default function Nifty50Page() {
                     <Link
                       key={r.name}
                       href="#"
-                      className="flex items-center justify-between px-5 py-3 hover:bg-secondary/40 transition-colors group"
+                      className="flex items-center justify-between px-4 sm:px-5 py-3 hover:bg-secondary/40 transition-colors group"
                     >
                       <span className="text-xs font-semibold text-foreground group-hover:text-burgundy transition-colors">
                         {r.name}
