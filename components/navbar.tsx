@@ -24,20 +24,6 @@ import { SearchPopup } from "./search-popup"
 import Link from "next/link"
 import Image from "next/image"
 
-function GlobeMarketIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
-      <circle cx="12" cy="12" r="9.5" stroke="currentColor" strokeWidth="1.4" />
-      <ellipse cx="12" cy="12" rx="9.5" ry="3.2" stroke="currentColor" strokeWidth="1.1" />
-      <ellipse cx="12" cy="8.2" rx="7.8" ry="2.2" stroke="currentColor" strokeWidth="0.7" opacity="0.55" />
-      <ellipse cx="12" cy="15.8" rx="7.8" ry="2.2" stroke="currentColor" strokeWidth="0.7" opacity="0.55" />
-      <ellipse cx="12" cy="12" rx="2.2" ry="9.5" stroke="currentColor" strokeWidth="0.9" />
-      <ellipse cx="12" cy="12" rx="6" ry="9.5" stroke="currentColor" strokeWidth="0.6" opacity="0.45" />
-      <line x1="12" y1="2.5" x2="12" y2="21.5" stroke="currentColor" strokeWidth="0.9" opacity="0.3" />
-      <circle cx="12" cy="12" r="1.5" fill="currentColor" opacity="0.7" />
-    </svg>
-  )
-}
 
 type MenuItem = {
   title: string
@@ -46,223 +32,69 @@ type MenuItem = {
   href: string
 }
 
-const tradeMenu: MenuItem[] = [
-  { title: "Trading App", desc: "Mobile-first trading experience", icon: "📱", href: "#" },
-  { title: "Web Terminal", desc: "Professional desktop platform", icon: "💻", href: "#" },
-  { title: "Options Trader", desc: "Advanced F&O strategies", icon: <PieChart className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/futures-options" },
-  { title: "Algo & API", desc: "Automate your trading", icon: "⚡", href: "#" },
-  { title: "Global Investing", desc: "Trade US stocks directly", icon: <GlobeMarketIcon className="h-5 w-5 text-burgundy" />, href: "/#global-investing" },
-  { title: "Stocks Intraday", desc: "Same-day trading", icon: <TrendingUp className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/stocks" },
-  { title: "Futures", desc: "Derivatives trading", icon: <PieChart className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/futures-options" },
-  { title: "MTF", desc: "4× buying power", icon: "💪", href: "#" },
-  { title: "Commodities", desc: "MCX trading", icon: <Box className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
-  { title: "Stock Screener", desc: "Find opportunities", icon: "🔍", href: "#" },
+// ── Menu data ─────────────────────────────────────────────────────────────
+
+const TRADE_INVEST: MenuItem[] = [
+  { title: "Stocks",    desc: "NSE & BSE equities, ₹0 delivery",   icon: <TrendingUp className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/stocks" },
+  { title: "F&O",       desc: "Futures & options, ₹17 flat",        icon: <PieChart   className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/futures-options" },
+  { title: "ETF",       desc: "Exchange traded funds",               icon: <Layers     className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
+  { title: "IPO",       desc: "Apply for upcoming IPOs free",        icon: <Target     className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/ipo" },
+  { title: "Commodity", desc: "MCX gold, silver & crude oil",        icon: <Box        className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
+  { title: "MTF",       desc: "4× margin buying power on stocks",   icon: <Zap        className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
 ]
 
-const investMenu: MenuItem[] = [
-  { title: "Stocks Delivery", desc: "₹0 brokerage forever", icon: <TrendingUp className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/stocks" },
-  { title: "Mutual Funds", desc: "Direct plans, zero commission", icon: <Landmark className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/mutual-funds" },
-  { title: "IPO", desc: "Apply for free", icon: <Target className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/ipo" },
-  { title: "ETF", desc: "Exchange traded funds", icon: <Layers className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
-  { title: "NFO", desc: "New fund offers", icon: "🆕", href: "#" },
-  { title: "Digital Gold", desc: "24K gold from ₹1", icon: "✨", href: "#" },
-  { title: "Global Investing", desc: "US stocks & ETFs", icon: <GlobeMarketIcon className="h-5 w-5 text-burgundy" />, href: "/#global-investing" },
+const MF_SIP: MenuItem[] = [
+  { title: "Mutual Funds",   desc: "5,000+ direct funds, 0% commission", icon: <Landmark  className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/mutual-funds" },
+  { title: "SIP Calculator", desc: "Plan your monthly SIP goal",          icon: <RotateCcw className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/mutual-funds" },
+  { title: "NFO",            desc: "New fund offers — invest early",      icon: "🆕",                                                              href: "#" },
 ]
 
-// ── Markets mega-menu ─────────────────────────────────────────────────────
+const PRODUCTS: MenuItem[] = [
+  { title: "Shree Varahi Web",         desc: "Trade from any browser",         icon: "💻",                                                                href: "#" },
+  { title: "Shree Varahi Mobile App",  desc: "iOS & Android trading app",      icon: "📱",                                                                href: "#" },
+  { title: "Shree Varahi Desktop App", desc: "Professional desktop platform",  icon: <BarChart2 className="h-5 w-5 text-burgundy" strokeWidth={2.2} />,   href: "#" },
+]
 
-type MktExchange = "NSE" | "BSE" | "MCX" | "GLOBAL"
-type MarketItem  = { name: string; href: string; exchange?: MktExchange }
+const LEARN_NEWS: MenuItem[] = [
+  { title: "Knowledge Panel", desc: "Courses, guides & tutorials",  icon: <BookOpen className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
+  { title: "Blog",            desc: "Market insights & analysis",   icon: "📝",                                                             href: "#" },
+  { title: "News",            desc: "Live market news & updates",   icon: "📰",                                                             href: "#" },
+]
 
-const MARKETS_TABS = ["Indices", "Stocks", "F&O", "Mutual Funds", "ETFs", "Gold & Silver", "Tools"] as const
+const SUPPORT: MenuItem[] = [
+  { title: "Live Chat",   desc: "Chat with our support team",    icon: "💬", href: "#" },
+  { title: "Contact Us",  desc: "Email & phone support",         icon: "📞", href: "#" },
+  { title: "FAQ",          desc: "Frequently asked questions",   icon: "❓", href: "#" },
+  { title: "User Manual",  desc: "Platform documentation",       icon: "📖", href: "#" },
+]
 
-const MARKETS_SUBS: Record<string, string[]> = {
-  "Indices":       ["Major Indices", "Global Indices"],
-  "Stocks":        ["By Market Cap", "By Sector", "Top Movers"],
-  "F&O":           ["Futures", "Options", "F&O Analysis"],
-  "Mutual Funds":  ["By Category", "Top Funds"],
-  "ETFs":          ["By Type"],
-  "Gold & Silver": ["Commodities", "Digital Assets"],
-  "Tools":         ["Calculators", "Screeners"],
+type NavSection = {
+  id: string
+  menu: MenuItem[]
+  grid: boolean
+  width: string
+  rightAlign: boolean
+  mobileGrid: boolean
 }
 
-const MARKETS_DATA: Record<string, Record<string, MarketItem[]>> = {
-  "Indices": {
-    "Major Indices": [
-      { name: "Nifty 50",           href: "/markets/indices/nifty-50", exchange: "NSE" },
-      { name: "Sensex",             href: "#", exchange: "BSE" },
-      { name: "Nifty Bank",         href: "#", exchange: "NSE" },
-      { name: "BSE Small Cap",      href: "#", exchange: "BSE" },
-      { name: "Finnifty",           href: "#", exchange: "NSE" },
-      { name: "BSE Mid Cap",        href: "#", exchange: "BSE" },
-      { name: "Nifty Next 50",      href: "#", exchange: "NSE" },
-      { name: "BSE Bankex",         href: "#", exchange: "BSE" },
-      { name: "Nifty Small Cap 50", href: "#", exchange: "NSE" },
-      { name: "Nifty IT",           href: "#", exchange: "NSE" },
-      { name: "Nifty Mid Cap 50",   href: "#", exchange: "NSE" },
-      { name: "Nifty Auto",         href: "#", exchange: "NSE" },
-    ],
-    "Global Indices": [
-      { name: "Dow Jones",   href: "#", exchange: "GLOBAL" },
-      { name: "S&P 500",     href: "#", exchange: "GLOBAL" },
-      { name: "NASDAQ",      href: "#", exchange: "GLOBAL" },
-      { name: "FTSE 100",    href: "#", exchange: "GLOBAL" },
-      { name: "Nikkei 225",  href: "#", exchange: "GLOBAL" },
-      { name: "Hang Seng",   href: "#", exchange: "GLOBAL" },
-      { name: "DAX",         href: "#", exchange: "GLOBAL" },
-      { name: "CAC 40",      href: "#", exchange: "GLOBAL" },
-    ],
-  },
-  "Stocks": {
-    "By Market Cap": [
-      { name: "Large Cap Stocks", href: "/stocks" },
-      { name: "Mid Cap Stocks",   href: "/stocks" },
-      { name: "Small Cap Stocks", href: "/stocks" },
-      { name: "Micro Cap Stocks", href: "/stocks" },
-    ],
-    "By Sector": [
-      { name: "Banking & Finance",      href: "/stocks" },
-      { name: "Information Technology", href: "/stocks" },
-      { name: "Automobile",             href: "/stocks" },
-      { name: "Pharma & Healthcare",    href: "/stocks" },
-      { name: "Energy & Power",         href: "/stocks" },
-      { name: "FMCG",                   href: "/stocks" },
-      { name: "Real Estate",            href: "/stocks" },
-      { name: "Metals & Mining",        href: "/stocks" },
-    ],
-    "Top Movers": [
-      { name: "Top Gainers",         href: "/stocks", exchange: "NSE" },
-      { name: "Top Losers",          href: "/stocks", exchange: "NSE" },
-      { name: "52-Week High",        href: "/stocks" },
-      { name: "52-Week Low",         href: "/stocks" },
-      { name: "Most Active (Vol.)",  href: "/stocks" },
-      { name: "Most Active (Value)", href: "/stocks" },
-    ],
-  },
-  "F&O": {
-    "Futures": [
-      { name: "Nifty Futures",      href: "/futures-options", exchange: "NSE" },
-      { name: "Bank Nifty Futures", href: "/futures-options", exchange: "NSE" },
-      { name: "Stock Futures",      href: "/futures-options", exchange: "NSE" },
-      { name: "Sensex Futures",     href: "/futures-options", exchange: "BSE" },
-      { name: "Bankex Futures",     href: "/futures-options", exchange: "BSE" },
-    ],
-    "Options": [
-      { name: "Nifty Options",       href: "/futures-options", exchange: "NSE" },
-      { name: "Bank Nifty Options",  href: "/futures-options", exchange: "NSE" },
-      { name: "Finnifty Options",    href: "/futures-options", exchange: "NSE" },
-      { name: "Stock Options",       href: "/futures-options", exchange: "NSE" },
-      { name: "Sensex Options",      href: "/futures-options", exchange: "BSE" },
-    ],
-    "F&O Analysis": [
-      { name: "Option Chain", href: "/futures-options" },
-      { name: "Open Interest", href: "/futures-options" },
-      { name: "PCR Ratio",    href: "/futures-options" },
-      { name: "F&O Screener", href: "/futures-options" },
-    ],
-  },
-  "Mutual Funds": {
-    "By Category": [
-      { name: "Equity Funds",        href: "/mutual-funds" },
-      { name: "Debt Funds",          href: "/mutual-funds" },
-      { name: "Hybrid Funds",        href: "/mutual-funds" },
-      { name: "Index Funds",         href: "/mutual-funds" },
-      { name: "ELSS (Tax Saver)",    href: "/mutual-funds" },
-      { name: "Sectoral / Thematic", href: "/mutual-funds" },
-    ],
-    "Top Funds": [
-      { name: "Top SIP Funds",     href: "/mutual-funds" },
-      { name: "High Return Funds", href: "/mutual-funds" },
-      { name: "Large Cap Funds",   href: "/mutual-funds" },
-      { name: "Mid Cap Funds",     href: "/mutual-funds" },
-      { name: "Small Cap Funds",   href: "/mutual-funds" },
-    ],
-  },
-  "ETFs": {
-    "By Type": [
-      { name: "Nifty 50 ETF",    href: "#", exchange: "NSE" },
-      { name: "Bank Nifty ETF",  href: "#", exchange: "NSE" },
-      { name: "Gold ETF",        href: "#" },
-      { name: "Silver ETF",      href: "#" },
-      { name: "Debt ETF",        href: "#" },
-      { name: "Sector ETFs",     href: "#" },
-      { name: "International ETF",href: "#" },
-      { name: "Liquid ETF",      href: "#" },
-    ],
-  },
-  "Gold & Silver": {
-    "Commodities": [
-      { name: "MCX Gold",   href: "#", exchange: "MCX" },
-      { name: "MCX Silver", href: "#", exchange: "MCX" },
-      { name: "Gold Mini",  href: "#", exchange: "MCX" },
-      { name: "Silver Mini",href: "#", exchange: "MCX" },
-      { name: "Gold Petal", href: "#", exchange: "MCX" },
-    ],
-    "Digital Assets": [
-      { name: "Digital Gold",        href: "#" },
-      { name: "Sovereign Gold Bond", href: "#" },
-      { name: "Gold ETF",            href: "#" },
-      { name: "Gold Mutual Fund",    href: "/mutual-funds" },
-    ],
-  },
-  "Tools": {
-    "Calculators": [
-      { name: "SIP Calculator",       href: "/mutual-funds" },
-      { name: "Brokerage Calculator", href: "#" },
-      { name: "MTF Calculator",       href: "#" },
-      { name: "CAGR Calculator",      href: "#" },
-      { name: "Lumpsum Calculator",   href: "#" },
-      { name: "Goal-based SIP",       href: "#" },
-    ],
-    "Screeners": [
-      { name: "Stock Screener", href: "/stocks" },
-      { name: "MF Screener",   href: "/mutual-funds" },
-      { name: "Option Chain",  href: "/futures-options" },
-      { name: "F&O Screener",  href: "/futures-options" },
-      { name: "IPO Screener",  href: "/ipo" },
-    ],
-  },
-}
-
-function ExchangeBadge({ exchange }: { exchange: MktExchange }) {
-  const styles: Record<MktExchange, string> = {
-    NSE:    "bg-burgundy/10 text-burgundy",
-    BSE:    "bg-blue-500/10 text-blue-600",
-    MCX:    "bg-amber-500/10 text-amber-600",
-    GLOBAL: "bg-slate-400/10 text-slate-500",
-  }
-  return (
-    <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-[3px] shrink-0 leading-none ${styles[exchange]}`}>
-      {exchange}
-    </span>
-  )
-}
+const NAV_SECTIONS: NavSection[] = [
+  { id: "Trade & Invest",     menu: TRADE_INVEST, grid: true,  width: "440px", rightAlign: false, mobileGrid: true  },
+  { id: "Mutual Funds & SIP", menu: MF_SIP,       grid: false, width: "320px", rightAlign: false, mobileGrid: false },
+  { id: "Products",           menu: PRODUCTS,     grid: false, width: "300px", rightAlign: false, mobileGrid: false },
+  { id: "Learn & News",       menu: LEARN_NEWS,   grid: false, width: "280px", rightAlign: true,  mobileGrid: false },
+  { id: "Support",            menu: SUPPORT,      grid: false, width: "280px", rightAlign: true,  mobileGrid: false },
+]
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [searchOpen, setSearchOpen] = useState(false)
-  const [marketsTab, setMarketsTab] = useState("Indices")
-  const [marketsSub, setMarketsSub] = useState("Major Indices")
   const [expandedSection, setExpandedSection] = useState<string | null>(null)
-  const [mobileMktTab, setMobileMktTab] = useState("Indices")
-
-  const switchMarketsTab = (tab: string) => {
-    setMarketsTab(tab)
-    setMarketsSub(MARKETS_SUBS[tab][0])
-  }
 
   const toggleSection = (section: string) => {
     setExpandedSection(prev => prev === section ? null : section)
   }
-
-  useEffect(() => {
-    if (activeDropdown !== "Markets") {
-      setMarketsTab("Indices")
-      setMarketsSub("Major Indices")
-    }
-  }, [activeDropdown])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -315,129 +147,44 @@ export function Navbar() {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-6">
-              {["Trade", "Invest", "Markets", "Research", "Knowledge"].map((item) => (
+            <div className="hidden lg:flex items-center gap-1">
+              {NAV_SECTIONS.map((section) => (
                 <div
-                  key={item}
+                  key={section.id}
                   className="relative"
-                  onMouseEnter={() => setActiveDropdown(item)}
+                  onMouseEnter={() => setActiveDropdown(section.id)}
                   onMouseLeave={() => setActiveDropdown(null)}
                 >
-                  <button className="flex items-center gap-1 px-2 py-1 text-sm font-medium text-foreground hover:text-burgundy transition-colors">
-                    {item}
-                    <ChevronDown className="h-3 w-3" />
+                  <button className="flex items-center gap-1 px-2.5 py-1.5 text-sm font-medium text-foreground hover:text-burgundy transition-colors whitespace-nowrap">
+                    {section.id}
+                    <ChevronDown className="h-3 w-3 shrink-0" />
                   </button>
 
                   <AnimatePresence>
-                    {activeDropdown === item && (item === "Trade" || item === "Invest") && (
+                    {activeDropdown === section.id && (
                       <motion.div
-                        key="standard-menu"
+                        key="dropdown"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute top-full left-0 mt-2 w-[480px] rounded-[5px] bg-background border border-border p-4 shadow-xl"
+                        style={{ width: section.width }}
+                        className={`absolute top-full mt-2 rounded-[5px] bg-background border border-border p-3 shadow-xl ${section.rightAlign ? "right-0" : "left-0"}`}
                       >
-                        <div className="grid grid-cols-2 gap-3">
-                          {(item === "Trade" ? tradeMenu : investMenu).map((menuItem) => (
+                        <div className={section.grid ? "grid grid-cols-2 gap-2" : "flex flex-col gap-0.5"}>
+                          {section.menu.map((menuItem) => (
                             <Link
                               key={menuItem.title}
                               href={menuItem.href}
-                              className="flex items-start gap-3 rounded-[5px] p-3 hover:bg-secondary transition-colors"
+                              className="flex items-start gap-3 rounded-[5px] p-2.5 hover:bg-secondary transition-colors"
                             >
-                              <span className="text-xl flex items-center justify-center h-6 w-6">{menuItem.icon}</span>
+                              <span className="text-xl flex items-center justify-center h-6 w-6 shrink-0">{menuItem.icon}</span>
                               <div>
-                                <div className="font-medium text-foreground text-sm">
-                                  {menuItem.title}
-                                </div>
-                                <div className="text-xs text-muted-foreground">
-                                  {menuItem.desc}
-                                </div>
+                                <div className="font-semibold text-foreground text-sm leading-tight">{menuItem.title}</div>
+                                <div className="text-xs text-muted-foreground mt-0.5">{menuItem.desc}</div>
                               </div>
                             </Link>
                           ))}
-                        </div>
-                      </motion.div>
-                    )}
-
-                    {activeDropdown === item && item === "Markets" && (
-                      <motion.div
-                        key="markets-mega"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute top-full left-0 mt-2 w-[700px] rounded-[8px] bg-background border border-border shadow-2xl overflow-hidden"
-                      >
-                        {/* ── Tab bar ── */}
-                        <div className="flex border-b border-border overflow-x-auto" style={{ scrollbarWidth: "none" }}>
-                          {MARKETS_TABS.map((t) => (
-                            <button
-                              key={t}
-                              onMouseEnter={() => switchMarketsTab(t)}
-                              className={`px-4 py-2.5 text-[11px] font-bold whitespace-nowrap transition-all ${
-                                marketsTab === t
-                                  ? "bg-burgundy text-white"
-                                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
-                              }`}
-                            >
-                              {t}
-                            </button>
-                          ))}
-                        </div>
-
-                        {/* ── Body: sidebar + content ── */}
-                        <div className="flex" style={{ height: 260 }}>
-                          {/* Left sidebar */}
-                          <div className="w-[160px] border-r border-border shrink-0 py-2" style={{ background: "var(--cream, #FAF8F5)" }}>
-                            {MARKETS_SUBS[marketsTab].map((sub) => (
-                              <button
-                                key={sub}
-                                onMouseEnter={() => setMarketsSub(sub)}
-                                className={`w-full text-left px-4 py-2.5 text-[12px] font-semibold flex items-center justify-between transition-all ${
-                                  marketsSub === sub
-                                    ? "text-burgundy"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
-                                }`}
-                              >
-                                <span>{sub}</span>
-                                {marketsSub === sub && (
-                                  <ChevronRight className="w-3 h-3 shrink-0 text-burgundy" />
-                                )}
-                              </button>
-                            ))}
-                          </div>
-
-                          {/* Right content grid */}
-                          <div className="flex-1 p-4 overflow-y-auto">
-                            <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
-                              {(MARKETS_DATA[marketsTab]?.[marketsSub] ?? []).map((mkt) => (
-                                <Link
-                                  key={mkt.name}
-                                  href={mkt.href}
-                                  className="flex items-center gap-2 py-1.5 px-2 rounded-[4px] hover:bg-secondary/60 group transition-colors"
-                                >
-                                  {mkt.exchange && <ExchangeBadge exchange={mkt.exchange} />}
-                                  <span className="text-[13px] font-medium text-foreground/80 group-hover:text-burgundy transition-colors truncate">
-                                    {mkt.name}
-                                  </span>
-                                </Link>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* ── Footer strip ── */}
-                        <div className="border-t border-border px-5 py-2.5 flex items-center justify-between bg-secondary/30">
-                          <span className="text-[11px] text-muted-foreground font-medium">
-                            Live market data powered by NSE &amp; BSE feeds
-                          </span>
-                          <Link
-                            href="/stocks"
-                            className="text-[11px] font-bold text-burgundy hover:underline flex items-center gap-1"
-                          >
-                            View all markets <ChevronRight className="w-3 h-3" />
-                          </Link>
                         </div>
                       </motion.div>
                     )}
@@ -580,28 +327,25 @@ export function Navbar() {
 
                 <div className="h-px bg-border mx-4" />
 
-                {/* ── Trade accordion ── */}
-                {[
-                  { id: "Trade",  items: tradeMenu },
-                  { id: "Invest", items: investMenu },
-                ].map(({ id, items }) => (
-                  <div key={id} className="border-b border-border">
+                {/* ── Nav section accordions ── */}
+                {NAV_SECTIONS.map((section) => (
+                  <div key={section.id} className="border-b border-border">
                     <button
-                      onClick={() => toggleSection(id)}
+                      onClick={() => toggleSection(section.id)}
                       className="w-full flex items-center justify-between px-5 py-4 hover:bg-secondary/40 transition-colors"
                     >
                       <div className="flex items-center gap-3">
                         <span
                           className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                            expandedSection === id ? "bg-burgundy" : "bg-border"
+                            expandedSection === section.id ? "bg-burgundy" : "bg-border"
                           }`}
                         />
-                        <span className={`text-sm font-semibold transition-colors ${expandedSection === id ? "text-burgundy" : "text-foreground"}`}>
-                          {id}
+                        <span className={`text-sm font-semibold transition-colors ${expandedSection === section.id ? "text-burgundy" : "text-foreground"}`}>
+                          {section.id}
                         </span>
                       </div>
                       <motion.div
-                        animate={{ rotate: expandedSection === id ? 180 : 0 }}
+                        animate={{ rotate: expandedSection === section.id ? 180 : 0 }}
                         transition={{ duration: 0.22 }}
                       >
                         <ChevronDown className="w-4 h-4 text-muted-foreground" />
@@ -609,7 +353,7 @@ export function Navbar() {
                     </button>
 
                     <AnimatePresence initial={false}>
-                      {expandedSection === id && (
+                      {expandedSection === section.id && (
                         <motion.div
                           key="content"
                           initial={{ height: 0, opacity: 0 }}
@@ -618,150 +362,44 @@ export function Navbar() {
                           transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
                           className="overflow-hidden"
                         >
-                          <div className="px-4 pb-4 grid grid-cols-2 gap-2">
-                            {items.map((item) => (
-                              <Link
-                                key={item.title}
-                                href={item.href}
-                                onClick={() => setMobileMenuOpen(false)}
-                                className="flex items-center gap-2.5 p-2.5 rounded-[6px] border border-border/60 hover:border-burgundy/30 hover:bg-burgundy/[0.03] transition-all"
-                              >
-                                <span className="text-base shrink-0 flex items-center justify-center w-5 h-5">
-                                  {item.icon}
-                                </span>
-                                <div className="min-w-0">
-                                  <div className="text-[11px] font-bold text-foreground truncate leading-tight">
-                                    {item.title}
+                          {section.mobileGrid ? (
+                            <div className="px-4 pb-4 grid grid-cols-2 gap-2">
+                              {section.menu.map((item) => (
+                                <Link
+                                  key={item.title}
+                                  href={item.href}
+                                  onClick={() => setMobileMenuOpen(false)}
+                                  className="flex items-center gap-2.5 p-2.5 rounded-[6px] border border-border/60 hover:border-burgundy/30 hover:bg-burgundy/[0.03] transition-all"
+                                >
+                                  <span className="text-base shrink-0 flex items-center justify-center w-5 h-5">{item.icon}</span>
+                                  <div className="min-w-0">
+                                    <div className="text-[11px] font-bold text-foreground truncate leading-tight">{item.title}</div>
+                                    <div className="text-[9px] text-muted-foreground truncate mt-0.5">{item.desc}</div>
                                   </div>
-                                  <div className="text-[9px] text-muted-foreground truncate mt-0.5">
-                                    {item.desc}
+                                </Link>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="pb-2">
+                              {section.menu.map((item) => (
+                                <Link
+                                  key={item.title}
+                                  href={item.href}
+                                  onClick={() => setMobileMenuOpen(false)}
+                                  className="flex items-center justify-between px-5 py-3 hover:bg-secondary/40 transition-colors group"
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <span className="text-base flex items-center justify-center w-5 h-5 shrink-0">{item.icon}</span>
+                                    <span className="text-sm font-medium text-foreground">{item.title}</span>
                                   </div>
-                                </div>
-                              </Link>
-                            ))}
-                          </div>
+                                  <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-burgundy transition-colors" />
+                                </Link>
+                              ))}
+                            </div>
+                          )}
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </div>
-                ))}
-
-                {/* ── Markets accordion ── */}
-                <div className="border-b border-border">
-                  <button
-                    onClick={() => toggleSection("Markets")}
-                    className="w-full flex items-center justify-between px-5 py-4 hover:bg-secondary/40 transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                          expandedSection === "Markets" ? "bg-burgundy" : "bg-border"
-                        }`}
-                      />
-                      <span className={`text-sm font-semibold transition-colors ${expandedSection === "Markets" ? "text-burgundy" : "text-foreground"}`}>
-                        Markets
-                      </span>
-                    </div>
-                    <motion.div
-                      animate={{ rotate: expandedSection === "Markets" ? 180 : 0 }}
-                      transition={{ duration: 0.22 }}
-                    >
-                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                    </motion.div>
-                  </button>
-
-                  <AnimatePresence initial={false}>
-                    {expandedSection === "Markets" && (
-                      <motion.div
-                        key="markets-content"
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.24, ease: [0.4, 0, 0.2, 1] }}
-                        className="overflow-hidden"
-                      >
-                        {/* Tab pills */}
-                        <div className="px-4 pt-1 pb-3">
-                          <div
-                            className="flex gap-1.5 overflow-x-auto pb-1"
-                            style={{ scrollbarWidth: "none" }}
-                          >
-                            {MARKETS_TABS.map((t) => (
-                              <button
-                                key={t}
-                                onClick={() => setMobileMktTab(t)}
-                                className={`px-3 py-1.5 text-[11px] font-bold rounded-full whitespace-nowrap shrink-0 transition-all ${
-                                  mobileMktTab === t
-                                    ? "bg-burgundy text-white shadow-sm"
-                                    : "bg-secondary text-muted-foreground hover:text-foreground"
-                                }`}
-                              >
-                                {t}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Items grouped by sub-category */}
-                        <div className="px-4 pb-4 space-y-3">
-                          {Object.entries(MARKETS_DATA[mobileMktTab] ?? {}).map(([subName, items]) => (
-                            <div key={subName}>
-                              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 px-1 mb-1.5">
-                                {subName}
-                              </p>
-                              <div className="grid grid-cols-2 gap-1">
-                                {items.map((item) => (
-                                  <Link
-                                    key={item.name}
-                                    href={item.href}
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="flex items-center gap-1.5 px-3 py-2 rounded-[5px] hover:bg-secondary transition-colors group"
-                                  >
-                                    {item.exchange && (
-                                      <span
-                                        className={`text-[7px] font-black px-1 py-0.5 rounded-[2px] shrink-0 leading-none ${
-                                          item.exchange === "NSE"    ? "bg-burgundy/10 text-burgundy" :
-                                          item.exchange === "BSE"    ? "bg-blue-500/10 text-blue-600" :
-                                          item.exchange === "MCX"    ? "bg-amber-500/10 text-amber-600" :
-                                                                       "bg-slate-400/10 text-slate-500"
-                                        }`}
-                                      >
-                                        {item.exchange}
-                                      </span>
-                                    )}
-                                    <span className="text-[12px] font-medium text-foreground/80 group-hover:text-burgundy transition-colors truncate">
-                                      {item.name}
-                                    </span>
-                                  </Link>
-                                ))}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                {/* ── Research & Knowledge (simple links) ── */}
-                {[
-                  { id: "Research",  icon: <BarChart2 className="w-4 h-4" /> },
-                  { id: "Knowledge", icon: <BookOpen  className="w-4 h-4" /> },
-                ].map(({ id, icon }) => (
-                  <div key={id} className="border-b border-border">
-                    <Link
-                      href="#"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center justify-between px-5 py-4 hover:bg-secondary/40 transition-colors group"
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="w-1.5 h-1.5 rounded-full bg-border" />
-                        <span className="text-sm font-semibold text-foreground group-hover:text-burgundy transition-colors">
-                          {id}
-                        </span>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-burgundy transition-colors" />
-                    </Link>
                   </div>
                 ))}
 
