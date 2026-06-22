@@ -199,7 +199,7 @@ export default function Nifty50Page() {
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-background pt-16 overflow-hidden">
+      <main className="min-h-screen bg-background pt-16 overflow-x-hidden">
 
         {/* ── Breadcrumb ──────────────────────────────────────────────── */}
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-5">
@@ -311,12 +311,30 @@ export default function Nifty50Page() {
           </div>
         </div>
 
+        {/* ── Mobile breadth strip (hidden on lg) ─────────────────────── */}
+        <div className="lg:hidden max-w-[1400px] mx-auto px-4 sm:px-6 mt-4">
+          <div className="grid grid-cols-3 gap-2">
+            <div className="bg-emerald-50 border border-emerald-100 rounded-[6px] p-2.5 text-center">
+              <div className="text-lg font-black text-emerald-700 tabular-nums">24</div>
+              <div className="text-[10px] font-semibold text-emerald-600 mt-0.5">Advancing</div>
+            </div>
+            <div className="bg-red-50 border border-red-100 rounded-[6px] p-2.5 text-center">
+              <div className="text-lg font-black text-red-600 tabular-nums">26</div>
+              <div className="text-[10px] font-semibold text-red-500 mt-0.5">Declining</div>
+            </div>
+            <div className="bg-secondary rounded-[6px] p-2.5 text-center">
+              <div className="text-lg font-black text-foreground tabular-nums">0</div>
+              <div className="text-[10px] font-semibold text-muted-foreground mt-0.5">Neutral</div>
+            </div>
+          </div>
+        </div>
+
         {/* ── Main grid: content + sidebar ─────────────────────────────── */}
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mt-6 pb-20">
-          <div className="grid lg:grid-cols-[1fr_340px] gap-5 items-start">
+          <div className="flex flex-col lg:grid lg:grid-cols-[1fr_340px] gap-5 items-start">
 
             {/* ── LEFT ── */}
-            <div className="space-y-4">
+            <div className="space-y-4 lg:order-1 w-full min-w-0">
 
               {/* Price chart */}
               <div className="border border-border rounded-[8px] bg-background overflow-hidden">
@@ -527,7 +545,7 @@ export default function Nifty50Page() {
             </div>
 
             {/* ── RIGHT SIDEBAR ── */}
-            <div className="space-y-4">
+            <div className="space-y-4 lg:order-2 w-full min-w-0">
 
               {/* Market Breadth */}
               <div className="border border-border rounded-[8px] bg-background p-4 sm:p-5">

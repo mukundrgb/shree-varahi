@@ -356,7 +356,7 @@ export default function StockDetailPage() {
       <Navbar />
 
       {/* ── HERO ── */}
-      <section className="bg-cream border-b border-border/40 pt-24 pb-5">
+      <section className="bg-cream border-b border-border/40 pt-24 pb-5 overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
           {/* Breadcrumb */}
@@ -392,11 +392,11 @@ export default function StockDetailPage() {
               </div>
 
               {/* Price */}
-              <div className="flex items-end gap-3 mb-3">
-                <span className="text-4xl sm:text-5xl font-black text-foreground tabular-nums tracking-tight">
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-3">
+                <span className="text-2xl sm:text-4xl lg:text-5xl font-black text-foreground tabular-nums tracking-tight">
                   ₹{fmtPrice(stock.price)}
                 </span>
-                <div className={`flex items-center gap-1 mb-1.5 px-2.5 py-1 rounded-[5px] font-black text-sm ${isUp ? "bg-profit/10 text-profit" : "bg-loss/10 text-loss"}`}>
+                <div className={`flex items-center gap-1 px-2.5 py-1 rounded-[5px] font-black text-sm ${isUp ? "bg-profit/10 text-profit" : "bg-loss/10 text-loss"}`}>
                   {isUp ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
                   <span>{isUp ? "+" : ""}{fmtPrice(Math.abs(stock.changeAmt))}</span>
                   <span>({isUp ? "+" : ""}{stock.change.toFixed(2)}%)</span>
@@ -426,7 +426,7 @@ export default function StockDetailPage() {
             </div>
 
             {/* Right: action buttons (desktop hero) */}
-            <div className="flex items-center gap-2 lg:mt-2">
+            <div className="flex flex-wrap items-center gap-2 mt-3 lg:mt-2">
               <button
                 onClick={() => setStarred(s => !s)}
                 className={`w-9 h-9 rounded-[7px] border flex items-center justify-center transition-all ${starred ? "bg-gold/10 border-gold/30 text-gold-deep" : "bg-white border-border text-muted-foreground hover:border-gold/30 hover:text-gold-deep"}`}
@@ -453,9 +453,9 @@ export default function StockDetailPage() {
       </section>
 
       {/* ── MAIN GRID ── */}
-      <section className="py-6 lg:py-8 bg-background">
+      <section className="py-6 lg:py-8 bg-background overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-[1fr_340px] gap-6 lg:gap-8 items-start">
+          <div className="grid lg:grid-cols-[1fr_340px] gap-6 lg:gap-8 items-start pb-20 lg:pb-0">
 
             {/* ── LEFT COLUMN ── */}
             <div className="space-y-5">
@@ -464,16 +464,18 @@ export default function StockDetailPage() {
               <div className="border border-border rounded-[10px] bg-white overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
                 {/* Timeframe tabs */}
                 <div className="flex items-center justify-between px-4 pt-4 pb-0 gap-3">
-                  <div className="flex gap-0.5">
-                    {TFS.map(t => (
-                      <button key={t} onClick={() => setTf(t)}
-                        className={`px-3 py-1.5 text-[11px] font-bold rounded-[5px] transition-all duration-150 ${
-                          tf === t ? "bg-burgundy text-white shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
-                        }`}
-                      >{t}</button>
-                    ))}
+                  <div className="overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+                    <div className="flex gap-0.5 w-fit">
+                      {TFS.map(t => (
+                        <button key={t} onClick={() => setTf(t)}
+                          className={`px-3 py-1.5 text-[11px] font-bold rounded-[5px] transition-all duration-150 whitespace-nowrap ${
+                            tf === t ? "bg-burgundy text-white shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
+                          }`}
+                        >{t}</button>
+                      ))}
+                    </div>
                   </div>
-                  <div className={`text-sm font-black tabular-nums ${tfPos ? "text-profit" : "text-loss"}`}>
+                  <div className={`text-sm font-black tabular-nums shrink-0 ${tfPos ? "text-profit" : "text-loss"}`}>
                     {tfPos ? "+" : ""}{tfReturn.toFixed(2)}%
                   </div>
                 </div>
@@ -490,7 +492,7 @@ export default function StockDetailPage() {
                 </div>
 
                 {/* OHLC footer */}
-                <div className="grid grid-cols-4 border-t border-border/60 divide-x divide-border/60">
+                <div className="grid grid-cols-2 sm:grid-cols-4 border-t border-border/60 divide-x divide-border/60 [&>*:nth-child(n+3)]:border-t [&>*:nth-child(n+3)]:border-border/60 sm:[&>*:nth-child(n+3)]:border-t-0">
                   {[
                     { label: "Open",  value: `₹${fmtPrice(stock.open)}` },
                     { label: "High",  value: `₹${fmtPrice(high)}` },
@@ -1066,6 +1068,16 @@ export default function StockDetailPage() {
           </div>
         </div>
       </section>
+
+      {/* Mobile sticky buy/sell bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-border/60 px-4 py-3 flex gap-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
+        <Link href="/signup/register" className="flex-1 py-2.5 rounded-[7px] bg-profit text-white font-black text-sm text-center">
+          Buy {stock.symbol}
+        </Link>
+        <Link href="/signup/register" className="flex-1 py-2.5 rounded-[7px] bg-loss text-white font-black text-sm text-center">
+          Sell
+        </Link>
+      </div>
 
       <Footer />
     </main>
