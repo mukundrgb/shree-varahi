@@ -178,11 +178,12 @@ export function MTFSection() {
               </p>
             </div>
 
-            {/* Two-column layout */}
-            <div className="grid lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-border">
+            {/* Two-column layout — scrolls horizontally on mobile */}
+            <div className="overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+            <div className="grid grid-cols-2 divide-x divide-border" style={{ minWidth: "640px" }}>
 
               {/* ── LEFT: Capital + Stock Selector ── */}
-              <div className="p-5 sm:p-8 space-y-6">
+              <div className="p-6 space-y-6">
 
                 {/* Capital input */}
                 <div>
@@ -302,7 +303,7 @@ export function MTFSection() {
               </div>
 
               {/* ── RIGHT: Selected Stock + Result ── */}
-              <div className="p-5 sm:p-8 flex flex-col gap-5">
+              <div className="p-6 flex flex-col gap-5">
 
                 {/* Selected stock card */}
                 <AnimatePresence mode="wait">
@@ -330,10 +331,9 @@ export function MTFSection() {
                   </motion.div>
                 </AnimatePresence>
 
-                {/* Donut + Legend — stacked on mobile, side-by-side on sm+ */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 lg:gap-10">
-                  {/* SVG Donut — responsive size */}
-                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 mx-auto sm:mx-0">
+                {/* Donut + Legend — always side-by-side */}
+                <div className="flex items-center gap-5">
+                  <div className="relative w-28 h-28 flex-shrink-0">
                     <svg width="100%" height="100%" viewBox="0 0 100 100" className="transform -rotate-90">
                       <circle cx="50" cy="50" r="35" fill="transparent" stroke="#E5E5E5" strokeWidth="16" />
                       <circle
@@ -352,13 +352,12 @@ export function MTFSection() {
                       />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-xl sm:text-2xl font-black text-foreground leading-none">{multiplier}x</span>
-                      <span className="text-[8px] sm:text-[9px] text-muted-foreground font-semibold mt-0.5">buying power</span>
+                      <span className="text-2xl font-black text-foreground leading-none">{multiplier}x</span>
+                      <span className="text-[9px] text-muted-foreground font-semibold mt-0.5">buying power</span>
                     </div>
                   </div>
 
-                  {/* Legend — 2-col grid on mobile, stacked on sm+ */}
-                  <div className="grid grid-cols-2 sm:flex sm:flex-col gap-3 sm:gap-4 flex-1">
+                  <div className="flex flex-col gap-4 flex-1">
                     <div className="border-l-[3px] border-gold pl-3">
                       <span className="text-[10px] text-muted-foreground block font-medium leading-snug">
                         Your Capital
@@ -369,7 +368,7 @@ export function MTFSection() {
                           key={capital}
                           initial={{ opacity: 0.5 }}
                           animate={{ opacity: 1 }}
-                          className="text-base sm:text-xl font-black text-foreground block mt-0.5"
+                          className="text-lg font-black text-foreground block mt-0.5"
                         >
                           {fmt(capital)}
                         </motion.span>
@@ -385,7 +384,7 @@ export function MTFSection() {
                           key={`${capital}-${multiplier}`}
                           initial={{ opacity: 0.5 }}
                           animate={{ opacity: 1 }}
-                          className="text-base sm:text-xl font-black text-burgundy block mt-0.5"
+                          className="text-lg font-black text-burgundy block mt-0.5"
                         >
                           {fmt(funding)}
                         </motion.span>
@@ -419,6 +418,7 @@ export function MTFSection() {
                 </div>
               </div>
             </div>
+            </div>{/* end overflow-x-auto */}
 
             {/* Bottom CTA */}
             <div className="bg-cream/50 border-t border-border rounded-b-[8px] flex flex-col gap-4 p-5 sm:p-6">
