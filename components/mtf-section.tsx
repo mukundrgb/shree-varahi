@@ -168,7 +168,7 @@ export function MTFSection() {
           viewport={{ once: true }}
           className="max-w-5xl mx-auto"
         >
-          <div className="bg-white border border-border rounded-[8px] shadow-sm overflow-hidden">
+          <div className="bg-white border border-border rounded-[8px] shadow-sm">
 
             {/* Card header */}
             <div className="bg-cream/40 px-4 sm:px-6 py-3 sm:py-4 border-b border-border/60 rounded-t-[8px]">
@@ -203,18 +203,20 @@ export function MTFSection() {
                   </div>
 
                   {/* Slider */}
-                  <div className="mt-4 space-y-2">
-                    <Slider
-                      value={[capital]}
-                      onValueChange={(v) => setCapital(v[0])}
-                      min={5000}
-                      max={500000}
-                      step={5000}
-                      className="[&_[role=slider]]:bg-burgundy [&_[role=slider]]:border-burgundy [&_[role=slider]]:h-5 [&_[role=slider]]:w-5"
-                    />
-                    <div className="flex justify-between text-xs text-muted-foreground font-medium">
-                      <span>₹5,000</span>
-                      <span>₹5,00,000</span>
+                  <div className="mt-4">
+                    <div className="px-2.5">
+                      <Slider
+                        value={[capital]}
+                        onValueChange={(v) => setCapital(v[0])}
+                        min={5000}
+                        max={500000}
+                        step={5000}
+                        className="[&_[role=slider]]:bg-burgundy [&_[role=slider]]:border-burgundy [&_[role=slider]]:h-5 [&_[role=slider]]:w-5"
+                      />
+                      <div className="flex justify-between text-xs text-muted-foreground font-medium mt-2">
+                        <span>₹5,000</span>
+                        <span>₹5,00,000</span>
+                      </div>
                     </div>
                   </div>
                 </div>
