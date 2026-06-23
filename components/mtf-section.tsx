@@ -449,7 +449,7 @@ export function MTFSection() {
 
           {/* View all link */}
           <p className="text-center mt-6">
-            <a href="#" className="text-sm text-burgundy hover:underline inline-flex items-center gap-1 font-semibold">
+            <a href="/mtf" className="text-sm text-burgundy hover:underline inline-flex items-center gap-1 font-semibold">
               View all 1,700+ MTF eligible stocks
               <ArrowRight className="h-3.5 w-3.5" />
             </a>

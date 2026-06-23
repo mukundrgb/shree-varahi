@@ -117,6 +117,7 @@ const products: Product[] = [
     badgeColor: "bg-burgundy/10 text-burgundy",
     accentColor: "#8B0D19",
     bgHover: "rgba(139,13,25,0.04)",
+    href: "/commodity",
   },
   {
     customIcon: GlobeMarketIcon,

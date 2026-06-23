@@ -39,14 +39,14 @@ const TRADE_INVEST: MenuItem[] = [
   { title: "F&O",       desc: "Futures & options, ₹17 flat",        icon: <PieChart   className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/futures-options" },
   { title: "ETF",       desc: "Exchange traded funds",               icon: <Layers     className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/etf" },
   { title: "IPO",       desc: "Apply for upcoming IPOs free",        icon: <Target     className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/ipo" },
-  { title: "Commodity", desc: "MCX gold, silver & crude oil",        icon: <Box        className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
-  { title: "MTF",       desc: "4× margin buying power on stocks",   icon: <Zap        className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
+  { title: "Commodity", desc: "MCX gold, silver & crude oil",        icon: <Box        className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/commodity" },
+  { title: "MTF",       desc: "4× margin buying power on stocks",   icon: <Zap        className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/mtf" },
 ]
 
 const MF_SIP: MenuItem[] = [
   { title: "Mutual Funds",   desc: "5,000+ direct funds, 0% commission", icon: <Landmark  className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/mutual-funds" },
   { title: "SIP Calculator", desc: "Plan your monthly SIP goal",          icon: <RotateCcw className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/mutual-funds" },
-  { title: "NFO",            desc: "New fund offers — invest early",      icon: "🆕",                                                              href: "#" },
+  { title: "NFO",            desc: "New fund offers — invest early",      icon: "🆕",                                                              href: "/nfo" },
 ]
 
 const PRODUCTS: MenuItem[] = [
@@ -184,11 +184,11 @@ const MARKETS_DATA: Record<string, Record<string, MarketItem[]>> = {
   },
   "Gold & Silver": {
     "Commodities": [
-      { name: "MCX Gold",    href: "#", exchange: "MCX" },
-      { name: "MCX Silver",  href: "#", exchange: "MCX" },
-      { name: "Gold Mini",   href: "#", exchange: "MCX" },
-      { name: "Silver Mini", href: "#", exchange: "MCX" },
-      { name: "Gold Petal",  href: "#", exchange: "MCX" },
+      { name: "MCX Gold",    href: "/commodity", exchange: "MCX" },
+      { name: "MCX Silver",  href: "/commodity", exchange: "MCX" },
+      { name: "Gold Mini",   href: "/commodity", exchange: "MCX" },
+      { name: "Silver Mini", href: "/commodity", exchange: "MCX" },
+      { name: "Gold Petal",  href: "/commodity", exchange: "MCX" },
     ],
     "Digital Assets": [
       { name: "Digital Gold",        href: "#" },
@@ -201,7 +201,7 @@ const MARKETS_DATA: Record<string, Record<string, MarketItem[]>> = {
     "Calculators": [
       { name: "SIP Calculator",       href: "/mutual-funds" },
       { name: "Brokerage Calculator", href: "#" },
-      { name: "MTF Calculator",       href: "#" },
+      { name: "MTF Calculator",       href: "/mtf" },
       { name: "CAGR Calculator",      href: "#" },
       { name: "Lumpsum Calculator",   href: "#" },
       { name: "Goal-based SIP",       href: "#" },
@@ -569,7 +569,8 @@ export function Navbar() {
                       { label: "IPO",          href: "/ipo",                       icon: <Target className="w-4 h-4" /> },
                       { label: "F&O",          href: "/futures-options",           icon: <PieChart className="w-4 h-4" /> },
                       { label: "Nifty 50",     href: "/markets/indices/nifty-50",  icon: <BarChart2 className="w-4 h-4" /> },
-                      { label: "ETF",          href: "#",                          icon: <Layers className="w-4 h-4" /> },
+                      { label: "ETF",          href: "/etf",                       icon: <Layers className="w-4 h-4" /> },
+                      { label: "Commodity",    href: "/commodity",                 icon: <Box className="w-4 h-4" /> },
                     ].map((q) => (
                       <Link
                         key={q.label}
