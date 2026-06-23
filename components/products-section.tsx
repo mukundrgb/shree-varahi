@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, TrendingUp, PieChart, Landmark, RotateCcw, Target, Layers, Box } from "lucide-react"
 
@@ -42,6 +43,7 @@ type Product = {
   accentColor: string
   bgHover: string
   tickers?: Ticker[]
+  href?: string
 }
 
 const products: Product[] = [
@@ -104,6 +106,7 @@ const products: Product[] = [
     badgeColor: "bg-gold/20 text-gold-deep",
     accentColor: "#B8924A",
     bgHover: "rgba(217,178,124,0.06)",
+    href: "/etf",
   },
   {
     icon: Box,
@@ -132,7 +135,7 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
   const Icon = product.icon
   const CustomIcon = product.customIcon
 
-  return (
+  const card = (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -188,6 +191,12 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
       {/* Description */}
       <p className="text-sm text-muted-foreground leading-relaxed">{product.description}</p>
     </motion.div>
+  )
+
+  return product.href ? (
+    <Link href={product.href} className="contents">{card}</Link>
+  ) : (
+    card
   )
 }
 

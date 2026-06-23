@@ -37,7 +37,7 @@ type MenuItem = {
 const TRADE_INVEST: MenuItem[] = [
   { title: "Stocks",    desc: "NSE & BSE equities, ₹0 delivery",   icon: <TrendingUp className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/stocks" },
   { title: "F&O",       desc: "Futures & options, ₹17 flat",        icon: <PieChart   className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/futures-options" },
-  { title: "ETF",       desc: "Exchange traded funds",               icon: <Layers     className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
+  { title: "ETF",       desc: "Exchange traded funds",               icon: <Layers     className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/etf" },
   { title: "IPO",       desc: "Apply for upcoming IPOs free",        icon: <Target     className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/ipo" },
   { title: "Commodity", desc: "MCX gold, silver & crude oil",        icon: <Box        className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
   { title: "MTF",       desc: "4× margin buying power on stocks",   icon: <Zap        className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
