@@ -225,7 +225,7 @@ export default function FuturesOptionsPage() {
             {/* Hero Left Column: Deep Typographic Editorial */}
             <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
               {/* Bold Headline Pairing */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-foreground tracking-tight leading-[1.02] uppercase">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-foreground tracking-tight leading-[1.02]">
                 Trade Futures &amp; Options <br />
                 <span className="text-burgundy">With Advanced F&amp;O Tools</span>
               </h1>
@@ -535,7 +535,7 @@ export default function FuturesOptionsPage() {
           
           {/* Section Heading */}
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground uppercase tracking-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight">
               Built for the F&amp;O trader who <span className="text-burgundy">analyse, strategise, and execute.</span>
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground/90 max-w-2xl mx-auto leading-relaxed">
@@ -553,7 +553,7 @@ export default function FuturesOptionsPage() {
                   <div className="w-10 h-10 rounded-[8px] bg-burgundy/10 flex items-center justify-center mb-5 border border-burgundy/10">
                     <Layers className="h-5 w-5 text-burgundy" />
                   </div>
-                  <h3 className="font-extrabold text-xl text-foreground uppercase tracking-tight mb-2">Options Trading</h3>
+                  <h3 className="font-extrabold text-xl text-foreground tracking-tight mb-2">Options Trading</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
                     Buy and sell Call and Put options on supported stocks and indices, and trade quickly and confidently as the market moves up or down.
                   </p>
@@ -614,7 +614,7 @@ export default function FuturesOptionsPage() {
                 <div className="w-10 h-10 rounded-[8px] bg-gold/10 flex items-center justify-center mb-5 border border-gold/10">
                   <LineChart className="h-5 w-5 text-gold-deep" />
                 </div>
-                <h3 className="font-extrabold text-xl text-foreground uppercase tracking-tight mb-2">Futures Trading</h3>
+                <h3 className="font-extrabold text-xl text-foreground tracking-tight mb-2">Futures Trading</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   Access futures trading across indices, stocks, and commodities with real-time execution and tools designed to support your trading decisions every day.
                 </p>
@@ -689,7 +689,7 @@ export default function FuturesOptionsPage() {
                     <Icon className="h-4 w-4" style={{ color: item.accent }} strokeWidth={2.5} />
                   </div>
                   <div>
-                    <h4 className="font-extrabold text-foreground text-sm uppercase mb-1">{item.title}</h4>
+                    <h4 className="font-extrabold text-foreground text-sm mb-1">{item.title}</h4>
                     <p className="text-[12px] text-muted-foreground leading-relaxed">{item.desc}</p>
                   </div>
                 </div>
@@ -782,7 +782,7 @@ export default function FuturesOptionsPage() {
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-burgundy/10 border border-burgundy/25 text-xs font-bold text-burgundy uppercase tracking-wider">
               ✦ Advanced Toolsets ✦
             </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground uppercase tracking-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight">
               Master the Derivatives Market.
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground/90 max-w-2xl mx-auto">
@@ -827,7 +827,7 @@ export default function FuturesOptionsPage() {
                 <div className="lg:col-span-5 space-y-6">
                   <div>
                     <span className="text-[10px] font-bold text-burgundy tracking-widest uppercase block mb-1">Options</span>
-                    <h3 className="text-2xl sm:text-3xl font-black text-foreground uppercase leading-tight">
+                    <h3 className="text-2xl sm:text-3xl font-black text-foreground leading-tight">
                       Every tool a serious options trader needs.
                     </h3>
                   </div>
@@ -842,7 +842,7 @@ export default function FuturesOptionsPage() {
                       { t: "OI Change Tracker", d: "Watch open interest build and unwind in real time across strikes." }
                     ].map((item, idx) => (
                       <div key={idx} className="bg-cream/70 border border-border/60 p-4 rounded-[10px] space-y-1">
-                        <h4 className="font-extrabold text-foreground text-xs uppercase tracking-tight">{item.t}</h4>
+                        <h4 className="font-extrabold text-foreground text-xs tracking-tight">{item.t}</h4>
                         <p className="text-[11px] text-muted-foreground leading-relaxed">{item.d}</p>
                       </div>
                     ))}
@@ -939,7 +939,7 @@ export default function FuturesOptionsPage() {
                 <div className="lg:col-span-5 space-y-6">
                   <div>
                     <span className="text-[10px] font-bold text-gold-deep tracking-widest uppercase block mb-1">Futures</span>
-                    <h3 className="text-2xl sm:text-3xl font-black text-foreground uppercase leading-tight">
+                    <h3 className="text-2xl sm:text-3xl font-black text-foreground leading-tight">
                       Futures trading built for speed and clarity.
                     </h3>
                   </div>
@@ -953,7 +953,7 @@ export default function FuturesOptionsPage() {
                       { t: "Intraday Leverage", d: "Get up to 5× leverage on futures positions. Settle same day." }
                     ].map((item, idx) => (
                       <div key={idx} className="bg-cream/70 border border-border/60 p-4 rounded-[10px] space-y-1">
-                        <h4 className="font-extrabold text-foreground text-xs uppercase tracking-tight">{item.t}</h4>
+                        <h4 className="font-extrabold text-foreground text-xs tracking-tight">{item.t}</h4>
                         <p className="text-[11px] text-muted-foreground leading-relaxed">{item.d}</p>
                       </div>
                     ))}
@@ -1084,7 +1084,7 @@ export default function FuturesOptionsPage() {
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
               Getting Started
             </span>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground uppercase tracking-tight leading-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight leading-tight">
               New to F&amp;O? Here&apos;s how to begin.
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground/90 max-w-2xl mx-auto">
@@ -1131,7 +1131,7 @@ export default function FuturesOptionsPage() {
                       0{idx + 1}
                     </span>
                     <div className="space-y-1">
-                      <h4 className="font-extrabold text-foreground text-sm uppercase tracking-wide">{step.title}</h4>
+                      <h4 className="font-extrabold text-foreground text-sm tracking-wide">{step.title}</h4>
                       <p className="text-xs text-muted-foreground leading-relaxed">{step.desc}</p>
                     </div>
                   </div>
@@ -1166,7 +1166,7 @@ export default function FuturesOptionsPage() {
                     >
                       <div className="space-y-4 text-center">
                         <Smartphone className="h-10 w-10 text-gold mx-auto animate-bounce" />
-                        <h5 className="font-bold text-sm uppercase">Open &amp; Activate</h5>
+                        <h5 className="font-bold text-sm">Open &amp; Activate</h5>
                         <p className="text-[9px] text-slate-400 leading-relaxed px-2">Complete Aadhaar e-KYC in under 10 minutes and activate F&amp;O trading from your settings.</p>
                       </div>
                       <div className="space-y-2">
@@ -1224,7 +1224,7 @@ export default function FuturesOptionsPage() {
                     >
                       <div className="space-y-3 text-center">
                         <Activity className="h-8 w-8 text-gold mx-auto animate-pulse" />
-                        <h5 className="font-bold text-xs uppercase text-slate-100">Analyse Before You Trade</h5>
+                        <h5 className="font-bold text-xs text-slate-100">Analyse Before You Trade</h5>
                       </div>
                       <div className="h-24 w-full bg-slate-900 rounded border border-slate-800 flex items-center">
                         <svg className="w-full h-full" viewBox="0 0 100 40">
@@ -1249,7 +1249,7 @@ export default function FuturesOptionsPage() {
                         <div className="h-10 w-10 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto">
                           <Check className="h-5 w-5" />
                         </div>
-                        <h5 className="font-bold text-sm uppercase">Execute &amp; Manage</h5>
+                        <h5 className="font-bold text-sm">Execute &amp; Manage</h5>
                         <p className="text-[9px] text-slate-400 px-2 leading-relaxed">Place order in under 80ms and monitor live P&amp;L modification limits.</p>
                       </div>
                       <div className="bg-slate-900 p-2.5 rounded border border-slate-800 space-y-1 text-[8px] font-mono text-slate-400">
@@ -1300,7 +1300,7 @@ export default function FuturesOptionsPage() {
                 <span className="text-7xl sm:text-8xl lg:text-9xl font-black tracking-tighter leading-none">17</span>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-foreground uppercase tracking-tight">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-foreground tracking-tight">
                 flat. Every F&amp;O order.
               </h2>
 
@@ -1310,7 +1310,7 @@ export default function FuturesOptionsPage() {
 
               {/* Savings Calculator Interactive Area */}
               <div className="bg-white border border-border/80 rounded-2xl p-6 lg:p-8 max-w-3xl mx-auto space-y-6 text-left my-8 shadow-sm">
-                <h3 className="font-extrabold text-sm uppercase tracking-wide text-foreground border-b border-slate-100 pb-3 flex items-center justify-between">
+                <h3 className="font-extrabold text-sm tracking-wide text-foreground border-b border-slate-100 pb-3 flex items-center justify-between">
                   <span>Interactive Savings Calculator</span>
                   <span className="text-xs text-muted-foreground font-mono font-normal">Calculate benefits instantly</span>
                 </h3>
@@ -1376,7 +1376,7 @@ export default function FuturesOptionsPage() {
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
               FAQ
             </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-foreground uppercase tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
               Frequently Asked Questions
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -1438,7 +1438,7 @@ export default function FuturesOptionsPage() {
                     onClick={() => setFaqOpenIndex(isOpen ? null : index)}
                     className="w-full px-6 py-4.5 text-left flex justify-between items-center gap-4 hover:bg-slate-50 transition-colors"
                   >
-                    <span className="font-extrabold text-foreground text-sm uppercase tracking-wide">{faq.q}</span>
+                    <span className="font-extrabold text-foreground text-sm tracking-wide">{faq.q}</span>
                     <ChevronDown className={`h-4 w-4 text-slate-400 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
                   </button>
 
@@ -1495,7 +1495,7 @@ export default function FuturesOptionsPage() {
                 4.5★ · App Rating
               </span>
 
-              <h2 className="text-3xl sm:text-5xl font-black leading-tight text-white uppercase tracking-tight">
+              <h2 className="text-3xl sm:text-5xl font-black leading-tight text-white tracking-tight">
                 Trade Futures &amp; Options <br />
                 <span className="text-gold-champagne">With Better Control</span>
               </h2>
@@ -1534,12 +1534,12 @@ export default function FuturesOptionsPage() {
                       placeholder="10-digit mobile"
                       value={smsNum}
                       onChange={(e) => setSmsNum(e.target.value.replace(/\D/g, ""))}
-                      className="flex-1 bg-white/5 border border-white/20 rounded-[5px] px-3.5 py-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-gold font-mono font-bold"
+                      className="flex-1 h-12 bg-white text-foreground placeholder:text-muted-foreground rounded-[5px] px-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-gold font-mono font-bold"
                     />
-                    <Button 
+                    <Button
                       type="submit"
                       disabled={smsStatus !== "idle"}
-                      className="bg-gold hover:bg-gold-champagne text-burgundy font-black rounded-[5px] px-4 py-2.5 text-xs shrink-0 shadow-md"
+                      className="bg-gold hover:bg-gold-champagne text-burgundy font-black rounded-[5px] px-4 h-12 text-xs shrink-0 shadow-md"
                     >
                       {smsStatus === "sending" && "SENDING..."}
                       {smsStatus === "sent" && "✓ SENT"}

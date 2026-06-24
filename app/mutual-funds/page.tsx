@@ -99,16 +99,16 @@ const RISK_FILTERS: Array<{ label: string; value: RiskLevel | "All" }> = [
 ]
 
 const CATEGORIES_GRID = [
-  { label: "Large Cap",          count: 48, color: "#1E40AF", icon: BarChart2 },
-  { label: "Mid Cap",            count: 32, color: "#7C3AED", icon: TrendingUp },
-  { label: "Small Cap",          count: 28, color: "#B91C1C", icon: Zap },
-  { label: "ELSS (Tax Saver)",   count: 38, color: "#15803D", icon: Shield },
-  { label: "Index Funds",        count: 56, color: "#0891B2", icon: BarChart2 },
-  { label: "Balanced Advantage", count: 20, color: "#D97706", icon: Award },
-  { label: "Multi Cap",          count: 24, color: "#0369A1", icon: TrendingUp },
-  { label: "Sectoral / Thematic",count: 82, color: "#DC2626", icon: Star },
-  { label: "Debt / Liquid",      count: 44, color: "#B45309", icon: Shield },
-  { label: "Hybrid",             count: 36, color: "#16A34A", icon: Users },
+  { label: "Large Cap",          count: 48, color: "#FF0000", icon: BarChart2 },
+  { label: "Mid Cap",            count: 32, color: "#FF0000", icon: TrendingUp },
+  { label: "Small Cap",          count: 28, color: "#FF0000", icon: Zap },
+  { label: "ELSS (Tax Saver)",   count: 38, color: "#FF0000", icon: Shield },
+  { label: "Index Funds",        count: 56, color: "#FF0000", icon: BarChart2 },
+  { label: "Balanced Advantage", count: 20, color: "#FF0000", icon: Award },
+  { label: "Multi Cap",          count: 24, color: "#FF0000", icon: TrendingUp },
+  { label: "Sectoral / Thematic",count: 82, color: "#FF0000", icon: Star },
+  { label: "Debt / Liquid",      count: 44, color: "#FF0000", icon: Shield },
+  { label: "Hybrid",             count: 36, color: "#FF0000", icon: Users },
 ]
 
 const AMC_PARTNERS = [
@@ -760,28 +760,28 @@ export default function MutualFundsPage() {
             {[
               {
                 icon: Award,
-                color: "#D97706",
+                color: "#FF0000",
                 title: "0% Commission",
                 desc: "Invest directly in regular & direct mutual funds with zero hidden charges or commission.",
                 points: ["No entry load", "No exit penalties", "Transparent pricing"],
               },
               {
                 icon: BarChart2,
-                color: "#1E40AF",
+                color: "#FF0000",
                 title: "Research Backed",
                 desc: "Fund recommendations powered by SEBI-registered research analysts and quant models.",
                 points: ["Expert analysis", "Quant screener", "Risk scoring"],
               },
               {
                 icon: Zap,
-                color: "#7C3AED",
+                color: "#FF0000",
                 title: "Seamless Investing",
                 desc: "Start, pause, or switch SIPs in seconds via app or web. Real-time portfolio tracking.",
                 points: ["One-click SIP", "Instant switch", "Live NAV tracking"],
               },
               {
                 icon: Users,
-                color: "#15803D",
+                color: "#FF0000",
                 title: "Trusted by Millions",
                 desc: "31+ years of experience. Backed by 5 lakh+ active investors and 30+ AMC partnerships.",
                 points: ["31 years legacy", "30+ AMC partners", "Secure & regulated"],

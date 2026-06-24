@@ -283,7 +283,7 @@ export default function MTFPage() {
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
               FAQ
             </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-foreground uppercase tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
               Frequently Asked Questions
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -303,7 +303,7 @@ export default function MTFPage() {
                     onClick={() => setFaqOpenIndex(isOpen ? null : index)}
                     className="w-full px-6 py-4.5 text-left flex justify-between items-center gap-4 hover:bg-slate-50 transition-colors"
                   >
-                    <span className="font-extrabold text-foreground text-sm uppercase tracking-wide">{faq.q}</span>
+                    <span className="font-extrabold text-foreground text-sm tracking-wide">{faq.q}</span>
                     <ChevronDown className={`h-4 w-4 text-slate-400 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
                   </button>
 
@@ -372,9 +372,9 @@ export default function MTFPage() {
                   value={mobile}
                   onChange={(e) => setMobile(e.target.value)}
                   placeholder="Enter your mobile number"
-                  className="flex-1 h-11 px-4 rounded-[5px] bg-white/10 border border-white/20 text-white placeholder:text-white/50 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold/40"
+                  className="w-full sm:flex-1 h-12 px-4 rounded-[5px] bg-white text-foreground placeholder:text-muted-foreground text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-gold"
                 />
-                <Button type="submit" className="bg-white hover:bg-gold-champagne text-burgundy font-black h-11 px-7 text-sm rounded-[5px] shadow-xl shrink-0">
+                <Button type="submit" className="w-full sm:w-auto bg-gold hover:bg-gold-champagne text-burgundy font-black h-12 px-7 text-sm rounded-[5px] shadow-xl shrink-0">
                   Open Account
                 </Button>
               </form>

@@ -16,14 +16,14 @@ import Link from "next/link"
 // ─── Data ───────────────────────────────────────────────────────────────────
 
 const TOOLS = [
-  { icon: TrendingUp,        color: "#8B0D19", title: "Active NFOs",       desc: "Explore and invest in currently open New Fund Offers (NFOs) to discover fresh opportunities for portfolio growth." },
-  { icon: CalendarRange,     color: "#D97706", title: "Upcoming NFOs",     desc: "Stay updated on upcoming fund launches and subscription schedules so you never miss new investment opportunities." },
-  { icon: FileSearch,        color: "#1D4ED8", title: "NFO Research",      desc: "Review fund objectives, strategy, risk profile, and key details to make more informed investment decisions." },
-  { icon: GitCompare,        color: "#7C3AED", title: "Fund Comparison",   desc: "Compare NFOs based on category, risk level, and investment strategy to choose the one that best fits your goals." },
-  { icon: MonitorSmartphone, color: "#059669", title: "Online Investment", desc: "Invest digitally through a simple, secure, and seamless process designed for a smooth investing experience." },
-  { icon: Bookmark,          color: "#B8924A", title: "Watchlists",        desc: "Save and monitor NFOs before investing to stay organized and never miss a promising opportunity." },
-  { icon: LineChart,         color: "#0891B2", title: "Fund Tracking",     desc: "Track your subscribed NFOs and investment status in real time to stay fully updated on your portfolio." },
-  { icon: Lightbulb,         color: "#B91C1C", title: "Investment Insights", desc: "Access fund information, market trends, and research insights to make smarter and more confident investment decisions." },
+  { icon: TrendingUp,        color: "#FF0000", title: "Active NFOs",       desc: "Explore and invest in currently open New Fund Offers (NFOs) to discover fresh opportunities for portfolio growth." },
+  { icon: CalendarRange,     color: "#FF0000", title: "Upcoming NFOs",     desc: "Stay updated on upcoming fund launches and subscription schedules so you never miss new investment opportunities." },
+  { icon: FileSearch,        color: "#FF0000", title: "NFO Research",      desc: "Review fund objectives, strategy, risk profile, and key details to make more informed investment decisions." },
+  { icon: GitCompare,        color: "#FF0000", title: "Fund Comparison",   desc: "Compare NFOs based on category, risk level, and investment strategy to choose the one that best fits your goals." },
+  { icon: MonitorSmartphone, color: "#FF0000", title: "Online Investment", desc: "Invest digitally through a simple, secure, and seamless process designed for a smooth investing experience." },
+  { icon: Bookmark,          color: "#FF0000", title: "Watchlists",        desc: "Save and monitor NFOs before investing to stay organized and never miss a promising opportunity." },
+  { icon: LineChart,         color: "#FF0000", title: "Fund Tracking",     desc: "Track your subscribed NFOs and investment status in real time to stay fully updated on your portfolio." },
+  { icon: Lightbulb,         color: "#FF0000", title: "Investment Insights", desc: "Access fund information, market trends, and research insights to make smarter and more confident investment decisions." },
 ]
 
 const KEY_BENEFITS_1 = [
@@ -35,12 +35,12 @@ const KEY_BENEFITS_1 = [
 type Category = "Equity" | "Debt" | "Hybrid" | "Index" | "Sector" | "International"
 
 const CATEGORIES: { id: Category; icon: React.ElementType; color: string; desc: string }[] = [
-  { id: "Equity",        icon: TrendingUp, color: "#8B0D19", desc: "Growth-focused funds investing primarily in equity markets to help you capture long-term wealth creation opportunities." },
-  { id: "Debt",          icon: Landmark,   color: "#15803D", desc: "Fixed-income funds focused on stability and steady income generation for predictable financial growth." },
-  { id: "Hybrid",        icon: Scale,      color: "#D97706", desc: "A balanced mix of equity and debt investments designed to deliver growth with stability and controlled risk." },
-  { id: "Index",         icon: BarChart3,  color: "#1D4ED8", desc: "Passive funds tracking benchmark market indices to deliver simple, low-cost, market-matching returns." },
-  { id: "Sector",        icon: Target,     color: "#B91C1C", desc: "Focused exposure to specific sectors and investment themes to capture targeted growth opportunities in the market." },
-  { id: "International", icon: Globe2,     color: "#7C3AED", desc: "Invest in global markets and international opportunities to diversify your portfolio and capture worldwide growth potential." },
+  { id: "Equity",        icon: TrendingUp, color: "#FF0000", desc: "Growth-focused funds investing primarily in equity markets to help you capture long-term wealth creation opportunities." },
+  { id: "Debt",          icon: Landmark,   color: "#FF0000", desc: "Fixed-income funds focused on stability and steady income generation for predictable financial growth." },
+  { id: "Hybrid",        icon: Scale,      color: "#FF0000", desc: "A balanced mix of equity and debt investments designed to deliver growth with stability and controlled risk." },
+  { id: "Index",         icon: BarChart3,  color: "#FF0000", desc: "Passive funds tracking benchmark market indices to deliver simple, low-cost, market-matching returns." },
+  { id: "Sector",        icon: Target,     color: "#FF0000", desc: "Focused exposure to specific sectors and investment themes to capture targeted growth opportunities in the market." },
+  { id: "International", icon: Globe2,     color: "#FF0000", desc: "Invest in global markets and international opportunities to diversify your portfolio and capture worldwide growth potential." },
 ]
 
 const NFOS: Record<Category, { name: string; status: "Open" | "Upcoming"; closes: string; min: string }[]> = {
@@ -376,7 +376,7 @@ export default function NFOPage() {
             {/* Left — scrollable feature list */}
             <div>
               <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-3">NFO Research</p>
-              <h2 className="text-3xl sm:text-4xl font-black uppercase text-foreground leading-[1.1] mb-4">
+              <h2 className="text-3xl sm:text-4xl font-black text-foreground leading-[1.1] mb-4">
                 Research<br />Before You Invest
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-md">
@@ -598,7 +598,7 @@ export default function NFOPage() {
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
               FAQ
             </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-foreground uppercase tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
               Frequently Asked Questions
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -618,7 +618,7 @@ export default function NFOPage() {
                     onClick={() => setFaqOpenIndex(isOpen ? null : index)}
                     className="w-full px-6 py-4.5 text-left flex justify-between items-center gap-4 hover:bg-slate-50 transition-colors"
                   >
-                    <span className="font-extrabold text-foreground text-sm uppercase tracking-wide">{faq.q}</span>
+                    <span className="font-extrabold text-foreground text-sm tracking-wide">{faq.q}</span>
                     <ChevronDown className={`h-4 w-4 text-slate-400 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
                   </button>
 
@@ -687,9 +687,9 @@ export default function NFOPage() {
                   value={mobile}
                   onChange={(e) => setMobile(e.target.value)}
                   placeholder="Enter your mobile number"
-                  className="flex-1 h-11 px-4 rounded-[5px] bg-white/10 border border-white/20 text-white placeholder:text-white/50 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold/40"
+                  className="w-full sm:flex-1 h-12 px-4 rounded-[5px] bg-white text-foreground placeholder:text-muted-foreground text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-gold"
                 />
-                <Button type="submit" className="bg-white hover:bg-gold-champagne text-burgundy font-black h-11 px-7 text-sm rounded-[5px] shadow-xl shrink-0">
+                <Button type="submit" className="w-full sm:w-auto bg-gold hover:bg-gold-champagne text-burgundy font-black h-12 px-7 text-sm rounded-[5px] shadow-xl shrink-0">
                   Get Started
                 </Button>
               </form>

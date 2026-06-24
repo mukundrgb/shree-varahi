@@ -16,14 +16,14 @@ import Link from "next/link"
 // ─── Data ───────────────────────────────────────────────────────────────────
 
 const TOOLS = [
-  { icon: TrendingUp,       color: "#8B0D19", title: "Commodity Futures",   desc: "Trade major commodity futures contracts across key markets and capture opportunities in global price movements." },
-  { icon: Layers,           color: "#059669", title: "Commodity Options",   desc: "Trade commodity options on eligible contracts and implement trading and hedging strategies based on market outlook." },
-  { icon: ListChecks,       color: "#1D4ED8", title: "Option Chain",        desc: "Track OI, volume, IV, and strike data for eligible commodity contracts in a single dedicated view." },
-  { icon: Gauge,            color: "#7C3AED", title: "Greeks Analysis",     desc: "Evaluate key option Greeks like Delta, Theta, Vega, and Gamma to manage risk and improve decision-making." },
-  { icon: Activity,         color: "#D97706", title: "TradingView Charts",  desc: "Advanced charts with indicators and multiple timeframes, integrated directly into your trading workflow." },
-  { icon: ShieldCheck,      color: "#B8924A", title: "Pledge Margin",       desc: "Access extra trading margin using approved holdings as collateral and keep your long-term investments invested." },
-  { icon: LayoutDashboard,  color: "#0891B2", title: "Commodity Dashboard", desc: "Monitor your trades, available margin, and overall performance live so you always know how your positions are performing." },
-  { icon: RotateCcw,        color: "#B91C1C", title: "Position Management", desc: "Manage your trades with ease by updating orders, monitoring positions, and exiting when needed as conditions change." },
+  { icon: TrendingUp,       color: "#FF0000", title: "Commodity Futures",   desc: "Trade major commodity futures contracts across key markets and capture opportunities in global price movements." },
+  { icon: Layers,           color: "#FF0000", title: "Commodity Options",   desc: "Trade commodity options on eligible contracts and implement trading and hedging strategies based on market outlook." },
+  { icon: ListChecks,       color: "#FF0000", title: "Option Chain",        desc: "Track OI, volume, IV, and strike data for eligible commodity contracts in a single dedicated view." },
+  { icon: Gauge,            color: "#FF0000", title: "Greeks Analysis",     desc: "Evaluate key option Greeks like Delta, Theta, Vega, and Gamma to manage risk and improve decision-making." },
+  { icon: Activity,         color: "#FF0000", title: "TradingView Charts",  desc: "Advanced charts with indicators and multiple timeframes, integrated directly into your trading workflow." },
+  { icon: ShieldCheck,      color: "#FF0000", title: "Pledge Margin",       desc: "Access extra trading margin using approved holdings as collateral and keep your long-term investments invested." },
+  { icon: LayoutDashboard,  color: "#FF0000", title: "Commodity Dashboard", desc: "Monitor your trades, available margin, and overall performance live so you always know how your positions are performing." },
+  { icon: RotateCcw,        color: "#FF0000", title: "Position Management", desc: "Manage your trades with ease by updating orders, monitoring positions, and exiting when needed as conditions change." },
 ]
 
 const KEY_BENEFITS_1 = [
@@ -62,10 +62,10 @@ const WHY_MULTIPLE = [
 ]
 
 const ADVANCED_TOOLS = [
-  { icon: ListChecks, title: "Advanced Option Chain",   desc: "Track OI, volume, premiums, and strike-wise market activity.", color: "#8B0D19" },
-  { icon: Gauge,      title: "Greeks Tracking",          desc: "Analyze Delta, Theta, Vega, and Gamma for risk management.",  color: "#B8924A" },
-  { icon: Activity,   title: "TradingView Integration",  desc: "Advanced charts, indicators, and real-time market analysis.", color: "#8B0D19" },
-  { icon: LayoutDashboard, title: "Commodity Dashboard",  desc: "Monitor positions, margins, P&L, and market exposure.",       color: "#B8924A" },
+  { icon: ListChecks, title: "Advanced Option Chain",   desc: "Track OI, volume, premiums, and strike-wise market activity.", color: "#FF0000" },
+  { icon: Gauge,      title: "Greeks Tracking",          desc: "Analyze Delta, Theta, Vega, and Gamma for risk management.",  color: "#FF0000" },
+  { icon: Activity,   title: "TradingView Integration",  desc: "Advanced charts, indicators, and real-time market analysis.", color: "#FF0000" },
+  { icon: LayoutDashboard, title: "Commodity Dashboard",  desc: "Monitor positions, margins, P&L, and market exposure.",       color: "#FF0000" },
 ]
 
 const WHY_TOOLS_MATTER = [
@@ -84,10 +84,10 @@ const MARGIN_BENEFITS = [
 ]
 
 const STRATEGY_CARDS = [
-  { icon: Layers,    title: "Basket Orders",          desc: "Trade commodities efficiently by placing multiple positions together for spreads, hedging, and advanced strategies.", color: "#8B0D19" },
-  { icon: Target,    title: "Strategy Builder",        desc: "Create, analyze, and compare commodity options strategies with clear risk-reward evaluation to support smarter decisions.", color: "#1D4ED8" },
-  { icon: Zap,       title: "Quick Order Execution",   desc: "React faster to market movements by placing, adjusting, and closing trades seamlessly when conditions change.", color: "#D97706" },
-  { icon: Eye,       title: "Position Monitoring",     desc: "Get real-time visibility into positions, P&L, margins, contracts, and market exposure from a single dashboard.", color: "#059669" },
+  { icon: Layers,    title: "Basket Orders",          desc: "Trade commodities efficiently by placing multiple positions together for spreads, hedging, and advanced strategies.", color: "#FF0000" },
+  { icon: Target,    title: "Strategy Builder",        desc: "Create, analyze, and compare commodity options strategies with clear risk-reward evaluation to support smarter decisions.", color: "#FF0000" },
+  { icon: Zap,       title: "Quick Order Execution",   desc: "React faster to market movements by placing, adjusting, and closing trades seamlessly when conditions change.", color: "#FF0000" },
+  { icon: Eye,       title: "Position Monitoring",     desc: "Get real-time visibility into positions, P&L, margins, contracts, and market exposure from a single dashboard.", color: "#FF0000" },
 ]
 
 const STRATEGY_WHY = [
@@ -370,7 +370,7 @@ export default function CommodityPage() {
             {/* Left — feature cards */}
             <div>
               <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-3">Advanced Tools</p>
-              <h2 className="text-3xl sm:text-4xl font-black uppercase text-foreground leading-[1.1] mb-4">
+              <h2 className="text-3xl sm:text-4xl font-black text-foreground leading-[1.1] mb-4">
                 Built For Active<br />Commodity Traders
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-md">
@@ -645,7 +645,7 @@ export default function CommodityPage() {
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
               FAQ
             </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-foreground uppercase tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
               Frequently Asked Questions
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -665,7 +665,7 @@ export default function CommodityPage() {
                     onClick={() => setFaqOpenIndex(isOpen ? null : index)}
                     className="w-full px-6 py-4.5 text-left flex justify-between items-center gap-4 hover:bg-slate-50 transition-colors"
                   >
-                    <span className="font-extrabold text-foreground text-sm uppercase tracking-wide">{faq.q}</span>
+                    <span className="font-extrabold text-foreground text-sm tracking-wide">{faq.q}</span>
                     <ChevronDown className={`h-4 w-4 text-slate-400 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
                   </button>
 
@@ -734,9 +734,9 @@ export default function CommodityPage() {
                   value={mobile}
                   onChange={(e) => setMobile(e.target.value)}
                   placeholder="Enter your mobile number"
-                  className="flex-1 h-11 px-4 rounded-[5px] bg-white/10 border border-white/20 text-white placeholder:text-white/50 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold/40"
+                  className="w-full sm:flex-1 h-12 px-4 rounded-[5px] bg-white text-foreground placeholder:text-muted-foreground text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-gold"
                 />
-                <Button type="submit" className="bg-white hover:bg-gold-champagne text-burgundy font-black h-11 px-7 text-sm rounded-[5px] shadow-xl shrink-0">
+                <Button type="submit" className="w-full sm:w-auto bg-gold hover:bg-gold-champagne text-burgundy font-black h-12 px-7 text-sm rounded-[5px] shadow-xl shrink-0">
                   Open Account
                 </Button>
               </form>

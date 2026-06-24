@@ -16,25 +16,25 @@ import Link from "next/link"
 // ─── Data ───────────────────────────────────────────────────────────────────
 
 const TOOLS = [
-  { icon: Layers,           color: "#8B0D19", title: "Invest In ETFs",        desc: "Invest in ETFs across different markets, industries, and asset types like gold and global stocks, helping you diversify your investments with ease." },
-  { icon: Repeat,           color: "#059669", title: "ETF SIP",               desc: "Start a daily, weekly, or monthly ETF SIP and grow your investments step by step with regular investing and long-term market opportunities." },
-  { icon: Eye,              color: "#1D4ED8", title: "ETF Watchlists",        desc: "Create personalized ETF watchlists to monitor your preferred funds, track price movements, and identify investment opportunities in real time." },
-  { icon: LayoutDashboard,  color: "#B8924A", title: "ETF Dashboard",         desc: "See all your ETF investments in one place and easily monitor your holdings, portfolio value, investment distribution, and growth over time." },
-  { icon: FileSearch,       color: "#7C3AED", title: "ETF Research",          desc: "Check an ETF's performance history, invested companies, sector distribution, costs, and comparison with market benchmarks before investing." },
-  { icon: Zap,              color: "#D97706", title: "MTF For Eligible ETFs", desc: "Use MTF to invest in eligible ETFs with extra funding support, helping you increase your buying power and maximize investment opportunities." },
-  { icon: Activity,         color: "#0891B2", title: "Market Tracking",       desc: "Track ETF price movements, market trends, and trading activity in real time to stay informed about your investments." },
-  { icon: PieChart,         color: "#B91C1C", title: "Portfolio Monitoring",  desc: "See how your ETF investments are performing by tracking returns, portfolio growth, profits, losses, and investment distribution in one dashboard." },
+  { icon: Layers,           color: "#FF0000", title: "Invest In ETFs",        desc: "Invest in ETFs across different markets, industries, and asset types like gold and global stocks, helping you diversify your investments with ease." },
+  { icon: Repeat,           color: "#FF0000", title: "ETF SIP",               desc: "Start a daily, weekly, or monthly ETF SIP and grow your investments step by step with regular investing and long-term market opportunities." },
+  { icon: Eye,              color: "#FF0000", title: "ETF Watchlists",        desc: "Create personalized ETF watchlists to monitor your preferred funds, track price movements, and identify investment opportunities in real time." },
+  { icon: LayoutDashboard,  color: "#FF0000", title: "ETF Dashboard",         desc: "See all your ETF investments in one place and easily monitor your holdings, portfolio value, investment distribution, and growth over time." },
+  { icon: FileSearch,       color: "#FF0000", title: "ETF Research",          desc: "Check an ETF's performance history, invested companies, sector distribution, costs, and comparison with market benchmarks before investing." },
+  { icon: Zap,              color: "#FF0000", title: "MTF For Eligible ETFs", desc: "Use MTF to invest in eligible ETFs with extra funding support, helping you increase your buying power and maximize investment opportunities." },
+  { icon: Activity,         color: "#FF0000", title: "Market Tracking",       desc: "Track ETF price movements, market trends, and trading activity in real time to stay informed about your investments." },
+  { icon: PieChart,         color: "#FF0000", title: "Portfolio Monitoring",  desc: "See how your ETF investments are performing by tracking returns, portfolio growth, profits, losses, and investment distribution in one dashboard." },
 ]
 
 type Category = "Index" | "Gold" | "Silver" | "Debt" | "Global" | "Sector"
 
 const CATEGORIES: { id: Category; label: string; icon: React.ElementType; color: string; desc: string }[] = [
-  { id: "Index",  label: "Index ETFs",  icon: BarChart3,        color: "#1D4ED8", desc: "Track benchmark indices and gain exposure to a diversified range of market investments." },
-  { id: "Gold",   label: "Gold ETFs",   icon: Coins,            color: "#D97706", desc: "Invest in gold digitally through easy-to-access Gold ETFs." },
-  { id: "Silver", label: "Silver ETFs", icon: CircleDollarSign, color: "#64748B", desc: "Invest in silver and benefit from its price movements with ease." },
-  { id: "Debt",   label: "Debt ETFs",   icon: Landmark,         color: "#15803D", desc: "Invest in bonds and debt securities to earn stable returns and diversify your portfolio." },
-  { id: "Global", label: "Global ETFs", icon: Globe,            color: "#7C3AED", desc: "Get exposure to companies and economies around the world through a single investment." },
-  { id: "Sector", label: "Sector ETFs", icon: Boxes,            color: "#B91C1C", desc: "Invest in specific industries and market sectors based on your investment goals." },
+  { id: "Index",  label: "Index ETFs",  icon: BarChart3,        color: "#FF0000", desc: "Track benchmark indices and gain exposure to a diversified range of market investments." },
+  { id: "Gold",   label: "Gold ETFs",   icon: Coins,            color: "#FF0000", desc: "Invest in gold digitally through easy-to-access Gold ETFs." },
+  { id: "Silver", label: "Silver ETFs", icon: CircleDollarSign, color: "#FF0000", desc: "Invest in silver and benefit from its price movements with ease." },
+  { id: "Debt",   label: "Debt ETFs",   icon: Landmark,         color: "#FF0000", desc: "Invest in bonds and debt securities to earn stable returns and diversify your portfolio." },
+  { id: "Global", label: "Global ETFs", icon: Globe,            color: "#FF0000", desc: "Get exposure to companies and economies around the world through a single investment." },
+  { id: "Sector", label: "Sector ETFs", icon: Boxes,            color: "#FF0000", desc: "Invest in specific industries and market sectors based on your investment goals." },
 ]
 
 const ETFS: Record<Category, { name: string; price: string; change: number }[]> = {
@@ -336,7 +336,7 @@ export default function ETFPage() {
             {/* Left — scrollable feature list */}
             <div>
               <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-3">ETF Research</p>
-              <h2 className="text-3xl sm:text-4xl font-black uppercase text-foreground leading-[1.1] mb-4">
+              <h2 className="text-3xl sm:text-4xl font-black text-foreground leading-[1.1] mb-4">
                 Research<br />Before You Invest
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-md">
@@ -475,7 +475,7 @@ export default function ETFPage() {
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
               FAQ
             </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-foreground uppercase tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
               Frequently Asked Questions
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -495,7 +495,7 @@ export default function ETFPage() {
                     onClick={() => setFaqOpenIndex(isOpen ? null : index)}
                     className="w-full px-6 py-4.5 text-left flex justify-between items-center gap-4 hover:bg-slate-50 transition-colors"
                   >
-                    <span className="font-extrabold text-foreground text-sm uppercase tracking-wide">{faq.q}</span>
+                    <span className="font-extrabold text-foreground text-sm tracking-wide">{faq.q}</span>
                     <ChevronDown className={`h-4 w-4 text-slate-400 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
                   </button>
 
@@ -561,9 +561,9 @@ export default function ETFPage() {
                   value={mobile}
                   onChange={(e) => setMobile(e.target.value)}
                   placeholder="Enter your mobile number"
-                  className="flex-1 h-11 px-4 rounded-[5px] bg-white/10 border border-white/20 text-white placeholder:text-white/50 text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 focus:border-gold/40"
+                  className="w-full sm:flex-1 h-12 px-4 rounded-[5px] bg-white text-foreground placeholder:text-muted-foreground text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-gold"
                 />
-                <Button type="submit" className="bg-white hover:bg-gold-champagne text-burgundy font-black h-11 px-7 text-sm rounded-[5px] shadow-xl shrink-0">
+                <Button type="submit" className="w-full sm:w-auto bg-gold hover:bg-gold-champagne text-burgundy font-black h-12 px-7 text-sm rounded-[5px] shadow-xl shrink-0">
                   Get Started
                 </Button>
               </form>
