@@ -538,9 +538,9 @@ export default function FuturesOptionsPage() {
           
           {/* Section Heading */}
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
+            <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">
               Trading Suite
-            </span>
+            </p>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight">
               Built for the F&amp;O trader who <span className="text-burgundy">analyse, strategise, and execute.</span>
             </h2>
@@ -713,9 +713,9 @@ export default function FuturesOptionsPage() {
 
           {/* Centered Header */}
           <div className="text-center mb-10 space-y-3">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
+            <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">
               Markets
-            </span>
+            </p>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground leading-tight text-balance">
               The Complete{" "}
               <span className="text-burgundy">F&amp;O Trading Experience</span>
@@ -785,9 +785,9 @@ export default function FuturesOptionsPage() {
           
           {/* Header */}
           <div className="text-center max-w-3xl mx-auto mb-12 space-y-4">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
+            <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">
               Advanced Toolsets
-            </span>
+            </p>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight">
               Master the Derivatives Market.
             </h2>
@@ -923,9 +923,9 @@ export default function FuturesOptionsPage() {
           
           {/* Header */}
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
+            <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">
               Getting Started
-            </span>
+            </p>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight leading-tight">
               New to F&amp;O? Here&apos;s how to begin.
             </h2>
@@ -1132,9 +1132,9 @@ export default function FuturesOptionsPage() {
             <div className="absolute -bottom-6 -right-6 w-24 h-24 rounded-full border border-gold/15 pointer-events-none" />
             
             <div className="relative z-10 space-y-6">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
+              <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">
                 Simple Pricing
-              </span>
+              </p>
 
               {/* Giant pricing counter */}
               <div className="flex items-start justify-center text-burgundy select-none">
