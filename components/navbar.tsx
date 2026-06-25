@@ -257,6 +257,11 @@ export function Navbar() {
   const [marketsTab, setMarketsTab] = useState("Indices")
   const [marketsSub, setMarketsSub] = useState("Major Indices")
   const [mobileMktTab, setMobileMktTab] = useState("Indices")
+  const [isMac, setIsMac] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    setIsMac(/Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent))
+  }, [])
 
   const switchMarketsTab = (tab: string) => {
     setMarketsTab(tab)
@@ -462,7 +467,11 @@ export function Navbar() {
                   <Search className="h-3.5 w-3.5 shrink-0" />
                   <span className="overflow-hidden text-ellipsis whitespace-nowrap">Search Stocks,Mutuals Funds, ETFs...</span>
                 </div>
-                <kbd className="px-1.5 py-0.5 rounded-[3px] bg-background border border-border text-[9px] font-sans font-normal shrink-0">⌘K</kbd>
+                {isMac !== null && (
+                  <kbd className="px-1.5 py-0.5 rounded-[3px] bg-background border border-border text-[9px] font-sans font-normal shrink-0">
+                    {isMac ? "⌘K" : "Ctrl K"}
+                  </kbd>
+                )}
               </button>
               <Button variant="ghost" className="text-foreground hover:text-burgundy rounded-[5px]" asChild>
                 <Link href="/login">Login</Link>
