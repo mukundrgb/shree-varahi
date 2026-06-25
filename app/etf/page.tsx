@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  ChevronRight, ChevronDown, Layers, Repeat, Eye, LayoutDashboard, FileSearch, Zap,
+  ChevronRight, Plus, X, Layers, Repeat, Eye, LayoutDashboard, FileSearch, Zap,
   Activity, PieChart, Coins, CircleDollarSign, Landmark, Globe, Boxes,
   LineChart, Percent, ListChecks, TrendingUp, Target, BarChart3,
   ArrowUpRight, Star,
@@ -16,25 +16,25 @@ import Link from "next/link"
 // ─── Data ───────────────────────────────────────────────────────────────────
 
 const TOOLS = [
-  { icon: Layers,           color: "#FF0000", title: "Invest In ETFs",        desc: "Invest in ETFs across different markets, industries, and asset types like gold and global stocks, helping you diversify your investments with ease." },
-  { icon: Repeat,           color: "#FF0000", title: "ETF SIP",               desc: "Start a daily, weekly, or monthly ETF SIP and grow your investments step by step with regular investing and long-term market opportunities." },
-  { icon: Eye,              color: "#FF0000", title: "ETF Watchlists",        desc: "Create personalized ETF watchlists to monitor your preferred funds, track price movements, and identify investment opportunities in real time." },
-  { icon: LayoutDashboard,  color: "#FF0000", title: "ETF Dashboard",         desc: "See all your ETF investments in one place and easily monitor your holdings, portfolio value, investment distribution, and growth over time." },
-  { icon: FileSearch,       color: "#FF0000", title: "ETF Research",          desc: "Check an ETF's performance history, invested companies, sector distribution, costs, and comparison with market benchmarks before investing." },
-  { icon: Zap,              color: "#FF0000", title: "MTF For Eligible ETFs", desc: "Use MTF to invest in eligible ETFs with extra funding support, helping you increase your buying power and maximize investment opportunities." },
-  { icon: Activity,         color: "#FF0000", title: "Market Tracking",       desc: "Track ETF price movements, market trends, and trading activity in real time to stay informed about your investments." },
-  { icon: PieChart,         color: "#FF0000", title: "Portfolio Monitoring",  desc: "See how your ETF investments are performing by tracking returns, portfolio growth, profits, losses, and investment distribution in one dashboard." },
+  { icon: Layers,           color: "#8B0D19", title: "Invest In ETFs",        desc: "Invest in ETFs across different markets, industries, and asset types like gold and global stocks, helping you diversify your investments with ease." },
+  { icon: Repeat,           color: "#8B0D19", title: "ETF SIP",               desc: "Start a daily, weekly, or monthly ETF SIP and grow your investments step by step with regular investing and long-term market opportunities." },
+  { icon: Eye,              color: "#8B0D19", title: "ETF Watchlists",        desc: "Create personalized ETF watchlists to monitor your preferred funds, track price movements, and identify investment opportunities in real time." },
+  { icon: LayoutDashboard,  color: "#8B0D19", title: "ETF Dashboard",         desc: "See all your ETF investments in one place and easily monitor your holdings, portfolio value, investment distribution, and growth over time." },
+  { icon: FileSearch,       color: "#8B0D19", title: "ETF Research",          desc: "Check an ETF's performance history, invested companies, sector distribution, costs, and comparison with market benchmarks before investing." },
+  { icon: Zap,              color: "#8B0D19", title: "MTF For Eligible ETFs", desc: "Use MTF to invest in eligible ETFs with extra funding support, helping you increase your buying power and maximize investment opportunities." },
+  { icon: Activity,         color: "#8B0D19", title: "Market Tracking",       desc: "Track ETF price movements, market trends, and trading activity in real time to stay informed about your investments." },
+  { icon: PieChart,         color: "#8B0D19", title: "Portfolio Monitoring",  desc: "See how your ETF investments are performing by tracking returns, portfolio growth, profits, losses, and investment distribution in one dashboard." },
 ]
 
 type Category = "Index" | "Gold" | "Silver" | "Debt" | "Global" | "Sector"
 
 const CATEGORIES: { id: Category; label: string; icon: React.ElementType; color: string; desc: string }[] = [
-  { id: "Index",  label: "Index ETFs",  icon: BarChart3,        color: "#FF0000", desc: "Track benchmark indices and gain exposure to a diversified range of market investments." },
-  { id: "Gold",   label: "Gold ETFs",   icon: Coins,            color: "#FF0000", desc: "Invest in gold digitally through easy-to-access Gold ETFs." },
-  { id: "Silver", label: "Silver ETFs", icon: CircleDollarSign, color: "#FF0000", desc: "Invest in silver and benefit from its price movements with ease." },
-  { id: "Debt",   label: "Debt ETFs",   icon: Landmark,         color: "#FF0000", desc: "Invest in bonds and debt securities to earn stable returns and diversify your portfolio." },
-  { id: "Global", label: "Global ETFs", icon: Globe,            color: "#FF0000", desc: "Get exposure to companies and economies around the world through a single investment." },
-  { id: "Sector", label: "Sector ETFs", icon: Boxes,            color: "#FF0000", desc: "Invest in specific industries and market sectors based on your investment goals." },
+  { id: "Index",  label: "Index ETFs",  icon: BarChart3,        color: "#8B0D19", desc: "Track benchmark indices and gain exposure to a diversified range of market investments." },
+  { id: "Gold",   label: "Gold ETFs",   icon: Coins,            color: "#8B0D19", desc: "Invest in gold digitally through easy-to-access Gold ETFs." },
+  { id: "Silver", label: "Silver ETFs", icon: CircleDollarSign, color: "#8B0D19", desc: "Invest in silver and benefit from its price movements with ease." },
+  { id: "Debt",   label: "Debt ETFs",   icon: Landmark,         color: "#8B0D19", desc: "Invest in bonds and debt securities to earn stable returns and diversify your portfolio." },
+  { id: "Global", label: "Global ETFs", icon: Globe,            color: "#8B0D19", desc: "Get exposure to companies and economies around the world through a single investment." },
+  { id: "Sector", label: "Sector ETFs", icon: Boxes,            color: "#8B0D19", desc: "Invest in specific industries and market sectors based on your investment goals." },
 ]
 
 const ETFS: Record<Category, { name: string; price: string; change: number }[]> = {
@@ -496,7 +496,9 @@ export default function ETFPage() {
                     className="w-full px-6 py-4.5 text-left flex justify-between items-center gap-4 hover:bg-slate-50 transition-colors"
                   >
                     <span className="font-extrabold text-foreground text-sm tracking-wide">{faq.q}</span>
-                    <ChevronDown className={`h-4 w-4 text-slate-400 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+                    <span className={`flex-shrink-0 w-6 h-6 rounded-[5px] flex items-center justify-center transition-colors ${isOpen ? "bg-burgundy text-white" : "bg-secondary text-muted-foreground"}`}>
+                      {isOpen ? <X className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
+                    </span>
                   </button>
 
                   <AnimatePresence initial={false}>
@@ -604,7 +606,7 @@ export default function ETFPage() {
               <div className="w-full p-3.5 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-extrabold text-foreground">My ETFs</span>
-                  <Layers className="w-3.5 h-3.5 text-burgundy" />
+                  <Layers className="w-3.5 h-3.5 text-[#8B0D19]" />
                 </div>
                 <div className="bg-cream rounded-[8px] p-3 space-y-1">
                   <p className="text-[8px] font-semibold text-muted-foreground uppercase">Portfolio Value</p>

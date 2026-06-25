@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  ChevronRight, ChevronDown, Layers, Eye, FileSearch, GitCompare, MonitorSmartphone,
+  ChevronRight, Plus, X, Layers, Eye, FileSearch, GitCompare, MonitorSmartphone,
   Bookmark, LineChart, Lightbulb, TrendingUp, Landmark, Scale, Globe2, BarChart3,
   Target, UserCheck, Gauge, CalendarRange, Wallet, PieChart, ListChecks,
   Star, Check, LayoutDashboard, Bell, Activity,
@@ -16,14 +16,14 @@ import Link from "next/link"
 // ─── Data ───────────────────────────────────────────────────────────────────
 
 const TOOLS = [
-  { icon: TrendingUp,        color: "#FF0000", title: "Active NFOs",       desc: "Explore and invest in currently open New Fund Offers (NFOs) to discover fresh opportunities for portfolio growth." },
-  { icon: CalendarRange,     color: "#FF0000", title: "Upcoming NFOs",     desc: "Stay updated on upcoming fund launches and subscription schedules so you never miss new investment opportunities." },
-  { icon: FileSearch,        color: "#FF0000", title: "NFO Research",      desc: "Review fund objectives, strategy, risk profile, and key details to make more informed investment decisions." },
-  { icon: GitCompare,        color: "#FF0000", title: "Fund Comparison",   desc: "Compare NFOs based on category, risk level, and investment strategy to choose the one that best fits your goals." },
-  { icon: MonitorSmartphone, color: "#FF0000", title: "Online Investment", desc: "Invest digitally through a simple, secure, and seamless process designed for a smooth investing experience." },
-  { icon: Bookmark,          color: "#FF0000", title: "Watchlists",        desc: "Save and monitor NFOs before investing to stay organized and never miss a promising opportunity." },
-  { icon: LineChart,         color: "#FF0000", title: "Fund Tracking",     desc: "Track your subscribed NFOs and investment status in real time to stay fully updated on your portfolio." },
-  { icon: Lightbulb,         color: "#FF0000", title: "Investment Insights", desc: "Access fund information, market trends, and research insights to make smarter and more confident investment decisions." },
+  { icon: TrendingUp,        color: "#8B0D19", title: "Active NFOs",       desc: "Explore and invest in currently open New Fund Offers (NFOs) to discover fresh opportunities for portfolio growth." },
+  { icon: CalendarRange,     color: "#8B0D19", title: "Upcoming NFOs",     desc: "Stay updated on upcoming fund launches and subscription schedules so you never miss new investment opportunities." },
+  { icon: FileSearch,        color: "#8B0D19", title: "NFO Research",      desc: "Review fund objectives, strategy, risk profile, and key details to make more informed investment decisions." },
+  { icon: GitCompare,        color: "#8B0D19", title: "Fund Comparison",   desc: "Compare NFOs based on category, risk level, and investment strategy to choose the one that best fits your goals." },
+  { icon: MonitorSmartphone, color: "#8B0D19", title: "Online Investment", desc: "Invest digitally through a simple, secure, and seamless process designed for a smooth investing experience." },
+  { icon: Bookmark,          color: "#8B0D19", title: "Watchlists",        desc: "Save and monitor NFOs before investing to stay organized and never miss a promising opportunity." },
+  { icon: LineChart,         color: "#8B0D19", title: "Fund Tracking",     desc: "Track your subscribed NFOs and investment status in real time to stay fully updated on your portfolio." },
+  { icon: Lightbulb,         color: "#8B0D19", title: "Investment Insights", desc: "Access fund information, market trends, and research insights to make smarter and more confident investment decisions." },
 ]
 
 const KEY_BENEFITS_1 = [
@@ -35,12 +35,12 @@ const KEY_BENEFITS_1 = [
 type Category = "Equity" | "Debt" | "Hybrid" | "Index" | "Sector" | "International"
 
 const CATEGORIES: { id: Category; icon: React.ElementType; color: string; desc: string }[] = [
-  { id: "Equity",        icon: TrendingUp, color: "#FF0000", desc: "Growth-focused funds investing primarily in equity markets to help you capture long-term wealth creation opportunities." },
-  { id: "Debt",          icon: Landmark,   color: "#FF0000", desc: "Fixed-income funds focused on stability and steady income generation for predictable financial growth." },
-  { id: "Hybrid",        icon: Scale,      color: "#FF0000", desc: "A balanced mix of equity and debt investments designed to deliver growth with stability and controlled risk." },
-  { id: "Index",         icon: BarChart3,  color: "#FF0000", desc: "Passive funds tracking benchmark market indices to deliver simple, low-cost, market-matching returns." },
-  { id: "Sector",        icon: Target,     color: "#FF0000", desc: "Focused exposure to specific sectors and investment themes to capture targeted growth opportunities in the market." },
-  { id: "International", icon: Globe2,     color: "#FF0000", desc: "Invest in global markets and international opportunities to diversify your portfolio and capture worldwide growth potential." },
+  { id: "Equity",        icon: TrendingUp, color: "#8B0D19", desc: "Growth-focused funds investing primarily in equity markets to help you capture long-term wealth creation opportunities." },
+  { id: "Debt",          icon: Landmark,   color: "#8B0D19", desc: "Fixed-income funds focused on stability and steady income generation for predictable financial growth." },
+  { id: "Hybrid",        icon: Scale,      color: "#8B0D19", desc: "A balanced mix of equity and debt investments designed to deliver growth with stability and controlled risk." },
+  { id: "Index",         icon: BarChart3,  color: "#8B0D19", desc: "Passive funds tracking benchmark market indices to deliver simple, low-cost, market-matching returns." },
+  { id: "Sector",        icon: Target,     color: "#8B0D19", desc: "Focused exposure to specific sectors and investment themes to capture targeted growth opportunities in the market." },
+  { id: "International", icon: Globe2,     color: "#8B0D19", desc: "Invest in global markets and international opportunities to diversify your portfolio and capture worldwide growth potential." },
 ]
 
 const NFOS: Record<Category, { name: string; status: "Open" | "Upcoming"; closes: string; min: string }[]> = {
@@ -569,7 +569,7 @@ export default function NFOPage() {
                   className="bg-white border border-border rounded-[8px] p-5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:border-gold/30 transition-all duration-300"
                 >
                   <div className="w-10 h-10 rounded-[7px] bg-burgundy/10 border border-burgundy/10 flex items-center justify-center mb-4">
-                    <Icon className="w-5 h-5 text-burgundy" strokeWidth={1.8} />
+                    <Icon className="w-5 h-5 text-[#8B0D19]" strokeWidth={1.8} />
                   </div>
                   <h3 className="font-extrabold text-foreground text-sm mb-2">{c.title}</h3>
                   <p className="text-[12px] text-muted-foreground leading-relaxed">{c.desc}</p>
@@ -619,7 +619,9 @@ export default function NFOPage() {
                     className="w-full px-6 py-4.5 text-left flex justify-between items-center gap-4 hover:bg-slate-50 transition-colors"
                   >
                     <span className="font-extrabold text-foreground text-sm tracking-wide">{faq.q}</span>
-                    <ChevronDown className={`h-4 w-4 text-slate-400 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+                    <span className={`flex-shrink-0 w-6 h-6 rounded-[5px] flex items-center justify-center transition-colors ${isOpen ? "bg-burgundy text-white" : "bg-secondary text-muted-foreground"}`}>
+                      {isOpen ? <X className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
+                    </span>
                   </button>
 
                   <AnimatePresence initial={false}>
@@ -730,7 +732,7 @@ export default function NFOPage() {
               <div className="w-full p-3.5 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-extrabold text-foreground">My NFOs</span>
-                  <LayoutDashboard className="w-3.5 h-3.5 text-burgundy" />
+                  <LayoutDashboard className="w-3.5 h-3.5 text-[#8B0D19]" />
                 </div>
                 <div className="bg-cream rounded-[8px] p-3 space-y-1">
                   <p className="text-[8px] font-semibold text-muted-foreground uppercase">Total Invested</p>

@@ -99,16 +99,16 @@ const RISK_FILTERS: Array<{ label: string; value: RiskLevel | "All" }> = [
 ]
 
 const CATEGORIES_GRID = [
-  { label: "Large Cap",          count: 48, color: "#FF0000", icon: BarChart2 },
-  { label: "Mid Cap",            count: 32, color: "#FF0000", icon: TrendingUp },
-  { label: "Small Cap",          count: 28, color: "#FF0000", icon: Zap },
-  { label: "ELSS (Tax Saver)",   count: 38, color: "#FF0000", icon: Shield },
-  { label: "Index Funds",        count: 56, color: "#FF0000", icon: BarChart2 },
-  { label: "Balanced Advantage", count: 20, color: "#FF0000", icon: Award },
-  { label: "Multi Cap",          count: 24, color: "#FF0000", icon: TrendingUp },
-  { label: "Sectoral / Thematic",count: 82, color: "#FF0000", icon: Star },
-  { label: "Debt / Liquid",      count: 44, color: "#FF0000", icon: Shield },
-  { label: "Hybrid",             count: 36, color: "#FF0000", icon: Users },
+  { label: "Large Cap",          count: 48, color: "#8B0D19", icon: BarChart2 },
+  { label: "Mid Cap",            count: 32, color: "#8B0D19", icon: TrendingUp },
+  { label: "Small Cap",          count: 28, color: "#8B0D19", icon: Zap },
+  { label: "ELSS (Tax Saver)",   count: 38, color: "#8B0D19", icon: Shield },
+  { label: "Index Funds",        count: 56, color: "#8B0D19", icon: BarChart2 },
+  { label: "Balanced Advantage", count: 20, color: "#8B0D19", icon: Award },
+  { label: "Multi Cap",          count: 24, color: "#8B0D19", icon: TrendingUp },
+  { label: "Sectoral / Thematic",count: 82, color: "#8B0D19", icon: Star },
+  { label: "Debt / Liquid",      count: 44, color: "#8B0D19", icon: Shield },
+  { label: "Hybrid",             count: 36, color: "#8B0D19", icon: Users },
 ]
 
 const AMC_PARTNERS = [
@@ -760,28 +760,28 @@ export default function MutualFundsPage() {
             {[
               {
                 icon: Award,
-                color: "#FF0000",
+                color: "#8B0D19",
                 title: "0% Commission",
                 desc: "Invest directly in regular & direct mutual funds with zero hidden charges or commission.",
                 points: ["No entry load", "No exit penalties", "Transparent pricing"],
               },
               {
                 icon: BarChart2,
-                color: "#FF0000",
+                color: "#8B0D19",
                 title: "Research Backed",
                 desc: "Fund recommendations powered by SEBI-registered research analysts and quant models.",
                 points: ["Expert analysis", "Quant screener", "Risk scoring"],
               },
               {
                 icon: Zap,
-                color: "#FF0000",
+                color: "#8B0D19",
                 title: "Seamless Investing",
                 desc: "Start, pause, or switch SIPs in seconds via app or web. Real-time portfolio tracking.",
                 points: ["One-click SIP", "Instant switch", "Live NAV tracking"],
               },
               {
                 icon: Users,
-                color: "#FF0000",
+                color: "#8B0D19",
                 title: "Trusted by Millions",
                 desc: "31+ years of experience. Backed by 5 lakh+ active investors and 30+ AMC partnerships.",
                 points: ["31 years legacy", "30+ AMC partners", "Secure & regulated"],
@@ -923,7 +923,7 @@ export default function MutualFundsPage() {
                   )}
                   <div className="relative z-10 flex flex-col items-center gap-3">
                     <div className="w-12 h-12 rounded-full bg-burgundy/8 border-2 border-burgundy/20 flex items-center justify-center">
-                      <Icon className="w-5 h-5 text-burgundy" strokeWidth={1.8} />
+                      <Icon className="w-5 h-5 text-[#8B0D19]" strokeWidth={1.8} />
                     </div>
                     <span className="text-[9px] font-extrabold text-burgundy/60 tracking-widest">{step.step}</span>
                     <h3 className="font-extrabold text-sm text-foreground">{step.title}</h3>

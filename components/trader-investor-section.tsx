@@ -80,7 +80,7 @@ function TraderImagePlaceholder() {
           className="w-12 h-12 rounded-[8px] flex items-center justify-center"
           style={{ background: "rgba(139,13,25,0.08)", border: "1px solid rgba(139,13,25,0.2)" }}
         >
-          <BarChart2 className="w-6 h-6 text-burgundy" strokeWidth={1.5} />
+          <BarChart2 className="w-6 h-6 text-[#8B0D19]" strokeWidth={1.5} />
         </div>
         <span className="text-[11px] font-semibold" style={{ color: "rgba(139,13,25,0.5)" }}>
           Trading Dashboard Preview

@@ -202,7 +202,7 @@ export function BranchLocator() {
                   <div className="flex items-start justify-between">
                     <div>
                       <h4 className="font-bold flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-burgundy" />
+                        <MapPin className="h-4 w-4 text-[#8B0D19]" />
                         {branch.city}
                       </h4>
                       <p className="text-sm text-muted-foreground mt-1">{branch.address}</p>

@@ -524,7 +524,7 @@ export default function Nifty50Page() {
               {/* About */}
               <div className="border border-border rounded-[8px] bg-background p-4 sm:p-5">
                 <h2 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
-                  <Info className="w-4 h-4 text-burgundy" />
+                  <Info className="w-4 h-4 text-[#8B0D19]" />
                   About Nifty 50
                 </h2>
                 <p className="text-sm text-muted-foreground leading-relaxed">
@@ -550,7 +550,7 @@ export default function Nifty50Page() {
               {/* Market Breadth */}
               <div className="border border-border rounded-[8px] bg-background p-4 sm:p-5">
                 <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
-                  <Activity className="w-4 h-4 text-burgundy" />
+                  <Activity className="w-4 h-4 text-[#8B0D19]" />
                   Market Breadth
                 </h3>
                 <div className="flex flex-wrap gap-1.5 mb-4">
@@ -584,7 +584,7 @@ export default function Nifty50Page() {
               {/* Technical Signals */}
               <div className="border border-border rounded-[8px] bg-background overflow-hidden">
                 <div className="px-4 sm:px-5 py-3 border-b border-border flex items-center gap-2">
-                  <BarChart2 className="w-4 h-4 text-burgundy" />
+                  <BarChart2 className="w-4 h-4 text-[#8B0D19]" />
                   <h3 className="text-sm font-bold text-foreground">Technical Signals</h3>
                 </div>
                 <div className="divide-y divide-border/50">

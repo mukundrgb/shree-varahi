@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  ChevronRight, ChevronDown, Zap, TrendingUp, Wallet, Percent, ShieldCheck,
+  ChevronRight, X, Zap, TrendingUp, Wallet, Percent, ShieldCheck,
   Layers, Clock, CreditCard, ArrowRight, Star, Check, Plus, Equal,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
@@ -182,7 +182,7 @@ export default function MTFPage() {
             </div>
             <Plus className="w-5 h-5 text-muted-foreground shrink-0" />
             <div className="w-full sm:w-auto flex-1 bg-white border border-border rounded-[10px] p-5 text-center">
-              <ShieldCheck className="w-6 h-6 text-burgundy mx-auto mb-2" strokeWidth={1.8} />
+              <ShieldCheck className="w-6 h-6 text-[#8B0D19] mx-auto mb-2" strokeWidth={1.8} />
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide mb-1">Varahi Funds</p>
               <p className="text-xl font-black text-burgundy">₹30,000</p>
             </div>
@@ -259,7 +259,7 @@ export default function MTFPage() {
                   className="bg-white border border-border rounded-[10px] p-6 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:border-gold/30 transition-all duration-300"
                 >
                   <div className="w-11 h-11 rounded-[8px] bg-burgundy/10 border border-burgundy/10 flex items-center justify-center mb-4">
-                    <Icon className="w-5 h-5 text-burgundy" strokeWidth={1.8} />
+                    <Icon className="w-5 h-5 text-[#8B0D19]" strokeWidth={1.8} />
                   </div>
                   <h3 className="font-extrabold text-foreground text-sm mb-1">{c.title}</h3>
                   <p className="text-2xl font-black text-burgundy mb-0.5">{c.value}</p>
@@ -304,7 +304,9 @@ export default function MTFPage() {
                     className="w-full px-6 py-4.5 text-left flex justify-between items-center gap-4 hover:bg-slate-50 transition-colors"
                   >
                     <span className="font-extrabold text-foreground text-sm tracking-wide">{faq.q}</span>
-                    <ChevronDown className={`h-4 w-4 text-slate-400 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+                    <span className={`flex-shrink-0 w-6 h-6 rounded-[5px] flex items-center justify-center transition-colors ${isOpen ? "bg-burgundy text-white" : "bg-secondary text-muted-foreground"}`}>
+                      {isOpen ? <X className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
+                    </span>
                   </button>
 
                   <AnimatePresence initial={false}>
@@ -415,7 +417,7 @@ export default function MTFPage() {
               <div className="w-full p-3.5 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-extrabold text-foreground">MTF Power</span>
-                  <Zap className="w-3.5 h-3.5 text-burgundy" />
+                  <Zap className="w-3.5 h-3.5 text-[#8B0D19]" />
                 </div>
                 <div className="bg-cream rounded-[8px] p-3 space-y-1">
                   <p className="text-[8px] font-semibold text-muted-foreground uppercase">Buying Power</p>

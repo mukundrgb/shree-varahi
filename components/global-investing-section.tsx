@@ -112,7 +112,7 @@ export function GlobalInvestingSection() {
                   transition={{ delay: idx * 0.1, duration: 0.4 }}
                   className="bg-white border border-border/50 rounded-[8px] p-6 text-center shadow-[0_4px_20px_rgba(0,0,0,0.015),inset_0_1px_0_rgba(255,255,255,0.9)] hover:shadow-[0_8px_30px_rgba(184,146,74,0.05)] hover:border-gold-deep/30 transition-all duration-300 flex flex-col items-center gap-1.5 group"
                 >
-                  <div className="w-10 h-10 rounded-[6px] flex items-center justify-center bg-burgundy/[0.04] border border-burgundy/10 mb-2 text-burgundy group-hover:bg-burgundy/[0.08] transition-colors duration-300">
+                  <div className="w-10 h-10 rounded-[6px] flex items-center justify-center bg-burgundy/[0.04] border border-burgundy/10 mb-2 text-[#8B0D19] group-hover:bg-burgundy/[0.08] transition-colors duration-300">
                     <Icon className="h-5 w-5" strokeWidth={1.8} />
                   </div>
                   <div>

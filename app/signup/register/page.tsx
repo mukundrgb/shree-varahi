@@ -273,7 +273,7 @@ export default function RegisterPage() {
                 <div className="mx-auto mb-8 w-20 h-20 relative">
                   <div className="absolute inset-0 rounded-2xl bg-white border border-border shadow-[0_2px_16px_rgba(0,0,0,0.06)]" />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    {(() => { const { Icon } = SLIDES[slide]; return <Icon className="w-9 h-9 text-burgundy" strokeWidth={1.5} /> })()}
+                    {(() => { const { Icon } = SLIDES[slide]; return <Icon className="w-9 h-9 text-[#8B0D19]" strokeWidth={1.5} /> })()}
                   </div>
                   <div className="absolute -top-px -left-px  w-3 h-3 border-t-2 border-l-2 border-gold rounded-tl-2xl" />
                   <div className="absolute -top-px -right-px w-3 h-3 border-t-2 border-r-2 border-gold rounded-tr-2xl" />

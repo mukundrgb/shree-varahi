@@ -197,7 +197,7 @@ export function CalculatorSection() {
                         className="group flex items-center gap-2.5 px-4 py-2.5 rounded-[6px] border border-border bg-white hover:border-burgundy/40 hover:bg-burgundy/[0.03] hover:shadow-sm transition-all duration-200"
                       >
                         <div className="w-6 h-6 rounded-[4px] bg-burgundy/8 flex items-center justify-center flex-shrink-0 group-hover:bg-burgundy/12 transition-colors">
-                          <Icon className="w-3.5 h-3.5 text-burgundy" strokeWidth={2} />
+                          <Icon className="w-3.5 h-3.5 text-[#8B0D19]" strokeWidth={2} />
                         </div>
                         <span className="text-[13px] font-semibold text-foreground/80 group-hover:text-foreground transition-colors whitespace-nowrap">
                           {calc.name}

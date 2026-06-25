@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button"
 import { 
   ArrowRight, 
   ChevronRight, 
-  ChevronDown, 
-  Percent, 
+  Plus,
+  X,
+  Percent,
   ShieldCheck, 
   Zap, 
   TrendingUp, 
@@ -551,7 +552,7 @@ export default function FuturesOptionsPage() {
               <div className="flex-1 flex flex-col justify-between space-y-6">
                 <div>
                   <div className="w-10 h-10 rounded-[8px] bg-burgundy/10 flex items-center justify-center mb-5 border border-burgundy/10">
-                    <Layers className="h-5 w-5 text-burgundy" />
+                    <Layers className="h-5 w-5 text-[#8B0D19]" />
                   </div>
                   <h3 className="font-extrabold text-xl text-foreground tracking-tight mb-2">Options Trading</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
@@ -1439,7 +1440,9 @@ export default function FuturesOptionsPage() {
                     className="w-full px-6 py-4.5 text-left flex justify-between items-center gap-4 hover:bg-slate-50 transition-colors"
                   >
                     <span className="font-extrabold text-foreground text-sm tracking-wide">{faq.q}</span>
-                    <ChevronDown className={`h-4 w-4 text-slate-400 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+                    <span className={`flex-shrink-0 w-6 h-6 rounded-[5px] flex items-center justify-center transition-colors ${isOpen ? "bg-burgundy text-white" : "bg-secondary text-muted-foreground"}`}>
+                      {isOpen ? <X className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
+                    </span>
                   </button>
 
                   <AnimatePresence initial={false}>

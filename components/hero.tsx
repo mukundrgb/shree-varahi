@@ -143,7 +143,7 @@ const products: Product[] = [
     detail: "NSE & BSE listed equities, real-time quotes, margin trading facility.",
     badge: "₹17 Delivery",
     badgeColor: "bg-profit/15 text-profit",
-    accentColor: "#059669",
+    accentColor: "#8B0D19",
     bgHover: "rgba(5,150,105,0.04)",
     href: "/stocks",
   },
@@ -165,7 +165,7 @@ const products: Product[] = [
     detail: "5,000+ funds, SIP, STP, SWP, goal-based investing in one click.",
     badge: "Direct Plans",
     badgeColor: "bg-gold/20 text-gold-deep",
-    accentColor: "#B8924A",
+    accentColor: "#8B0D19",
     bgHover: "rgba(217,178,124,0.06)",
   },
   {
@@ -175,7 +175,7 @@ const products: Product[] = [
     detail: "Auto-debit, pause/resume anytime, step-up SIP, smart triggers.",
     badge: "From ₹100",
     badgeColor: "bg-profit/15 text-profit",
-    accentColor: "#059669",
+    accentColor: "#8B0D19",
     bgHover: "rgba(5,150,105,0.04)",
   },
   {
@@ -185,7 +185,7 @@ const products: Product[] = [
     detail: "UPI mandate, GMP tracker, allotment status, ASBA support.",
     badge: "₹0 Application",
     badgeColor: "bg-profit/15 text-profit",
-    accentColor: "#059669",
+    accentColor: "#8B0D19",
     bgHover: "rgba(5,150,105,0.04)",
   },
   {
@@ -195,7 +195,7 @@ const products: Product[] = [
     detail: "Gold ETFs, index ETFs, sectoral ETFs — live on-exchange prices.",
     badge: "Low Cost",
     badgeColor: "bg-gold/20 text-gold-deep",
-    accentColor: "#B8924A",
+    accentColor: "#8B0D19",
     bgHover: "rgba(217,178,124,0.06)",
   },
   {
@@ -216,7 +216,7 @@ const products: Product[] = [
     detail: "Invest in Apple, Tesla, Google, and 5,000+ US equities with ease.",
     badge: "Global Access",
     badgeColor: "bg-gold/20 text-gold-deep",
-    accentColor: "#B8924A",
+    accentColor: "#8B0D19",
     bgHover: "rgba(217,178,124,0.06)",
     href: "/#global-investing",
   },
@@ -584,7 +584,7 @@ export function Hero() {
                 className="text-[11px] tracking-[0.22em] uppercase text-gold-deep font-black mb-5 flex items-center gap-2"
               >
                 <span className="w-5 h-px bg-gold-deep inline-block" />
-                Trusted by 3.25 Crore+ Investors
+                Trusted by 60,000+ Investors
               </motion.div>
 
               {/* Headline */}

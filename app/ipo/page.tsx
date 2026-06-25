@@ -933,21 +933,21 @@ export default function IpoPage() {
                 icon: Users,
                 title: "Open Your Account",
                 desc: "Complete KYC digitally in minutes with Aadhaar & PAN. Get your Demat account instantly.",
-                color: "#FF0000",
+                color: "#8B0D19",
               },
               {
                 step: "02",
                 icon: TrendingUp,
                 title: "Select the IPO",
                 desc: "Browse open and upcoming IPOs. Read the Red Herring Prospectus, GMP, and analyst insights.",
-                color: "#FF0000",
+                color: "#8B0D19",
               },
               {
                 step: "03",
                 icon: Award,
                 title: "Bid & Track",
                 desc: "Enter your price bid and quantity. Funds are blocked via ASBA — no upfront debit. Track allotment instantly.",
-                color: "#FF0000",
+                color: "#8B0D19",
               },
             ].map((s, i) => {
               const Icon = s.icon
@@ -991,10 +991,10 @@ export default function IpoPage() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { icon: Award,    color: "#FF0000", title: "₹0 Application Fee",    desc: "Apply to any IPO with zero brokerage or application charges." },
-              { icon: Zap,      color: "#FF0000", title: "ASBA Based Bidding",    desc: "Funds stay in your bank until allotment. No premature debit." },
-              { icon: Clock,    color: "#FF0000", title: "Quick Allotment Alert", desc: "Get instant notifications on allotment status on app and email." },
-              { icon: FileText, color: "#FF0000", title: "Research & GMP",        desc: "In-depth IPO analysis, RHP summaries, and live GMP tracking." },
+              { icon: Award,    color: "#8B0D19", title: "₹0 Application Fee",    desc: "Apply to any IPO with zero brokerage or application charges." },
+              { icon: Zap,      color: "#8B0D19", title: "ASBA Based Bidding",    desc: "Funds stay in your bank until allotment. No premature debit." },
+              { icon: Clock,    color: "#8B0D19", title: "Quick Allotment Alert", desc: "Get instant notifications on allotment status on app and email." },
+              { icon: FileText, color: "#8B0D19", title: "Research & GMP",        desc: "In-depth IPO analysis, RHP summaries, and live GMP tracking." },
             ].map((b, i) => {
               const Icon = b.icon
               return (

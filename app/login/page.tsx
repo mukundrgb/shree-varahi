@@ -89,7 +89,7 @@ function LeftPanel({ slide, setSlide }: { slide: number; setSlide: (i: number) =
                 <div className="absolute inset-0 flex items-center justify-center">
                   {(() => {
                     const { Icon } = slides[slide]
-                    return <Icon className="w-9 h-9 text-burgundy" strokeWidth={1.5} />
+                    return <Icon className="w-9 h-9 text-[#8B0D19]" strokeWidth={1.5} />
                   })()}
                 </div>
                 {/* Gold corner accents */}

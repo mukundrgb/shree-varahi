@@ -35,28 +35,28 @@ type MenuItem = {
 // ── Menu data ─────────────────────────────────────────────────────────────
 
 const TRADE_INVEST: MenuItem[] = [
-  { title: "Stocks",    desc: "NSE & BSE equities, ₹0 delivery",   icon: <TrendingUp className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/stocks" },
-  { title: "F&O",       desc: "Futures & options, ₹17 flat",        icon: <PieChart   className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/futures-options" },
-  { title: "ETF",       desc: "Exchange traded funds",               icon: <Layers     className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/etf" },
-  { title: "IPO",       desc: "Apply for upcoming IPOs free",        icon: <Target     className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/ipo" },
-  { title: "Commodity", desc: "MCX gold, silver & crude oil",        icon: <Box        className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/commodity" },
-  { title: "MTF",       desc: "4× margin buying power on stocks",   icon: <Zap        className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/mtf" },
+  { title: "Stocks",    desc: "NSE & BSE equities, ₹0 delivery",   icon: <TrendingUp className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/stocks" },
+  { title: "F&O",       desc: "Futures & options, ₹17 flat",        icon: <PieChart   className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/futures-options" },
+  { title: "ETF",       desc: "Exchange traded funds",               icon: <Layers     className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/etf" },
+  { title: "IPO",       desc: "Apply for upcoming IPOs free",        icon: <Target     className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/ipo" },
+  { title: "Commodity", desc: "MCX gold, silver & crude oil",        icon: <Box        className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/commodity" },
+  { title: "MTF",       desc: "4× margin buying power on stocks",   icon: <Zap        className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/mtf" },
 ]
 
 const MF_SIP: MenuItem[] = [
-  { title: "Mutual Funds",   desc: "5,000+ direct funds, 0% commission", icon: <Landmark  className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/mutual-funds" },
-  { title: "SIP Calculator", desc: "Plan your monthly SIP goal",          icon: <RotateCcw className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "/mutual-funds" },
+  { title: "Mutual Funds",   desc: "5,000+ direct funds, 0% commission", icon: <Landmark  className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/mutual-funds" },
+  { title: "SIP Calculator", desc: "Plan your monthly SIP goal",          icon: <RotateCcw className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/mutual-funds" },
   { title: "NFO",            desc: "New fund offers — invest early",      icon: "🆕",                                                              href: "/nfo" },
 ]
 
 const PRODUCTS: MenuItem[] = [
   { title: "Shree Varahi Web",         desc: "Trade from any browser",         icon: "💻",                                                                href: "#" },
   { title: "Shree Varahi Mobile App",  desc: "iOS & Android trading app",      icon: "📱",                                                                href: "#" },
-  { title: "Shree Varahi Desktop App", desc: "Professional desktop platform",  icon: <BarChart2 className="h-5 w-5 text-burgundy" strokeWidth={2.2} />,   href: "#" },
+  { title: "Shree Varahi Desktop App", desc: "Professional desktop platform",  icon: <BarChart2 className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />,   href: "#" },
 ]
 
 const LEARN_NEWS: MenuItem[] = [
-  { title: "Knowledge Panel", desc: "Courses, guides & tutorials",  icon: <BookOpen className="h-5 w-5 text-burgundy" strokeWidth={2.2} />, href: "#" },
+  { title: "Knowledge Panel", desc: "Courses, guides & tutorials",  icon: <BookOpen className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "#" },
   { title: "Blog",            desc: "Market insights & analysis",   icon: "📝",                                                             href: "#" },
   { title: "News",            desc: "Live market news & updates",   icon: "📰",                                                             href: "#" },
 ]
@@ -578,7 +578,7 @@ export function Navbar() {
                         onClick={() => setMobileMenuOpen(false)}
                         className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-[7px] border border-border hover:border-burgundy/40 hover:bg-burgundy/[0.04] transition-all group"
                       >
-                        <span className="text-burgundy">{q.icon}</span>
+                        <span className="text-[#8B0D19]">{q.icon}</span>
                         <span className="text-[10px] font-semibold text-foreground text-center leading-tight">{q.label}</span>
                       </Link>
                     ))}

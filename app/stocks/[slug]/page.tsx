@@ -870,7 +870,7 @@ export default function StockDetailPage() {
                       className="flex items-center justify-between px-5 py-3 hover:bg-cream/40 transition-colors cursor-pointer">
                       <div className="flex items-center gap-3 min-w-0">
                         <div className="w-7 h-7 rounded-[6px] bg-burgundy/8 flex items-center justify-center shrink-0">
-                          <BookOpen className="w-3.5 h-3.5 text-burgundy" />
+                          <BookOpen className="w-3.5 h-3.5 text-[#8B0D19]" />
                         </div>
                         <span className="text-xs font-semibold text-foreground truncate">{f.fund}</span>
                       </div>
