@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import Image from "next/image"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -537,6 +538,9 @@ export default function FuturesOptionsPage() {
           
           {/* Section Heading */}
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
+              Trading Suite
+            </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight">
               Built for the F&amp;O trader who <span className="text-burgundy">analyse, strategise, and execute.</span>
             </h2>
@@ -613,8 +617,8 @@ export default function FuturesOptionsPage() {
             {/* Card 2: Futures Trading (Large Bento) */}
             <div className="col-span-12 md:col-span-6 lg:col-span-4 bg-white border border-border/80 rounded-[20px] p-6 lg:p-8 flex flex-col justify-between hover:shadow-md hover:border-gold/30 transition-all duration-300">
               <div>
-                <div className="w-10 h-10 rounded-[8px] bg-gold/10 flex items-center justify-center mb-5 border border-gold/10">
-                  <LineChart className="h-5 w-5 text-gold-deep" />
+                <div className="w-10 h-10 rounded-[8px] bg-burgundy/10 flex items-center justify-center mb-5 border border-burgundy/10">
+                  <LineChart className="h-5 w-5 text-[#8B0D19]" />
                 </div>
                 <h3 className="font-extrabold text-xl text-foreground tracking-tight mb-2">Futures Trading</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
@@ -654,7 +658,7 @@ export default function FuturesOptionsPage() {
                 icon: Zap,
                 title: "Integrated Strategy Building Tools",
                 desc: "Create and evaluate options strategies with detailed risk-reward analysis, helping you compare potential outcomes before making trading decisions.",
-                accent: "#B8924A",
+                accent: "#8B0D19",
               },
               {
                 icon: CheckCircle2,
@@ -666,7 +670,7 @@ export default function FuturesOptionsPage() {
                 icon: ShieldCheck,
                 title: "Pledge Margin Benefits",
                 desc: "Pledge your approved holdings to unlock extra trading margin and increase the buying power of your existing portfolio.",
-                accent: "#B8924A",
+                accent: "#8B0D19",
               },
               {
                 icon: Play,
@@ -678,7 +682,7 @@ export default function FuturesOptionsPage() {
                 icon: RotateCcw,
                 title: "Fast Position Management",
                 desc: "Stay in control of your trades by monitoring, modifying, reversing, or exiting positions whenever market conditions change.",
-                accent: "#B8924A",
+                accent: "#8B0D19",
               }
             ].map((item, idx) => {
               const Icon = item.icon
@@ -709,9 +713,9 @@ export default function FuturesOptionsPage() {
 
           {/* Centered Header */}
           <div className="text-center mb-10 space-y-3">
-            <p className="text-sm tracking-[0.2em] uppercase text-gold-deep font-extrabold block">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
               Markets
-            </p>
+            </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground leading-tight text-balance">
               The Complete{" "}
               <span className="text-burgundy">F&amp;O Trading Experience</span>
@@ -781,8 +785,8 @@ export default function FuturesOptionsPage() {
           
           {/* Header */}
           <div className="text-center max-w-3xl mx-auto mb-12 space-y-4">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-burgundy/10 border border-burgundy/25 text-xs font-bold text-burgundy uppercase tracking-wider">
-              ✦ Advanced Toolsets ✦
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
+              Advanced Toolsets
             </span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight">
               Master the Derivatives Market.
@@ -851,81 +855,15 @@ export default function FuturesOptionsPage() {
                   </div>
                 </div>
 
-                {/* Options Right: Interactive Greeks Chain linked to SVG payoff */}
-                <div className="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-[24px] p-6 shadow-2xl text-white space-y-6">
-                  
-                  {/* Interactive Strike Row Hover list */}
-                  <div>
-                    <div className="flex justify-between items-center mb-4">
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                        <span className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">Interactive Greek Chain Matrix</span>
-                      </div>
-                      <span className="text-[9px] font-mono bg-slate-850 px-2 py-0.5 rounded text-gold">ATM SPOT = 23400</span>
-                    </div>
-
-                    <div className="space-y-1.5 font-mono text-[11px]">
-                      <div className="grid grid-cols-5 text-center text-slate-500 font-sans font-bold text-[9px] uppercase tracking-wider border-b border-slate-850 pb-2">
-                        <span>C-Delta</span>
-                        <span>C-Theta</span>
-                        <span className="text-white">Strike</span>
-                        <span>P-Delta</span>
-                        <span>P-Theta</span>
-                      </div>
-
-                      {[
-                        { strike: 23200, cD: "+0.82", cT: "-12.4", pD: "-0.18", pT: "-4.2" },
-                        { strike: 23300, cD: "+0.68", cT: "-14.8", pD: "-0.32", pT: "-6.5" },
-                        { strike: 23400, cD: "+0.50", cT: "-16.5", pD: "-0.50", pT: "-8.1", atm: true },
-                        { strike: 23500, cD: "+0.31", cT: "-13.2", pD: "-0.69", pT: "-7.8" },
-                        { strike: 23600, cD: "+0.16", cT: "-9.5", pD: "-0.84", pT: "-5.1" }
-                      ].map((row) => (
-                        <div 
-                          key={row.strike}
-                          onMouseEnter={() => setHoveredGreekStrike(row.strike)}
-                          className={`grid grid-cols-5 text-center py-2.5 rounded-[6px] items-center cursor-pointer transition-all ${
-                            row.strike === hoveredGreekStrike 
-                              ? "bg-slate-800 text-white shadow-inner border border-gold/45" 
-                              : "bg-slate-950/40 text-slate-350 border border-transparent"
-                          } ${row.atm && row.strike !== hoveredGreekStrike ? "border border-slate-880" : ""}`}
-                        >
-                          <span className="text-emerald-400 font-bold">{row.cD}</span>
-                          <span className="text-rose-400">{row.cT}</span>
-                          <span className="font-extrabold text-white text-xs">{row.strike} {row.atm && <span className="text-[7px] text-gold-champagne block font-sans uppercase">ATM</span>}</span>
-                          <span className="text-rose-400">{row.pD}</span>
-                          <span className="text-emerald-400 font-bold">{row.pT}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Integrated Payoff Chart responding to selected row */}
-                  <div className="bg-slate-950 border border-slate-850 p-4 rounded-xl space-y-4">
-                    <div className="flex justify-between items-center text-[10px]">
-                      <span className="font-sans font-bold text-slate-400 uppercase tracking-wide">Interactive Long Call Payoff (Strike {strikePivot})</span>
-                      <span className="font-mono text-slate-400">Premium Cost: ₹120</span>
-                    </div>
-
-                    <div className="h-32 w-full flex items-center justify-center relative">
-                      <svg className="w-full h-full" viewBox="0 0 400 120">
-                        <line x1="0" y1="70" x2="400" y2="70" stroke="#475569" strokeDasharray="3 3" />
-                        <path 
-                          d={`M 0,105 L 180,105 L 340,15`} 
-                          fill="none" 
-                          stroke="#D9B27C" 
-                          strokeWidth="2.5" 
-                        />
-                        <circle cx="260" cy="70" r="4" fill="#D9B27C" className="pulse-dot" />
-                        <text x="10" y="25" fill="#EF4444" fontSize="8" fontFamily="monospace">LOSS ZONE (-₹120)</text>
-                        <text x="280" y="25" fill="#10B981" fontSize="8" fontFamily="monospace">PROFIT ZONE</text>
-                        <text x="240" y="85" fill="#E2E8F0" fontSize="8" fontFamily="sans-serif">Breakeven (₹{strikePivot + 120})</text>
-                      </svg>
-                    </div>
-                    <p className="text-[9px] text-slate-500 font-sans text-center">
-                      * Hover over strike rows in the table above to shift the simulated option contract payoff.
-                    </p>
-                  </div>
-
+                {/* Options Right: visual */}
+                <div className="lg:col-span-7 relative">
+                  <Image
+                    src="/fando.jpeg"
+                    alt="F&O trading on the Shree Varahi app"
+                    width={1424}
+                    height={1080}
+                    className="w-full h-auto object-cover"
+                  />
                 </div>
               </motion.div>
             ) : (
@@ -962,113 +900,15 @@ export default function FuturesOptionsPage() {
                   </div>
                 </div>
 
-                {/* Futures Right: Interactive Margin calculator & SVG needle gauge */}
-                <div className="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-[24px] p-6 shadow-2xl text-white grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                  
-                  {/* Calculator controls */}
-                  <div className="space-y-4 font-sans text-xs">
-                    <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">Margin Estimator</span>
-                      <span className="text-[9px] bg-slate-800 px-2 py-0.5 rounded font-mono text-gold">Lot Multipliers</span>
-                    </div>
-
-                    {/* Selector */}
-                    <div className="space-y-1">
-                      <span className="text-[9px] text-slate-400 font-bold block uppercase">Select Asset Contract</span>
-                      <div className="grid grid-cols-3 gap-1 bg-slate-950 p-0.5 rounded-[5px] border border-slate-850">
-                        {["NIFTY", "GOLD", "RELIANCE"].map((asset) => (
-                          <button
-                            key={asset}
-                            onClick={() => {
-                              setSelectedAsset(asset as any)
-                              setFuturesPriceInput(asset === "NIFTY" ? 23400 : asset === "GOLD" ? 72400 : 2940)
-                            }}
-                            className={`py-1 text-[9px] font-black rounded-[4px] transition-colors ${selectedAsset === asset ? "bg-gold text-slate-950" : "text-slate-400"}`}
-                          >
-                            {asset}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Lot slider */}
-                    <div className="space-y-1.5">
-                      <div className="flex justify-between text-[11px]">
-                        <span className="text-slate-400 font-medium">Quantity (Lots of {lotDetails.size})</span>
-                        <span className="text-white font-mono font-bold">{futuresLots} Lots ({futuresLots * lotDetails.size} Qty)</span>
-                      </div>
-                      <input 
-                        type="range"
-                        min="1"
-                        max="20"
-                        value={futuresLots}
-                        onChange={(e) => setFuturesLots(Number(e.target.value))}
-                        className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-gold"
-                      />
-                    </div>
-
-                    {/* Entry Price */}
-                    <div className="space-y-1.5">
-                      <div className="flex justify-between text-[11px]">
-                        <span className="text-slate-400 font-medium">Entry Price Target</span>
-                        <span className="text-white font-mono font-bold">₹{futuresPriceInput.toLocaleString("en-IN")}</span>
-                      </div>
-                      <input 
-                        type="range"
-                        min={selectedAsset === "NIFTY" ? 22000 : selectedAsset === "GOLD" ? 70000 : 2500}
-                        max={selectedAsset === "NIFTY" ? 25000 : selectedAsset === "GOLD" ? 75000 : 3500}
-                        step={selectedAsset === "NIFTY" ? 100 : selectedAsset === "GOLD" ? 200 : 20}
-                        value={futuresPriceInput}
-                        onChange={(e) => setFuturesPriceInput(Number(e.target.value))}
-                        className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-gold"
-                      />
-                    </div>
-
-                    {/* Detailed Math Display */}
-                    <div className="bg-slate-950 border border-slate-850 p-3.5 rounded-xl space-y-2.5 font-mono text-[11px]">
-                      <div className="flex justify-between text-slate-400">
-                        <span>Contract Notional:</span>
-                        <span>₹{futuresContractVal.toLocaleString("en-IN")}</span>
-                      </div>
-                      <div className="flex justify-between text-slate-400 border-b border-slate-800 pb-2">
-                        <span>Span Margin (12%):</span>
-                        <span>₹{initialMargin.toLocaleString("en-IN")}</span>
-                      </div>
-                      <div className="flex justify-between text-gold font-bold text-xs pt-1">
-                        <span>EST. MARGIN REQ:</span>
-                        <span>₹{totalMargin.toLocaleString("en-IN")}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* SVG speedometer risk gauge */}
-                  <div className="flex flex-col items-center justify-center p-4 bg-slate-950/60 border border-slate-850 rounded-xl space-y-4">
-                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Capital Risk Gauge</span>
-                    
-                    <div className="relative w-36 h-20 overflow-hidden flex items-center justify-center">
-                      <svg className="w-full h-full" viewBox="0 0 100 50">
-                        <path d="M10,50 A40,40 0 0,1 90,50" fill="none" stroke="#334155" strokeWidth="6" strokeLinecap="round" />
-                        <path d="M10,50 A40,40 0 0,1 40,15" fill="none" stroke="#10B981" strokeWidth="6" strokeLinecap="round" />
-                        <path d="M40,15 A40,40 0 0,1 70,22" fill="none" stroke="#F59E0B" strokeWidth="6" strokeLinecap="round" />
-                        <path d="M70,22 A40,40 0 0,1 90,50" fill="none" stroke="#EF4444" strokeWidth="6" strokeLinecap="round" />
-                        
-                        <g transform={`translate(50, 50) rotate(${needleRotation})`}>
-                          <line x1="0" y1="0" x2="0" y2="-38" stroke="#FFFFFF" strokeWidth="2.5" strokeLinecap="round" />
-                          <circle cx="0" cy="0" r="4" fill="#D9B27C" />
-                        </g>
-                      </svg>
-                    </div>
-
-                    <div className="text-center">
-                      <span className="text-[10px] text-slate-400 block font-sans">Leverage Risk Status</span>
-                      <span className={`text-xs font-extrabold uppercase tracking-wide ${
-                        riskFraction < 0.3 ? "text-emerald-400" : riskFraction < 0.75 ? "text-amber-400" : "text-rose-500"
-                      }`}>
-                        {riskFraction < 0.3 ? "Conservative Risk" : riskFraction < 0.75 ? "Moderate Exposure" : "Aggressive Leverage"}
-                      </span>
-                    </div>
-                  </div>
-
+                {/* Futures Right: visual */}
+                <div className="lg:col-span-7 relative">
+                  <Image
+                    src="/fando.jpeg"
+                    alt="Futures trading on the Shree Varahi app"
+                    width={1424}
+                    height={1080}
+                    className="w-full h-auto object-cover"
+                  />
                 </div>
               </motion.div>
             )}
@@ -1292,7 +1132,7 @@ export default function FuturesOptionsPage() {
             <div className="absolute -bottom-6 -right-6 w-24 h-24 rounded-full border border-gold/15 pointer-events-none" />
             
             <div className="relative z-10 space-y-6">
-              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gold/15 border border-gold/30 text-xs font-black text-gold-deep uppercase tracking-wider mb-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
                 Simple Pricing
               </span>
 
