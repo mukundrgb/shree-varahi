@@ -254,7 +254,7 @@ export default function NFOPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">What You Can Do</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground text-balance">Everything You Need For NFO Investing.</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Everything You Need For NFO Investing.</h2>
             <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
               Discover and explore new fund offers, compare available options, invest with ease, and track your investments from one convenient platform.
             </p>
@@ -285,9 +285,7 @@ export default function NFOPage() {
             })}
           </div>
 
-          <div className="flex flex-wrap justify-center gap-2.5">
-            {KEY_BENEFITS_1.map((b) => <CheckPill key={b} label={b} />)}
-          </div>
+
         </div>
       </section>
 
@@ -296,7 +294,7 @@ export default function NFOPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">Explore NFO Opportunities</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground">Track New Investment Opportunities</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground">Track New Investment Opportunities</h2>
           </div>
 
           {/* Category tabs */}
@@ -363,9 +361,6 @@ export default function NFOPage() {
             </motion.div>
           </AnimatePresence>
 
-          <div className="flex flex-wrap justify-center gap-2.5">
-            {WHY_EXPLORE.map((b) => <CheckPill key={b} label={b} />)}
-          </div>
         </div>
       </section>
 
@@ -376,7 +371,7 @@ export default function NFOPage() {
             {/* Left — scrollable feature list */}
             <div>
               <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-3">NFO Research</p>
-              <h2 className="text-3xl sm:text-4xl font-black text-foreground leading-[1.1] mb-4">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground leading-[1.1] mb-4">
                 Research<br />Before You Invest
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-md">
@@ -497,9 +492,7 @@ export default function NFOPage() {
             </div>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-2.5 mt-12">
-            {RESEARCH_ADVANTAGES.map((b) => <CheckPill key={b} label={b} />)}
-          </div>
+
         </div>
       </section>
 
@@ -508,7 +501,7 @@ export default function NFOPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">Track Your NFO Investments</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground text-balance">Monitor Investments Efficiently</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Monitor Investments Efficiently</h2>
             <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
               Track, monitor, and manage your NFO investments effortlessly through Shree Varahi&apos;s unified investment dashboard.
             </p>
@@ -539,9 +532,7 @@ export default function NFOPage() {
             })}
           </div>
 
-          <div className="flex flex-wrap justify-center gap-2.5">
-            {WHY_TRACKING.map((b) => <CheckPill key={b} label={b} />)}
-          </div>
+
         </div>
       </section>
 
@@ -550,7 +541,7 @@ export default function NFOPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">Why Shree Varahi</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground text-balance">Built For Smarter NFO Investing</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Built For Smarter NFO Investing</h2>
             <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
               Discover promising NFOs, access detailed research, invest seamlessly, and track progress through Shree Varahi&apos;s integrated platform.
             </p>
@@ -578,9 +569,7 @@ export default function NFOPage() {
             })}
           </div>
 
-          <div className="flex flex-wrap justify-center gap-2.5 mb-10">
-            {WHY_INVESTORS_CHOOSE.map((b) => <CheckPill key={b} label={b} />)}
-          </div>
+
 
           <div className="max-w-3xl mx-auto bg-cream border border-gold/30 rounded-[12px] p-6 sm:p-8 text-center">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-3">The Shree Varahi Advantage</p>
@@ -598,7 +587,7 @@ export default function NFOPage() {
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
               FAQ
             </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight">
               Frequently Asked Questions
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">

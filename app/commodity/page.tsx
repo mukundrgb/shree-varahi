@@ -35,25 +35,27 @@ const KEY_BENEFITS_1 = [
 type Category = "Gold" | "Silver" | "Crude Oil" | "Natural Gas" | "Copper" | "Zinc" | "Aluminium" | "Nickel"
 
 const CATEGORIES: { id: Category; icon: React.ElementType; color: string; price: string; change: number }[] = [
-  { id: "Gold",         icon: Coins,            color: "#D97706", price: "72,450",  change: 0.42 },
-  { id: "Silver",       icon: CircleDollarSign, color: "#64748B", price: "87,420",  change: 0.65 },
-  { id: "Crude Oil",    icon: Flame,            color: "#B91C1C", price: "6,450",   change: -0.74 },
-  { id: "Natural Gas",  icon: Zap,              color: "#0891B2", price: "296.80",  change: -1.59 },
-  { id: "Copper",       icon: Box,              color: "#C2703D", price: "812.35",  change: -0.51 },
-  { id: "Zinc",         icon: Boxes,            color: "#475569", price: "362.95",  change: -0.70 },
-  { id: "Aluminium",    icon: Layers3,          color: "#7C3AED", price: "238.40",  change: 0.28 },
-  { id: "Nickel",       icon: Gauge,            color: "#15803D", price: "1,736.40",change: -1.21 },
+  { id: "Gold",         icon: Coins,            color: "#8B0D19", price: "72,450",  change: 0.42 },
+  { id: "Silver",       icon: CircleDollarSign, color: "#8B0D19", price: "87,420",  change: 0.65 },
+  { id: "Crude Oil",    icon: Flame,            color: "#8B0D19", price: "6,450",   change: -0.74 },
+  { id: "Natural Gas",  icon: Zap,              color: "#8B0D19", price: "296.80",  change: -1.59 },
+  { id: "Copper",       icon: Box,              color: "#8B0D19", price: "812.35",  change: -0.51 },
+  { id: "Zinc",         icon: Boxes,            color: "#8B0D19", price: "362.95",  change: -0.70 },
+  { id: "Aluminium",    icon: Layers3,          color: "#8B0D19", price: "238.40",  change: 0.28 },
+  { id: "Nickel",       icon: Gauge,            color: "#8B0D19", price: "1,736.40",change: -1.21 },
 ]
 
-const CONTRACTS: Record<Category, string[]> = {
-  "Gold":        ["Gold", "Gold Mini", "Gold Guinea", "Gold Petal"],
-  "Silver":      ["Silver", "Silver Mini", "Silver Micro"],
-  "Crude Oil":   ["Crude Oil", "Crude Oil Mini"],
-  "Natural Gas": ["Natural Gas", "Natural Gas Mini"],
-  "Copper":      ["Copper", "Copper Mini"],
-  "Zinc":        ["Zinc", "Zinc Mini"],
-  "Aluminium":   ["Aluminium", "Aluminium Mini"],
-  "Nickel":      ["Nickel", "Nickel Mini"],
+type Contract = { name: string; expiry: string }
+
+const CONTRACTS: Record<Category, Contract[]> = {
+  "Gold":        [{ name: "Gold", expiry: "5, Aug 2027" }, { name: "Gold Mini", expiry: "29, Jul 2027" }, { name: "Gold Guinea", expiry: "31, Jul 2027" }, { name: "Gold Petal", expiry: "31, Jul 2027" }],
+  "Silver":      [{ name: "Silver", expiry: "5, Sep 2027" }, { name: "Silver Mini", expiry: "30, Jul 2027" }, { name: "Silver Micro", expiry: "30, Jul 2027" }],
+  "Crude Oil":   [{ name: "Crude Oil", expiry: "19, Jul 2027" }, { name: "Crude Oil Mini", expiry: "19, Jul 2027" }],
+  "Natural Gas": [{ name: "Natural Gas", expiry: "24, Jul 2027" }, { name: "Natural Gas Mini", expiry: "24, Jul 2027" }],
+  "Copper":      [{ name: "Copper", expiry: "30, Jul 2027" }, { name: "Copper Mini", expiry: "30, Jul 2027" }],
+  "Zinc":        [{ name: "Zinc", expiry: "29, Jul 2027" }, { name: "Zinc Mini", expiry: "29, Jul 2027" }],
+  "Aluminium":   [{ name: "Aluminium", expiry: "30, Jul 2027" }, { name: "Aluminium Mini", expiry: "30, Jul 2027" }],
+  "Nickel":      [{ name: "Nickel", expiry: "30, Jul 2027" }, { name: "Nickel Mini", expiry: "30, Jul 2027" }],
 }
 
 const WHY_MULTIPLE = [
@@ -246,12 +248,90 @@ export default function CommodityPage() {
         </div>
       </section>
 
-      {/* ── WHAT YOU CAN DO ── */}
+
+      {/* ── ACCESS MAJOR COMMODITY MARKETS ── */}
+      <section className="py-12 lg:py-16 bg-cream border-t border-border/40">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">Trade Multiple Commodities</p>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground">Access Major Commodity Markets</h2>
+          </div>
+
+          {/* Category tabs */}
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
+            {CATEGORIES.map((c) => {
+              const Icon = c.icon
+              const active = activeCat === c.id
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => setActiveCat(c.id)}
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-[6px] text-[12px] font-bold border transition-all duration-200 ${
+                    active
+                      ? "bg-burgundy text-white border-burgundy shadow-sm"
+                      : "bg-white text-muted-foreground border-border hover:border-burgundy/25 hover:text-foreground"
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" style={{ color: active ? "#fff" : c.color }} />
+                  {c.id}
+                </button>
+              )
+            })}
+          </div>
+
+          <p className="text-center text-sm text-muted-foreground max-w-xl mx-auto mb-8 -mt-2">
+            Available Contracts: {CONTRACTS[activeCat].map((c) => c.name).join(", ")}
+          </p>
+
+          {/* Contracts grid */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeCat}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8"
+            >
+              {CONTRACTS[activeCat].map((contract) => (
+
+                <div
+                  key={contract.name}
+                  className="relative bg-white border border-border rounded-[8px] p-4 hover:border-gold/40 hover:shadow-sm transition-all duration-200 cursor-pointer"
+                >
+                  <span className="absolute top-3 right-3 text-[9px] font-bold text-muted-foreground">
+                    {contract.expiry}
+                  </span>
+                  <div
+                    className="w-8 h-8 rounded-[6px] flex items-center justify-center mb-3 text-[10px] font-black"
+                    style={{ background: activeCatMeta.color + "14", color: activeCatMeta.color, border: `1px solid ${activeCatMeta.color}22` }}
+                  >
+                    {contract.name.split(" ").slice(0, 2).map((w) => w[0]).join("")}
+                  </div>
+                  <div className="font-extrabold text-[12px] text-foreground leading-tight mb-2 line-clamp-2 min-h-[28px] pr-12">
+                    {contract.name}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-black text-foreground">₹{activeCatMeta.price}</span>
+                    <span className={`text-[11px] font-bold flex items-center gap-0.5 ${activeCatMeta.change >= 0 ? "text-profit" : "text-loss"}`}>
+                      <ArrowUpRight className={`w-3 h-3 ${activeCatMeta.change < 0 ? "rotate-90" : ""}`} />{activeCatMeta.change}%
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </AnimatePresence>
+
+
+        </div>
+      </section>
+
+            {/* ── WHAT YOU CAN DO ── */}
       <section className="py-12 lg:py-16 bg-background border-t border-border/40">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">What You Can Do</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground text-balance">Everything You Need For Commodity Trading.</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Everything You Need For Commodity Trading.</h2>
             <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
               Analyze market trends, execute commodity trades, and manage positions seamlessly through Shree Varahi&apos;s integrated trading platform.
             </p>
@@ -282,84 +362,7 @@ export default function CommodityPage() {
             })}
           </div>
 
-          <div className="flex flex-wrap justify-center gap-2.5">
-            {KEY_BENEFITS_1.map((b) => <CheckPill key={b} label={b} />)}
-          </div>
-        </div>
-      </section>
 
-      {/* ── ACCESS MAJOR COMMODITY MARKETS ── */}
-      <section className="py-12 lg:py-16 bg-cream border-t border-border/40">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">Trade Multiple Commodities</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground">Access Major Commodity Markets</h2>
-          </div>
-
-          {/* Category tabs */}
-          <div className="flex flex-wrap justify-center gap-2 mb-8">
-            {CATEGORIES.map((c) => {
-              const Icon = c.icon
-              const active = activeCat === c.id
-              return (
-                <button
-                  key={c.id}
-                  onClick={() => setActiveCat(c.id)}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-[6px] text-[12px] font-bold border transition-all duration-200 ${
-                    active
-                      ? "bg-burgundy text-white border-burgundy shadow-sm"
-                      : "bg-white text-muted-foreground border-border hover:border-burgundy/25 hover:text-foreground"
-                  }`}
-                >
-                  <Icon className="w-3.5 h-3.5" style={{ color: active ? "#fff" : c.color }} />
-                  {c.id}
-                </button>
-              )
-            })}
-          </div>
-
-          <p className="text-center text-sm text-muted-foreground max-w-xl mx-auto mb-8 -mt-2">
-            Available Contracts: {CONTRACTS[activeCat].join(", ")}
-          </p>
-
-          {/* Contracts grid */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeCat}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8"
-            >
-              {CONTRACTS[activeCat].map((name) => (
-                <div
-                  key={name}
-                  className="bg-white border border-border rounded-[8px] p-4 hover:border-gold/40 hover:shadow-sm transition-all duration-200 cursor-pointer"
-                >
-                  <div
-                    className="w-8 h-8 rounded-[6px] flex items-center justify-center mb-3 text-[10px] font-black"
-                    style={{ background: activeCatMeta.color + "14", color: activeCatMeta.color, border: `1px solid ${activeCatMeta.color}22` }}
-                  >
-                    {name.split(" ").slice(0, 2).map((w) => w[0]).join("")}
-                  </div>
-                  <div className="font-extrabold text-[12px] text-foreground leading-tight mb-2 line-clamp-2 min-h-[28px]">
-                    {name}
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-black text-foreground">₹{activeCatMeta.price}</span>
-                    <span className={`text-[11px] font-bold flex items-center gap-0.5 ${activeCatMeta.change >= 0 ? "text-profit" : "text-loss"}`}>
-                      <ArrowUpRight className={`w-3 h-3 ${activeCatMeta.change < 0 ? "rotate-90" : ""}`} />{activeCatMeta.change}%
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-          </AnimatePresence>
-
-          <div className="flex flex-wrap justify-center gap-2.5">
-            {WHY_MULTIPLE.map((b) => <CheckPill key={b} label={b} />)}
-          </div>
         </div>
       </section>
 
@@ -370,7 +373,7 @@ export default function CommodityPage() {
             {/* Left — feature cards */}
             <div>
               <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-3">Advanced Tools</p>
-              <h2 className="text-3xl sm:text-4xl font-black text-foreground leading-[1.1] mb-4">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground leading-[1.1] mb-4">
                 Built For Active<br />Commodity Traders
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-md">
@@ -505,9 +508,7 @@ export default function CommodityPage() {
             </div>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-2.5 mt-12">
-            {WHY_TOOLS_MATTER.map((b) => <CheckPill key={b} label={b} />)}
-          </div>
+
         </div>
       </section>
 
@@ -516,7 +517,7 @@ export default function CommodityPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">Trade With More Flexibility</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground text-balance">More Margin. More Opportunities.</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">More Margin. More Opportunities.</h2>
             <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
               Unlock greater trading flexibility with Shree Varahi&apos;s margin solutions, designed to optimize capital utilization and maximize market opportunities.
             </p>
@@ -544,9 +545,6 @@ export default function CommodityPage() {
             })}
           </div>
 
-          <div className="flex flex-wrap justify-center gap-2.5">
-            {MARGIN_BENEFITS.map((b) => <CheckPill key={b} label={b} />)}
-          </div>
         </div>
       </section>
 
@@ -555,7 +553,7 @@ export default function CommodityPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">Strategy &amp; Execution</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground text-balance">Execute Commodity Strategies Efficiently</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Execute Commodity Strategies Efficiently</h2>
             <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
               Execute trading strategies, place orders quickly, and manage commodity positions efficiently with Shree Varahi&apos;s advanced trading platform.
             </p>
@@ -586,55 +584,7 @@ export default function CommodityPage() {
             })}
           </div>
 
-          <div className="flex flex-wrap justify-center gap-2.5">
-            {STRATEGY_WHY.map((b) => <CheckPill key={b} label={b} />)}
-          </div>
-        </div>
-      </section>
 
-      {/* ── WHY SHREE VARAHI ── */}
-      <section className="py-12 lg:py-16 bg-cream border-t border-border/40">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">Why Shree Varahi</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground text-balance">Built For Modern Commodity Traders</h2>
-            <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
-              Empower your commodity trading with advanced tools, real-time analytics, and fast execution capabilities built for active traders.
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-            {WHY_VARAHI.map((c, i) => {
-              const Icon = c.icon
-              return (
-                <motion.div
-                  key={c.title}
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.05 }}
-                  className="bg-white border border-border rounded-[8px] p-5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:border-gold/30 transition-all duration-300"
-                >
-                  <div className="w-10 h-10 rounded-[7px] bg-burgundy/10 border border-burgundy/10 flex items-center justify-center mb-4">
-                    <Icon className="w-5 h-5 text-[#8B0D19]" strokeWidth={1.8} />
-                  </div>
-                  <h3 className="font-extrabold text-foreground text-sm mb-2">{c.title}</h3>
-                  <p className="text-[12px] text-muted-foreground leading-relaxed">{c.desc}</p>
-                </motion.div>
-              )
-            })}
-          </div>
-
-          <div className="flex flex-wrap justify-center gap-2.5 mb-10">
-            {WHY_TRADERS_CHOOSE.map((b) => <CheckPill key={b} label={b} />)}
-          </div>
-
-          <div className="max-w-3xl mx-auto bg-white border border-gold/30 rounded-[12px] p-6 sm:p-8 text-center">
-            <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-3">The Shree Varahi Advantage</p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Whether you&apos;re trading Gold, Silver, Crude Oil, Natural Gas, or industrial metals, Shree Varahi provides the technology, market intelligence, and execution capabilities needed to navigate commodity markets with greater confidence, efficiency, and control.
-            </p>
-          </div>
         </div>
       </section>
 
@@ -645,7 +595,7 @@ export default function CommodityPage() {
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
               FAQ
             </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight">
               Frequently Asked Questions
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">

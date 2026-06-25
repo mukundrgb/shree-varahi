@@ -1142,7 +1142,7 @@ export default function FuturesOptionsPage() {
                 <span className="text-7xl sm:text-8xl lg:text-9xl font-black tracking-tighter leading-none">17</span>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-foreground tracking-tight">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight">
                 flat. Every F&amp;O order.
               </h2>
 
@@ -1218,7 +1218,7 @@ export default function FuturesOptionsPage() {
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
               FAQ
             </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight">
               Frequently Asked Questions
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">

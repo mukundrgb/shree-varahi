@@ -384,7 +384,7 @@ export default function StocksPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">What You Can Do</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground text-balance">Everything you need to trade and invest in stocks.</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Everything you need to trade and invest in stocks.</h2>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -726,7 +726,7 @@ export default function StocksPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10 max-w-2xl mx-auto">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">Trade With More Flexibility</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground text-balance">Invest Beyond Available Cash</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Invest Beyond Available Cash</h2>
             <p className="text-sm text-muted-foreground mt-3">
               Enhance your investment potential with Shree Varahi&apos;s margin solutions, designed to maximize opportunities while optimizing your available capital and portfolio holdings.
             </p>
@@ -772,7 +772,7 @@ export default function StocksPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">Explore Multiple Stock Opportunities</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground text-balance">Discover Investment Opportunities Across Market Caps &amp; Strategies</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Discover Investment Opportunities Across Market Caps &amp; Strategies</h2>
             <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
               Discover investment opportunities across market caps, sectors, and strategies with Shree Varahi&apos;s comprehensive stock selection platform.
             </p>
@@ -870,7 +870,7 @@ export default function StocksPage() {
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
               FAQ
             </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight">
               Frequently Asked Questions
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -1029,7 +1029,7 @@ export default function StocksPage() {
               <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep mb-1">
                 Market Updates
               </p>
-              <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight">
                 Latest Market News
               </h2>
             </div>

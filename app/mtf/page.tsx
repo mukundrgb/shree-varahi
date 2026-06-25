@@ -168,7 +168,7 @@ export default function MTFPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">What Is MTF</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground text-balance">How Does Margin Trading Facility Work?</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">How Does Margin Trading Facility Work?</h2>
             <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
               MTF lets you purchase shares worth up to 4× your available cash — Shree Varahi funds the remaining amount, so your capital goes further.
             </p>
@@ -201,7 +201,7 @@ export default function MTFPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">See The Benefit</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground text-balance">How MTF Multiplies Your Returns</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">How MTF Multiplies Your Returns</h2>
             <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
               With ₹10,000 cash, buying a stock at ₹1,000/share — if the price rises 10% to ₹1,100 in 10 days, here&apos;s how the outcome compares.
             </p>
@@ -243,7 +243,7 @@ export default function MTFPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">Transparent Pricing</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground text-balance">What Are The Charges For MTF?</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">What Are The Charges For MTF?</h2>
           </div>
 
           <div className="grid sm:grid-cols-3 gap-5 max-w-5xl mx-auto">
@@ -270,7 +270,7 @@ export default function MTFPage() {
             })}
           </div>
 
-          <div className="flex flex-wrap justify-center gap-2.5 mt-10">
+          <div className="hidden sm:flex flex-wrap justify-center gap-2.5 mt-10">
             {KEY_BENEFITS.map((b) => <CheckPill key={b} label={b} />)}
           </div>
         </div>
@@ -283,7 +283,7 @@ export default function MTFPage() {
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
               FAQ
             </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight">
               Frequently Asked Questions
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">

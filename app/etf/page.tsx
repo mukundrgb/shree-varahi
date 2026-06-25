@@ -223,7 +223,7 @@ export default function ETFPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">What You Can Do</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground text-balance">Every tool you need to invest in ETFs.</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Every tool you need to invest in ETFs.</h2>
             <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
               Browse, analyse, and invest in ETFs across indices, sectors, and asset classes — all from one platform.
             </p>
@@ -261,7 +261,7 @@ export default function ETFPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">EXPLORE ETF CATEGORIES</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground">Invest Across Multiple ETF Categories</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground">Invest Across Multiple ETF Categories</h2>
           </div>
 
           {/* Category tabs */}
@@ -336,7 +336,7 @@ export default function ETFPage() {
             {/* Left — scrollable feature list */}
             <div>
               <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-3">ETF Research</p>
-              <h2 className="text-3xl sm:text-4xl font-black text-foreground leading-[1.1] mb-4">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground leading-[1.1] mb-4">
                 Research<br />Before You Invest
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-md">
@@ -475,7 +475,7 @@ export default function ETFPage() {
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider">
               FAQ
             </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight">
               Frequently Asked Questions
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
