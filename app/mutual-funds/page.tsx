@@ -850,7 +850,7 @@ export default function MutualFundsPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-1">Fund Houses</p>
-            <h2 className="text-xl sm:text-2xl font-black text-foreground">30+ AMC Partners</h2>
+            <h2 className="text-xl sm:text-2xl font-black text-foreground">AMC Partners</h2>
           </div>
 
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">

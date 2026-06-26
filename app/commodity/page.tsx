@@ -6,7 +6,7 @@ import {
   ChevronRight, Plus, X, Layers, ListChecks, LayoutDashboard, Zap,
   Activity, PieChart, Coins, CircleDollarSign, Flame, Boxes, Box, Gauge,
   TrendingUp, Target, BarChart3, ShieldCheck, RotateCcw,
-  ArrowUpRight, Star, Check, Eye, Layers3, SplitSquareHorizontal,
+  ArrowUpRight, Star, Check, Eye, Layers3, SplitSquareHorizontal, CalendarClock,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -297,18 +297,21 @@ export default function CommodityPage() {
 
                 <div
                   key={contract.name}
-                  className="relative bg-white border border-border rounded-[8px] p-4 hover:border-gold/40 hover:shadow-sm transition-all duration-200 cursor-pointer"
+                  className="bg-white border border-border rounded-[8px] p-4 hover:border-gold/40 hover:shadow-sm transition-all duration-200 cursor-pointer"
                 >
-                  <span className="absolute top-3 right-3 text-[9px] font-bold text-muted-foreground">
-                    {contract.expiry}
-                  </span>
-                  <div
-                    className="w-8 h-8 rounded-[6px] flex items-center justify-center mb-3 text-[10px] font-black"
-                    style={{ background: activeCatMeta.color + "14", color: activeCatMeta.color, border: `1px solid ${activeCatMeta.color}22` }}
-                  >
-                    {contract.name.split(" ").slice(0, 2).map((w) => w[0]).join("")}
+                  <div className="flex items-center justify-between mb-3">
+                    <div
+                      className="w-8 h-8 rounded-[6px] flex items-center justify-center text-[10px] font-black"
+                      style={{ background: activeCatMeta.color + "14", color: activeCatMeta.color, border: `1px solid ${activeCatMeta.color}22` }}
+                    >
+                      {contract.name.split(" ").slice(0, 2).map((w) => w[0]).join("")}
+                    </div>
+                    <span className="flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground" title="Contract expiry date">
+                      <CalendarClock className="w-4 h-4 shrink-0" />
+                      Exp {contract.expiry}
+                    </span>
                   </div>
-                  <div className="font-extrabold text-[12px] text-foreground leading-tight mb-2 line-clamp-2 min-h-[28px] pr-12">
+                  <div className="font-extrabold text-[12px] text-foreground leading-tight mb-2 line-clamp-2 min-h-[28px]">
                     {contract.name}
                   </div>
                   <div className="flex items-center justify-between">
