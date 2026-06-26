@@ -35,7 +35,7 @@ function AnimatedCounter({ target, duration = 2 }: { target: number; duration?: 
 
 export function BrokerageSection() {
   return (
-    <section className="relative bg-gradient-to-b from-background via-cream to-cream py-16 lg:py-24 overflow-hidden">
+    <section className="relative py-16 lg:py-24 overflow-hidden"> {/*bg-gradient-to-b from-background via-cream to-cream */}
       {/* Giant watermark */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <span className="text-[20rem] font-bold text-burgundy/[0.03] select-none">

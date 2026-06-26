@@ -4,7 +4,7 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ChevronRight, Plus, X, Star, Users, RefreshCw,
-  TrendingUp, CheckCircle2, Layers,
+  TrendingUp, CheckCircle2, Layers, ArrowRight, BarChart3,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -19,6 +19,23 @@ const SAMPLE_BASKET = [
   { name: "TCS",             weight: 12 },
   { name: "ICICI Bank",      weight: 11 },
   { name: "L&T",             weight: 9 },
+]
+
+const LIVE_BASKETS = [
+  {
+    icon: BarChart3,
+    title: "Blue Chip High Growth Low Valuation Strategy",
+    desc: "A fundamentals-driven basket of established large-cap leaders, selected for strong growth at reasonable valuations — built for steady, long-term wealth creation.",
+    points: ["Moderate Risk", "Min. ₹2.5 Lakhs", "3 Year Horizon", "2.5% Advisory Fee / Year"],
+    href: "https://lakshmishree.valuestocks.in/",
+  },
+  {
+    icon: TrendingUp,
+    title: "Small Cap High Growth Low Valuation Strategy",
+    desc: "A research-backed basket of high-growth small-cap stocks trading at attractive valuations, aimed at investors seeking higher long-term upside.",
+    points: ["Moderate Risk", "Min. ₹2.5 Lakhs", "3 Year Horizon", "2.5% Advisory Fee / Year"],
+    href: "https://lakshmishree.valuestocks.in/",
+  },
 ]
 
 const FLEX_CARDS = [
@@ -142,16 +159,17 @@ export default function AdvisoryBasketsPage() {
       {/* ── TWO 50/50 CARDS ── */}
       <section className="py-12 lg:py-16 bg-background border-t border-border/40">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10 max-w-2xl mx-auto">
-            <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep mb-2">Why Advisory Baskets</p>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Research-Backed Investing, Simplified</h2>
+          {/* Live Baskets */}
+          <div className="text-center mt-16 mb-10 max-w-2xl mx-auto">
+            <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep mb-2">Live On ValueStocks</p>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Explore Our Live Baskets</h2>
             <p className="text-sm text-muted-foreground mt-3">
-              Every Advisory Basket combines structured research with hassle-free execution, so you invest with a clear strategy instead of guesswork.
+              A look at two active strategies on our ValueStocks advisory platform — click through to view full details and subscribe.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {FLEX_CARDS.map((c, i) => {
+            {LIVE_BASKETS.map((c, i) => {
               const Icon = c.icon
               return (
                 <motion.div
@@ -160,7 +178,7 @@ export default function AdvisoryBasketsPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: i * 0.08 }}
-                  className="bg-white border border-border rounded-[12px] p-7 sm:p-8"
+                  className="bg-white border border-border rounded-[12px] p-7 sm:p-8 flex flex-col"
                 >
                   <div
                     className="w-12 h-12 rounded-[8px] flex items-center justify-center mb-5"
@@ -170,7 +188,7 @@ export default function AdvisoryBasketsPage() {
                   </div>
                   <h3 className="font-extrabold text-foreground text-lg sm:text-xl mb-3">{c.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed mb-5">{c.desc}</p>
-                  <div className="grid sm:grid-cols-2 gap-2.5">
+                  <div className="grid sm:grid-cols-2 gap-2.5 mb-6">
                     {c.points.map((p) => (
                       <div key={p} className="flex items-center gap-2">
                         <CheckCircle2 className="w-4 h-4 text-[#8B0D19] shrink-0" />
@@ -178,6 +196,12 @@ export default function AdvisoryBasketsPage() {
                       </div>
                     ))}
                   </div>
+                  <a href={c.href} target="_blank" rel="noopener noreferrer" className="mt-auto">
+                    <Button className="w-full bg-burgundy hover:bg-burgundy-deep text-white font-bold rounded-[5px] flex items-center justify-center gap-2">
+                      View Basket &amp; Subscribe
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </a>
                 </motion.div>
               )
             })}
