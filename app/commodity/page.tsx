@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  ChevronRight, Plus, X, Layers, ListChecks, LayoutDashboard, Zap,
+  ChevronRight, ChevronDown, Plus, X, Layers, ListChecks, LayoutDashboard, Zap,
   Activity, PieChart, Coins, CircleDollarSign, Flame, Boxes, Box, Gauge,
   TrendingUp, Target, BarChart3, ShieldCheck, RotateCcw,
   ArrowUpRight, Star, Check, Eye, Layers3, SplitSquareHorizontal, CalendarClock,
@@ -44,6 +44,20 @@ const CATEGORIES: { id: Category; icon: React.ElementType; color: string; price:
   { id: "Aluminium",    icon: Layers3,          color: "#8B0D19", price: "238.40",  change: 0.28 },
   { id: "Nickel",       icon: Gauge,            color: "#8B0D19", price: "1,736.40",change: -1.21 },
 ]
+
+type Group = "Bullion" | "Base Metal" | "Energy"
+
+const GROUPS: { id: Group; icon: React.ElementType; desc: string }[] = [
+  { id: "Bullion",    icon: Coins, desc: "Precious metals traded for value preservation, hedging, and long-term wealth storage." },
+  { id: "Base Metal", icon: Boxes, desc: "Industrial metals driven by manufacturing demand, infrastructure, and global trade activity." },
+  { id: "Energy",     icon: Flame, desc: "Energy commodities driven by global supply, demand, and geopolitical market activity." },
+]
+
+const GROUP_MEMBERS: Record<Group, Category[]> = {
+  "Bullion":    ["Gold", "Silver"],
+  "Base Metal": ["Copper", "Zinc", "Aluminium", "Nickel"],
+  "Energy":     ["Crude Oil", "Natural Gas"],
+}
 
 type Contract = { name: string; expiry: string }
 
@@ -154,10 +168,17 @@ function CheckPill({ label }: { label: string }) {
 // ─── Page ───────────────────────────────────────────────────────────────────
 
 export default function CommodityPage() {
+  const [activeGroup, setActiveGroup] = useState<Group>("Bullion")
   const [activeCat, setActiveCat] = useState<Category>("Gold")
   const [mobile, setMobile] = useState("")
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null)
   const activeCatMeta = CATEGORIES.find((c) => c.id === activeCat)!
+  const activeGroupMeta = GROUPS.find((g) => g.id === activeGroup)!
+
+  const selectGroup = (g: Group) => {
+    setActiveGroup(g)
+    setActiveCat(GROUP_MEMBERS[g][0])
+  }
 
   return (
     <main className="min-h-screen bg-background">
@@ -257,74 +278,125 @@ export default function CommodityPage() {
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground">Access Major Commodity Markets</h2>
           </div>
 
-          {/* Category tabs */}
-          <div className="flex flex-wrap justify-center gap-2 mb-8">
-            {CATEGORIES.map((c) => {
-              const Icon = c.icon
-              const active = activeCat === c.id
+          {/* Group tabs — Bullion / Base Metal / Energy */}
+          <div className="flex flex-wrap justify-center gap-2 mb-6">
+            {GROUPS.map((g) => {
+              const Icon = g.icon
+              const active = activeGroup === g.id
               return (
                 <button
-                  key={c.id}
-                  onClick={() => setActiveCat(c.id)}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-[6px] text-[12px] font-bold border transition-all duration-200 ${
+                  key={g.id}
+                  onClick={() => selectGroup(g.id)}
+                  className={`flex items-center gap-2 px-5 py-3 rounded-[8px] text-[13px] font-bold border transition-all duration-200 ${
                     active
                       ? "bg-burgundy text-white border-burgundy shadow-sm"
                       : "bg-white text-muted-foreground border-border hover:border-burgundy/25 hover:text-foreground"
                   }`}
                 >
-                  <Icon className="w-3.5 h-3.5" style={{ color: active ? "#fff" : c.color }} />
-                  {c.id}
+                  <Icon className="w-4 h-4" style={{ color: active ? "#fff" : "#8B0D19" }} />
+                  {g.id}
                 </button>
               )
             })}
           </div>
 
-          <p className="text-center text-sm text-muted-foreground max-w-xl mx-auto mb-8 -mt-2">
-            Available Contracts: {CONTRACTS[activeCat].map((c) => c.name).join(", ")}
+          <p className="text-center text-sm text-muted-foreground max-w-xl mx-auto mb-8">
+            {activeGroupMeta.desc}
           </p>
 
-          {/* Contracts grid */}
+          {/* Commodity tree — contracts nest directly under their parent commodity */}
           <AnimatePresence mode="wait">
             <motion.div
-              key={activeCat}
+              key={activeGroup}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8"
+              className="max-w-3xl mx-auto space-y-3"
             >
-              {CONTRACTS[activeCat].map((contract) => (
-
-                <div
-                  key={contract.name}
-                  className="bg-white border border-border rounded-[8px] p-4 hover:border-gold/40 hover:shadow-sm transition-all duration-200 cursor-pointer"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <div
-                      className="w-8 h-8 rounded-[6px] flex items-center justify-center text-[10px] font-black"
-                      style={{ background: activeCatMeta.color + "14", color: activeCatMeta.color, border: `1px solid ${activeCatMeta.color}22` }}
+              {GROUP_MEMBERS[activeGroup].map((catId) => {
+                const cat = CATEGORIES.find((c) => c.id === catId)!
+                const Icon = cat.icon
+                const active = activeCat === cat.id
+                return (
+                  <div
+                    key={cat.id}
+                    className={`bg-white border rounded-[10px] transition-all duration-200 ${
+                      active ? "border-burgundy shadow-sm" : "border-border hover:border-gold/40"
+                    }`}
+                  >
+                    <button
+                      onClick={() => setActiveCat(active ? cat.id : cat.id)}
+                      className="w-full flex items-center gap-3 p-4 text-left"
                     >
-                      {contract.name.split(" ").slice(0, 2).map((w) => w[0]).join("")}
-                    </div>
-                    <span className="flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground" title="Contract expiry date">
-                      <CalendarClock className="w-4 h-4 shrink-0" />
-                      Exp {contract.expiry}
-                    </span>
+                      <div
+                        className="w-9 h-9 rounded-[6px] flex items-center justify-center shrink-0"
+                        style={{ background: cat.color + "14", border: `1px solid ${cat.color}22` }}
+                      >
+                        <Icon className="w-4.5 h-4.5" style={{ color: cat.color }} />
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-extrabold text-[13px] text-foreground leading-tight">{cat.id}</div>
+                        <div className="text-[11px] text-muted-foreground font-semibold">{CONTRACTS[cat.id].length} contracts</div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="text-sm font-black text-foreground block">₹{cat.price}</span>
+                        <span className={`text-[11px] font-bold flex items-center justify-end gap-0.5 ${cat.change >= 0 ? "text-profit" : "text-loss"}`}>
+                          <ArrowUpRight className={`w-3 h-3 ${cat.change < 0 ? "rotate-90" : ""}`} />{cat.change}%
+                        </span>
+                      </div>
+                      <ChevronDown className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200 ${active ? "rotate-180 text-burgundy" : ""}`} />
+                    </button>
+
+                    <AnimatePresence initial={false}>
+                      {active && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.25 }}
+                          className="overflow-hidden"
+                        >
+                          {/* Nested contracts — indented + connected with a left rail to show they belong to the commodity above */}
+                          <div className="pl-6 pr-4 pb-4 ml-[34px] border-l-2 border-burgundy/20 space-y-2">
+                            {CONTRACTS[cat.id].map((contract) => (
+                              <div
+                                key={contract.name}
+                                className="flex items-center justify-between gap-3 bg-cream/50 border border-border/60 rounded-[6px] px-3 py-2.5 hover:border-gold/40 transition-colors"
+                              >
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  <div
+                                    className="w-6 h-6 rounded-[5px] flex items-center justify-center text-[8px] font-black shrink-0"
+                                    style={{ background: cat.color + "14", color: cat.color }}
+                                  >
+                                    {contract.name.split(" ").slice(0, 2).map((w) => w[0]).join("")}
+                                  </div>
+                                  <span className="font-bold text-[12px] text-foreground truncate">{contract.name}</span>
+                                </div>
+                                <div className="flex items-center gap-3 shrink-0">
+                                  <span className="hidden sm:flex items-center gap-1 text-[10px] font-semibold text-muted-foreground">
+                                    <CalendarClock className="w-3 h-3" />
+                                    Exp {contract.expiry}
+                                  </span>
+                                  <span className="text-[12px] font-black text-foreground">₹{cat.price}</span>
+                                  <span className={`hidden sm:flex text-[11px] font-bold items-center gap-0.5 ${cat.change >= 0 ? "text-profit" : "text-loss"}`}>
+                                    <ArrowUpRight className={`w-3 h-3 ${cat.change < 0 ? "rotate-90" : ""}`} />{cat.change}%
+                                  </span>
+                                  <Button size="sm" className="bg-burgundy hover:bg-burgundy-deep text-white text-[10px] font-bold h-7 px-3 rounded-[5px]">
+                                    Trade
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
-                  <div className="font-extrabold text-[12px] text-foreground leading-tight mb-2 line-clamp-2 min-h-[28px]">
-                    {contract.name}
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-black text-foreground">₹{activeCatMeta.price}</span>
-                    <span className={`text-[11px] font-bold flex items-center gap-0.5 ${activeCatMeta.change >= 0 ? "text-profit" : "text-loss"}`}>
-                      <ArrowUpRight className={`w-3 h-3 ${activeCatMeta.change < 0 ? "rotate-90" : ""}`} />{activeCatMeta.change}%
-                    </span>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
             </motion.div>
           </AnimatePresence>
-
 
         </div>
       </section>

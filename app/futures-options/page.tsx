@@ -761,11 +761,11 @@ export default function FuturesOptionsPage() {
                   {/* Name */}
                   <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">{item.name}</p>
                   {/* Price */}
-                  <p className="text-base font-black text-foreground font-mono">
+                  <p className="text-base font-black text-foreground">
                     {item.price.toLocaleString("en-IN", { minimumFractionDigits: item.price > 10000 ? 0 : 2 })}
                   </p>
                   {/* Change */}
-                  <p className={`text-[11px] font-bold mt-0.5 font-mono ${isPos ? "text-profit" : "text-loss"}`}>
+                  <p className={`text-[11px] font-bold mt-0.5 ${isPos ? "text-profit" : "text-loss"}`}>
                     {isPos ? "+" : ""}{item.change.toFixed(2)} ({isPos ? "+" : ""}{item.changePct.toFixed(2)}%) {isPos ? "▲" : "▼"}
                   </p>
                 </motion.div>

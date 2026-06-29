@@ -248,6 +248,10 @@ const NAV_SECTIONS: NavSection[] = [
   { id: "Learn & News",       menu: LEARN_NEWS,   grid: false, width: "280px", rightAlign: true,  mobileGrid: false },
 ]
 
+const POPULAR_SEARCHES = [
+  "Reliance", "HDFC Bank", "Tata Consultancy Services", "ICICI Bank", "Infosys", "Nifty 50 ETF",
+]
+
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -258,6 +262,14 @@ export function Navbar() {
   const [marketsSub, setMarketsSub] = useState("Major Indices")
   const [mobileMktTab, setMobileMktTab] = useState("Indices")
   const [isMac, setIsMac] = useState<boolean | null>(null)
+  const [searchIdx, setSearchIdx] = useState(0)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSearchIdx((i) => (i + 1) % POPULAR_SEARCHES.length)
+    }, 3000)
+    return () => clearInterval(timer)
+  }, [])
 
   useEffect(() => {
     setIsMac(/Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent))
@@ -465,7 +477,19 @@ export function Navbar() {
               >
                 <div className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
                   <Search className="h-3.5 w-3.5 shrink-0" />
-                  <span className="overflow-hidden text-ellipsis whitespace-nowrap">Search Stocks,Mutuals Funds, ETFs...</span>
+                  <span className="overflow-hidden text-ellipsis whitespace-nowrap shrink-0">Search</span>
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={searchIdx}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      transition={{ duration: 0.3 }}
+                      className="overflow-hidden text-ellipsis whitespace-nowrap"
+                    >
+                      {POPULAR_SEARCHES[searchIdx]}...
+                    </motion.span>
+                  </AnimatePresence>
                 </div>
                 {isMac !== null && (
                   <kbd className="px-1.5 py-0.5 rounded-[3px] bg-background border border-border text-[9px] font-sans font-normal shrink-0">
