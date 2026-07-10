@@ -687,17 +687,17 @@ export function Hero() {
                   transition={{ duration: 0.18 }}
                   className="flex items-center gap-2 px-4 py-2 rounded-full cursor-pointer"
                   style={{
-                    background: "rgba(217,178,124,0.18)",
-                    border: "1px solid rgba(217,178,124,0.42)",
+                    background: "#f9f7f3",
+                    border: "1px solid rgba(255,0,0,0.18)",
                   }}
                 >
                   <div
                     className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{ background: "rgba(217,178,124,0.22)" }}
+                    style={{ background: "rgba(255,0,0,0.1)" }}
                   >
-                    {CustomIcon ? <CustomIcon color="#FFE8C0" size={13} /> : Icon ? <Icon className="h-3 w-3" style={{ color: "#FFE8C0" }} strokeWidth={2.2} /> : null}
+                    {CustomIcon ? <CustomIcon color="#FF0000" size={13} /> : Icon ? <Icon className="h-3 w-3" style={{ color: "#FF0000" }} strokeWidth={2.2} /> : null}
                   </div>
-                  <span className="text-[13px] font-semibold whitespace-nowrap" style={{ color: "#FFE8C0" }}>{product.title}</span>
+                  <span className="text-[13px] font-semibold whitespace-nowrap" style={{ color: "#FF0000" }}>{product.title}</span>
                 </motion.div>
               )
               if (product.href) return <Link key={product.title} href={product.href} className="flex items-center">{chip}</Link>
@@ -721,15 +721,15 @@ export function Hero() {
                 const Icon = product.icon
                 const CustomIcon = product.customIcon
                 const chipStyle = {
-                  background: "rgba(217,178,124,0.18)",
-                  border: "1px solid rgba(217,178,124,0.42)",
+                  background: "#f9f7f3",
+                  border: "1px solid rgba(255,0,0,0.18)",
                 }
                 const chipContent = (
                   <>
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(217,178,124,0.22)" }}>
-                      {CustomIcon ? <CustomIcon color="#FFE8C0" size={13} /> : Icon ? <Icon className="h-3 w-3" style={{ color: "#FFE8C0" }} strokeWidth={2.2} /> : null}
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,0,0,0.1)" }}>
+                      {CustomIcon ? <CustomIcon color="#FF0000" size={13} /> : Icon ? <Icon className="h-3 w-3" style={{ color: "#FF0000" }} strokeWidth={2.2} /> : null}
                     </div>
-                    <span className="text-[13px] font-semibold whitespace-nowrap" style={{ color: "#FFE8C0" }}>{product.title}</span>
+                    <span className="text-[13px] font-semibold whitespace-nowrap" style={{ color: "#FF0000" }}>{product.title}</span>
                   </>
                 )
                 if (product.href) {
