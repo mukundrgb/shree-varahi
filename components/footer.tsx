@@ -241,8 +241,8 @@ function MarketTabsSection() {
               onClick={() => { setActive(t.id); setExpanded(false) }}
               className={`relative flex-shrink-0 px-3 py-1 rounded-full text-[11px] font-bold whitespace-nowrap transition-all duration-150 ${
                 active === t.id
-                  ? "text-[#D9B27C] bg-white/10"
-                  : "text-white/55 hover:text-white/85 hover:bg-white/[0.06]"
+                  ? "text-[#8B0D19] bg-black/[0.06]"
+                  : "text-[#3a1414]/55 hover:text-[#3a1414]/85 hover:bg-black/[0.04]"
               }`}
               style={active === t.id ? { boxShadow: "inset 0 0 0 1px rgba(217,178,124,0.4)" } : {}}
             >
@@ -267,7 +267,7 @@ function MarketTabsSection() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="text-[13px] text-white/85 hover:text-white transition-colors duration-150 truncate"
+                  className="text-[13px] text-[#3a1414]/85 hover:text-[#3a1414] transition-colors duration-150 truncate"
                 >
                   {link.name}
                 </Link>
@@ -279,8 +279,8 @@ function MarketTabsSection() {
         {hasMore && (
           <button
             onClick={() => setExpanded((e) => !e)}
-            className="mt-4 flex items-center gap-1.5 text-[13px] font-semibold text-white/85 hover:text-white transition-colors"
-            style={{ textDecoration: "underline", textDecorationStyle: "dashed", textUnderlineOffset: "3px", textDecorationColor: "rgba(255,255,255,0.3)" }}
+            className="mt-4 flex items-center gap-1.5 text-[13px] font-semibold text-[#3a1414]/85 hover:text-[#3a1414] transition-colors"
+            style={{ textDecoration: "underline", textDecorationStyle: "dashed", textUnderlineOffset: "3px", textDecorationColor: "rgba(58,20,20,0.35)" }}
           >
             {expanded ? "Show Less ∧" : `Show More ∨`}
           </button>
@@ -295,11 +295,11 @@ function AboutAccordion() {
   const [open, setOpen] = useState(false)
 
   return (
-    <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+    <div style={{ borderTop: "1px solid rgba(58,20,20,0.12)" }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <button
           onClick={() => setOpen((o) => !o)}
-          className="w-full flex items-center justify-between py-4 text-[13px] font-bold text-white/80 hover:text-white transition-colors"
+          className="w-full flex items-center justify-between py-4 text-[13px] font-bold text-[#3a1414]/80 hover:text-[#3a1414] transition-colors"
         >
           <span>About Shree Varahi</span>
           <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.25 }}>
@@ -316,21 +316,21 @@ function AboutAccordion() {
               transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
               className="overflow-hidden"
             >
-              <div className="pb-6 space-y-3 text-[13px] text-white/85 leading-relaxed max-w-4xl">
+              <div className="pb-6 space-y-3 text-[13px] text-[#3a1414]/85 leading-relaxed max-w-4xl">
                 <p>
-                  <strong className="text-white/90 font-semibold">Shree Varahi</strong> is the digital trading and investment platform of{" "}
-                  <strong className="text-white/90 font-semibold">Lakshmishree Investment & Securities Ltd.</strong> — a SEBI-registered stockbroker with over 31 years of market presence since 1993. We offer flat-fee brokerage at ₹17 per executed order for intraday and F&O trades, and zero brokerage on equity delivery.
+                  <strong className="text-[#3a1414]/90 font-semibold">Shree Varahi</strong> is the digital trading and investment platform of{" "}
+                  <strong className="text-[#3a1414]/90 font-semibold">Lakshmishree Investment & Securities Ltd.</strong> — a SEBI-registered stockbroker with over 31 years of market presence since 1993. We offer flat-fee brokerage at ₹17 per executed order for intraday and F&O trades, and zero brokerage on equity delivery.
                 </p>
                 <p>
                   Our platform provides access to NSE, BSE, MCX, and international markets through a single unified account. We offer stocks, futures & options, mutual funds, IPOs, ETFs, digital gold, and US equities — all under one roof with no hidden charges.
                 </p>
                 <p>
-                  SEBI Registration No: <span className="text-white/80">INZ000215633</span> &nbsp;|&nbsp;
-                  NSE Member ID: <span className="text-white/80">14136</span> &nbsp;|&nbsp;
-                  BSE Member ID: <span className="text-white/80">6736</span> &nbsp;|&nbsp;
-                  MCX Member ID: <span className="text-white/80">46685</span> &nbsp;|&nbsp;
-                  CDSL DP ID: <span className="text-white/80">IN-DP-596-2021</span> &nbsp;|&nbsp;
-                  CIN: <span className="text-white/80">U67120MH1993PLC074454</span>
+                  SEBI Registration No: <span className="text-[#3a1414]/80">INZ000215633</span> &nbsp;|&nbsp;
+                  NSE Member ID: <span className="text-[#3a1414]/80">14136</span> &nbsp;|&nbsp;
+                  BSE Member ID: <span className="text-[#3a1414]/80">6736</span> &nbsp;|&nbsp;
+                  MCX Member ID: <span className="text-[#3a1414]/80">46685</span> &nbsp;|&nbsp;
+                  CDSL DP ID: <span className="text-[#3a1414]/80">IN-DP-596-2021</span> &nbsp;|&nbsp;
+                  CIN: <span className="text-[#3a1414]/80">U67120MH1993PLC074454</span>
                 </p>
                 <p>
                   Registered Office: 1st Floor, Vaswani Chambers, 264-265, Dr. Annie Besant Road, Worli, Mumbai – 400 025, Maharashtra, India.
@@ -347,10 +347,16 @@ function AboutAccordion() {
 /* ─── Footer ─── */
 export function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-burgundy text-white">
+    <footer
+      className="relative overflow-hidden text-[#3a1414]"
+      style={{
+        background:
+          "radial-gradient(circle at 15% 10%, rgba(255,0,0,0.16) 0%, transparent 45%), radial-gradient(circle at 85% 90%, rgba(255,0,0,0.14) 0%, transparent 50%), #ffffff",
+      }}
+    >
 
       {/* Atmospheric glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] pointer-events-none" style={{ background: "radial-gradient(ellipse at center top, rgba(217,178,124,0.07) 0%, transparent 65%)" }} />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[320px] pointer-events-none" style={{ background: "radial-gradient(ellipse at center top, rgba(255,0,0,0.08) 0%, transparent 65%)" }} />
 
       {/* Gold top line */}
       <div className="h-[2px] bg-gradient-to-r from-transparent via-gold to-transparent" />
@@ -366,12 +372,12 @@ export function Footer() {
               <Link href="/" className="flex items-center gap-2.5 mb-4">
                 <Image src="/favicon.jpg" alt="Shree Varahi" width={40} height={40} className="rounded-[5px] object-contain" />
                 <div>
-                  <span className="text-[17px] font-bold text-white block leading-tight">Shree Varahi</span>
+                  <span className="text-[17px] font-bold text-[#3a1414] block leading-tight">Shree Varahi</span>
                   <span className="text-[10px] text-gold-champagne font-semibold tracking-wider">by Lakshmishree</span>
                 </div>
               </Link>
 
-              <p className="text-[13px] text-white/85 mb-5 max-w-[240px] leading-relaxed">
+              <p className="text-[13px] text-[#3a1414]/85 mb-5 max-w-[240px] leading-relaxed">
                 SEBI-registered broker since 1993. Flat ₹17 brokerage. One platform for every market.
               </p>
 
@@ -379,7 +385,7 @@ export function Footer() {
               <div className="flex gap-2 mb-5">
                 {socials.map((s) => (
                   <a key={s.name} href="#" aria-label={s.name}
-                    className="w-8 h-8 rounded-[5px] bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/85 hover:text-white transition-all duration-200">
+                    className="w-8 h-8 rounded-[5px] bg-black/[0.06] hover:bg-black/[0.1] flex items-center justify-center text-[#3a1414]/85 hover:text-[#3a1414] transition-all duration-200">
                     <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="currentColor">
                       <path d={s.path} />
                     </svg>
@@ -390,23 +396,23 @@ export function Footer() {
               {/* App store buttons */}
               <div className="flex flex-col gap-2">
                 <a href="#" onClick={(e) => e.preventDefault()}
-                  className="flex items-center gap-2.5 bg-white/10 hover:bg-white/20 border border-white/15 rounded-[8px] px-3.5 py-2 transition-all w-fit">
-                  <svg className="w-5 h-5 fill-white flex-shrink-0" viewBox="0 0 24 24">
+                  className="flex items-center gap-2.5 bg-black/[0.06] hover:bg-black/[0.1] border border-[#3a1414]/15 rounded-[8px] px-3.5 py-2 transition-all w-fit">
+                  <svg className="w-5 h-5 fill-[#3a1414] flex-shrink-0" viewBox="0 0 24 24">
                     <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.21.67-2.93 1.49-.62.69-1.16 1.84-1.01 2.96 1.12.09 2.27-.57 2.95-1.39z" />
                   </svg>
                   <div className="leading-none">
-                    <span className="text-[9px] text-white/70 block font-medium uppercase tracking-wider">Download on the</span>
-                    <span className="text-[12px] font-bold text-white block mt-0.5">App Store</span>
+                    <span className="text-[9px] text-[#3a1414]/70 block font-medium uppercase tracking-wider">Download on the</span>
+                    <span className="text-[12px] font-bold text-[#3a1414] block mt-0.5">App Store</span>
                   </div>
                 </a>
                 <a href="#" onClick={(e) => e.preventDefault()}
-                  className="flex items-center gap-2.5 bg-white/10 hover:bg-white/20 border border-white/15 rounded-[8px] px-3.5 py-2 transition-all w-fit">
-                  <svg className="w-5 h-5 fill-white flex-shrink-0" viewBox="0 0 24 24">
+                  className="flex items-center gap-2.5 bg-black/[0.06] hover:bg-black/[0.1] border border-[#3a1414]/15 rounded-[8px] px-3.5 py-2 transition-all w-fit">
+                  <svg className="w-5 h-5 fill-[#3a1414] flex-shrink-0" viewBox="0 0 24 24">
                     <path d="M5 3.5c-.2 0-.4.1-.5.3l9.8 9.8 3.2-3.2L5.4 3.8c-.1-.2-.3-.3-.4-.3zM3.8 4.7c-.2.2-.3.5-.3.8v13c0 .3.1.6.3.8l7.2-7.2L3.8 4.7zm15 4.4L15.6 11l3.2 3.2 3.1-1.8c.4-.2.6-.6.6-1s-.2-.8-.6-1l-3.1-1.8zM4.3 19.9c.1.2.3.3.5.3.2 0 .3-.1.4-.2l12.1-7-3.2-3.2-9.8 9.8z" />
                   </svg>
                   <div className="leading-none">
-                    <span className="text-[9px] text-white/70 block font-medium uppercase tracking-wider">Get it on</span>
-                    <span className="text-[12px] font-bold text-white block mt-0.5">Google Play</span>
+                    <span className="text-[9px] text-[#3a1414]/70 block font-medium uppercase tracking-wider">Get it on</span>
+                    <span className="text-[12px] font-bold text-[#3a1414] block mt-0.5">Google Play</span>
                   </div>
                 </a>
               </div>
@@ -415,11 +421,11 @@ export function Footer() {
             {/* Nav columns */}
             {Object.entries(footerLinks).map(([category, links]) => (
               <div key={category}>
-                <h4 className="font-bold text-white/90 text-[12px] tracking-widest mb-4 uppercase">{category}</h4>
+                <h4 className="font-bold text-[#3a1414]/90 text-[12px] tracking-widest mb-4 uppercase">{category}</h4>
                 <ul className="space-y-[9px]">
                   {links.map((link) => (
                     <li key={link.name}>
-                      <Link href={link.href} className="text-[13px] text-white/85 hover:text-white transition-colors duration-150">
+                      <Link href={link.href} className="text-[13px] text-[#3a1414]/85 hover:text-[#3a1414] transition-colors duration-150">
                         {link.name}
                       </Link>
                     </li>
@@ -431,22 +437,22 @@ export function Footer() {
         </div>
 
         {/* ── Market Tabs ── */}
-        <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+        <div style={{ borderTop: "1px solid rgba(58,20,20,0.12)" }}>
           <MarketTabsSection />
         </div>
 
         {/* ── Others + Stocks A-Z ── */}
-        <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+        <div style={{ borderTop: "1px solid rgba(58,20,20,0.12)" }}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             {/* Others row */}
-            <div className="py-4 flex flex-wrap items-start gap-x-0 gap-y-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-              <span className="text-[12px] font-bold text-white/90 mr-3 flex-shrink-0 pt-px">Others:</span>
+            <div className="py-4 flex flex-wrap items-start gap-x-0 gap-y-2" style={{ borderBottom: "1px solid rgba(58,20,20,0.1)" }}>
+              <span className="text-[12px] font-bold text-[#3a1414]/90 mr-3 flex-shrink-0 pt-px">Others:</span>
               <div className="flex flex-wrap items-center gap-x-0 gap-y-1.5">
                 {othersLinks.map((l, i) => (
                   <span key={l.name} className="flex items-center">
-                    <Link href={l.href} className="text-[12px] text-white/80 hover:text-white transition-colors px-2 py-0.5">{l.name}</Link>
-                    {i < othersLinks.length - 1 && <span className="text-white/40 text-xs select-none">|</span>}
+                    <Link href={l.href} className="text-[12px] text-[#3a1414]/80 hover:text-[#3a1414] transition-colors px-2 py-0.5">{l.name}</Link>
+                    {i < othersLinks.length - 1 && <span className="text-[#3a1414]/40 text-xs select-none">|</span>}
                   </span>
                 ))}
               </div>
@@ -454,17 +460,17 @@ export function Footer() {
 
             {/* Stocks A-Z row */}
             <div className="py-4 flex flex-wrap items-center gap-x-0 gap-y-1.5">
-              <span className="text-[12px] font-bold text-white/90 mr-3 flex-shrink-0">Stocks:</span>
+              <span className="text-[12px] font-bold text-[#3a1414]/90 mr-3 flex-shrink-0">Stocks:</span>
               {alphabet.map((letter, i) => (
                 <span key={letter} className="flex items-center">
-                  <Link href="#" className="text-[12px] font-semibold text-white/80 hover:text-white px-1.5 py-0.5 rounded transition-colors">
+                  <Link href="#" className="text-[12px] font-semibold text-[#3a1414]/80 hover:text-[#3a1414] px-1.5 py-0.5 rounded transition-colors">
                     {letter}
                   </Link>
-                  {i < alphabet.length - 1 && <span className="text-white/40 text-[10px] select-none">|</span>}
+                  {i < alphabet.length - 1 && <span className="text-[#3a1414]/40 text-[10px] select-none">|</span>}
                 </span>
               ))}
-              <span className="text-white/40 text-[10px] select-none">|</span>
-              <Link href="#" className="text-[12px] font-semibold text-white/80 hover:text-white px-1.5 py-0.5 rounded transition-colors">Others</Link>
+              <span className="text-[#3a1414]/40 text-[10px] select-none">|</span>
+              <Link href="#" className="text-[12px] font-semibold text-[#3a1414]/80 hover:text-[#3a1414] px-1.5 py-0.5 rounded transition-colors">Others</Link>
             </div>
           </div>
         </div>
@@ -473,10 +479,10 @@ export function Footer() {
         <AboutAccordion />
 
         {/* ── Disclaimer ── */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8" style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "1.5rem" }}>
-          <div className="p-4 rounded-[5px] text-[12px] text-white/80 leading-relaxed" style={{ background: "rgba(0,0,0,0.2)", border: "1px solid rgba(255,255,255,0.08)" }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8" style={{ borderTop: "1px solid rgba(58,20,20,0.12)", paddingTop: "1.5rem" }}>
+          <div className="p-4 rounded-[5px] text-[12px] text-[#3a1414]/80 leading-relaxed" style={{ background: "rgba(0,0,0,0.05)", border: "1px solid rgba(58,20,20,0.1)" }}>
             <p className="mb-2">
-              <strong className="text-white/95">Disclaimer:</strong> Investments in securities market are subject to market risks. Read all related documents carefully before investing. Brokerage will not exceed the SEBI prescribed limit. Registration granted by SEBI and certification from NISM in no way guarantee performance of the intermediary or provide any assurance of returns to investors.
+              <strong className="text-[#3a1414]/95">Disclaimer:</strong> Investments in securities market are subject to market risks. Read all related documents carefully before investing. Brokerage will not exceed the SEBI prescribed limit. Registration granted by SEBI and certification from NISM in no way guarantee performance of the intermediary or provide any assurance of returns to investors.
             </p>
             <p>
               Lakshmishree Investment & Securities Ltd. | SEBI Reg: INZ000215633 | NSE: 14136 | BSE: 6736 | MCX: 46685 | CDSL DP: IN-DP-596-2021 | CIN: U67120MH1993PLC074454
@@ -484,11 +490,11 @@ export function Footer() {
           </div>
 
           {/* Copyright */}
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-6 pt-6" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
-            <p className="text-[13px] text-white/70">© 2026 Shree Varahi — Lakshmishree Investment & Securities Ltd.</p>
-            <p className="text-[12px] text-white/65 flex items-center gap-1.5">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-6 pt-6" style={{ borderTop: "1px solid rgba(58,20,20,0.1)" }}>
+            <p className="text-[13px] text-[#3a1414]/70">© 2026 Shree Varahi — Lakshmishree Investment & Securities Ltd.</p>
+            <p className="text-[12px] text-[#3a1414]/65 flex items-center gap-1.5">
               Built with
-              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-white/55" style={{ animation: "footer-heartbeat 1.2s ease-in-out infinite" }} aria-hidden="true">
+              <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-[#3a1414]/55" style={{ animation: "footer-heartbeat 1.2s ease-in-out infinite" }} aria-hidden="true">
                 <path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z" />
               </svg>
               for traders, savers & dreamers — Made in India
@@ -507,7 +513,7 @@ export function Footer() {
         `}</style>
 
         {/* ── Marquee ── */}
-        <div className="overflow-hidden" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+        <div className="overflow-hidden" style={{ borderTop: "1px solid rgba(58,20,20,0.1)" }}>
           <motion.div
             animate={{ x: ["0%", "-25%"] }}
             transition={{ duration: 26, repeat: Infinity, ease: "linear" }}
@@ -522,7 +528,7 @@ export function Footer() {
                     fontSize: "clamp(56px, 11vw, 152px)",
                     lineHeight: 0.88,
                     paddingRight: "5vw",
-                    WebkitTextStroke: "1.5px rgba(255,255,255,0.22)",
+                    WebkitTextStroke: "1.5px rgba(58,20,20,0.22)",
                     WebkitTextFillColor: "transparent",
                     color: "transparent",
                     letterSpacing: "0.04em",

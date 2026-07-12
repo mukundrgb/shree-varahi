@@ -54,7 +54,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${manrope.variable} ${dmSans.variable} ${dmMono.variable} ${cormorant.variable} bg-background overflow-x-clip`}>
-      <body className="font-sans antialiased bg-background text-foreground overflow-x-hidden">
+      <body className="font-sans antialiased bg-background text-foreground overflow-x-clip">
         <ScrollProgress />
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}

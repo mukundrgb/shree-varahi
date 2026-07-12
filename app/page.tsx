@@ -1,7 +1,6 @@
 import { Navbar } from "@/components/navbar"
 import { Hero } from "@/components/hero"
 import { FeaturesSection } from "@/components/features-section"
-import { ProductsSection } from "@/components/products-section"
 import { TraderInvestorSection } from "@/components/trader-investor-section"
 import { GlobalInvestingSection } from "@/components/global-investing-section"
 import { OptionStrategyBuilder } from "@/components/option-strategy-builder"

@@ -538,6 +538,83 @@ function PromoSlider() {
   )
 }
 
+/* ── Stacking cards section (CSS sticky, same technique as kashivaibhavtours.com) ── */
+function ProductStackSection() {
+  const PAIRS: [number, number][] = [[0, 1], [2, 3], [4, 5], [6, 7]]
+
+  return (
+    <section className="relative bg-cream py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* Mobile: plain grid */}
+        <div className="lg:hidden">
+          <div className="text-center mb-10">
+            <p className="text-sm tracking-[0.2em] uppercase text-gold-deep font-extrabold mb-4">Complete Investment Suite</p>
+            <h2 className="text-4xl sm:text-5xl font-black leading-tight text-foreground text-balance">
+              Every market. <span className="text-burgundy">One account.</span>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {products.map((p, i) => <ProductCard key={`m-${p.title}`} product={p} index={i} />)}
+          </div>
+        </div>
+
+        {/* Desktop: sticky left heading + sticky-stacking right pairs */}
+        <div className="hidden lg:grid grid-cols-[36fr_64fr] gap-16 items-start">
+
+          {/* Left: sticky heading */}
+          <div className="sticky top-32">
+            <p className="text-sm tracking-[0.2em] uppercase text-gold-deep font-extrabold mb-5">
+              Complete Investment Suite
+            </p>
+            <h2 className="text-4xl xl:text-5xl font-black leading-[1.08] text-foreground mb-6">
+              Every market.<br />
+              <span className="text-burgundy">One account.</span>
+            </h2>
+            <p className="text-muted-foreground leading-relaxed mb-10 text-base">
+              Stocks, F&amp;O, Mutual Funds, IPOs, ETFs, Commodities, US Stocks — one account, one flat ₹17 fee.
+            </p>
+            <div className="flex flex-col gap-6 border-t border-border pt-8">
+              {[
+                { val: "60,000+",  label: "Active Investors" },
+                { val: "₹0",       label: "Delivery Brokerage" },
+                { val: "₹17 Flat", label: "Intraday & F&O" },
+              ].map(({ val, label }) => (
+                <div key={label} className="flex items-baseline gap-3">
+                  <span className="text-3xl font-black text-burgundy">{val}</span>
+                  <span className="text-sm text-muted-foreground font-medium">{label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right: pairs in normal flow; each pair sticky with increasing top,
+              so the next pair scrolls up over the pinned one, leaving the
+              previous pair's top edge peeking above. No gap between pairs —
+              they must sit flush so the stack reads as one deck. */}
+          <div className="flex flex-col">
+            {PAIRS.map(([a, b], i) => (
+              <div
+                key={i}
+                className="sticky bg-cream rounded-[8px] pb-6"
+                style={{ top: 110 + i * 16, zIndex: i + 1 }}
+              >
+                <div className="grid grid-cols-2 gap-5">
+                  {products[a] && <ProductCard product={products[a]} index={a} />}
+                  {products[b] && <ProductCard product={products[b]} index={b} />}
+                </div>
+              </div>
+            ))}
+            {/* Small buffer so the last pair finishes pinning before section ends */}
+            <div style={{ height: "12vh" }} />
+          </div>
+
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export function Hero() {
   return (
     <>
@@ -753,7 +830,7 @@ export function Hero() {
       {/* App Promo */}
       <AppPromoSection />
 
-      {/* ── Product Grid ── */}
+      {/* ── Product Grid (ORIGINAL) ── */}
       <section className="relative bg-cream pt-[100px] pb-24">
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-20">
           <motion.div
@@ -767,7 +844,6 @@ export function Hero() {
               Every market. <span className="text-burgundy">One account.</span>
             </h2>
           </motion.div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {products.map((product, index) => (
               <ProductCard key={product.title} product={product} index={index} />
@@ -775,6 +851,9 @@ export function Hero() {
           </div>
         </div>
       </section>
+
+      {/* ── Product Stack (NEW — scroll-driven stacking) ── */}
+      <ProductStackSection />
     </>
   )
 }
