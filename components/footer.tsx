@@ -221,6 +221,337 @@ const othersLinks = [
 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
 
+/* ─── Explore | Sitemap grid (dhan.co-style dropdown cards) ─── */
+type ExploreCategory = { label: string; links: { name: string; href: string }[] }
+
+/* Each category gets its own distinct link list (not shared/reused) */
+const exploreCategories: ExploreCategory[] = [
+  { label: "Nifty 50 Stocks", links: [
+    { name: "Reliance Industries", href: "/stocks" }, { name: "TCS", href: "/stocks" }, { name: "HDFC Bank", href: "/stocks" },
+    { name: "ICICI Bank", href: "/stocks" }, { name: "Infosys", href: "/stocks" }, { name: "Hindustan Unilever", href: "/stocks" },
+    { name: "ITC", href: "/stocks" }, { name: "State Bank of India", href: "/stocks" }, { name: "Bharti Airtel", href: "/stocks" },
+    { name: "Bajaj Finance", href: "/stocks" }, { name: "All Nifty 50 Companies", href: "/stocks" },
+  ]},
+  { label: "Nifty Next 50 Stocks", links: [
+    { name: "LIC of India", href: "/stocks" }, { name: "Dmart", href: "/stocks" }, { name: "Adani Green Energy", href: "/stocks" },
+    { name: "Siemens", href: "/stocks" }, { name: "Indian Oil Corporation", href: "/stocks" }, { name: "DLF", href: "/stocks" },
+    { name: "Hindustan Aeronautics", href: "/stocks" }, { name: "Pidilite Industries", href: "/stocks" }, { name: "Varun Beverages", href: "/stocks" },
+    { name: "Godrej Consumer Products", href: "/stocks" }, { name: "All Nifty Next 50 Companies", href: "/stocks" },
+  ]},
+  { label: "Nifty Midcap 50 Stocks", links: [
+    { name: "Punjab National Bank", href: "/stocks" }, { name: "Power Finance Cororation", href: "/stocks" }, { name: "Polycab India", href: "/stocks" },
+    { name: "Trent", href: "/stocks" }, { name: "Shriram Finance", href: "/stocks" }, { name: "TVS Motors", href: "/stocks" },
+    { name: "Rural Electrification Corporation", href: "/stocks" }, { name: "IDFC First Bank", href: "/stocks" }, { name: "Zydus Life Science", href: "/stocks" },
+    { name: "Indian Hotels Company", href: "/stocks" }, { name: "All Nifty Midcap 50 Companies", href: "/stocks" },
+  ]},
+  { label: "Nifty Smallcap 50 Stocks", links: [
+    { name: "Indian Overseas Bank", href: "/stocks" }, { name: "IDBI Bank", href: "/stocks" }, { name: "UCO Bank", href: "/stocks" },
+    { name: "Mazgaon Dock Shipbuilders", href: "/stocks" }, { name: "Rail Vikas Nigam", href: "/stocks" }, { name: "Suzlon Energy", href: "/stocks" },
+    { name: "Bank of Maharashtra", href: "/stocks" }, { name: "IDFC", href: "/stocks" }, { name: "NALCO", href: "/stocks" },
+    { name: "BSE", href: "/stocks" }, { name: "All Nifty Smallcap 50 Companies", href: "/stocks" },
+  ]},
+  { label: "Nifty Bank Stocks", links: [
+    { name: "HDFC Bank", href: "/stocks" }, { name: "ICICI Bank", href: "/stocks" }, { name: "State Bank of India", href: "/stocks" },
+    { name: "Kotak Mahindra Bank", href: "/stocks" }, { name: "Axis Bank", href: "/stocks" }, { name: "Bank of Baroda", href: "/stocks" },
+    { name: "IndusInd Bank", href: "/stocks" }, { name: "Punjab National Bank", href: "/stocks" }, { name: "IDFC First Bank", href: "/stocks" },
+    { name: "AU Small Finance Bank", href: "/stocks" }, { name: "All Nifty Bank Companies", href: "/stocks" },
+  ]},
+  { label: "Finnifty Stocks", links: [
+    { name: "HDFC Bank", href: "/stocks" }, { name: "ICICI Bank", href: "/stocks" }, { name: "State Bank of India", href: "/stocks" },
+    { name: "Bajaj Finance", href: "/stocks" }, { name: "Kotak Mahindra Bank", href: "/stocks" }, { name: "Bajaj Finserv", href: "/stocks" },
+    { name: "HDFC Life Insurance", href: "/stocks" }, { name: "SBI Life Insurance", href: "/stocks" }, { name: "Cholamandalam Investment", href: "/stocks" },
+    { name: "All Finnifty Companies", href: "/stocks" },
+  ]},
+  { label: "Nifty IT Stocks", links: [
+    { name: "TCS", href: "/stocks" }, { name: "Infosys", href: "/stocks" }, { name: "HCL Technologies", href: "/stocks" },
+    { name: "Wipro", href: "/stocks" }, { name: "LTI Mindtree", href: "/stocks" }, { name: "Tech Mahindra", href: "/stocks" },
+    { name: "L&T Technology Services", href: "/stocks" }, { name: "Mphasis", href: "/stocks" }, { name: "Persistent Systems", href: "/stocks" },
+    { name: "Coforge", href: "/stocks" }, { name: "All Nifty IT Companies", href: "/stocks" },
+  ]},
+  { label: "Nifty Auto Stocks", links: [
+    { name: "Maruti Suzuki", href: "/stocks" }, { name: "Tata Motors", href: "/stocks" }, { name: "Mahindra & Mahindra", href: "/stocks" },
+    { name: "Bajaj Auto", href: "/stocks" }, { name: "Eicher Motors", href: "/stocks" }, { name: "TVS Motors", href: "/stocks" },
+    { name: "Samvardhana Motherson", href: "/stocks" }, { name: "Hero Motocorp", href: "/stocks" }, { name: "Bosch", href: "/stocks" },
+    { name: "Ashok Leyland", href: "/stocks" }, { name: "All Nifty Auto Companies", href: "/stocks" },
+  ]},
+  { label: "Nifty FMCG Stocks", links: [
+    { name: "Hindustan Unilever", href: "/stocks" }, { name: "ITC", href: "/stocks" }, { name: "Nestle India", href: "/stocks" },
+    { name: "Varun Beverages", href: "/stocks" }, { name: "Britannia Industries", href: "/stocks" }, { name: "Godrej Consumer Products", href: "/stocks" },
+    { name: "Dabur India", href: "/stocks" }, { name: "Tata Consumer Products", href: "/stocks" }, { name: "Marico", href: "/stocks" },
+    { name: "United Spirits", href: "/stocks" }, { name: "All Nifty FMCG Companies", href: "/stocks" },
+  ]},
+  { label: "Nifty Pharma Stocks", links: [
+    { name: "Sun Pharmaceutical", href: "/stocks" }, { name: "Divis Laboratories", href: "/stocks" }, { name: "Cipla", href: "/stocks" },
+    { name: "Dr Reddys Laboratories", href: "/stocks" }, { name: "Torrent Pharmaceuticals", href: "/stocks" }, { name: "Zydus Life Science", href: "/stocks" },
+    { name: "Aurobindo Pharma", href: "/stocks" }, { name: "Lupin", href: "/stocks" }, { name: "Abbott India", href: "/stocks" },
+    { name: "Alkem Laboratories", href: "/stocks" }, { name: "All Nifty Pharma Companies", href: "/stocks" },
+  ]},
+  { label: "Nifty Stocks List", links: [
+    { name: "Nifty 50 Stocks", href: "/stocks" }, { name: "Nifty Next 50 Stocks", href: "/stocks" }, { name: "Nifty Bank Stocks", href: "/stocks" },
+    { name: "Finnifty Stocks", href: "/stocks" }, { name: "Nifty IT Stocks", href: "/stocks" }, { name: "Nifty Auto Stocks", href: "/stocks" },
+    { name: "Nifty FMCG Stocks", href: "/stocks" }, { name: "Nifty Pharma Stocks", href: "/stocks" }, { name: "Nifty Energy Stocks", href: "/stocks" },
+    { name: "Nifty Metal Stocks", href: "/stocks" }, { name: "Nifty Realty Stocks", href: "/stocks" },
+  ]},
+  { label: "Sector Stocks List", links: [
+    { name: "Bank Stocks", href: "/stocks" }, { name: "Finance Stocks", href: "/stocks" }, { name: "IT Stocks", href: "/stocks" },
+    { name: "Auto Stocks", href: "/stocks" }, { name: "FMCG Stocks", href: "/stocks" }, { name: "Pharma Stocks", href: "/stocks" },
+    { name: "Petroleum Stocks", href: "/stocks" }, { name: "Power Stocks", href: "/stocks" }, { name: "Engineering Stocks", href: "/stocks" },
+    { name: "Cement Stocks", href: "/stocks" }, { name: "Chemical Stocks", href: "/stocks" },
+  ]},
+  { label: "Indices List", links: [
+    { name: "All Indices", href: "/stocks" }, { name: "All NSE Indices", href: "/stocks" }, { name: "All BSE Indices", href: "/stocks" },
+  ]},
+  { label: "Most Visited Indices", links: [
+    { name: "Nifty 50", href: "/stocks" }, { name: "Nifty Bank", href: "/stocks" }, { name: "Finnifty", href: "/stocks" },
+    { name: "India VIX", href: "/stocks" }, { name: "Nifty Next 50", href: "/stocks" }, { name: "Nifty Smallcap 50", href: "/stocks" },
+    { name: "Nifty Midcap 50", href: "/stocks" }, { name: "Nifty Midcap Select", href: "/stocks" }, { name: "Sensex", href: "/stocks" },
+    { name: "BSE Smallcap", href: "/stocks" }, { name: "BSE Midcap", href: "/stocks" }, { name: "BSE Bankex", href: "/stocks" },
+  ]},
+  { label: "Most Searched Stocks", links: [
+    { name: "Tata Steel", href: "/stocks" }, { name: "Adani Power", href: "/stocks" }, { name: "Yes Bank", href: "/stocks" },
+    { name: "Infosys", href: "/stocks" }, { name: "Adani Enterprises", href: "/stocks" }, { name: "Tata Motors", href: "/stocks" },
+    { name: "State Bank of India", href: "/stocks" }, { name: "Suzlon", href: "/stocks" }, { name: "Adani Wilmar", href: "/stocks" },
+    { name: "Zomato", href: "/stocks" }, { name: "Reliance Industries", href: "/stocks" }, { name: "ITC", href: "/stocks" },
+    { name: "TCS", href: "/stocks" }, { name: "LIC", href: "/stocks" }, { name: "Wipro", href: "/stocks" },
+    { name: "Punjab National Bank", href: "/stocks" }, { name: "Vedanta", href: "/stocks" }, { name: "IRFC", href: "/stocks" },
+    { name: "Adani Green Energy", href: "/stocks" },
+  ]},
+  { label: "All Commodity Futures", links: [
+    { name: "Aluminium", href: "/commodity" }, { name: "Aluminium Mini", href: "/commodity" }, { name: "Copper", href: "/commodity" },
+    { name: "Cotton Candy", href: "/commodity" }, { name: "Crude Oil", href: "/commodity" }, { name: "Crude Oil Mini", href: "/commodity" },
+    { name: "Gold", href: "/commodity" }, { name: "Gold Guinea", href: "/commodity" }, { name: "Gold Mini", href: "/commodity" },
+    { name: "Gold Petal", href: "/commodity" }, { name: "Kapas", href: "/commodity" }, { name: "Lead", href: "/commodity" },
+    { name: "Mentha Oil", href: "/commodity" }, { name: "Natural Gas", href: "/commodity" }, { name: "Nickel", href: "/commodity" },
+    { name: "Silver", href: "/commodity" }, { name: "Silver Mini", href: "/commodity" }, { name: "Silver Micro", href: "/commodity" },
+    { name: "Zinc", href: "/commodity" }, { name: "Zinc Mini", href: "/commodity" },
+  ]},
+  { label: "Most Searched ETFs", links: [
+    { name: "ICICI Pru Nifty 50 ETF", href: "/etf" }, { name: "ICICI Pru Bharat 22 ETF", href: "/etf" }, { name: "SBI Nifty 50 ETF", href: "/etf" },
+    { name: "SBI Nifty IT ETF", href: "/etf" }, { name: "Nippon India Nifty 50 ETF", href: "/etf" }, { name: "Nippon India Nifty Consumption ETF", href: "/etf" },
+    { name: "Nippon India Gold ETF", href: "/etf" }, { name: "Kotak Nifty 50 ETF", href: "/etf" }, { name: "Kotak Nifty IT ETF", href: "/etf" },
+    { name: "Axis Nifty 50 ETF", href: "/etf" }, { name: "Axis Nifty Bank ETF", href: "/etf" }, { name: "Axis Nifty IT ETF", href: "/etf" },
+    { name: "HDFC Nifty 50 ETF", href: "/etf" }, { name: "HDFC Sensex ETF", href: "/etf" }, { name: "Mirae Asset Nifty 50 ETF", href: "/etf" },
+    { name: "Mirae Asset Gold ETF", href: "/etf" }, { name: "UTI Gold ETF", href: "/etf" }, { name: "Motilal Oswal Nifty 50 ETF", href: "/etf" },
+    { name: "Motilal Oswal Nasdaq 100 ETF", href: "/etf" },
+  ]},
+  { label: "Calculators", links: [
+    { name: "Brokerage Calculator", href: "#" }, { name: "Margin Calculator", href: "#" }, { name: "MTF Calculator", href: "#" },
+    { name: "SIP Calculator", href: "#" }, { name: "SIP Calculator with Inflation", href: "#" }, { name: "Lumpsum Calculator", href: "#" },
+    { name: "ETF Return Calculator", href: "#" }, { name: "CAGR Calculator", href: "#" }, { name: "PPF Calculator", href: "#" },
+    { name: "FD Calculator", href: "#" }, { name: "RD Calculator", href: "#" }, { name: "Compound Interest Calculator", href: "#" },
+    { name: "EPF Calculator", href: "#" }, { name: "NPS Calculator", href: "#" }, { name: "NSC Calculator", href: "#" },
+    { name: "Gratuity Calculator", href: "#" }, { name: "MF Returns Calculator", href: "#" }, { name: "EMI Calculator", href: "#" },
+    { name: "All Calculators", href: "#" },
+  ]},
+  { label: "Stock Market Live", links: [
+    { name: "Top Gainers", href: "/stocks" }, { name: "Top Losers", href: "/stocks" }, { name: "52 Week High Stocks", href: "/stocks" },
+    { name: "52 Week Low Stocks", href: "/stocks" }, { name: "Most Active Stocks by Value", href: "/stocks" }, { name: "Most Active Stocks by Volume", href: "/stocks" },
+    { name: "Stock Market Today", href: "/stocks" },
+  ]},
+  { label: "All Stock Lists", links: [
+    { name: "All Stocks Listed on NSE & BSE", href: "/stocks" }, { name: "Futures Stocks List", href: "/stocks" }, { name: "Options Stocks List", href: "/stocks" },
+    { name: "F&O Lot Size", href: "/stocks" },
+  ]},
+  { label: "Equity Mutual Funds", links: [
+    { name: "Large Cap Funds", href: "#" }, { name: "Mid Cap Funds", href: "#" }, { name: "Small Cap Funds", href: "#" },
+    { name: "Large & Mid Cap Funds", href: "#" }, { name: "Flexi Cap Funds", href: "#" }, { name: "Multi Cap Funds", href: "#" },
+    { name: "Bluechip Funds", href: "#" }, { name: "Focused Funds", href: "#" }, { name: "Sectoral Funds", href: "#" },
+    { name: "International Funds", href: "#" }, { name: "Value Funds", href: "#" }, { name: "Contra Funds", href: "#" },
+    { name: "Dividend Yield Funds", href: "#" }, { name: "All Equity Funds", href: "#" },
+  ]},
+  { label: "Debt Mutual Funds", links: [
+    { name: "Liquid Funds", href: "#" }, { name: "Banking PSU Funds", href: "#" }, { name: "Corporate Bond", href: "#" },
+    { name: "Dynamic Bond", href: "#" }, { name: "Overnight Bond", href: "#" }, { name: "Ultra Short Duration Funds", href: "#" },
+    { name: "Short Duration Funds", href: "#" }, { name: "Low Duration Funds", href: "#" }, { name: "Credit Risk Funds", href: "#" },
+    { name: "Gilt Funds", href: "#" }, { name: "10 Year Gilt Funds", href: "#" }, { name: "Money Market Funds", href: "#" },
+    { name: "Floater Funds", href: "#" }, { name: "Medium Duration Funds", href: "#" }, { name: "Long Duration Funds", href: "#" },
+    { name: "Medium Long Duration Funds", href: "#" }, { name: "All Debt Funds", href: "#" },
+  ]},
+  { label: "Hybrid Mutual Funds", links: [
+    { name: "Conservative Funds", href: "#" }, { name: "Aggressive Funds", href: "#" }, { name: "Balanced Funds", href: "#" },
+    { name: "Arbitrage Funds", href: "#" }, { name: "Equity Savings Funds", href: "#" }, { name: "Multi Asset Allocation Funds", href: "#" },
+    { name: "All Hybrid Funds", href: "#" },
+  ]},
+  { label: "Index Mutual Funds", links: [
+    { name: "Nifty 50 Funds", href: "#" }, { name: "Nifty Next 50 Funds", href: "#" }, { name: "Nifty Small Cap Funds", href: "#" },
+    { name: "Nifty Mid Cap Funds", href: "#" }, { name: "Nifty Bank Funds", href: "#" }, { name: "Sensex Funds", href: "#" },
+    { name: "All Index Funds", href: "#" },
+  ]},
+  { label: "All Mutual Fund AMCs", links: [
+    { name: "SBI Mutual Fund", href: "#" }, { name: "ICICI Prudential Mutual Fund", href: "#" }, { name: "HDFC Mutual Fund", href: "#" },
+    { name: "Nippon India Mutual Fund", href: "#" }, { name: "Kotak Mahindra Mutual Fund", href: "#" }, { name: "Aditya Birla Sun Life Mutual Fund", href: "#" },
+    { name: "UTI Mutual Fund", href: "#" }, { name: "Axis Mutual Fund", href: "#" }, { name: "Mirae Asset Mutual Fund", href: "#" },
+    { name: "Edelweiss Mutual Fund", href: "#" }, { name: "View All AMCs", href: "#" },
+  ]},
+  { label: "Mutual Fund Calculators", links: [
+    { name: "SBI SIP Calculator", href: "#" }, { name: "ICICI SIP Calculator", href: "#" }, { name: "HDFC SIP Calculator", href: "#" },
+    { name: "Nippon SIP Calculator", href: "#" }, { name: "HSBC SIP Calculator", href: "#" }, { name: "Franklin SIP Calculator", href: "#" },
+    { name: "Canara SIP Calculator", href: "#" }, { name: "Invesco SIP Calculator", href: "#" }, { name: "PPFAS SIP Calculator", href: "#" },
+    { name: "Sundaram SIP Calculator", href: "#" },
+  ]},
+  { label: "Margin Stocks / Mutual Funds", links: [
+    { name: "Intraday Margin Stocks List", href: "#" }, { name: "MTF Stocks List", href: "#" }, { name: "Margin Pledge Stocks List", href: "#" },
+    { name: "Mutual Funds for Margin Benefit", href: "#" }, { name: "ETFs & Bonds Pledge List", href: "#" }, { name: "G-Sec & TB Pledge List", href: "#" },
+  ]},
+  { label: "Surveillance Stocks", links: [
+    { name: "NSE ASM List", href: "/stocks" }, { name: "BSE ASM List", href: "/stocks" }, { name: "NSE GSM List", href: "/stocks" },
+    { name: "BSE GSM List", href: "/stocks" },
+  ]},
+  { label: "Trending Stocks", links: [
+    { name: "Large Cap Stocks", href: "/stocks" }, { name: "Mid Cap Stocks", href: "/stocks" }, { name: "Small Cap Stocks", href: "/stocks" },
+    { name: "Bluechip Stocks", href: "/stocks" }, { name: "Dividend Stocks", href: "/stocks" }, { name: "Intraday Stocks", href: "/stocks" },
+    { name: "Penny Stocks", href: "/stocks" }, { name: "High Return Stocks", href: "/stocks" }, { name: "Multibagger Stocks", href: "/stocks" },
+    { name: "Long Term Stocks", href: "/stocks" }, { name: "Short Term Stocks", href: "/stocks" }, { name: "Top 50 Stocks by Market Cap", href: "/stocks" },
+    { name: "Top 50 Stocks by PE Ratio", href: "/stocks" }, { name: "Top 50 Stocks by EPS", href: "/stocks" }, { name: "Stocks with Daily RSI Below 30", href: "/stocks" },
+    { name: "Stocks with Daily RSI Above 70", href: "/stocks" },
+  ]},
+  { label: "Group Stocks", links: [
+    { name: "Tata Group Stocks", href: "/stocks" }, { name: "Adani Group Stocks", href: "/stocks" }, { name: "Mukesh Ambani Group Stocks", href: "/stocks" },
+    { name: "Anil Ambani Group Stocks", href: "/stocks" }, { name: "Jindal Group Stocks", href: "/stocks" }, { name: "Birla Group Stocks", href: "/stocks" },
+    { name: "Bajaj Group Stocks", href: "/stocks" }, { name: "Hinduja Group Stocks", href: "/stocks" }, { name: "Godrej Group Stocks", href: "/stocks" },
+    { name: "HDFC Group Stocks", href: "/stocks" }, { name: "ICICI Group Stocks", href: "/stocks" }, { name: "L&T Group Stocks", href: "/stocks" },
+    { name: "Murugappa Group Stocks", href: "/stocks" }, { name: "Mahindra Group Stocks", href: "/stocks" },
+  ]},
+  { label: "Trending Mutual Funds", links: [
+    { name: "Best SIP for 5 Years", href: "#" }, { name: "Best SIP for 3 Years", href: "#" }, { name: "Best SIP for 1 Year", href: "#" },
+    { name: "Best SIP for Beginners", href: "#" }, { name: "Best SIP Child Education", href: "#" }, { name: "Best SIP for House Wife", href: "#" },
+    { name: "Best SIP for Home Loan", href: "#" }, { name: "Best SIP for Senior Citizens", href: "#" }, { name: "Best SIP for Retirement", href: "#" },
+    { name: "Best Tax Saving Mutual Funds", href: "#" }, { name: "Best Mutual Funds for SIP", href: "#" }, { name: "Best Mutual Funds for Lumpsum", href: "#" },
+    { name: "Best Gold Mutual Funds", href: "#" }, { name: "Top Rated Mutual Funds", href: "#" },
+  ]},
+  { label: "Live Charts", links: [
+    { name: "Nifty 50 Chart", href: "/stocks" }, { name: "Finnifty Chart", href: "/stocks" }, { name: "Bank Nifty Chart", href: "/stocks" },
+    { name: "Reliance Industries Chart", href: "/stocks" }, { name: "TCS Chart", href: "/stocks" }, { name: "HDFC Bank Chart", href: "/stocks" },
+    { name: "ICICI Bank Chart", href: "/stocks" }, { name: "Infosys Chart", href: "/stocks" }, { name: "ITC Chart", href: "/stocks" },
+  ]},
+  { label: "Global Indices", links: [
+    { name: "US Tech 100", href: "/#global-investing" }, { name: "FTSE", href: "/#global-investing" }, { name: "DAX", href: "/#global-investing" },
+    { name: "CAC", href: "/#global-investing" }, { name: "NIKKEI 225", href: "/#global-investing" }, { name: "DOW JONES", href: "/#global-investing" },
+    { name: "S&P", href: "/#global-investing" }, { name: "Gift Nifty", href: "/#global-investing" },
+  ]},
+  { label: "Popular ETFs", links: [
+    { name: "Nippon ETFs", href: "/etf" }, { name: "SBI ETFs", href: "/etf" }, { name: "Tata ETFs", href: "/etf" },
+    { name: "Zerodha ETFs", href: "/etf" }, { name: "ICICI ETFs", href: "/etf" }, { name: "HDFC ETFs", href: "/etf" },
+    { name: "Motilal Oswal ETFs", href: "/etf" }, { name: "Groww ETFs", href: "/etf" }, { name: "Mirae ETFs", href: "/etf" },
+    { name: "Axis ETFs", href: "/etf" }, { name: "Kotak ETFs", href: "/etf" }, { name: "Aditya Birla ETFs", href: "/etf" },
+    { name: "UTI ETFs", href: "/etf" }, { name: "All ETFs", href: "/etf" },
+  ]},
+  { label: "Popular Funds Comparison", links: [
+    { name: "SBI Small Cap vs Quant Small Cap", href: "#" }, { name: "HDFC Flexi Cap vs Parag Parikh Flexi Cap", href: "#" }, { name: "UTI Nifty 50 Index vs Tata Nifty 50 Index", href: "#" },
+    { name: "HDFC Small Cap vs Nippon Small Cap", href: "#" }, { name: "Canara Robeco ELSS vs DSP ELSS", href: "#" }, { name: "Nippon Large Cap vs ICICI Pru Bluechip", href: "#" },
+    { name: "HDFC Mid-Cap vs Motilal Oswal Mid-Cap", href: "#" }, { name: "Compare Mutual Funds", href: "#" },
+  ]},
+  { label: "Popular Stock Comparison", links: [
+    { name: "Infosys vs TCS", href: "/stocks" }, { name: "Zomato vs Swiggy", href: "/stocks" }, { name: "Tata Power vs Adani Power", href: "/stocks" },
+    { name: "HDFC Bank vs ICICI Bank", href: "/stocks" }, { name: "Tata Motors vs Maruti Suzuki", href: "/stocks" }, { name: "Asian Paints vs Berger Paints", href: "/stocks" },
+    { name: "LIC of India vs SBI Life Insurance", href: "/stocks" }, { name: "Cipla vs Sun Pharma", href: "/stocks" }, { name: "Exide vs Amara Raja", href: "/stocks" },
+    { name: "JK Tyres vs CEAT Tyres", href: "/stocks" }, { name: "Pollycab vs KEI Industries", href: "/stocks" }, { name: "HAL vs BEL", href: "/stocks" },
+    { name: "Compare Stocks", href: "/stocks" },
+  ]},
+  { label: "Popular Index Comparison", links: [
+    { name: "Nifty 50 vs Sensex", href: "/stocks" }, { name: "Nifty 50 vs Nifty Next 50", href: "/stocks" }, { name: "Nifty 50 vs Nifty 100", href: "/stocks" },
+    { name: "Nifty Next 50 vs Nifty Midcap 150", href: "/stocks" }, { name: "Nifty 50 vs Nifty 500", href: "/stocks" }, { name: "Compare Indices", href: "/stocks" },
+  ]},
+  { label: "Popular ETFs Comparison", links: [
+    { name: "SBI Nifty 50 ETF vs UTI Nifty 50 ETF", href: "/etf" }, { name: "Nippon Gold ETF vs HDFC Gold ETF", href: "/etf" }, { name: "UTI Sensex ETF vs ICICI Pru Sensex ETF", href: "/etf" },
+    { name: "Nippon Silver ETF vs ICICI Pru Silver ETF", href: "/etf" }, { name: "SBI Gold ETF vs ICICI Pru Gold ETF", href: "/etf" }, { name: "Compare ETFs", href: "/etf" },
+  ]},
+  { label: "Gainers & Losers", links: [
+    { name: "Nifty 50 Gainers", href: "/stocks" }, { name: "Nifty 50 Losers", href: "/stocks" }, { name: "Nifty Next 50 Gainers", href: "/stocks" },
+    { name: "Nifty Next 50 Losers", href: "/stocks" }, { name: "Sensex Gainers", href: "/stocks" }, { name: "Sensex Losers ", href: "/stocks" },
+    { name: "Nifty Midcap 100 Gainers", href: "/stocks" }, { name: "Nifty Midcap 100 Losers", href: "/stocks" }, { name: "Bank Nifty Gainers", href: "/stocks" },
+    { name: "Bank Nifty Losers", href: "/stocks" },
+  ]},
+  { label: "Gold Rates Today", links: [
+    { name: "Gold Rate in Mumbai", href: "/commodity" }, { name: "Gold Rate in Delhi", href: "/commodity" }, { name: "Gold Rate in Chennai", href: "/commodity" },
+    { name: "Gold Rate in Kolkata", href: "/commodity" }, { name: "Gold Rate in Bangalore", href: "/commodity" }, { name: "Gold Rate in Hyderabad", href: "/commodity" },
+    { name: "Gold Rate in Ahmedabad", href: "/commodity" }, { name: "Gold Rate in Pune", href: "/commodity" },
+  ]},
+  { label: "Silver Rates Today", links: [
+    { name: "Silver Rate in Mumbai", href: "/commodity" }, { name: "Silver Rate in Delhi", href: "/commodity" }, { name: "Silver Rate in Chennai", href: "/commodity" },
+    { name: "Silver Rate in Kolkata", href: "/commodity" }, { name: "Silver Rate in Bangalore", href: "/commodity" }, { name: "Silver Rate in Hyderabad", href: "/commodity" },
+    { name: "Silver Rate in Ahmedabad", href: "/commodity" }, { name: "Silver Rate in Pune", href: "/commodity" },
+  ]},
+  { label: "Popular US Stocks", links: [
+    { name: "NVIDIA Share Price", href: "/#global-investing" }, { name: "Alphabet Inc Share Price", href: "/#global-investing" }, { name: "Apple Inc Share Price", href: "/#global-investing" },
+    { name: "Microsoft Share Price", href: "/#global-investing" }, { name: "Amazon Share Price", href: "/#global-investing" }, { name: "SpaceX Share Price", href: "/#global-investing" },
+    { name: "Broadcom Inc Share Price", href: "/#global-investing" }, { name: "Tesla Share Price", href: "/#global-investing" }, { name: "Meta Share Price", href: "/#global-investing" },
+    { name: "Micron Tech Share Price", href: "/#global-investing" }, { name: "Eli Lilly & Company Share Price", href: "/#global-investing" }, { name: "Berkshire Hathaway Share Price", href: "/#global-investing" },
+    { name: "JP Morgan Chase & Co Share Price", href: "/#global-investing" }, { name: "Walmart Share Price", href: "/#global-investing" },
+  ]},
+  { label: "Popular US ETFs", links: [
+    { name: "Vanguard S&P 500 ETF", href: "/#global-investing" }, { name: "iShares Core S&P 500 ETF", href: "/#global-investing" }, { name: "State Street SPDR S&P 500 ETF", href: "/#global-investing" },
+    { name: "Vanguard Total Stock Market ETF", href: "/#global-investing" }, { name: "Invesco QQQ Trust Series I", href: "/#global-investing" }, { name: "Vanguard Growth ETF", href: "/#global-investing" },
+    { name: "State Street SPDR Portfolio S&P 500 ETF", href: "/#global-investing" }, { name: "Vanguard Value ETF", href: "/#global-investing" }, { name: "iShares Core U.S. Aggregate Bond ETF", href: "/#global-investing" },
+    { name: "Vanguard Total Bond Market ETF", href: "/#global-investing" }, { name: "Invesco NASDAQ 100 ETF", href: "/#global-investing" },
+  ]},
+]
+
+function ExploreSitemapSection() {
+  const [openIdx, setOpenIdx] = useState<number | null>(null)
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <p className="text-lg font-bold text-[#3a1414] mb-5">
+        Explore&nbsp;&nbsp;|&nbsp;&nbsp;
+        <Link href="#" className="hover:underline">Sitemap</Link>
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+        {exploreCategories.map((cat, i) => {
+          const isOpen = openIdx === i
+          return (
+            <div key={`${cat.label}-${i}`} className="relative">
+              <button
+                onClick={() => setOpenIdx(isOpen ? null : i)}
+                className="relative z-20 w-full p-3.5 rounded-[6px] flex items-center justify-between bg-black/[0.04] hover:bg-black/[0.06] transition-colors"
+              >
+                <span className="text-[13px] font-semibold text-[#3a1414] text-left">{cat.label}</span>
+                <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }} className="flex-shrink-0 ml-2">
+                  <ChevronDown className="w-3.5 h-3.5 text-[#3a1414]/60" />
+                </motion.div>
+              </button>
+
+              {/* Overlay dropdown — floats above the page, doesn't push the grid
+                  or leave blank space where the row sits */}
+              <AnimatePresence>
+                {isOpen && (
+                  <>
+                    <motion.div
+                      initial={{ opacity: 0, y: -6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      transition={{ duration: 0.16 }}
+                      className="absolute left-0 top-[calc(100%+6px)] z-30 w-full min-w-[240px] rounded-[8px] shadow-xl p-3"
+                      style={{ background: "#FBDDDA", border: "1px solid rgba(139,13,25,0.18)" }}
+                    >
+                      <ul className="flex flex-col">
+                        {cat.links.map((link) => (
+                          <li key={link.name}>
+                            <Link
+                              href={link.href}
+                              onClick={() => setOpenIdx(null)}
+                              className="text-[12.5px] text-[#3a1414]/75 hover:text-[#8B0D19] hover:bg-black/[0.04] transition-colors block truncate rounded-[4px] px-2 py-1.5"
+                            >
+                              {link.name}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </motion.div>
+                    {/* Click-outside backdrop, transparent */}
+                    <div className="fixed inset-0 z-20" onClick={() => setOpenIdx(null)} />
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 /* ─── Market Tabs (dark variant) ─── */
 function MarketTabsSection() {
   const [active, setActive] = useState("stocks")
@@ -439,6 +770,11 @@ export function Footer() {
         {/* ── Market Tabs ── */}
         <div style={{ borderTop: "1px solid rgba(58,20,20,0.12)" }}>
           <MarketTabsSection />
+        </div>
+
+        {/* ── Explore | Sitemap ── */}
+        <div style={{ borderTop: "1px solid rgba(58,20,20,0.12)" }}>
+          <ExploreSitemapSection />
         </div>
 
         {/* ── Others + Stocks A-Z ── */}
