@@ -768,9 +768,9 @@ export function Footer() {
         </div>
 
         {/* ── Market Tabs ── */}
-        <div style={{ borderTop: "1px solid rgba(58,20,20,0.12)" }}>
+        {/* <div style={{ borderTop: "1px solid rgba(58,20,20,0.12)" }}>
           <MarketTabsSection />
-        </div>
+        </div> */}
 
         {/* ── Explore | Sitemap ── */}
         <div style={{ borderTop: "1px solid rgba(58,20,20,0.12)" }}>
