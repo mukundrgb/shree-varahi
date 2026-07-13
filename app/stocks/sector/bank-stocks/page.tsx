@@ -1,0 +1,32 @@
+"use client"
+
+import { StockListPage, type StockListPageData } from "@/components/stock-list-page"
+
+const DATA: StockListPageData = {
+  slug: "bank-stocks",
+  crumbCategory: "Sector",
+  title: "Bank Stocks",
+  lastUpdated: "13 Jul 2026 at 12:21",
+  description: "Bank stocks represent financial institutions in India that offer services like deposits, loans, and wealth management. These banks are essential for the economy, providing capital and financial services to individuals and businesses. Looking at bank stocks means you\'re analyzing data on companies that facilitate economic activities by managing money flow, credit, and financial solutions across the country.",
+  stocks: [
+    { name: "IDFC First Bank", symbol: "IDFCFIRSTB", ltp: 1136.18, chg: -2.88, volume: "62,46,941", mcap: "1,298,746", pe: 24.15, industryPe: 10.24, high52: 1623.85, low52: 812.11, ret1m: 10.91, ret3m: 14.04, ret1y: 34.59, ret3y: 228.87, ret5y: 122.65, pb: 4.29, divYield: 2.08, roe: 34.63, roce: 11.37, eps: 47.05, dma50: 1078.97, dma200: 1203.54, rsi: 69.11, mtf: 72.0, pledge: 88.81 },
+    { name: "IDBI Bank", symbol: "IDBI", ltp: 310.98, chg: -1.96, volume: "94,37,913", mcap: "1,247,051", pe: 42.15, industryPe: 21.72, high52: 352.72, low52: 236.48, ret1m: 10.21, ret3m: 11.45, ret1y: 19.87, ret3y: 208.18, ret5y: -9.11, pb: 3.47, divYield: 2.42, roe: 11.84, roce: 39.32, eps: 7.38, dma50: 318.35, dma200: 314.59, rsi: 43.57, mtf: 56.0, pledge: 75.21 },
+    { name: "Punjab National Bank", symbol: "PNB", ltp: 361.93, chg: -0.01, volume: "90,52,130", mcap: "1,062,126", pe: 43.52, industryPe: 27.83, high52: 458.73, low52: 270.36, ret1m: -5.78, ret3m: 2.61, ret1y: 1.78, ret3y: 53.96, ret5y: 544.75, pb: 2.2, divYield: 1.54, roe: 14.81, roce: 24.71, eps: 8.32, dma50: 352.06, dma200: 372.71, rsi: 62.27, mtf: 71.0, pledge: 82.26 },
+    { name: "Canara Bank", symbol: "CANBK", ltp: 1414.65, chg: -1.49, volume: "8,72,885", mcap: "1,007,457", pe: 9.67, industryPe: 27.78, high52: 1565.69, low52: 943.49, ret1m: -0.82, ret3m: -11.63, ret1y: 18.55, ret3y: 80.94, ret5y: 357.15, pb: 7.09, divYield: 1.24, roe: 19.42, roce: 19.32, eps: 146.29, dma50: 1399.77, dma200: 1434.3, rsi: 51.98, mtf: 58.0, pledge: 85.99 },
+    { name: "IndusInd Bank", symbol: "INDUSINDBK", ltp: 347.1, chg: 2.49, volume: "54,99,958", mcap: "958,332", pe: 23.88, industryPe: 23.65, high52: 486.17, low52: 222.52, ret1m: -4.07, ret3m: -4.55, ret1y: 70.1, ret3y: 161.43, ret5y: 390.03, pb: 4.82, divYield: 1.65, roe: 37.87, roce: 16.7, eps: 14.54, dma50: 349.04, dma200: 312.85, rsi: 57.15, mtf: 76.0, pledge: 86.25 },
+    { name: "Axis Bank", symbol: "AXISBANK", ltp: 1062.92, chg: 0.35, volume: "71,79,243", mcap: "936,564", pe: 16.86, industryPe: 35.47, high52: 1581.25, low52: 694.81, ret1m: 0.63, ret3m: 9.23, ret1y: 78.28, ret3y: 222.7, ret5y: 108.29, pb: 9.57, divYield: 1.27, roe: 29.41, roce: 25.94, eps: 63.04, dma50: 1062.86, dma200: 908.55, rsi: 60.26, mtf: 57.0, pledge: 89.83 },
+    { name: "State Bank of India", symbol: "SBIN", ltp: 1641.79, chg: 1.61, volume: "14,82,265", mcap: "803,719", pe: 38.83, industryPe: 28.12, high52: 2539.66, low52: 1473.05, ret1m: -6.39, ret3m: -9.95, ret1y: 64.37, ret3y: 150.5, ret5y: 52.81, pb: 7.98, divYield: 3.18, roe: 36.04, roce: 15.77, eps: 42.28, dma50: 1700.75, dma200: 1661.95, rsi: 44.35, mtf: 77.0, pledge: 89.9 },
+    { name: "Union Bank of India", symbol: "UNIONBANK", ltp: 206.49, chg: -0.67, volume: "95,28,546", mcap: "629,378", pe: 36.05, industryPe: 37.6, high52: 237.39, low52: 132.64, ret1m: 5.48, ret3m: 11.57, ret1y: 49.87, ret3y: 255.8, ret5y: 28.25, pb: 2.77, divYield: 1.29, roe: 32.38, roce: 25.72, eps: 5.73, dma50: 200.22, dma200: 208.38, rsi: 42.29, mtf: 62.0, pledge: 81.53 },
+    { name: "Bank of Baroda", symbol: "BANKBARODA", ltp: 654.0, chg: -0.27, volume: "20,61,328", mcap: "562,884", pe: 14.53, industryPe: 37.46, high52: 987.7, low52: 500.83, ret1m: -2.67, ret3m: 17.87, ret1y: 53.78, ret3y: 99.19, ret5y: 55.26, pb: 2.13, divYield: 2.73, roe: 17.46, roce: 21.5, eps: 45.01, dma50: 614.94, dma200: 726.15, rsi: 70.71, mtf: 67.0, pledge: 88.0 },
+    { name: "Federal Bank", symbol: "FEDERALBNK", ltp: 1162.51, chg: -2.19, volume: "33,48,989", mcap: "520,069", pe: 32.75, industryPe: 24.25, high52: 1797.05, low52: 998.14, ret1m: -4.27, ret3m: 18.6, ret1y: 50.77, ret3y: 132.83, ret5y: 90.71, pb: 2.17, divYield: 1.22, roe: 23.66, roce: 26.44, eps: 35.5, dma50: 1138.43, dma200: 1136.32, rsi: 67.03, mtf: 56.0, pledge: 80.3 },
+    { name: "Indian Bank", symbol: "INDIANB", ltp: 1666.35, chg: -1.51, volume: "93,83,781", mcap: "492,114", pe: 26.6, industryPe: 33.05, high52: 2335.19, low52: 1326.42, ret1m: 7.85, ret3m: 15.21, ret1y: 72.26, ret3y: 8.43, ret5y: 32.4, pb: 2.76, divYield: 1.85, roe: 8.21, roce: 16.33, eps: 62.64, dma50: 1671.35, dma200: 1800.84, rsi: 68.67, mtf: 74.0, pledge: 90.25 },
+    { name: "HDFC Bank", symbol: "HDFCBANK", ltp: 241.29, chg: 0.78, volume: "52,53,130", mcap: "417,576", pe: 19.22, industryPe: 25.64, high52: 314.91, low52: 210.97, ret1m: 0.01, ret3m: 1.2, ret1y: 47.52, ret3y: 66.3, ret5y: 444.96, pb: 5.88, divYield: 1.11, roe: 40.58, roce: 4.07, eps: 12.55, dma50: 242.37, dma200: 270.44, rsi: 33.97, mtf: 61.0, pledge: 84.34 },
+    { name: "Kotak Mahindra Bank", symbol: "KOTAKBANK", ltp: 1016.19, chg: -2.4, volume: "29,75,805", mcap: "327,746", pe: 17.0, industryPe: 27.27, high52: 1377.14, low52: 862.09, ret1m: -4.8, ret3m: -14.41, ret1y: 45.37, ret3y: 33.42, ret5y: 121.35, pb: 2.01, divYield: 3.33, roe: 25.04, roce: 7.57, eps: 59.78, dma50: 1005.73, dma200: 955.16, rsi: 47.4, mtf: 77.0, pledge: 88.97 },
+    { name: "AU Small Finance Bank", symbol: "AUBANK", ltp: 1656.07, chg: -0.16, volume: "73,83,129", mcap: "195,851", pe: 43.97, industryPe: 38.4, high52: 1919.94, low52: 1272.51, ret1m: -7.58, ret3m: -7.53, ret1y: 12.51, ret3y: -15.63, ret5y: 141.25, pb: 9.53, divYield: 0.04, roe: 24.52, roce: 30.96, eps: 37.66, dma50: 1600.57, dma200: 1517.5, rsi: 40.25, mtf: 61.0, pledge: 88.3 },
+    { name: "ICICI Bank", symbol: "ICICIBANK", ltp: 657.39, chg: -2.78, volume: "15,32,762", mcap: "70,832", pe: 11.01, industryPe: 14.67, high52: 770.53, low52: 426.46, ret1m: 5.68, ret3m: -8.43, ret1y: 51.54, ret3y: 143.64, ret5y: 266.56, pb: 6.7, divYield: 2.9, roe: 8.12, roce: 25.25, eps: 59.71, dma50: 672.61, dma200: 697.15, rsi: 34.3, mtf: 69.0, pledge: 89.46 },
+  ],
+}
+
+export default function BankStocksPage() {
+  return <StockListPage data={DATA} />
+}
