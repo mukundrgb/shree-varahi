@@ -830,29 +830,7 @@ export function Hero() {
       {/* App Promo */}
       <AppPromoSection />
 
-      {/* ── Product Grid (ORIGINAL) ── */}
-      <section className="relative bg-cream pt-[100px] pb-24">
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-20">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <p className="text-sm tracking-[0.2em] uppercase text-gold-deep font-extrabold mb-4">Complete Investment Suite</p>
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-foreground text-balance">
-              Every market. <span className="text-burgundy">One account.</span>
-            </h2>
-          </motion.div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            {products.map((product, index) => (
-              <ProductCard key={product.title} product={product} index={index} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Product Stack (NEW — scroll-driven stacking) ── */}
+      {/* ── Product Stack (scroll-driven stacking) ── */}
       <ProductStackSection />
     </>
   )

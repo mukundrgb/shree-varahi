@@ -188,7 +188,7 @@ export function KnowledgeSection() {
   const [active, setActive] = useState("news")
 
   return (
-    <section className="relative bg-white py-16 lg:py-24 overflow-hidden border-t border-slate-100">
+    <section className="relative bg-white py-16 lg:py-24 overflow-hidden border-t border-slate-100"> 
       {/* Dot grid background */}
       <div
         className="absolute inset-0 opacity-[0.015] pointer-events-none"
