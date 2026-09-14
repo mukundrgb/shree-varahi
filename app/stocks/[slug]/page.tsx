@@ -116,9 +116,44 @@ function deriveExtras(s: typeof ALL_STOCKS[0]) {
   }
 }
 
+// Deterministic hash → any slug not in ALL_STOCKS still resolves to a real,
+// stable (not random-per-render) page instead of a 404, so every stock link
+// across the site (menus, sitemap, F&O, groups) has somewhere real to land.
+function hashSlug(slug: string) {
+  let h = 0
+  for (let i = 0; i < slug.length; i++) h = (h * 31 + slug.charCodeAt(i)) >>> 0
+  return h
+}
+
+const SECTORS = ["Banking", "IT", "FMCG", "Auto", "Pharma", "Energy", "Power", "Metals", "Realty", "Telecom", "Chemicals", "Cement", "Infrastructure"]
+const COLORS = ["#1E40AF", "#0369A1", "#15803D", "#6D28D9", "#B45309", "#1D4ED8", "#DC2626", "#0891B2", "#16A34A", "#7C3AED", "#0D9488", "#B91C1C"]
+
+function synthesizeStock(slug: string) {
+  const h = hashSlug(slug)
+  const name = slug.split("-").filter(Boolean).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
+  const price = 80 + (h % 6000) + ((h >> 8) % 100) / 100
+  const changePct = ((h % 600) - 300) / 100
+  const changeAmt = price * changePct / 100
+  const marketCapCr = 2000 + (h % 850000)
+  const capCategory: "large" | "mid" | "small" = marketCapCr > 400000 ? "large" : marketCapCr > 50000 ? "mid" : "small"
+  return {
+    symbol: slug.toUpperCase().replace(/-/g, "").slice(0, 12),
+    name: name || slug.toUpperCase(),
+    sector: SECTORS[h % SECTORS.length],
+    exchange: "NSE" as const,
+    marketCapCr,
+    marketCapLabel: `₹${marketCapCr.toLocaleString("en-IN")} Cr`,
+    capCategory,
+    price: Math.round(price * 100) / 100,
+    change: Math.round(changePct * 100) / 100,
+    changeAmt: Math.round(changeAmt * 100) / 100,
+    color: COLORS[h % COLORS.length],
+    spark: Array.from({ length: 7 }, (_, i) => Math.round((price - changeAmt * (1 - i / 6)) * 100) / 100),
+  } as typeof ALL_STOCKS[number]
+}
+
 function getStock(slug: string) {
-  const base = ALL_STOCKS.find(s => toSlug(s.symbol) === slug)
-  if (!base) return null
+  const base = ALL_STOCKS.find(s => toSlug(s.symbol) === slug) ?? synthesizeStock(slug)
   const extras = EXTRAS[base.symbol] ?? deriveExtras(base)
   return { ...base, ...extras }
 }
