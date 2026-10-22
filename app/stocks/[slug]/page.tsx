@@ -290,6 +290,8 @@ export default function StockDetailPage() {
 
   const [tf, setTf] = useState<TF>("1D")
   const [tab, setTab] = useState<Tab>("Fundamental")
+  const [financialsPeriod, setFinancialsPeriod] = useState<"Quarterly" | "Yearly">("Quarterly")
+  const [financialsType, setFinancialsType] = useState<"Standalone" | "Consolidated">("Standalone")
   const [starred, setStarred] = useState(false)
   const [tradeMode, setTradeMode] = useState<"buy" | "sell">("buy")
   const [qty, setQty] = useState("1")
@@ -329,9 +331,11 @@ export default function StockDetailPage() {
     { label: "Face Value",     value: `₹${stock.faceVal}`,         sub: "Per share" },
   ]
 
-  // Quarterly financials (derived from market cap)
+  // Quarterly & yearly financials (derived from market cap)
   const qtrs = ["Mar 2025", "Jun 2025", "Sep 2025", "Dec 2025"]
+  const years = ["FY2022", "FY2023", "FY2024", "FY2025"]
   const baseRev = stock.marketCapCr / 55
+
   const financials = qtrs.map((q, i) => ({
     quarter: q,
     revenue:  +(baseRev * (0.88 + i * 0.06)).toFixed(0),
@@ -341,6 +345,36 @@ export default function StockDetailPage() {
     eps:      +(stock.eps * (0.88 + i * 0.06)).toFixed(1),
     opm:      (22 + i * 1.2).toFixed(1),
   }))
+
+  const financialsYearly = years.map((y, i) => ({
+    quarter: y,
+    revenue:  +(baseRev * 4 * (0.70 + i * 0.09)).toFixed(0),
+    expenses: +(baseRev * 4 * (0.54 + i * 0.07)).toFixed(0),
+    opProfit: +(baseRev * 4 * (0.16 + i * 0.02)).toFixed(0),
+    netProfit:+(baseRev * 4 * (0.095 + i * 0.013)).toFixed(0),
+    eps:      +(stock.eps * 4 * (0.70 + i * 0.09)).toFixed(1),
+    opm:      (19 + i * 1.5).toFixed(1),
+  }))
+
+  // Consolidated figures roll in subsidiaries — scaled up from standalone.
+  const toConsolidated = (data: typeof financials) => data.map(f => {
+    const revenue = +(f.revenue * 1.14).toFixed(0)
+    const expenses = +(f.expenses * 1.17).toFixed(0)
+    const opProfit = +(f.opProfit * 1.10).toFixed(0)
+    const netProfit = +(f.netProfit * 1.07).toFixed(0)
+    return {
+      quarter: f.quarter,
+      revenue, expenses, opProfit, netProfit,
+      eps: +(f.eps * 1.05).toFixed(1),
+      opm: ((opProfit / revenue) * 100).toFixed(1),
+    }
+  })
+  const financialsConsolidated = toConsolidated(financials)
+  const financialsYearlyConsolidated = toConsolidated(financialsYearly)
+
+  const periodFinancials = financialsPeriod === "Quarterly" ? financials : financialsYearly
+  const periodFinancialsConsolidated = financialsPeriod === "Quarterly" ? financialsConsolidated : financialsYearlyConsolidated
+  const activeFinancials = financialsType === "Standalone" ? periodFinancials : periodFinancialsConsolidated
 
   const shareholding = [
     { label: "Promoters",  pct: stock.promoters, color: "#8B0D19" },
@@ -443,7 +477,6 @@ export default function StockDetailPage() {
                 <span>Open: <span className="font-bold text-foreground tabular-nums">₹{fmtPrice(stock.open)}</span></span>
                 <span>Prev Close: <span className="font-bold text-foreground tabular-nums">₹{fmtPrice(stock.prevClose)}</span></span>
                 <span>Volume: <span className="font-bold text-foreground">{stock.volume}</span></span>
-                <span>Avg Vol: <span className="font-bold text-foreground">{stock.avgVol}</span></span>
               </div>
 
               {/* 52W range bar */}
@@ -612,17 +645,44 @@ export default function StockDetailPage() {
                     {/* ── FINANCIALS ── */}
                     {tab === "Financials" && (
                       <div>
-                        <div className="flex items-center justify-between mb-4">
-                          <p className="text-sm font-black text-foreground">Quarterly Results</p>
-                          <span className="text-[10px] font-semibold text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">Standalone · ₹ Crore</span>
+                        <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+                          <div className="flex bg-secondary/60 p-0.5 rounded-[6px]">
+                            {(["Quarterly", "Yearly"] as const).map(p => (
+                              <button
+                                key={p}
+                                onClick={() => setFinancialsPeriod(p)}
+                                className={`px-2.5 py-1 text-[10px] font-bold rounded-[4px] transition-all duration-150 ${
+                                  financialsPeriod === p ? "bg-burgundy text-white shadow-sm" : "text-muted-foreground hover:text-foreground"
+                                }`}
+                              >
+                                {p}
+                              </button>
+                            ))}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="flex bg-secondary/60 p-0.5 rounded-[6px]">
+                              {(["Standalone", "Consolidated"] as const).map(t => (
+                                <button
+                                  key={t}
+                                  onClick={() => setFinancialsType(t)}
+                                  className={`px-2.5 py-1 text-[10px] font-bold rounded-[4px] transition-all duration-150 ${
+                                    financialsType === t ? "bg-burgundy text-white shadow-sm" : "text-muted-foreground hover:text-foreground"
+                                  }`}
+                                >
+                                  {t}
+                                </button>
+                              ))}
+                            </div>
+                            <span className="text-[10px] font-semibold text-muted-foreground">₹ Crore</span>
+                          </div>
                         </div>
                         <div className="overflow-x-auto -mx-5" style={{ scrollbarWidth: "none" }}>
                           <table className="w-full min-w-[520px] text-sm">
                             <thead>
                               <tr className="border-b border-border/60">
                                 <th className="pl-5 pr-3 py-2.5 text-left text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">Metric</th>
-                                {qtrs.map(q => (
-                                  <th key={q} className="px-3 py-2.5 text-right text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">{q}</th>
+                                {activeFinancials.map(f => (
+                                  <th key={f.quarter} className="px-3 py-2.5 text-right text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">{f.quarter}</th>
                                 ))}
                               </tr>
                             </thead>
@@ -637,7 +697,7 @@ export default function StockDetailPage() {
                               ].map(row => (
                                 <tr key={row.label} className="hover:bg-cream/40 transition-colors">
                                   <td className="pl-5 pr-3 py-2.5 text-[11px] font-semibold text-muted-foreground">{row.label}</td>
-                                  {financials.map(f => (
+                                  {activeFinancials.map(f => (
                                     <td key={f.quarter} className="px-3 py-2.5 text-right text-[11px] font-bold text-foreground tabular-nums">
                                       {row.fmt(f[row.key])}
                                     </td>
@@ -652,8 +712,8 @@ export default function StockDetailPage() {
                         <div className="mt-5 pt-4 border-t border-border/60">
                           <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-3">Revenue Trend</p>
                           <div className="flex items-end gap-2 h-16">
-                            {financials.map((f, i) => {
-                              const maxRev = Math.max(...financials.map(x => x.revenue))
+                            {activeFinancials.map((f, i) => {
+                              const maxRev = Math.max(...activeFinancials.map(x => x.revenue))
                               const h = (f.revenue / maxRev) * 100
                               return (
                                 <div key={f.quarter} className="flex-1 flex flex-col items-center gap-1">
@@ -1054,11 +1114,9 @@ export default function StockDetailPage() {
                 <div className="divide-y divide-border/40">
                   {[
                     { label: "Market Cap",   value: stock.marketCapLabel },
-                    { label: "P/E Ratio",    value: stock.pe.toFixed(1)         },
                     { label: "52W High",     value: `₹${fmtPrice(stock.wHigh52)}` },
                     { label: "52W Low",      value: `₹${fmtPrice(stock.wLow52)}`  },
-                    { label: "Avg Volume",   value: stock.avgVol                },
-                    { label: "Div. Yield",   value: `${stock.divYield.toFixed(2)}%` },
+                    { label: "Volume",       value: stock.volume                },
                   ].map(s => (
                     <div key={s.label} className="flex items-center justify-between px-4 py-2.5">
                       <span className="text-[11px] text-muted-foreground font-semibold">{s.label}</span>
