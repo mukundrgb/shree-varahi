@@ -4,7 +4,7 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ChevronRight, Plus, X, Layers, Repeat, Eye, LayoutDashboard, FileSearch, Zap,
-  Activity, PieChart, Coins, CircleDollarSign, Landmark, Globe, Boxes,
+  Activity, PieChart, Coins, Landmark, Globe,
   LineChart, Percent, ListChecks, TrendingUp, Target, BarChart3,
   ArrowUpRight, Star,
 } from "lucide-react"
@@ -26,31 +26,31 @@ const TOOLS = [
   { icon: PieChart,         color: "#8B0D19", title: "Portfolio Monitoring",  desc: "See how your ETF investments are performing by tracking returns, portfolio growth, profits, losses, and investment distribution in one dashboard." },
 ]
 
-type Category = "Index" | "Gold" | "Silver" | "Debt" | "Global" | "Sector"
+type Category = "Equity" | "Commodity" | "Debt" | "Global"
 
 const CATEGORIES: { id: Category; label: string; icon: React.ElementType; color: string; desc: string }[] = [
-  { id: "Index",  label: "Index ETFs",  icon: BarChart3,        color: "#8B0D19", desc: "Track benchmark indices and gain exposure to a diversified range of market investments." },
-  { id: "Gold",   label: "Gold ETFs",   icon: Coins,            color: "#8B0D19", desc: "Invest in gold digitally through easy-to-access Gold ETFs." },
-  { id: "Silver", label: "Silver ETFs", icon: CircleDollarSign, color: "#8B0D19", desc: "Invest in silver and benefit from its price movements with ease." },
-  { id: "Debt",   label: "Debt ETFs",   icon: Landmark,         color: "#8B0D19", desc: "Invest in bonds and debt securities to earn stable returns and diversify your portfolio." },
-  { id: "Global", label: "Global ETFs", icon: Globe,            color: "#8B0D19", desc: "Get exposure to companies and economies around the world through a single investment." },
-  { id: "Sector", label: "Sector ETFs", icon: Boxes,            color: "#8B0D19", desc: "Invest in specific industries and market sectors based on your investment goals." },
+  { id: "Equity",    label: "Equity ETFs",    icon: BarChart3, color: "#8B0D19", desc: "Track benchmark indices and market sectors to gain diversified exposure to Indian equities." },
+  { id: "Commodity", label: "Commodity ETFs", icon: Coins,     color: "#8B0D19", desc: "Invest in gold and silver digitally through easy-to-access Commodity ETFs." },
+  { id: "Debt",      label: "Debt ETFs",      icon: Landmark,  color: "#8B0D19", desc: "Invest in bonds and debt securities to earn stable returns and diversify your portfolio." },
+  { id: "Global",    label: "Global ETFs",    icon: Globe,     color: "#8B0D19", desc: "Get exposure to companies and economies around the world through a single investment." },
 ]
 
 const ETFS: Record<Category, { name: string; price: string; change: number }[]> = {
-  Index: [
+  Equity: [
     { name: "Nifty 50 ETF",      price: "243.50",  change: 0.62 },
     { name: "Nifty Bank ETF",    price: "512.80",  change: 0.34 },
     { name: "Nifty Next 50 ETF", price: "68.90",   change: 0.48 },
     { name: "Sensex ETF",        price: "812.40",  change: 0.55 },
+    { name: "Nifty IT ETF",       price: "38.40", change: 0.72 },
+    { name: "Nifty PSU Bank ETF", price: "86.20", change: 0.58 },
+    { name: "Nifty Pharma ETF",   price: "24.98", change: 0.41 },
+    { name: "Nifty Auto ETF",     price: "26.97", change: 0.36 },
   ],
-  Gold: [
+  Commodity: [
     { name: "Nippon Gold BeES",     price: "68.20", change: 0.21 },
     { name: "SBI Gold ETF",         price: "71.10", change: 0.18 },
     { name: "HDFC Gold ETF",        price: "70.45", change: 0.24 },
     { name: "ICICI Pru Gold ETF",   price: "69.85", change: 0.20 },
-  ],
-  Silver: [
     { name: "ICICI Pru Silver ETF",      price: "98.40", change: 0.45 },
     { name: "Aditya Birla SL Silver ETF",price: "97.10", change: 0.42 },
     { name: "Nippon Silver ETF",         price: "99.20", change: 0.50 },
@@ -68,12 +68,6 @@ const ETFS: Record<Category, { name: string; price: string; change: number }[]> 
     { name: "Mirae Asset NYSE FANG+ ETF",   price: "84.20",  change: 1.05 },
     { name: "Motilal Oswal S&P 500 ETF",    price: "38.60",  change: 0.62 },
   ],
-  Sector: [
-    { name: "Nifty IT ETF",       price: "38.40", change: 0.72 },
-    { name: "Nifty PSU Bank ETF", price: "86.20", change: 0.58 },
-    { name: "Nifty Pharma ETF",   price: "24.98", change: 0.41 },
-    { name: "Nifty Auto ETF",     price: "26.97", change: 0.36 },
-  ],
 }
 
 const RESEARCH_PARAMS = [
@@ -90,7 +84,7 @@ const RESEARCH_PARAMS = [
 
 const FAQS = [
   { q: "What are ETFs?", a: "Exchange Traded Funds (ETFs) are investment instruments that track an index, commodity, sector, or basket of assets and trade on stock exchanges like regular stocks. ETFs offer diversification, transparency, and flexibility while allowing investors to buy and sell units during market hours." },
-  { q: "Which ETF categories are available?", a: "Shree Varahi provides access to multiple ETF categories, including Index ETFs, Gold ETFs, Silver ETFs, Debt ETFs, Global ETFs, and Sector ETFs. Investors can choose categories based on their financial goals, risk appetite, and investment preferences." },
+  { q: "Which ETF categories are available?", a: "Shree Varahi provides access to multiple ETF categories, including Equity ETFs, Commodity ETFs, Debt ETFs, and Global ETFs. Investors can choose categories based on their financial goals, risk appetite, and investment preferences." },
   { q: "Can I start ETF SIPs?", a: "Yes. You can invest in selected ETFs through Systematic Investment Plans (SIPs) with daily, weekly, or monthly investment frequencies. ETF SIPs help build wealth through disciplined and consistent investing over the long term." },
   { q: "Is MTF available for ETFs?", a: "Yes. Margin Trading Facility (MTF) is available on eligible ETFs, allowing investors to enhance buying power and utilize capital more efficiently, subject to applicable terms and eligibility criteria." },
   { q: "What are ETF brokerage charges?", a: "ETF transactions are generally charged as per the applicable brokerage plan for exchange-traded products. Brokerage, taxes, exchange charges, and other statutory levies may apply as per the prevailing tariff structure." },
@@ -123,7 +117,7 @@ const CANDLES = Array.from({ length: 26 }, (_, i) => {
 // ─── Page ───────────────────────────────────────────────────────────────────
 
 export default function ETFPage() {
-  const [activeCat, setActiveCat]     = useState<Category>("Index")
+  const [activeCat, setActiveCat]     = useState<Category>("Equity")
   const [mobile, setMobile]           = useState("")
   const [activeParam, setActiveParam] = useState(0)
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null)
@@ -198,7 +192,7 @@ export default function ETFPage() {
                   <span className="text-[10px] font-extrabold uppercase tracking-wider text-gold-deep">Top ETFs Today</span>
                   <span className="text-[9px] font-bold text-muted-foreground">LTP</span>
                 </div>
-                {ETFS.Index.slice(0, 3).map((etf) => (
+                {ETFS.Equity.slice(0, 3).map((etf) => (
                   <div key={etf.name} className="flex items-center justify-between">
                     <span className="text-[11px] font-semibold text-foreground truncate pr-2">{etf.name}</span>
                     <div className="text-right shrink-0">
@@ -388,7 +382,7 @@ export default function ETFPage() {
                   <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/60 bg-cream/50">
                     <div className="flex-1 flex items-center gap-2 bg-white border border-border rounded-[5px] px-2.5 py-1.5">
                       <Activity className="w-3 h-3 text-muted-foreground/60" />
-                      <span className="text-[10px] text-muted-foreground truncate">{RESEARCH_PARAMS[activeParam].title} · {ETFS.Index[0].name}</span>
+                      <span className="text-[10px] text-muted-foreground truncate">{RESEARCH_PARAMS[activeParam].title} · {ETFS.Equity[0].name}</span>
                     </div>
                     <div className="hidden sm:flex gap-1.5">
                       {["ORDERS", "POSITIONS", "BUY", "SELL"].map((label, i) => (
@@ -411,10 +405,10 @@ export default function ETFPage() {
                   {/* Ticker header */}
                   <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/40">
                     <span className="text-[13px] font-extrabold text-foreground">
-                      {ETFS.Index[0].name} <span className="text-muted-foreground font-semibold">· NSE</span>
+                      {ETFS.Equity[0].name} <span className="text-muted-foreground font-semibold">· NSE</span>
                     </span>
                     <span className="text-[12px] font-black text-profit">
-                      ₹{ETFS.Index[0].price} <span className="text-[10px] font-bold">(+{ETFS.Index[0].change}%)</span>
+                      ₹{ETFS.Equity[0].price} <span className="text-[10px] font-bold">(+{ETFS.Equity[0].change}%)</span>
                     </span>
                   </div>
 
@@ -443,9 +437,9 @@ export default function ETFPage() {
                 <div className="hidden sm:block absolute -bottom-8 -right-5 w-36 rounded-[16px] border-[5px] border-foreground bg-white shadow-2xl overflow-hidden">
                   <div className="px-3 py-3 space-y-2.5">
                     <div>
-                      <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-wide">{ETFS.Index[0].name}</p>
+                      <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-wide">{ETFS.Equity[0].name}</p>
                       <p className="text-[13px] font-black text-foreground">
-                        ₹{ETFS.Index[0].price} <span className="text-profit text-[9px]">+{ETFS.Index[0].change}%</span>
+                        ₹{ETFS.Equity[0].price} <span className="text-profit text-[9px]">+{ETFS.Equity[0].change}%</span>
                       </p>
                     </div>
                     <div className="space-y-1.5 pt-2 border-t border-border/50">
@@ -613,7 +607,7 @@ export default function ETFPage() {
                   <p className="text-base font-black text-foreground">₹2,84,650</p>
                   <p className="text-[10px] font-bold text-profit">+₹18,240 (6.8%)</p>
                 </div>
-                {ETFS.Index.slice(0, 3).map((etf) => (
+                {ETFS.Equity.slice(0, 3).map((etf) => (
                   <div key={etf.name} className="flex items-center justify-between">
                     <span className="text-[9px] font-semibold text-foreground truncate pr-2">{etf.name}</span>
                     <span className="text-[9px] font-bold text-profit shrink-0">+{etf.change}%</span>
