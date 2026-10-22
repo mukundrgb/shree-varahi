@@ -140,40 +140,44 @@ export default function FuturesOptionsPage() {
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null)
 
   // ── 10. MARKETS TAB STATE ──
-  type MarketsTabKey = "Index F&O" | "Stock F&O" | "Commodity F&O"
-  const [marketsTab, setMarketsTab] = useState<MarketsTabKey>("Index F&O")
+  type MarketsTabKey = "Index Future" | "Stocks Future" | "Index Option" | "Stock Option"
+  const [marketsTab, setMarketsTab] = useState<MarketsTabKey>("Index Future")
 
-  const marketsData: Record<MarketsTabKey, { icon: string; name: string; price: number; change: number; changePct: number }[]> = {
-    "Index F&O": [
-      { icon: "📈", name: "NIFTY 50",       price: niftyPrice,     change: niftyChange,     changePct: niftyChange / niftyPrice * 100 },
-      { icon: "🏦", name: "BANK NIFTY",     price: bankNiftyPrice, change: -120.40,          changePct: -0.24 },
-      { icon: "💹", name: "FINNIFTY",       price: 23812.50,       change: 45.30,            changePct: 0.19 },
-      { icon: "📊", name: "MIDCAP NIFTY",   price: 52340.25,       change: -215.80,          changePct: -0.41 },
-      { icon: "🌐", name: "SENSEX",         price: 76820.40,       change: 183.60,           changePct: 0.24 },
-      { icon: "🔷", name: "NIFTY NEXT 50",  price: 67421.00,       change: -98.50,           changePct: -0.15 },
-      { icon: "📉", name: "NIFTY IT",       price: 35218.75,       change: 312.40,           changePct: 0.89 },
-      { icon: "💰", name: "NIFTY PSU BANK", price: 5812.30,        change: -41.20,           changePct: -0.70 },
-    ],
-    "Stock F&O": [
-      { icon: "🛢️", name: "RELIANCE",      price: reliancePrice,  change: 12.30,            changePct: 0.42 },
-      { icon: "💻", name: "TCS",           price: 3840.40,        change: -28.60,           changePct: -0.74 },
-      { icon: "🔵", name: "INFY",          price: 1485.00,        change: 18.50,            changePct: 1.26 },
-      { icon: "🏧", name: "HDFC BANK",     price: 1620.80,        change: -9.40,            changePct: -0.58 },
-      { icon: "🚗", name: "TATA MOTORS",   price: 952.10,         change: 32.60,            changePct: 3.55 },
-      { icon: "⚡", name: "ADANI GREEN",   price: 1842.35,        change: -54.80,           changePct: -2.89 },
-      { icon: "🏗️", name: "L&T",          price: 3315.50,        change: 47.20,            changePct: 1.44 },
-      { icon: "💊", name: "SUN PHARMA",    price: 1741.20,        change: -23.10,           changePct: -1.31 },
-    ],
-    "Commodity F&O": [
-      { icon: "🥇", name: "GOLD",         price: goldPrice,      change: -1520,            changePct: -2.06 },
-      { icon: "🥈", name: "SILVER",       price: 87420,          change: -1840,            changePct: -2.06 },
-      { icon: "🛢️", name: "CRUDE OIL",   price: crudePrice,     change: -48,              changePct: -0.74 },
-      { icon: "🔥", name: "NATURAL GAS",  price: 296.80,         change: -4.80,            changePct: -1.59 },
-      { icon: "🟤", name: "COPPER",       price: 812.35,         change: -4.15,            changePct: -0.51 },
-      { icon: "⚙️", name: "NICKEL",      price: 1736.40,        change: -21.20,           changePct: -1.21 },
-      { icon: "🔩", name: "ZINC",         price: 362.95,         change: -2.55,            changePct: -0.70 },
-      { icon: "🌾", name: "COTTON",       price: 58200,          change: 420,              changePct: 0.73 },
-    ],
+  type MarketInstrument = { icon: string; name: string; price: number; change: number; changePct: number; href: string }
+  type MarketInstrumentSource = Omit<MarketInstrument, "href"> & { futHref: string; optHref: string }
+
+  // Same underlying index/stock feeds both the Future and Option tab for that
+  // asset — avoids keeping four copies of the same price/change numbers.
+  const INDEX_INSTRUMENTS: MarketInstrumentSource[] = [
+    { icon: "📈", name: "NIFTY 50",       price: niftyPrice,     change: niftyChange, changePct: niftyChange / niftyPrice * 100, futHref: "/futures/nifty-50-futures",            optHref: "/options/nifty-50-options" },
+    { icon: "🏦", name: "BANK NIFTY",     price: bankNiftyPrice, change: -120.40,     changePct: -0.24,                          futHref: "/futures/bank-nifty-futures",          optHref: "/options/bank-nifty-options" },
+    { icon: "💹", name: "FINNIFTY",       price: 23812.50,       change: 45.30,       changePct: 0.19,                           futHref: "/futures/finnifty-futures",            optHref: "/options/finnifty-options" },
+    { icon: "📊", name: "MIDCAP NIFTY",   price: 52340.25,       change: -215.80,     changePct: -0.41,                          futHref: "/futures/nifty-midcap-select-futures", optHref: "/options/nifty-midcap-select-options" },
+    { icon: "🌐", name: "SENSEX",         price: 76820.40,       change: 183.60,      changePct: 0.24,                           futHref: "/futures/sensex-futures",              optHref: "/options/sensex-options" },
+    { icon: "🔷", name: "NIFTY NEXT 50",  price: 67421.00,       change: -98.50,      changePct: -0.15,                          futHref: "/futures/nifty-next-50-futures",       optHref: "/options/nifty-next-50-options" },
+    { icon: "📉", name: "NIFTY IT",       price: 35218.75,       change: 312.40,      changePct: 0.89,                           futHref: "/futures/nifty-it-futures",            optHref: "/options/nifty-it-options" },
+    { icon: "💰", name: "NIFTY PSU BANK", price: 5812.30,        change: -41.20,      changePct: -0.70,                          futHref: "/futures/nifty-psu-bank-futures",      optHref: "/options/nifty-psu-bank-options" },
+  ]
+
+  const STOCK_INSTRUMENTS: MarketInstrumentSource[] = [
+    { icon: "🛢️", name: "RELIANCE",    price: reliancePrice, change: 12.30,  changePct: 0.42,  futHref: "/futures/reliance-industries-ltd-futures-summary",               optHref: "/options/reliance-industries-ltd-options-summary" },
+    { icon: "💻", name: "TCS",         price: 3840.40,       change: -28.60, changePct: -0.74, futHref: "/futures/tcs-tata-consultancy-services-ltd-futures-summary",     optHref: "/options/tcs-tata-consultancy-services-ltd-options-summary" },
+    { icon: "🔵", name: "INFY",        price: 1485.00,       change: 18.50,  changePct: 1.26,  futHref: "/futures/infosys-ltd-futures-summary",                            optHref: "/options/infosys-ltd-options-summary" },
+    { icon: "🏧", name: "HDFC BANK",   price: 1620.80,       change: -9.40,  changePct: -0.58, futHref: "/futures/hdfc-bank-ltd-futures-summary",                          optHref: "/options/hdfc-bank-ltd-options-summary" },
+    { icon: "🚗", name: "TATA MOTORS", price: 952.10,        change: 32.60,  changePct: 3.55,  futHref: "/futures/tata-motors-ltd-futures-summary",                        optHref: "/options/tata-motors-ltd-options-summary" },
+    { icon: "⚡", name: "ADANI GREEN", price: 1842.35,       change: -54.80, changePct: -2.89, futHref: "/futures/adani-green-energy-ltd-futures-summary",                optHref: "/options/adani-green-energy-ltd-options-summary" },
+    { icon: "🏗️", name: "L&T",        price: 3315.50,       change: 47.20,  changePct: 1.44,  futHref: "/futures/larsen-toubro-ltd-futures-summary",                      optHref: "/options/larsen-toubro-ltd-options-summary" },
+    { icon: "💊", name: "SUN PHARMA",  price: 1741.20,       change: -23.10, changePct: -1.31, futHref: "/futures/sun-pharmaceutical-industries-ltd-futures-summary",      optHref: "/options/sun-pharmaceutical-industries-ltd-options-summary" },
+  ]
+
+  const toInstruments = (source: MarketInstrumentSource[], kind: "fut" | "opt"): MarketInstrument[] =>
+    source.map(({ futHref, optHref, ...rest }) => ({ ...rest, href: kind === "fut" ? futHref : optHref }))
+
+  const marketsData: Record<MarketsTabKey, MarketInstrument[]> = {
+    "Index Future":  toInstruments(INDEX_INSTRUMENTS, "fut"),
+    "Index Option":  toInstruments(INDEX_INSTRUMENTS, "opt"),
+    "Stocks Future": toInstruments(STOCK_INSTRUMENTS, "fut"),
+    "Stock Option":  toInstruments(STOCK_INSTRUMENTS, "opt"),
   }
 
   // ── 9. SMS CTA STATE ──
@@ -721,14 +725,14 @@ export default function FuturesOptionsPage() {
               <span className="text-burgundy">F&amp;O Trading Experience</span>
             </h2>
             <p className="text-sm text-muted-foreground max-w-xl mx-auto">
-              Trade across indices, stocks, and commodities — all from a single account.
+              Trade indices and stocks as Futures or Options — all from a single account.
             </p>
           </div>
 
           {/* Tab Switcher */}
           <div className="flex justify-center mb-10">
-            <div className="inline-flex bg-background border border-border rounded-[8px] p-1 gap-1">
-              {(["Index F&O", "Stock F&O", "Commodity F&O"] as const).map((tab) => (
+            <div className="inline-flex bg-background border border-border rounded-[8px] p-1 gap-1 flex-wrap">
+              {(["Index Future", "Stocks Future", "Index Option", "Stock Option"] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setMarketsTab(tab)}
@@ -754,7 +758,7 @@ export default function FuturesOptionsPage() {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.04, duration: 0.3 }}
-                  className="bg-white border border-border/70 rounded-[12px] p-4 hover:border-gold/40 hover:shadow-[0_4px_20px_rgba(184,146,74,0.06)] transition-all duration-300 group cursor-pointer"
+                  className="bg-white border border-border/70 rounded-[12px] p-4 hover:border-gold/40 hover:shadow-[0_4px_20px_rgba(184,146,74,0.06)] transition-all duration-300"
                 >
                   {/* Icon */}
                   <div className="text-2xl mb-3">{item.icon}</div>
@@ -772,8 +776,6 @@ export default function FuturesOptionsPage() {
               )
             })}
           </div>
-
-
 
         </div>
       </section>
