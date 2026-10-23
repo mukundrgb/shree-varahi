@@ -150,28 +150,6 @@ const FLEX_CARDS = [
   },
 ]
 
-// ─── Explore Multiple Stock Opportunities ───────────────────────────────────
-
-type OppTab = "Bluechip" | "Dividend" | "HighEPS" | "Penny" | "Intraday"
-
-const OPP_TABS: { id: OppTab; label: string }[] = [
-  { id: "Bluechip", label: "Bluechip Stocks" },
-  { id: "Dividend", label: "Dividend Stocks" },
-  { id: "HighEPS",  label: "High EPS Low PE" },
-  { id: "Penny",    label: "Penny Stocks" },
-  { id: "Intraday", label: "Intraday Stocks" },
-]
-
-const OPP_SYMBOLS: Record<OppTab, string[]> = {
-  Bluechip: ["RELIANCE", "TCS", "HDFCBANK", "ICICIBANK", "INFY", "LT", "SBIN", "MARUTI"],
-  Dividend: ["ITC", "HINDUNILVR", "COALINDIA", "POWERGRID", "NTPC", "NESTLEIND", "BRITANNIA", "ASIANPAINT"],
-  HighEPS:  ["SBIN", "COALINDIA", "ADANIPORTS", "TATAPOWER", "NTPC", "POWERGRID", "ITC", "LT"],
-  Penny:    ["POWERGRID", "ZOMATO", "TATAPOWER", "COALINDIA", "NTPC", "WIPRO", "ITC", "SBIN"],
-  Intraday: ["ZOMATO", "TATAMOTORS", "ADANIENT", "BHARTIARTL", "MARUTI", "BAJFINANCE", "SUNPHARMA", "TITAN"],
-}
-
-const STOCK_BY_SYMBOL: Record<string, Stock> = Object.fromEntries(ALL_STOCKS.map((s) => [s.symbol, s]))
-
 // ─── FAQ ─────────────────────────────────────────────────────────────────────
 
 const FAQS = [
@@ -237,7 +215,6 @@ export default function StocksPage() {
   const [quickLink, setQuickLink] = useState<string | null>(null)
   const [page, setPage]           = useState(1)
   const [watchlist, setWatchlist] = useState<Set<string>>(new Set())
-  const [oppTab, setOppTab]       = useState<OppTab>("Bluechip")
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null)
   const [mobile, setMobile]       = useState("")
 
@@ -766,85 +743,6 @@ export default function StocksPage() {
           </div>
         </div>
       </section>
-
-      {/* ── EXPLORE MULTIPLE STOCK OPPORTUNITIES ── */}
-      <section className="py-12 lg:py-16 bg-background border-t border-border/40">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">Explore Multiple Stock Opportunities</p>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Discover Investment Opportunities Across Market Caps &amp; Strategies</h2>
-            <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
-              Discover investment opportunities across market caps, sectors, and strategies with Shree Varahi&apos;s comprehensive stock selection platform.
-            </p>
-          </div>
-
-          {/* Tabs */}
-          <div className="flex flex-wrap justify-center gap-2 mb-8">
-            {OPP_TABS.map((t) => {
-              const active = oppTab === t.id
-              return (
-                <button
-                  key={t.id}
-                  onClick={() => setOppTab(t.id)}
-                  className={`px-4 py-2.5 rounded-[6px] text-[12px] font-bold border transition-all duration-200 ${
-                    active
-                      ? "bg-burgundy text-white border-burgundy shadow-sm"
-                      : "bg-white text-muted-foreground border-border hover:border-burgundy/25 hover:text-foreground"
-                  }`}
-                >
-                  {t.label}
-                </button>
-              )
-            })}
-          </div>
-
-          {/* Stock grid */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={oppTab}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8"
-            >
-              {OPP_SYMBOLS[oppTab].map((sym) => {
-                const stock = STOCK_BY_SYMBOL[sym]
-                if (!stock) return null
-                const up = stock.change >= 0
-                return (
-                  <div
-                    key={sym}
-                    onClick={() => router.push(`/stocks/${toSlug(stock.symbol)}`)}
-                    className="bg-white border border-border rounded-[8px] p-4 hover:border-gold/40 hover:shadow-sm transition-all duration-200 cursor-pointer"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <StockAvatar symbol={stock.symbol} color={stock.color} />
-                    </div>
-                    <div className="font-extrabold text-[12px] text-foreground leading-tight mb-2 line-clamp-2 min-h-[28px]">
-                      {stock.name}
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-black text-foreground">₹{stock.price.toLocaleString("en-IN")}</span>
-                      <span className={`text-[11px] font-bold flex items-center gap-0.5 ${up ? "text-profit" : "text-loss"}`}>
-                        {up ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                        {up ? "+" : ""}{stock.change.toFixed(2)}%
-                      </span>
-                    </div>
-                  </div>
-                )
-              })}
-            </motion.div>
-          </AnimatePresence>
-
-          <div className="text-center">
-            <Button className="bg-burgundy hover:bg-burgundy-deep text-white px-8 h-11 font-bold rounded-[5px]">
-              Start Trading →
-            </Button>
-          </div>
-        </div>
-      </section>
-
 
 
       {/* ── PRICING ── */}

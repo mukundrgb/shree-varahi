@@ -6,9 +6,9 @@ import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import {
   Star, Bell, Share2, ChevronRight, TrendingUp, TrendingDown,
-  ArrowUpRight, ArrowDownRight, Info, ExternalLink, Building2,
-  Calendar, Zap, BarChart3, ShieldCheck, Newspaper, ChevronDown,
-  BookOpen, Award,
+  ArrowUpRight, ArrowDownRight, Info, Building2,
+  Calendar, Zap, BarChart3, Newspaper, ChevronDown,
+  Award, Users, MapPin, Phone, Mail, Globe,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -56,13 +56,19 @@ function toSlug(symbol: string) {
 
 // ─── Extended fundamentals per stock ────────────────────────────────────────
 
+interface CompanyInfo {
+  incorporated: string; lastName: string; marketLot: number
+  chairman: string; auditor: string; group: string
+  address: string; phone: string; email: string; website: string
+}
+
 const EXTRAS: Record<string, {
   pe: number; pb: number; eps: number; roce: number; roe: number
   debtEq: number; divYield: number; bookVal: number; faceVal: number
   wHigh52: number; wLow52: number; open: number; prevClose: number
   volume: string; avgVol: string
   promoters: number; fii: number; dii: number; retail: number
-  about: string
+  company: CompanyInfo
   industryPE: number
 }> = {
   RELIANCE: {
@@ -72,7 +78,12 @@ const EXTRAS: Record<string, {
     volume: "1.24 Cr", avgVol: "98.4 L",
     promoters: 50.30, fii: 21.45, dii: 15.82, retail: 12.43,
     industryPE: 18.40,
-    about: "Reliance Industries Limited is a Fortune 500 company and India's largest private sector corporation by market capitalization. Founded by Dhirubhai Ambani in 1966, it has diversified operations spanning energy, petrochemicals, retail (Reliance Retail), digital services (Jio Platforms), and media (Network18). Jio alone has over 440 million subscribers, making it the largest telecom operator in India. Reliance Retail is India's largest retailer. The company is managed by Mukesh D. Ambani, Chairman & Managing Director.",
+    company: {
+      incorporated: "1973", lastName: "Reliance Textile Industries Ltd.", marketLot: 1,
+      chairman: "Mukesh D. Ambani", auditor: "Deloitte Haskins & Sells LLP", group: "Reliance",
+      address: "3rd Floor, Maker Chambers IV, 222 Nariman Point, Mumbai, Maharashtra 400021",
+      phone: "91-022-35555000", email: "investor.relations@ril.com", website: "ril.com",
+    },
   },
   TCS: {
     pe: 28.4, pb: 13.2, eps: 137.05, roce: 51.20, roe: 48.70, debtEq: 0.03,
@@ -81,7 +92,12 @@ const EXTRAS: Record<string, {
     volume: "42.8 L", avgVol: "38.2 L",
     promoters: 72.19, fii: 12.44, dii: 8.25, retail: 7.12,
     industryPE: 27.80,
-    about: "Tata Consultancy Services (TCS) is a global IT services, consulting, and business solutions organization. It is the flagship company of the Tata Group and is listed on both the BSE and NSE. TCS serves clients in banking, financial services, insurance, retail, manufacturing, and telecom industries across 150+ countries. It is consistently ranked among the most valuable IT brands globally.",
+    company: {
+      incorporated: "1995", lastName: "Tata Consultancy Services Ltd.", marketLot: 1,
+      chairman: "N. Chandrasekaran", auditor: "B S R & Co. LLP", group: "Tata",
+      address: "9th Floor, Nirmal Building, Nariman Point, Mumbai, Maharashtra 400021",
+      phone: "91-022-67789595", email: "investor.relations@tcs.com", website: "tcs.com",
+    },
   },
   HDFCBANK: {
     pe: 18.2, pb: 2.45, eps: 97.95, roce: 8.20, roe: 14.60, debtEq: 7.80,
@@ -90,7 +106,12 @@ const EXTRAS: Record<string, {
     volume: "1.02 Cr", avgVol: "89.6 L",
     promoters: 0, fii: 47.22, dii: 22.15, retail: 30.63,
     industryPE: 14.20,
-    about: "HDFC Bank Limited is India's largest private sector bank by assets and market capitalisation. Formed in 1994, it offers a wide range of banking services including wholesale banking, retail banking, treasury, and credit cards. Following its merger with HDFC Ltd. in 2023, HDFC Bank became one of the top 10 largest banks globally by market cap.",
+    company: {
+      incorporated: "1994", lastName: "HDFC Bank Ltd.", marketLot: 1,
+      chairman: "Atanu Chakraborty", auditor: "Price Waterhouse LLP", group: "HDFC",
+      address: "HDFC Bank House, Senapati Bapat Marg, Lower Parel (West), Mumbai, Maharashtra 400013",
+      phone: "91-022-39760000", email: "shareholder.grievances@hdfcbank.com", website: "hdfcbank.com",
+    },
   },
 }
 
@@ -112,7 +133,12 @@ function deriveExtras(s: typeof ALL_STOCKS[0]) {
     promoters: 45 + (mc / 200000) % 25, fii: 15 + (mc / 400000) % 20,
     dii: 10 + (mc / 600000) % 18, retail: 8 + (mc / 800000) % 12,
     industryPE: pe * 0.85,
-    about: `${s.name} is one of India's leading companies in the ${s.sector} sector, listed on the ${s.exchange}. It is classified as a ${s.capCategory}-cap stock with a market capitalization of ${s.marketCapLabel}. The company has consistently delivered strong financial performance, maintaining a leadership position in its core business while expanding into adjacent opportunities to drive long-term shareholder value.`,
+    company: {
+      incorporated: String(1960 + (Math.floor(mc) % 50)), lastName: s.name, marketLot: 1,
+      chairman: "—", auditor: "—", group: s.name.split(" ")[0],
+      address: "—", phone: "—", email: "—",
+      website: `${s.symbol.toLowerCase()}.com`,
+    } as CompanyInfo,
   }
 }
 
@@ -160,13 +186,9 @@ function getStock(slug: string) {
 
 // ─── Chart data generator (deterministic) ───────────────────────────────────
 
-const TFS = ["1D","1W","1M","3M","1Y","5Y"] as const
-type TF = typeof TFS[number]
-
-function genChart(price: number, changeAmt: number, tf: TF): number[] {
-  const pts: Record<TF, number> = { "1D": 60, "1W": 35, "1M": 30, "3M": 60, "1Y": 60, "5Y": 60 }
-  const n = pts[tf]
-  const start = price - changeAmt * (tf === "1D" ? 1 : tf === "1W" ? 5 : tf === "1M" ? 10 : tf === "3M" ? 18 : tf === "1Y" ? 30 : 50)
+function genChart(price: number, changeAmt: number): number[] {
+  const n = 60
+  const start = price - changeAmt
   const seed = Math.floor(price * 100) % 997
   const result: number[] = []
   let cur = start
@@ -178,10 +200,6 @@ function genChart(price: number, changeAmt: number, tf: TF): number[] {
   }
   result.push(price)
   return result
-}
-
-const TF_RETURNS: Record<TF, number> = {
-  "1D": -0.42, "1W": 1.85, "1M": -3.20, "3M": 4.12, "1Y": 8.74, "5Y": 102.40,
 }
 
 // ─── SVG Chart ──────────────────────────────────────────────────────────────
@@ -288,7 +306,6 @@ export default function StockDetailPage() {
 
   const stock = useMemo(() => getStock(slug), [slug])
 
-  const [tf, setTf] = useState<TF>("1D")
   const [tab, setTab] = useState<Tab>("Fundamental")
   const [financialsPeriod, setFinancialsPeriod] = useState<"Quarterly" | "Yearly">("Quarterly")
   const [financialsType, setFinancialsType] = useState<"Standalone" | "Consolidated">("Standalone")
@@ -310,9 +327,7 @@ export default function StockDetailPage() {
   }
 
   const isUp = stock.change >= 0
-  const chartData = useMemo(() => genChart(stock.price, stock.changeAmt, tf), [stock.price, stock.changeAmt, tf])
-  const tfReturn = TF_RETURNS[tf]
-  const tfPos = tfReturn >= 0
+  const chartData = useMemo(() => genChart(stock.price, stock.changeAmt), [stock.price, stock.changeAmt])
 
   // Derived values
   const high = Math.max(...chartData)
@@ -394,14 +409,6 @@ export default function StockDetailPage() {
   const peers = ALL_STOCKS
     .filter(s => s.sector === stock.sector && s.symbol !== stock.symbol)
     .slice(0, 5)
-
-  const topMFs = [
-    { fund: "SBI Bluechip Fund",      holding: "4.32%", aum: "₹48,200 Cr" },
-    { fund: "HDFC Flexi Cap Fund",    holding: "3.87%", aum: "₹52,800 Cr" },
-    { fund: "Mirae Asset Large Cap",  holding: "3.45%", aum: "₹38,100 Cr" },
-    { fund: "Axis Bluechip Fund",     holding: "3.20%", aum: "₹31,400 Cr" },
-    { fund: "Nippon India Large Cap", holding: "2.94%", aum: "₹24,900 Cr" },
-  ]
 
   const news = [
     { tag: stock.sector, headline: `${stock.name.split(" ")[0]} posts record quarterly revenue on strong demand`, date: "Jun 21, 2026" },
@@ -530,33 +537,17 @@ export default function StockDetailPage() {
 
               {/* Chart card */}
               <div className="border border-border rounded-[10px] bg-white overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-                {/* Timeframe tabs */}
+                {/* Chart header */}
                 <div className="flex items-center justify-between px-4 pt-4 pb-0 gap-3">
-                  <div className="overflow-x-auto" style={{ scrollbarWidth: "none" }}>
-                    <div className="flex gap-0.5 w-fit">
-                      {TFS.map(t => (
-                        <button key={t} onClick={() => setTf(t)}
-                          className={`px-3 py-1.5 text-[11px] font-bold rounded-[5px] transition-all duration-150 whitespace-nowrap ${
-                            tf === t ? "bg-burgundy text-white shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
-                          }`}
-                        >{t}</button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className={`text-sm font-black tabular-nums shrink-0 ${tfPos ? "text-profit" : "text-loss"}`}>
-                    {tfPos ? "+" : ""}{tfReturn.toFixed(2)}%
+                  <span className="px-3 py-1.5 text-[11px] font-bold rounded-[5px] bg-burgundy text-white shadow-sm">1D</span>
+                  <div className={`text-sm font-black tabular-nums shrink-0 ${isUp ? "text-profit" : "text-loss"}`}>
+                    {isUp ? "+" : ""}{stock.change.toFixed(2)}%
                   </div>
                 </div>
 
                 {/* SVG area chart */}
                 <div className="px-2 py-2">
-                  <AnimatePresence mode="wait">
-                    <motion.div key={tf}
-                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      transition={{ duration: 0.2 }}>
-                      <StockChart data={chartData} positive={tfPos} />
-                    </motion.div>
-                  </AnimatePresence>
+                  <StockChart data={chartData} positive={isUp} />
                 </div>
 
                 {/* OHLC footer */}
@@ -900,13 +891,12 @@ export default function StockDetailPage() {
                     {tab === "About" && (
                       <div>
                         <p className="text-sm font-black text-foreground mb-3">About {stock.name}</p>
-                        <p className="text-sm text-muted-foreground leading-relaxed mb-5">{stock.about}</p>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                           {[
-                            { icon: Building2, label: "Founded",   val: "1966" },
-                            { icon: BarChart3, label: "Listed",    val: "1995"  },
-                            { icon: Award,     label: "Index",     val: "NIFTY 50" },
-                            { icon: ShieldCheck,label:"SEBI Cat.", val: "Large Cap" },
+                            { icon: Calendar,  label: "Incorporated",      val: stock.company.incorporated },
+                            { icon: Building2, label: "Company Last Name", val: stock.company.lastName },
+                            { icon: Award,     label: "Face Value",        val: `₹${stock.faceVal}` },
+                            { icon: BarChart3, label: "Market Lot",        val: String(stock.company.marketLot) },
                           ].map(f => (
                             <div key={f.label} className="bg-cream/60 border border-border/60 rounded-[8px] px-3 py-3 flex items-start gap-2">
                               <f.icon className="w-4 h-4 text-burgundy mt-0.5 shrink-0" />
@@ -918,14 +908,40 @@ export default function StockDetailPage() {
                           ))}
                         </div>
                         <div className="mt-5 pt-4 border-t border-border/60">
-                          <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-3">Management</p>
-                          {["Chairman & Managing Director", "Chief Financial Officer", "Company Secretary"].map((role, i) => (
-                            <div key={role} className="flex items-center justify-between py-2.5 border-b border-border/40 last:border-0">
-                              <div>
-                                <div className="text-xs font-bold text-foreground">{["Mukesh D. Ambani", "V. Srikanth", "Savithri Parekh"][i]}</div>
-                                <div className="text-[10px] text-muted-foreground">{role}</div>
+                          <p className="flex items-center gap-2 text-sm font-black text-foreground mb-2">
+                            <Users className="w-4 h-4 text-burgundy" /> Management &amp; Company Information
+                          </p>
+                          {[
+                            { label: "Chairman", val: stock.company.chairman },
+                            { label: "Auditor",  val: stock.company.auditor },
+                            { label: "Group",    val: stock.company.group },
+                          ].map(r => (
+                            <div key={r.label} className="grid grid-cols-[140px_1fr] sm:grid-cols-[200px_1fr] gap-3 py-2.5 border-b border-border/40 last:border-0">
+                              <div className="text-xs text-muted-foreground">{r.label}</div>
+                              <div className="text-xs font-bold text-foreground">{r.val}</div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="mt-5 pt-4 border-t border-border/60">
+                          <p className="flex items-center gap-2 text-sm font-black text-foreground mb-2">
+                            <MapPin className="w-4 h-4 text-burgundy" /> Registered Office
+                          </p>
+                          {[
+                            { icon: MapPin, label: "Address", val: stock.company.address },
+                            { icon: Phone,  label: "Phone",   val: stock.company.phone },
+                            { icon: Mail,   label: "Email",   val: stock.company.email },
+                            { icon: Globe,  label: "Website", val: stock.company.website },
+                          ].map(r => (
+                            <div key={r.label} className="grid grid-cols-[140px_1fr] sm:grid-cols-[200px_1fr] gap-3 py-2.5 border-b border-border/40 last:border-0">
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground self-start">
+                                <r.icon className="w-3.5 h-3.5 shrink-0" /> {r.label}
                               </div>
-                              <ExternalLink className="w-3.5 h-3.5 text-muted-foreground/40" />
+                              {r.label === "Website" && r.val !== "—" ? (
+                                <a href={`https://${r.val}`} target="_blank" rel="noopener noreferrer"
+                                  className="text-xs font-bold text-burgundy hover:underline break-all">{r.val}</a>
+                              ) : (
+                                <div className="text-xs font-bold text-foreground leading-relaxed break-words">{r.val}</div>
+                              )}
                             </div>
                           ))}
                         </div>
@@ -952,41 +968,6 @@ export default function StockDetailPage() {
                     <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-burgundy transition-colors shrink-0" />
                   </Link>
                 ))}
-              </div>
-
-              {/* ── TOP MF HOLDINGS ── */}
-              <div className="border border-border rounded-[10px] bg-white overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-                <div className="px-5 py-4 border-b border-border/60">
-                  <p className="text-sm font-black text-foreground">Top Mutual Funds Holding {stock.symbol}</p>
-                </div>
-                <div className="divide-y divide-border/40">
-                  {topMFs.map((f, i) => (
-                    <motion.div key={f.fund} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.05 }}
-                      className="flex items-center justify-between px-5 py-3 hover:bg-cream/40 transition-colors cursor-pointer">
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-7 h-7 rounded-[6px] bg-burgundy/8 flex items-center justify-center shrink-0">
-                          <BookOpen className="w-3.5 h-3.5 text-[#8B0D19]" />
-                        </div>
-                        <span className="text-xs font-semibold text-foreground truncate">{f.fund}</span>
-                      </div>
-                      <div className="flex items-center gap-4 shrink-0">
-                        <div className="text-right hidden sm:block">
-                          <div className="text-[10px] text-muted-foreground">AUM</div>
-                          <div className="text-xs font-bold text-foreground">{f.aum}</div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-[10px] text-muted-foreground">Holding</div>
-                          <div className="text-xs font-black text-burgundy tabular-nums">{f.holding}</div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-                <div className="px-5 py-3 border-t border-border/60">
-                  <button className="text-[11px] font-bold text-burgundy hover:underline flex items-center gap-1">
-                    View all mutual funds holding {stock.symbol} <ArrowUpRight className="w-3 h-3" />
-                  </button>
-                </div>
               </div>
 
               {/* ── LATEST NEWS ── */}
