@@ -13,6 +13,7 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { StockAvatar } from "@/components/stock-avatar"
+import { TradingViewCredit, TradingViewMiniChart } from "@/components/tradingview-chart"
 import { useStockList } from "@/hooks/stocks/use-stock-list"
 import { NO_VALUE, formatPercent, formatPrice } from "@/lib/stocks/format"
 import Link from "next/link"
@@ -537,10 +538,11 @@ export default function StocksPage() {
             {/* Header — desktop only */}
             <div
               className="hidden sm:grid px-4 py-2.5 border-b border-border bg-cream/70"
-              style={{ gridTemplateColumns: "36px 1fr 140px 110px 96px 32px" }}
+              style={{ gridTemplateColumns: "36px 1fr 120px 140px 110px 96px 32px" }}
             >
               <div />
               <div className="pl-3 text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">Company</div>
+              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-center">Chart (1M)</div>
               <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">LTP (₹)</div>
               <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right hidden lg:block">Market Cap</div>
               <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">Change</div>
@@ -609,7 +611,7 @@ export default function StocksPage() {
                       {/* Desktop layout */}
                       <div
                         className="hidden sm:grid px-4 py-3"
-                        style={{ gridTemplateColumns: "36px 1fr 140px 110px 96px 32px" }}
+                        style={{ gridTemplateColumns: "36px 1fr 120px 140px 110px 96px 32px" }}
                       >
                         <StockAvatar symbol={stock.symbol} name={stock.name} logoUrl={stock.logoUrl} className="w-9 h-9 text-[11px]" />
 
@@ -622,6 +624,14 @@ export default function StocksPage() {
                             </span>
                             <span className="text-[9px] text-muted-foreground/55">{stock.sector}</span>
                           </div>
+                        </div>
+
+                        <div className="flex items-center justify-center">
+                          {stock.tradingViewSymbol ? (
+                            <TradingViewMiniChart symbol={stock.tradingViewSymbol} className="h-12 w-[112px]" />
+                          ) : (
+                            <span className="text-[11px] text-muted-foreground">{NO_VALUE}</span>
+                          )}
                         </div>
 
                         <div className="flex items-center justify-end">
@@ -659,6 +669,8 @@ export default function StocksPage() {
               )}
             </AnimatePresence>
           </div>
+
+          <TradingViewCredit className="hidden sm:block mt-2 text-right" />
 
           {/* Pagination */}
           {totalPages > 1 && (

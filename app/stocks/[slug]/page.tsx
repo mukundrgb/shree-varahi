@@ -14,6 +14,7 @@ import {
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { StockAvatar } from "@/components/stock-avatar"
+import { TradingViewPriceChart } from "@/components/tradingview-chart"
 import { useCorporateActions } from "@/hooks/stocks/use-corporate-actions"
 import { useStockAbout } from "@/hooks/stocks/use-stock-about"
 import { useStockFinancials } from "@/hooks/stocks/use-stock-financials"
@@ -617,16 +618,11 @@ function StockDetail({ slug, stock }: { slug: string; stock: StockSummary }) {
 
               {/* Chart card */}
               <div className="border border-border rounded-[10px] bg-white overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-                {/* Chart header */}
-                <div className="flex items-center justify-between px-4 pt-4 pb-0 gap-3">
-                  <span className="px-3 py-1.5 text-[11px] font-bold rounded-[5px] bg-burgundy text-white shadow-sm">1D</span>
-                  <div className={`text-sm font-black tabular-nums shrink-0 ${isUp ? "text-profit" : "text-loss"}`}>
-                    {formatPercent(change)}
-                  </div>
-                </div>
-
-                {/* The chart returns here once the 1D chart API URL is available. */}
-                <Notice title="1D chart not available yet" />
+                {stock.tradingViewSymbol ? (
+                  <TradingViewPriceChart symbol={stock.tradingViewSymbol} name={stock.name} />
+                ) : (
+                  <Notice title="Chart not available for this stock" />
+                )}
 
                 {/* OHLC footer */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 border-t border-border/60 divide-x divide-border/60 [&>*:nth-child(n+3)]:border-t [&>*:nth-child(n+3)]:border-border/60 sm:[&>*:nth-child(n+3)]:border-t-0">

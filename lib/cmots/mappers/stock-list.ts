@@ -38,6 +38,7 @@ export function toStockSummary(
     capCategory: company.capCategory,
     capLabel: company.capLabel,
     logoUrl,
+    tradingViewSymbol: company.tradingViewSymbol,
     quote: quote ? toStockQuote(quote) : null,
   }
 }

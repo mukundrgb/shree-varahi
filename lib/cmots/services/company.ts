@@ -20,6 +20,7 @@ export interface CompanyRecord {
   exchange: string
   capCategory: CapCategory | null
   capLabel: string | null
+  tradingViewSymbol: string | null
 }
 
 function toSlug(value: string): string {
@@ -34,6 +35,16 @@ function toLookupKey(slug: string): string {
 function toCapCategory(capType: string | null): CapCategory | null {
   const match = /^(large|mid|small)/i.exec(capType?.trim() ?? "")
   return match ? (match[1].toLowerCase() as CapCategory) : null
+}
+
+/**
+ * TradingView's free widgets are reported to block NSE symbols, so stocks listed on
+ * both exchanges use BSE. TradingView writes & and - in tickers as an underscore.
+ */
+function toTradingViewSymbol(company: CmotsCompany): string | null {
+  const ticker = company.NSESymbol?.trim().replace(/[&-]/g, "_")
+  if (!ticker) return null
+  return `${company.BSEListed === "Yes" ? "BSE" : "NSE"}:${ticker}`
 }
 
 function toCompanyRecord(company: CmotsCompany): CompanyRecord {
@@ -55,6 +66,7 @@ function toCompanyRecord(company: CmotsCompany): CompanyRecord {
       .join(", "),
     capCategory: toCapCategory(company.mcaptype),
     capLabel: company.mcaptype?.trim() || null,
+    tradingViewSymbol: toTradingViewSymbol(company),
   }
 }
 

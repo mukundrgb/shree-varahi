@@ -27,6 +27,7 @@ export interface StockSummary {
   capCategory: CapCategory | null
   capLabel: string | null
   logoUrl: string | null
+  tradingViewSymbol: string | null
   quote: StockQuote | null
 }
 
