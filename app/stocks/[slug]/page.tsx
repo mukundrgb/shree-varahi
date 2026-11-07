@@ -1,17 +1,31 @@
 "use client"
 
-import { useState, useMemo } from "react"
-import { useParams, notFound } from "next/navigation"
+import { useState } from "react"
+import type { ReactNode } from "react"
+import { useParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import {
-  Star, Bell, Share2, ChevronRight, TrendingUp, TrendingDown,
-  ArrowUpRight, ArrowDownRight, Info, Building2,
-  Calendar, Zap, BarChart3, Newspaper, ChevronDown,
+  Star, Bell, Share2, ChevronRight,
+  ArrowUpRight, ArrowDownRight, Building2,
+  Calendar, Zap, BarChart3, Newspaper,
   Award, Users, MapPin, Phone, Mail, Globe,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { StockAvatar } from "@/components/stock-avatar"
+import { useCorporateActions } from "@/hooks/stocks/use-corporate-actions"
+import { useStockAbout } from "@/hooks/stocks/use-stock-about"
+import { useStockFinancials } from "@/hooks/stocks/use-stock-financials"
+import { useStockNews } from "@/hooks/stocks/use-stock-news"
+import { useStockOverview } from "@/hooks/stocks/use-stock-overview"
+import { useStockPeers } from "@/hooks/stocks/use-stock-peers"
+import {
+  NO_VALUE, formatDate, formatPercent, formatPrice, formatQuoteTime, formatRupees, formatVolume,
+} from "@/lib/stocks/format"
+import type { CorporateAction, FinancialsRowFormat, StockSummary } from "@/lib/stocks/types"
+
+/* ─── Dummy data (replaced by the CMOTS API; kept for reference) ──────────────
 
 // ─── All stocks data ────────────────────────────────────────────────────────
 
@@ -293,59 +307,6 @@ function Ava({ symbol, color }: { symbol: string; color: string }) {
   )
 }
 
-// ─── Tab definitions ─────────────────────────────────────────────────────────
-
-const TABS = ["Fundamental", "Financials", "Shareholding", "Corp. Actions", "Peers", "About"] as const
-type Tab = typeof TABS[number]
-
-// ─── Page ────────────────────────────────────────────────────────────────────
-
-export default function StockDetailPage() {
-  const params = useParams()
-  const slug = typeof params.slug === "string" ? params.slug : params.slug?.[0] ?? ""
-
-  const stock = useMemo(() => getStock(slug), [slug])
-
-  const [tab, setTab] = useState<Tab>("Fundamental")
-  const [financialsPeriod, setFinancialsPeriod] = useState<"Quarterly" | "Yearly">("Quarterly")
-  const [financialsType, setFinancialsType] = useState<"Standalone" | "Consolidated">("Standalone")
-  const [starred, setStarred] = useState(false)
-  const [tradeMode, setTradeMode] = useState<"buy" | "sell">("buy")
-  const [qty, setQty] = useState("1")
-
-  if (!stock) {
-    return (
-      <main className="min-h-screen bg-background">
-        <Navbar />
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-          <p className="text-2xl font-black text-foreground">Stock not found</p>
-          <Link href="/stocks" className="text-burgundy font-semibold hover:underline">← Back to all stocks</Link>
-        </div>
-        <Footer />
-      </main>
-    )
-  }
-
-  const isUp = stock.change >= 0
-  const chartData = useMemo(() => genChart(stock.price, stock.changeAmt), [stock.price, stock.changeAmt])
-
-  // Derived values
-  const high = Math.max(...chartData)
-  const low  = Math.min(...chartData)
-
-  const fundMetrics = [
-    { label: "P/E Ratio",      value: stock.pe.toFixed(1),         sub: `Industry: ${stock.industryPE.toFixed(1)}` },
-    { label: "P/B Ratio",      value: stock.pb.toFixed(2),         sub: "Price to Book" },
-    { label: "EPS (TTM)",      value: `₹${stock.eps.toFixed(1)}`,  sub: "Earnings/Share" },
-    { label: "ROCE (TTM)",     value: `${stock.roce.toFixed(1)}%`, sub: "Return on Cap. Emp." },
-    { label: "ROE",            value: `${stock.roe.toFixed(1)}%`,  sub: "Return on Equity" },
-    { label: "Debt to Equity", value: stock.debtEq.toFixed(2),     sub: stock.debtEq < 1 ? "Low leverage" : "High leverage" },
-    { label: "Div. Yield",     value: `${stock.divYield.toFixed(2)}%`, sub: "Annual dividend" },
-    { label: "Book Value",     value: `₹${stock.bookVal.toFixed(0)}`, sub: "Per share" },
-    { label: "Market Cap",     value: stock.marketCapLabel,        sub: stock.capCategory + " cap" },
-    { label: "Face Value",     value: `₹${stock.faceVal}`,         sub: "Per share" },
-  ]
-
   // Quarterly & yearly financials (derived from market cap)
   const qtrs = ["Mar 2025", "Jun 2025", "Sep 2025", "Dec 2025"]
   const years = ["FY2022", "FY2023", "FY2024", "FY2025"]
@@ -416,16 +377,133 @@ export default function StockDetailPage() {
     { tag: "Analysis",  headline: `Analysts raise target price for ${stock.symbol}; 3 brokerages upgrade to Buy`, date: "Jun 18, 2026" },
   ]
 
-  const relatedStocks = ALL_STOCKS
-    .filter(s => s.symbol !== stock.symbol)
-    .filter(s => s.sector === stock.sector || s.capCategory === stock.capCategory)
-    .slice(0, 5)
+─────────────────────────────────────────────────────────────────────────────── */
 
-  const fmtPrice = (p: number) => p.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-  const fmtCr   = (v: number) => v >= 10000 ? `₹${(v / 100).toFixed(0)} Cr` : `₹${v.toFixed(0)} Cr`
+// ─── Tab definitions ─────────────────────────────────────────────────────────
+
+const TABS = ["Fundamental", "Financials", "Shareholding", "Corp. Actions", "Peers", "About"] as const
+type Tab = typeof TABS[number]
+
+const ACTION_ICONS: Record<CorporateAction["type"], string> = { Dividend: "💰", Bonus: "🎁", Split: "✂️" }
+
+function formatFinancial(value: number | null, format: FinancialsRowFormat) {
+  if (value === null) return NO_VALUE
+  if (format === "percent") return `${value.toFixed(1)}%`
+  if (format === "rupees") return formatRupees(value)
+  return `₹${value.toLocaleString("en-IN", { maximumFractionDigits: 0 })} Cr`
+}
+
+// ─── Shared states ───────────────────────────────────────────────────────────
+
+function Notice({ title, children }: { title: string; children?: ReactNode }) {
+  return (
+    <div className="py-10 px-4 text-center">
+      <p className="text-sm font-black text-foreground">{title}</p>
+      {children && <div className="text-xs text-muted-foreground mt-1.5">{children}</div>}
+    </div>
+  )
+}
+
+function ErrorNotice({ message, onRetry }: { message: string; onRetry: () => void }) {
+  return (
+    <Notice title="Unable to load this data">
+      <p>{message}</p>
+      <button onClick={onRetry} className="mt-3 text-xs font-bold text-burgundy hover:underline">Try again</button>
+    </Notice>
+  )
+}
+
+function LoadingRows({ rows = 4 }: { rows?: number }) {
+  return (
+    <div className="space-y-3 animate-pulse" aria-label="Loading">
+      {Array.from({ length: rows }, (_, i) => (
+        <div key={i} className="h-10 rounded-[6px] bg-secondary/60" />
+      ))}
+    </div>
+  )
+}
+
+function StockPageShell({ children }: { children: ReactNode }) {
+  return (
+    <main className="min-h-screen bg-background">
+      <Navbar />
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4 pt-24">{children}</div>
+      <Footer />
+    </main>
+  )
+}
+
+// ─── Page ────────────────────────────────────────────────────────────────────
+
+export default function StockDetailPage() {
+  const params = useParams()
+  const slug = typeof params.slug === "string" ? params.slug : params.slug?.[0] ?? ""
+
+  // Remounts on navigation between stocks so nothing from the last stock is shown.
+  return <StockLoader key={slug} slug={slug} />
+}
+
+function StockLoader({ slug }: { slug: string }) {
+  const { data: stock, error, retry } = useStockOverview(slug)
+
+  if (stock) return <StockDetail slug={slug} stock={stock} />
+
+  if (error?.status === 404) {
+    return (
+      <StockPageShell>
+        <p className="text-2xl font-black text-foreground">Stock not found</p>
+        <Link href="/stocks" className="text-burgundy font-semibold hover:underline">← Back to all stocks</Link>
+      </StockPageShell>
+    )
+  }
+
+  if (error) {
+    return (
+      <StockPageShell>
+        <ErrorNotice message={error.message} onRetry={retry} />
+      </StockPageShell>
+    )
+  }
+
+  return (
+    <StockPageShell>
+      <div className="w-full max-w-3xl"><LoadingRows rows={6} /></div>
+    </StockPageShell>
+  )
+}
+
+function StockDetail({ slug, stock }: { slug: string; stock: StockSummary }) {
+  const [tab, setTab] = useState<Tab>("Financials")
+  const [financialsPeriod, setFinancialsPeriod] = useState<"Quarterly" | "Yearly">("Quarterly")
+  const [financialsType, setFinancialsType] = useState<"Standalone" | "Consolidated">("Standalone")
+  const [starred, setStarred] = useState(false)
+  const [tradeMode, setTradeMode] = useState<"buy" | "sell">("buy")
+  const [qty, setQty] = useState("1")
+
+  const financials = useStockFinancials(
+    slug,
+    financialsPeriod === "Quarterly" ? "quarterly" : "yearly",
+    financialsType === "Standalone" ? "standalone" : "consolidated",
+    tab === "Financials",
+  )
+  const corporateActions = useCorporateActions(slug, tab === "Corp. Actions")
+  const about = useStockAbout(slug, tab === "About")
+  const peers = useStockPeers(slug)
+  const news = useStockNews(slug)
+
+  const quote = stock.quote
+  const change = quote?.changePct ?? null
+  const isUp = (change ?? 0) >= 0
+  const peerList = peers.data ?? []
 
   // 52W range position
-  const weekRange52Pct = ((stock.price - stock.wLow52) / (stock.wHigh52 - stock.wLow52)) * 100
+  const hasRange = quote?.price != null && quote.high52 != null && quote.low52 != null && quote.high52 > quote.low52
+  const weekRange52Pct = hasRange
+    ? Math.min(100, Math.max(0, ((quote.price! - quote.low52!) / (quote.high52! - quote.low52!)) * 100))
+    : null
+
+  const estTotal = quote?.price != null ? quote.price * +qty : null
+  const maxRevenue = Math.max(0, ...(financials.data?.revenue ?? []).map(v => v ?? 0))
 
   return (
     <main className="min-h-screen bg-background">
@@ -449,20 +527,18 @@ export default function StockDetailPage() {
             <div className="flex-1 min-w-0">
               <div className="flex items-start gap-3 mb-3">
                 {/* Avatar */}
-                <div className="w-11 h-11 rounded-[10px] flex items-center justify-center shrink-0 font-extrabold text-sm text-white"
-                  style={{ backgroundColor: stock.color }}>
-                  {stock.symbol.slice(0, 2)}
-                </div>
+                <StockAvatar symbol={stock.symbol} name={stock.name} logoUrl={stock.logoUrl} className="w-11 h-11 rounded-[10px] text-sm" />
                 <div className="min-w-0">
                   <h1 className="text-xl sm:text-2xl font-black text-foreground leading-tight truncate">{stock.name}</h1>
                   <div className="flex flex-wrap items-center gap-2 mt-1">
                     <span className="text-[10px] font-black px-2 py-0.5 bg-burgundy/10 text-burgundy rounded-[4px]">{stock.exchange}</span>
                     <span className="text-[10px] font-black px-2 py-0.5 bg-secondary text-muted-foreground rounded-[4px]">{stock.sector}</span>
-                    <span className="text-[10px] font-black px-2 py-0.5 bg-gold/15 text-gold-deep rounded-[4px] capitalize">{stock.capCategory} Cap</span>
-                    <span className="flex items-center gap-1 text-[10px] text-profit font-bold">
-                      <span className="w-1.5 h-1.5 rounded-full bg-profit animate-pulse inline-block" />
-                      Live
-                    </span>
+                    {stock.capLabel && (
+                      <span className="text-[10px] font-black px-2 py-0.5 bg-gold/15 text-gold-deep rounded-[4px]">{stock.capLabel}</span>
+                    )}
+                    {quote?.updatedAt && (
+                      <span className="text-[10px] text-muted-foreground font-bold">As of {formatQuoteTime(quote.updatedAt)}</span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -470,32 +546,36 @@ export default function StockDetailPage() {
               {/* Price */}
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-3">
                 <span className="text-2xl sm:text-4xl lg:text-5xl font-black text-foreground tabular-nums tracking-tight">
-                  ₹{fmtPrice(stock.price)}
+                  {formatRupees(quote?.price)}
                 </span>
-                <div className={`flex items-center gap-1 px-2.5 py-1 rounded-[5px] font-black text-sm ${isUp ? "bg-profit/10 text-profit" : "bg-loss/10 text-loss"}`}>
-                  {isUp ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
-                  <span>{isUp ? "+" : ""}{fmtPrice(Math.abs(stock.changeAmt))}</span>
-                  <span>({isUp ? "+" : ""}{stock.change.toFixed(2)}%)</span>
-                </div>
+                {change !== null && (
+                  <div className={`flex items-center gap-1 px-2.5 py-1 rounded-[5px] font-black text-sm ${isUp ? "bg-profit/10 text-profit" : "bg-loss/10 text-loss"}`}>
+                    {isUp ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
+                    <span>{isUp ? "+" : "-"}{formatPrice(Math.abs(quote?.changeAmt ?? 0))}</span>
+                    <span>({formatPercent(change)})</span>
+                  </div>
+                )}
               </div>
 
               {/* Day stats row */}
               <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-[11px] text-muted-foreground mb-4">
-                <span>Open: <span className="font-bold text-foreground tabular-nums">₹{fmtPrice(stock.open)}</span></span>
-                <span>Prev Close: <span className="font-bold text-foreground tabular-nums">₹{fmtPrice(stock.prevClose)}</span></span>
-                <span>Volume: <span className="font-bold text-foreground">{stock.volume}</span></span>
+                <span>Open: <span className="font-bold text-foreground tabular-nums">{formatRupees(quote?.open)}</span></span>
+                <span>Prev Close: <span className="font-bold text-foreground tabular-nums">{formatRupees(quote?.prevClose)}</span></span>
+                <span>Volume: <span className="font-bold text-foreground">{formatVolume(quote?.volume)}</span></span>
               </div>
 
               {/* 52W range bar */}
               <div className="max-w-xs">
                 <div className="flex justify-between text-[10px] font-semibold text-muted-foreground mb-1">
-                  <span>52W Low: ₹{fmtPrice(stock.wLow52)}</span>
-                  <span>52W High: ₹{fmtPrice(stock.wHigh52)}</span>
+                  <span>52W Low: {formatRupees(quote?.low52)}</span>
+                  <span>52W High: {formatRupees(quote?.high52)}</span>
                 </div>
                 <div className="h-1.5 bg-secondary rounded-full overflow-hidden relative">
                   <div className="h-full bg-gradient-to-r from-loss via-gold to-profit rounded-full" style={{ width: "100%" }} />
-                  <div className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-burgundy border-2 border-white shadow-sm"
-                    style={{ left: `calc(${weekRange52Pct}% - 6px)` }} />
+                  {weekRange52Pct !== null && (
+                    <div className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-burgundy border-2 border-white shadow-sm"
+                      style={{ left: `calc(${weekRange52Pct}% - 6px)` }} />
+                  )}
                 </div>
               </div>
             </div>
@@ -541,22 +621,20 @@ export default function StockDetailPage() {
                 <div className="flex items-center justify-between px-4 pt-4 pb-0 gap-3">
                   <span className="px-3 py-1.5 text-[11px] font-bold rounded-[5px] bg-burgundy text-white shadow-sm">1D</span>
                   <div className={`text-sm font-black tabular-nums shrink-0 ${isUp ? "text-profit" : "text-loss"}`}>
-                    {isUp ? "+" : ""}{stock.change.toFixed(2)}%
+                    {formatPercent(change)}
                   </div>
                 </div>
 
-                {/* SVG area chart */}
-                <div className="px-2 py-2">
-                  <StockChart data={chartData} positive={isUp} />
-                </div>
+                {/* The chart returns here once the 1D chart API URL is available. */}
+                <Notice title="1D chart not available yet" />
 
                 {/* OHLC footer */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 border-t border-border/60 divide-x divide-border/60 [&>*:nth-child(n+3)]:border-t [&>*:nth-child(n+3)]:border-border/60 sm:[&>*:nth-child(n+3)]:border-t-0">
                   {[
-                    { label: "Open",  value: `₹${fmtPrice(stock.open)}` },
-                    { label: "High",  value: `₹${fmtPrice(high)}` },
-                    { label: "Low",   value: `₹${fmtPrice(low)}` },
-                    { label: "Close", value: `₹${fmtPrice(stock.prevClose)}` },
+                    { label: "Open",       value: formatRupees(quote?.open) },
+                    { label: "High",       value: formatRupees(quote?.high) },
+                    { label: "Low",        value: formatRupees(quote?.low) },
+                    { label: "Prev Close", value: formatRupees(quote?.prevClose) },
                   ].map(s => (
                     <div key={s.label} className="px-3 py-2.5 text-center">
                       <div className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider mb-0.5">{s.label}</div>
@@ -597,41 +675,7 @@ export default function StockDetailPage() {
                   >
 
                     {/* ── FUNDAMENTAL ── */}
-                    {tab === "Fundamental" && (
-                      <div>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                          {fundMetrics.map(m => (
-                            <div key={m.label} className="bg-cream/60 border border-border/60 rounded-[8px] px-3 py-3">
-                              <div className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-wider mb-1">{m.label}</div>
-                              <div className="text-base font-black text-foreground tabular-nums leading-tight">{m.value}</div>
-                              <div className="text-[9px] text-muted-foreground/70 mt-0.5">{m.sub}</div>
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* Performance bar */}
-                        <div className="mt-5">
-                          <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-3">Performance vs Index</p>
-                          <div className="space-y-2.5">
-                            {[
-                              { label: stock.symbol, pct: Math.abs(stock.change) * 8 + 40 },
-                              { label: "NIFTY 50",   pct: 38 },
-                              { label: "Sector Avg", pct: 44 },
-                            ].map(row => (
-                              <div key={row.label} className="flex items-center gap-3">
-                                <span className="text-[11px] font-semibold text-muted-foreground w-24 shrink-0">{row.label}</span>
-                                <div className="flex-1 h-1.5 bg-secondary rounded-full overflow-hidden">
-                                  <motion.div className="h-full bg-burgundy rounded-full"
-                                    initial={{ width: 0 }} animate={{ width: `${row.pct}%` }}
-                                    transition={{ duration: 0.6, ease: "easeOut" }} />
-                                </div>
-                                <span className="text-[11px] font-bold text-foreground tabular-nums w-8 text-right">{row.pct.toFixed(0)}%</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                    {tab === "Fundamental" && <Notice title="Fundamental data is not available yet" />}
 
                     {/* ── FINANCIALS ── */}
                     {tab === "Financials" && (
@@ -667,153 +711,100 @@ export default function StockDetailPage() {
                             <span className="text-[10px] font-semibold text-muted-foreground">₹ Crore</span>
                           </div>
                         </div>
-                        <div className="overflow-x-auto -mx-5" style={{ scrollbarWidth: "none" }}>
-                          <table className="w-full min-w-[520px] text-sm">
-                            <thead>
-                              <tr className="border-b border-border/60">
-                                <th className="pl-5 pr-3 py-2.5 text-left text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">Metric</th>
-                                {activeFinancials.map(f => (
-                                  <th key={f.quarter} className="px-3 py-2.5 text-right text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">{f.quarter}</th>
-                                ))}
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-border/40">
-                              {[
-                                { label: "Net Revenue",   key: "revenue"   as const, fmt: (v: number | string) => fmtCr(+v) },
-                                { label: "Expenses",      key: "expenses"  as const, fmt: (v: number | string) => fmtCr(+v) },
-                                { label: "Op. Profit",    key: "opProfit"  as const, fmt: (v: number | string) => fmtCr(+v) },
-                                { label: "OPM %",         key: "opm"       as const, fmt: (v: number | string) => `${v}%` },
-                                { label: "Net Profit",    key: "netProfit" as const, fmt: (v: number | string) => fmtCr(+v) },
-                                { label: "EPS (₹)",       key: "eps"       as const, fmt: (v: number | string) => `₹${v}` },
-                              ].map(row => (
-                                <tr key={row.label} className="hover:bg-cream/40 transition-colors">
-                                  <td className="pl-5 pr-3 py-2.5 text-[11px] font-semibold text-muted-foreground">{row.label}</td>
-                                  {activeFinancials.map(f => (
-                                    <td key={f.quarter} className="px-3 py-2.5 text-right text-[11px] font-bold text-foreground tabular-nums">
-                                      {row.fmt(f[row.key])}
-                                    </td>
-                                  ))}
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
 
-                        {/* Revenue trend bars */}
-                        <div className="mt-5 pt-4 border-t border-border/60">
-                          <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-3">Revenue Trend</p>
-                          <div className="flex items-end gap-2 h-16">
-                            {activeFinancials.map((f, i) => {
-                              const maxRev = Math.max(...activeFinancials.map(x => x.revenue))
-                              const h = (f.revenue / maxRev) * 100
-                              return (
-                                <div key={f.quarter} className="flex-1 flex flex-col items-center gap-1">
-                                  <motion.div className="w-full rounded-t-[3px] bg-burgundy/80"
-                                    initial={{ height: 0 }} animate={{ height: `${h}%` }}
-                                    transition={{ duration: 0.5, delay: i * 0.08 }}
-                                    style={{ minHeight: "4px" }} />
-                                  <span className="text-[8px] text-muted-foreground font-semibold">{f.quarter.slice(0, 6)}</span>
+                        {financials.error ? (
+                          <ErrorNotice message={financials.error.message} onRetry={financials.retry} />
+                        ) : financials.loading || !financials.data ? (
+                          <LoadingRows rows={6} />
+                        ) : financials.data.periods.length === 0 ? (
+                          <Notice title="No financial results available" />
+                        ) : (
+                          <>
+                            <div className="overflow-x-auto -mx-5" style={{ scrollbarWidth: "none" }}>
+                              <table className="w-full min-w-[520px] text-sm">
+                                <thead>
+                                  <tr className="border-b border-border/60">
+                                    <th className="pl-5 pr-3 py-2.5 text-left text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">Metric</th>
+                                    {financials.data.periods.map(period => (
+                                      <th key={period} className="px-3 py-2.5 text-right text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">{period}</th>
+                                    ))}
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-border/40">
+                                  {financials.data.rows.map(row => (
+                                    <tr key={row.label} className="hover:bg-cream/40 transition-colors">
+                                      <td className="pl-5 pr-3 py-2.5 text-[11px] font-semibold text-muted-foreground">{row.label}</td>
+                                      {row.values.map((value, i) => (
+                                        <td key={i} className="px-3 py-2.5 text-right text-[11px] font-bold text-foreground tabular-nums">
+                                          {formatFinancial(value, row.format)}
+                                        </td>
+                                      ))}
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+
+                            {/* Revenue trend bars */}
+                            {maxRevenue > 0 && (
+                              <div className="mt-5 pt-4 border-t border-border/60">
+                                <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-3">Revenue Trend</p>
+                                <div className="flex items-end gap-2 h-16">
+                                  {financials.data.periods.map((period, i) => {
+                                    const h = (Math.max(0, financials.data?.revenue[i] ?? 0) / maxRevenue) * 100
+                                    return (
+                                      <div key={period} className="flex-1 h-full flex flex-col justify-end items-center gap-1">
+                                        <motion.div className="w-full rounded-t-[3px] bg-burgundy/80"
+                                          initial={{ height: 0 }} animate={{ height: `${h}%` }}
+                                          transition={{ duration: 0.5, delay: i * 0.08 }}
+                                          style={{ minHeight: "4px" }} />
+                                        <span className="text-[8px] text-muted-foreground font-semibold whitespace-nowrap">{period}</span>
+                                      </div>
+                                    )
+                                  })}
                                 </div>
-                              )
-                            })}
-                          </div>
-                        </div>
+                              </div>
+                            )}
+                          </>
+                        )}
                       </div>
                     )}
 
                     {/* ── SHAREHOLDING ── */}
-                    {tab === "Shareholding" && (
-                      <div>
-                        <div className="flex items-center justify-between mb-4">
-                          <p className="text-sm font-black text-foreground">Shareholding Pattern</p>
-                          <span className="text-[10px] font-semibold text-muted-foreground bg-secondary px-2 py-0.5 rounded-full">As of Dec 2025</span>
-                        </div>
-                        <div className="flex flex-col sm:flex-row items-center gap-8">
-                          <DonutChart segments={shareholding} />
-                          <div className="flex-1 space-y-3 w-full">
-                            {shareholding.map(s => (
-                              <div key={s.label}>
-                                <div className="flex items-center justify-between mb-1">
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
-                                    <span className="text-[12px] font-semibold text-foreground">{s.label}</span>
-                                  </div>
-                                  <span className="text-[12px] font-black text-foreground tabular-nums">{+s.pct > 0 ? (+s.pct).toFixed(1) : "0.0"}%</span>
-                                </div>
-                                <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
-                                  <motion.div className="h-full rounded-full"
-                                    style={{ backgroundColor: s.color }}
-                                    initial={{ width: 0 }} animate={{ width: `${s.pct}%` }}
-                                    transition={{ duration: 0.6 }} />
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* QoQ change */}
-                        <div className="mt-5 pt-4 border-t border-border/60">
-                          <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-3">Quarter-on-Quarter Change</p>
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                            {shareholding.slice(0, 4).map(s => (
-                              <div key={s.label} className="bg-cream/60 rounded-[7px] px-3 py-2.5 border border-border/60">
-                                <div className="flex items-center gap-1.5 mb-1">
-                                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: s.color }} />
-                                  <span className="text-[10px] font-semibold text-muted-foreground">{s.label}</span>
-                                </div>
-                                <div className="text-sm font-black text-foreground">{+s.pct > 0 ? (+s.pct).toFixed(1) : "0.0"}%</div>
-                                <div className={`text-[10px] font-bold ${Math.random() > 0.5 ? "text-profit" : "text-loss"}`}>
-                                  {Math.random() > 0.5 ? "▲" : "▼"} {(Math.random() * 1.5).toFixed(2)}%
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                    {tab === "Shareholding" && <Notice title="Shareholding data is not available yet" />}
 
                     {/* ── CORPORATE ACTIONS ── */}
                     {tab === "Corp. Actions" && (
                       <div>
                         <p className="text-sm font-black text-foreground mb-4">Corporate Actions History</p>
-                        <div className="space-y-3">
-                          {corpActions.map((a, i) => (
-                            <motion.div key={i}
-                              initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: i * 0.06 }}
-                              className="flex items-start gap-3 p-3.5 bg-cream/50 border border-border/60 rounded-[8px]"
-                            >
-                              <span className="text-xl shrink-0">{a.icon}</span>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between gap-2">
-                                  <span className="text-xs font-black text-foreground">{a.type}</span>
-                                  <span className="text-[10px] text-muted-foreground font-semibold shrink-0 flex items-center gap-1">
-                                    <Calendar className="w-3 h-3" /> {a.date}
-                                  </span>
-                                </div>
-                                <p className="text-[11px] text-muted-foreground mt-0.5">{a.detail}</p>
-                              </div>
-                            </motion.div>
-                          ))}
-                        </div>
-
-                        {/* Historical Returns table */}
-                        <div className="mt-5 pt-4 border-t border-border/60">
-                          <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-3">Historical Returns</p>
-                          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                            {(["1W","1M","3M","6M","1Y","3Y"] as const).map((p, i) => {
-                              const ret = [-1.23, -3.17, 4.31, 6.80, 8.70, 45.20][i]
-                              return (
-                                <div key={p} className={`rounded-[7px] px-3 py-2.5 text-center border ${ret >= 0 ? "bg-profit/8 border-profit/20" : "bg-loss/8 border-loss/20"}`}>
-                                  <div className="text-[10px] font-extrabold text-muted-foreground mb-0.5">{p}</div>
-                                  <div className={`text-sm font-black tabular-nums ${ret >= 0 ? "text-profit" : "text-loss"}`}>
-                                    {ret >= 0 ? "+" : ""}{ret.toFixed(1)}%
+                        {corporateActions.error ? (
+                          <ErrorNotice message={corporateActions.error.message} onRetry={corporateActions.retry} />
+                        ) : corporateActions.loading || !corporateActions.data ? (
+                          <LoadingRows />
+                        ) : corporateActions.data.length === 0 ? (
+                          <Notice title="No corporate actions found" />
+                        ) : (
+                          <div className="space-y-3">
+                            {corporateActions.data.map((a, i) => (
+                              <motion.div key={i}
+                                initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: i * 0.06 }}
+                                className="flex items-start gap-3 p-3.5 bg-cream/50 border border-border/60 rounded-[8px]"
+                              >
+                                <span className="text-xl shrink-0">{ACTION_ICONS[a.type]}</span>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center justify-between gap-2">
+                                    <span className="text-xs font-black text-foreground">{a.type}</span>
+                                    <span className="text-[10px] text-muted-foreground font-semibold shrink-0 flex items-center gap-1">
+                                      <Calendar className="w-3 h-3" /> {formatDate(a.date)}
+                                    </span>
                                   </div>
+                                  <p className="text-[11px] text-muted-foreground mt-0.5">{a.detail}</p>
                                 </div>
-                              )
-                            })}
+                              </motion.div>
+                            ))}
                           </div>
-                        </div>
+                        )}
                       </div>
                     )}
 
@@ -824,128 +815,121 @@ export default function StockDetailPage() {
                           <p className="text-sm font-black text-foreground">Peer Comparison · {stock.sector}</p>
                           <span className="text-[10px] text-muted-foreground font-semibold">vs {stock.symbol}</span>
                         </div>
-                        <div className="overflow-x-auto -mx-5" style={{ scrollbarWidth: "none" }}>
-                          <table className="w-full min-w-[580px]">
-                            <thead>
-                              <tr className="border-b border-border/60">
-                                {["Company","LTP","Chg %","Mkt Cap","P/E","52W Hi/Lo"].map(h => (
-                                  <th key={h} className={`px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground ${h === "Company" ? "text-left pl-5" : "text-right"}`}>{h}</th>
-                                ))}
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-border/40">
-                              {/* Current stock highlighted */}
-                              <tr className="bg-burgundy/4 border-l-2 border-l-burgundy">
-                                <td className="pl-5 pr-4 py-3">
-                                  <div className="flex items-center gap-2">
-                                    <Ava symbol={stock.symbol} color={stock.color} />
-                                    <div>
-                                      <div className="text-xs font-extrabold text-foreground">{stock.symbol}</div>
-                                      <div className="text-[10px] text-muted-foreground truncate max-w-[120px]">{stock.name}</div>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td className="px-4 py-3 text-right text-xs font-extrabold text-foreground tabular-nums">₹{fmtPrice(stock.price)}</td>
-                                <td className={`px-4 py-3 text-right text-xs font-black tabular-nums ${isUp ? "text-profit" : "text-loss"}`}>{isUp ? "+" : ""}{stock.change.toFixed(2)}%</td>
-                                <td className="px-4 py-3 text-right text-[11px] text-muted-foreground">{stock.marketCapLabel}</td>
-                                <td className="px-4 py-3 text-right text-xs font-bold text-foreground tabular-nums">{stock.pe.toFixed(1)}</td>
-                                <td className="px-4 py-3 text-right text-[10px] text-muted-foreground tabular-nums">
-                                  ₹{fmtPrice(stock.wLow52)} / ₹{fmtPrice(stock.wHigh52)}
-                                </td>
-                              </tr>
-                              {peers.map(p => {
-                                const pUp = p.change >= 0
-                                const pPE = (15 + (p.marketCapCr / 100000) % 22).toFixed(1)
-                                return (
-                                  <tr key={p.symbol} className="hover:bg-cream/40 transition-colors cursor-pointer"
-                                    onClick={() => window.location.href = `/stocks/${toSlug(p.symbol)}`}>
-                                    <td className="pl-5 pr-4 py-3">
-                                      <div className="flex items-center gap-2">
-                                        <Ava symbol={p.symbol} color={p.color} />
-                                        <div>
-                                          <div className="text-xs font-extrabold text-foreground">{p.symbol}</div>
-                                          <div className="text-[10px] text-muted-foreground truncate max-w-[120px]">{p.name}</div>
+                        {peers.error ? (
+                          <ErrorNotice message={peers.error.message} onRetry={peers.retry} />
+                        ) : peers.loading ? (
+                          <LoadingRows />
+                        ) : (
+                          <div className="overflow-x-auto -mx-5" style={{ scrollbarWidth: "none" }}>
+                            <table className="w-full min-w-[580px]">
+                              <thead>
+                                <tr className="border-b border-border/60">
+                                  {["Company","LTP","Chg %","Mkt Cap","52W Hi/Lo"].map(h => (
+                                    <th key={h} className={`px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground ${h === "Company" ? "text-left pl-5" : "text-right"}`}>{h}</th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-border/40">
+                                {[stock, ...peerList].map(p => {
+                                  const current = p.slug === stock.slug
+                                  const pChange = p.quote?.changePct ?? null
+                                  return (
+                                    <tr key={p.slug}
+                                      className={current ? "bg-burgundy/4 border-l-2 border-l-burgundy" : "hover:bg-cream/40 transition-colors cursor-pointer"}
+                                      onClick={current ? undefined : () => window.location.href = `/stocks/${p.slug}`}>
+                                      <td className="pl-5 pr-4 py-3">
+                                        <div className="flex items-center gap-2">
+                                          <StockAvatar symbol={p.symbol} name={p.name} logoUrl={p.logoUrl} className="w-8 h-8 text-[10px]" />
+                                          <div>
+                                            <div className="text-xs font-extrabold text-foreground">{p.symbol}</div>
+                                            <div className="text-[10px] text-muted-foreground truncate max-w-[120px]">{p.name}</div>
+                                          </div>
                                         </div>
-                                      </div>
-                                    </td>
-                                    <td className="px-4 py-3 text-right text-xs font-extrabold text-foreground tabular-nums">₹{fmtPrice(p.price)}</td>
-                                    <td className={`px-4 py-3 text-right text-xs font-black tabular-nums ${pUp ? "text-profit" : "text-loss"}`}>{pUp ? "+" : ""}{p.change.toFixed(2)}%</td>
-                                    <td className="px-4 py-3 text-right text-[11px] text-muted-foreground">{p.marketCapLabel}</td>
-                                    <td className="px-4 py-3 text-right text-xs font-bold text-foreground tabular-nums">{pPE}</td>
-                                    <td className="px-4 py-3 text-right text-[10px] text-muted-foreground tabular-nums">
-                                      ₹{fmtPrice(p.price * 0.78)} / ₹{fmtPrice(p.price * 1.28)}
-                                    </td>
-                                  </tr>
-                                )
-                              })}
-                              {peers.length === 0 && (
-                                <tr><td colSpan={6} className="py-8 text-center text-sm text-muted-foreground">No peers found in this sector</td></tr>
-                              )}
-                            </tbody>
-                          </table>
-                        </div>
+                                      </td>
+                                      <td className="px-4 py-3 text-right text-xs font-extrabold text-foreground tabular-nums">{formatRupees(p.quote?.price)}</td>
+                                      <td className={`px-4 py-3 text-right text-xs font-black tabular-nums ${(pChange ?? 0) >= 0 ? "text-profit" : "text-loss"}`}>{formatPercent(pChange)}</td>
+                                      <td className="px-4 py-3 text-right text-[11px] text-muted-foreground">{p.capLabel ?? NO_VALUE}</td>
+                                      <td className="px-4 py-3 text-right text-[10px] text-muted-foreground tabular-nums">
+                                        {formatRupees(p.quote?.high52)} / {formatRupees(p.quote?.low52)}
+                                      </td>
+                                    </tr>
+                                  )
+                                })}
+                                {peerList.length === 0 && (
+                                  <tr><td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">No peers found in this sector</td></tr>
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
                       </div>
                     )}
 
                     {/* ── ABOUT ── */}
                     {tab === "About" && (
-                      <div>
-                        <p className="text-sm font-black text-foreground mb-3">About {stock.name}</p>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                          {[
-                            { icon: Calendar,  label: "Incorporated",      val: stock.company.incorporated },
-                            { icon: Building2, label: "Company Last Name", val: stock.company.lastName },
-                            { icon: Award,     label: "Face Value",        val: `₹${stock.faceVal}` },
-                            { icon: BarChart3, label: "Market Lot",        val: String(stock.company.marketLot) },
-                          ].map(f => (
-                            <div key={f.label} className="bg-cream/60 border border-border/60 rounded-[8px] px-3 py-3 flex items-start gap-2">
-                              <f.icon className="w-4 h-4 text-burgundy mt-0.5 shrink-0" />
-                              <div>
-                                <div className="text-[9px] font-extrabold uppercase tracking-wider text-muted-foreground">{f.label}</div>
-                                <div className="text-xs font-bold text-foreground mt-0.5">{f.val}</div>
+                      about.error ? (
+                        <ErrorNotice message={about.error.message} onRetry={about.retry} />
+                      ) : about.loading || !about.data ? (
+                        <LoadingRows />
+                      ) : (
+                        <div>
+                          <p className="text-sm font-black text-foreground mb-3">About {stock.name}</p>
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            {[
+                              { icon: Calendar,  label: "Incorporated", val: about.data.incorporated ?? NO_VALUE },
+                              { icon: Building2, label: "Company Name", val: about.data.name ?? stock.name },
+                              { icon: Award,     label: "Face Value",   val: formatRupees(about.data.faceValue) },
+                              { icon: BarChart3, label: "Market Lot",   val: about.data.marketLot === null ? NO_VALUE : String(about.data.marketLot) },
+                            ].map(f => (
+                              <div key={f.label} className="bg-cream/60 border border-border/60 rounded-[8px] px-3 py-3 flex items-start gap-2">
+                                <f.icon className="w-4 h-4 text-burgundy mt-0.5 shrink-0" />
+                                <div>
+                                  <div className="text-[9px] font-extrabold uppercase tracking-wider text-muted-foreground">{f.label}</div>
+                                  <div className="text-xs font-bold text-foreground mt-0.5">{f.val}</div>
+                                </div>
                               </div>
-                            </div>
-                          ))}
-                        </div>
-                        <div className="mt-5 pt-4 border-t border-border/60">
-                          <p className="flex items-center gap-2 text-sm font-black text-foreground mb-2">
-                            <Users className="w-4 h-4 text-burgundy" /> Management &amp; Company Information
-                          </p>
-                          {[
-                            { label: "Chairman", val: stock.company.chairman },
-                            { label: "Auditor",  val: stock.company.auditor },
-                            { label: "Group",    val: stock.company.group },
-                          ].map(r => (
-                            <div key={r.label} className="grid grid-cols-[140px_1fr] sm:grid-cols-[200px_1fr] gap-3 py-2.5 border-b border-border/40 last:border-0">
-                              <div className="text-xs text-muted-foreground">{r.label}</div>
-                              <div className="text-xs font-bold text-foreground">{r.val}</div>
-                            </div>
-                          ))}
-                        </div>
-                        <div className="mt-5 pt-4 border-t border-border/60">
-                          <p className="flex items-center gap-2 text-sm font-black text-foreground mb-2">
-                            <MapPin className="w-4 h-4 text-burgundy" /> Registered Office
-                          </p>
-                          {[
-                            { icon: MapPin, label: "Address", val: stock.company.address },
-                            { icon: Phone,  label: "Phone",   val: stock.company.phone },
-                            { icon: Mail,   label: "Email",   val: stock.company.email },
-                            { icon: Globe,  label: "Website", val: stock.company.website },
-                          ].map(r => (
-                            <div key={r.label} className="grid grid-cols-[140px_1fr] sm:grid-cols-[200px_1fr] gap-3 py-2.5 border-b border-border/40 last:border-0">
-                              <div className="flex items-center gap-2 text-xs text-muted-foreground self-start">
-                                <r.icon className="w-3.5 h-3.5 shrink-0" /> {r.label}
+                            ))}
+                          </div>
+                          <div className="mt-5 pt-4 border-t border-border/60">
+                            <p className="flex items-center gap-2 text-sm font-black text-foreground mb-2">
+                              <Users className="w-4 h-4 text-burgundy" /> Management &amp; Company Information
+                            </p>
+                            {[
+                              { label: "Chairman", val: about.data.chairman ?? NO_VALUE },
+                              { label: "Auditor",  val: about.data.auditor ?? NO_VALUE },
+                              { label: "Group",    val: about.data.group ?? NO_VALUE },
+                            ].map(r => (
+                              <div key={r.label} className="grid grid-cols-[140px_1fr] sm:grid-cols-[200px_1fr] gap-3 py-2.5 border-b border-border/40 last:border-0">
+                                <div className="text-xs text-muted-foreground">{r.label}</div>
+                                <div className="text-xs font-bold text-foreground">{r.val}</div>
                               </div>
-                              {r.label === "Website" && r.val !== "—" ? (
-                                <a href={`https://${r.val}`} target="_blank" rel="noopener noreferrer"
-                                  className="text-xs font-bold text-burgundy hover:underline break-all">{r.val}</a>
-                              ) : (
-                                <div className="text-xs font-bold text-foreground leading-relaxed break-words">{r.val}</div>
-                              )}
-                            </div>
-                          ))}
+                            ))}
+                          </div>
+                          <div className="mt-5 pt-4 border-t border-border/60">
+                            <p className="flex items-center gap-2 text-sm font-black text-foreground mb-2">
+                              <MapPin className="w-4 h-4 text-burgundy" /> Registered Office
+                            </p>
+                            {[
+                              { icon: MapPin, label: "Address", val: about.data.address ?? NO_VALUE },
+                              { icon: Phone,  label: "Phone",   val: about.data.phone ?? NO_VALUE },
+                              { icon: Mail,   label: "Email",   val: about.data.email ?? NO_VALUE },
+                              { icon: Globe,  label: "Website", val: about.data.website ?? NO_VALUE },
+                            ].map(r => (
+                              <div key={r.label} className="grid grid-cols-[140px_1fr] sm:grid-cols-[200px_1fr] gap-3 py-2.5 border-b border-border/40 last:border-0">
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground self-start">
+                                  <r.icon className="w-3.5 h-3.5 shrink-0" /> {r.label}
+                                </div>
+                                {r.label === "Website" && r.val !== NO_VALUE ? (
+                                  <a href={`https://${r.val}`} target="_blank" rel="noopener noreferrer"
+                                    className="text-xs font-bold text-burgundy hover:underline break-all">{r.val}</a>
+                                ) : (
+                                  <div className="text-xs font-bold text-foreground leading-relaxed break-words">{r.val}</div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      </div>
+                      )
                     )}
 
                   </motion.div>
@@ -973,25 +957,30 @@ export default function StockDetailPage() {
               {/* ── LATEST NEWS ── */}
               <div className="border border-border rounded-[10px] bg-white overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
                 <div className="px-5 py-4 border-b border-border/60 flex items-center justify-between">
-                  <p className="text-sm font-black text-foreground">Latest News · {stock.symbol}</p>
+                  <p className="text-sm font-black text-foreground">
+                    {news.data && !news.data.matched ? "Latest Corporate News" : `Latest News · ${stock.symbol}`}
+                  </p>
                   <Newspaper className="w-4 h-4 text-muted-foreground/40" />
                 </div>
-                <div className="divide-y divide-border/40">
-                  {news.map((n, i) => (
-                    <div key={i} className="px-5 py-4 hover:bg-cream/40 transition-colors cursor-pointer group">
-                      <div className="flex items-start gap-3">
-                        <div className="flex-1 min-w-0">
-                          <span className="text-[9px] font-extrabold px-1.5 py-0.5 bg-burgundy/10 text-burgundy rounded-[3px] uppercase tracking-wide">{n.tag}</span>
-                          <p className="text-xs font-bold text-foreground mt-1.5 leading-relaxed group-hover:text-burgundy transition-colors line-clamp-2">{n.headline}</p>
-                          <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
-                            <Calendar className="w-2.5 h-2.5" /> {n.date}
-                          </p>
-                        </div>
-                        <ChevronRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-burgundy transition-colors shrink-0 mt-1" />
+                {news.error ? (
+                  <ErrorNotice message={news.error.message} onRetry={news.retry} />
+                ) : news.loading || !news.data ? (
+                  <div className="p-5"><LoadingRows rows={3} /></div>
+                ) : news.data.items.length === 0 ? (
+                  <Notice title="No recent news" />
+                ) : (
+                  <div className="divide-y divide-border/40">
+                    {news.data.items.map(n => (
+                      <div key={n.id} className="px-5 py-4">
+                        <span className="text-[9px] font-extrabold px-1.5 py-0.5 bg-burgundy/10 text-burgundy rounded-[3px] uppercase tracking-wide">{n.tag}</span>
+                        <p className="text-xs font-bold text-foreground mt-1.5 leading-relaxed line-clamp-2">{n.headline}</p>
+                        <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
+                          <Calendar className="w-2.5 h-2.5" /> {formatDate(n.date)}
+                        </p>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
             </div>
@@ -1017,7 +1006,7 @@ export default function StockDetailPage() {
                   {/* Price display */}
                   <div className="bg-cream/60 rounded-[7px] px-3 py-2.5 flex items-center justify-between">
                     <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">Market Price</span>
-                    <span className="text-sm font-black text-foreground tabular-nums">₹{fmtPrice(stock.price)}</span>
+                    <span className="text-sm font-black text-foreground tabular-nums">{formatRupees(quote?.price)}</span>
                   </div>
                   {/* Qty */}
                   <div>
@@ -1034,7 +1023,7 @@ export default function StockDetailPage() {
                   {/* Total */}
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-muted-foreground font-semibold">Est. Total</span>
-                    <span className="font-black text-foreground tabular-nums">₹{(stock.price * +qty).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                    <span className="font-black text-foreground tabular-nums">{formatRupees(estTotal)}</span>
                   </div>
                   <Link href="/signup/register"
                     className={`w-full py-3 rounded-[7px] font-black text-sm text-white text-center block transition-opacity hover:opacity-90 ${tradeMode === "buy" ? "bg-profit" : "bg-loss"}`}>
@@ -1094,10 +1083,10 @@ export default function StockDetailPage() {
                 </div>
                 <div className="divide-y divide-border/40">
                   {[
-                    { label: "Market Cap",   value: stock.marketCapLabel },
-                    { label: "52W High",     value: `₹${fmtPrice(stock.wHigh52)}` },
-                    { label: "52W Low",      value: `₹${fmtPrice(stock.wLow52)}`  },
-                    { label: "Volume",       value: stock.volume                },
+                    { label: "Market Cap",   value: stock.capLabel ?? NO_VALUE },
+                    { label: "52W High",     value: formatRupees(quote?.high52) },
+                    { label: "52W Low",      value: formatRupees(quote?.low52)  },
+                    { label: "Volume",       value: formatVolume(quote?.volume) },
                   ].map(s => (
                     <div key={s.label} className="flex items-center justify-between px-4 py-2.5">
                       <span className="text-[11px] text-muted-foreground font-semibold">{s.label}</span>
@@ -1108,35 +1097,36 @@ export default function StockDetailPage() {
               </div>
 
               {/* Related stocks */}
-              <div className="border border-border rounded-[10px] bg-white overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-                <div className="px-4 py-3 border-b border-border/60">
-                  <p className="text-xs font-black text-foreground">Related Stocks</p>
-                </div>
-                <div className="divide-y divide-border/40">
-                  {relatedStocks.map(s => {
-                    const up = s.change >= 0
-                    return (
-                      <Link key={s.symbol} href={`/stocks/${toSlug(s.symbol)}`}
-                        className="flex items-center justify-between px-4 py-3 hover:bg-cream/40 transition-colors group">
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <Ava symbol={s.symbol} color={s.color} />
-                          <div className="min-w-0">
-                            <div className="text-xs font-extrabold text-foreground truncate">{s.symbol}</div>
-                            <div className="text-[9px] text-muted-foreground truncate">{s.sector}</div>
+              {peerList.length > 0 && (
+                <div className="border border-border rounded-[10px] bg-white overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+                  <div className="px-4 py-3 border-b border-border/60">
+                    <p className="text-xs font-black text-foreground">Related Stocks</p>
+                  </div>
+                  <div className="divide-y divide-border/40">
+                    {peerList.map(s => {
+                      const sChange = s.quote?.changePct ?? null
+                      return (
+                        <Link key={s.slug} href={`/stocks/${s.slug}`}
+                          className="flex items-center justify-between px-4 py-3 hover:bg-cream/40 transition-colors group">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <StockAvatar symbol={s.symbol} name={s.name} logoUrl={s.logoUrl} className="w-8 h-8 text-[10px]" />
+                            <div className="min-w-0">
+                              <div className="text-xs font-extrabold text-foreground truncate">{s.symbol}</div>
+                              <div className="text-[9px] text-muted-foreground truncate">{s.sector}</div>
+                            </div>
                           </div>
-                        </div>
-                        <div className="text-right shrink-0">
-                          <div className="text-xs font-black text-foreground tabular-nums">₹{s.price.toLocaleString("en-IN", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</div>
-                          <div className={`text-[10px] font-black tabular-nums flex items-center justify-end gap-0.5 ${up ? "text-profit" : "text-loss"}`}>
-                            <Spark data={s.spark} up={up} />
-                            {up ? "+" : ""}{s.change.toFixed(2)}%
+                          <div className="text-right shrink-0">
+                            <div className="text-xs font-black text-foreground tabular-nums">{formatRupees(s.quote?.price)}</div>
+                            <div className={`text-[10px] font-black tabular-nums ${(sChange ?? 0) >= 0 ? "text-profit" : "text-loss"}`}>
+                              {formatPercent(sChange)}
+                            </div>
                           </div>
-                        </div>
-                      </Link>
-                    )
-                  })}
+                        </Link>
+                      )
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
 
             </div>
           </div>

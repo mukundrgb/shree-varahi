@@ -1,8 +1,12 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Search, X, TrendingUp, Clock, ArrowRight } from "lucide-react"
+import { StockAvatar } from "@/components/stock-avatar"
+import { useStockSearch } from "@/hooks/stocks/use-stock-search"
+import type { StockSearchResult } from "@/lib/stocks/types"
 
 interface SearchPopupProps {
   isOpen: boolean
@@ -32,8 +36,47 @@ const quickLinks = [
 ]
 
 export function SearchPopup({ isOpen, onClose }: SearchPopupProps) {
+  const router = useRouter()
   const [query, setQuery] = useState("")
+  const [debouncedQuery, setDebouncedQuery] = useState("")
+  const [activeIndex, setActiveIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // Wait for a pause in typing so each keystroke doesn't call the API.
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(query.trim()), 250)
+    return () => clearTimeout(timer)
+  }, [query])
+
+  const { data, error, loading } = useStockSearch(debouncedQuery)
+  const hasQuery = query.trim().length > 0
+  const isSettled = hasQuery && debouncedQuery === query.trim() && !loading
+  const stocks = hasQuery && debouncedQuery && data ? data : []
+  const matchingTerms = popularSearches.filter((item) =>
+    item.term.toLowerCase().includes(query.trim().toLowerCase())
+  )
+
+  useEffect(() => setActiveIndex(0), [data])
+
+  const openStock = (stock: StockSearchResult) => {
+    setQuery("")
+    onClose()
+    router.push(`/stocks/${stock.slug}`)
+  }
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (stocks.length === 0) return
+    if (e.key === "ArrowDown") {
+      e.preventDefault()
+      setActiveIndex((i) => (i + 1) % stocks.length)
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault()
+      setActiveIndex((i) => (i - 1 + stocks.length) % stocks.length)
+    } else if (e.key === "Enter") {
+      e.preventDefault()
+      openStock(stocks[activeIndex] ?? stocks[0])
+    }
+  }
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -79,7 +122,8 @@ export function SearchPopup({ isOpen, onClose }: SearchPopupProps) {
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search for products, tools, or help..."
+                  onKeyDown={handleInputKeyDown}
+                  placeholder="Search stocks, products, tools, or help..."
                   className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground text-lg outline-none"
                 />
                 <button
@@ -92,7 +136,7 @@ export function SearchPopup({ isOpen, onClose }: SearchPopupProps) {
 
               {/* Search Content */}
               <div className="p-4 max-h-[60vh] overflow-y-auto">
-                {query.length === 0 ? (
+                {!hasQuery ? (
                   <div className="space-y-6">
                     {/* Recent Searches */}
                     {recentSearches.length > 0 && (
@@ -159,16 +203,40 @@ export function SearchPopup({ isOpen, onClose }: SearchPopupProps) {
                   </div>
                 ) : (
                   <div className="space-y-4">
+                    {/* Stock Results */}
+                    {stocks.length > 0 && (
+                      <div>
+                        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                          Stocks
+                        </h3>
+                        <div className="space-y-1">
+                          {stocks.map((stock, i) => (
+                            <button
+                              key={stock.slug}
+                              onClick={() => openStock(stock)}
+                              onMouseEnter={() => setActiveIndex(i)}
+                              className={`w-full text-left px-3 py-2.5 rounded-[5px] transition-colors flex items-center justify-between gap-3 ${
+                                i === activeIndex ? "bg-secondary" : ""
+                              }`}
+                            >
+                              <div className="flex items-center gap-3 min-w-0">
+                                <StockAvatar symbol={stock.symbol} name={stock.name} logoUrl={null} className="w-8 h-8 text-[10px]" />
+                                <div className="min-w-0">
+                                  <p className="text-sm font-semibold text-foreground truncate">{stock.name}</p>
+                                  <p className="text-xs text-muted-foreground truncate">{stock.symbol} · {stock.sector}</p>
+                                </div>
+                              </div>
+                              <span className="text-xs text-muted-foreground shrink-0">{stock.exchange}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     {/* Search Results */}
-                    <p className="text-sm text-muted-foreground">
-                      Searching for &quot;{query}&quot;...
-                    </p>
-                    <div className="space-y-2">
-                      {popularSearches
-                        .filter((item) =>
-                          item.term.toLowerCase().includes(query.toLowerCase())
-                        )
-                        .map((item, i) => (
+                    {matchingTerms.length > 0 && (
+                      <div className="space-y-2">
+                        {matchingTerms.map((item, i) => (
                           <button
                             key={i}
                             className="w-full text-left px-3 py-3 rounded-[5px] hover:bg-secondary transition-colors flex items-center justify-between group"
@@ -180,7 +248,19 @@ export function SearchPopup({ isOpen, onClose }: SearchPopupProps) {
                             <span className="text-xs text-muted-foreground capitalize">{item.type}</span>
                           </button>
                         ))}
-                    </div>
+                      </div>
+                    )}
+
+                    {/* Search Status */}
+                    {!isSettled && stocks.length === 0 && (
+                      <p className="text-sm text-muted-foreground">Searching for &quot;{query.trim()}&quot;...</p>
+                    )}
+                    {isSettled && error && (
+                      <p className="text-sm text-muted-foreground">Stock search is unavailable right now.</p>
+                    )}
+                    {isSettled && !error && stocks.length === 0 && matchingTerms.length === 0 && (
+                      <p className="text-sm text-muted-foreground">No results for &quot;{query.trim()}&quot;.</p>
+                    )}
                   </div>
                 )}
               </div>

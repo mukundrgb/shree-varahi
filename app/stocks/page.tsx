@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import {
@@ -12,11 +12,12 @@ import {
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
+import { StockAvatar } from "@/components/stock-avatar"
+import { useStockList } from "@/hooks/stocks/use-stock-list"
+import { NO_VALUE, formatPercent, formatPrice } from "@/lib/stocks/format"
 import Link from "next/link"
 
-function toSlug(symbol: string) {
-  return symbol.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
-}
+/* ─── Dummy data (replaced by the CMOTS API; kept for reference) ──────────────
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -73,6 +74,8 @@ const ALL_STOCKS: Stock[] = [
   { symbol: "TATAPOWER",  name: "Tata Power Company Ltd.",       sector: "Power",         exchange: "NSE", marketCapCr:  119000, marketCapLabel:  "₹1,19,000 Cr", capCategory: "mid",   price:  374.00,  change:  1.95, changeAmt:   7.15, color: "#B91C1C", spark: [358,362,366,368,370,372,374] },
 ]
 
+─────────────────────────────────────────────────────────────────────────────── */
+
 const SECTOR_FILTERS = ["All", "Banking", "IT", "Auto", "Pharma", "FMCG", "Power", "Energy", "NBFC", "Telecom"]
 
 const CAP_OPTIONS = [
@@ -82,15 +85,16 @@ const CAP_OPTIONS = [
   { label: "Small Cap", value: "small" },
 ]
 
-const QUICK_LINKS = [
-  { label: "52W High · NSE",  id: "52h",  fn: (s: Stock) => s.change > 2    },
-  { label: "52W Low · NSE",   id: "52l",  fn: (s: Stock) => s.change < -1   },
-  { label: "NSE Top Gainers", id: "gain", fn: (s: Stock) => s.change > 0    },
-  { label: "NSE Top Losers",  id: "lose", fn: (s: Stock) => s.change < 0    },
-  { label: "Large Cap",       id: "lc",   fn: (s: Stock) => s.capCategory === "large" },
-  { label: "Mid Cap",         id: "mc",   fn: (s: Stock) => s.capCategory === "mid"   },
-  { label: "Banking",         id: "bank", fn: (s: Stock) => s.sector === "Banking"    },
-  { label: "IT Sector",       id: "it",   fn: (s: Stock) => s.sector === "IT"         },
+const QUICK_LINKS: { label: string; id: string; sector?: string; cap?: string }[] = [
+  // These need a quote for every stock, and CMOTS has no bulk quote API yet.
+  // { label: "52W High · NSE",  id: "52h",  fn: (s: Stock) => s.change > 2    },
+  // { label: "52W Low · NSE",   id: "52l",  fn: (s: Stock) => s.change < -1   },
+  // { label: "NSE Top Gainers", id: "gain", fn: (s: Stock) => s.change > 0    },
+  // { label: "NSE Top Losers",  id: "lose", fn: (s: Stock) => s.change < 0    },
+  { label: "Large Cap", id: "lc",   cap: "large"     },
+  { label: "Mid Cap",   id: "mc",   cap: "mid"       },
+  { label: "Banking",   id: "bank", sector: "Banking" },
+  { label: "IT Sector", id: "it",   sector: "IT"      },
 ]
 
 const NEWS = [
@@ -167,6 +171,8 @@ const FAQS = [
 
 // ─── Sub-components ─────────────────────────────────────────────────────────
 
+/* The 7-point dummy price series is gone; the CMOTS 1D chart URL is still needed.
+
 function Sparkline({ data, up }: { data: number[]; up: boolean }) {
   const W = 80, H = 28, PAD = 2
   const min = Math.min(...data), max = Math.max(...data)
@@ -203,6 +209,8 @@ function StockAvatar({ symbol, color }: { symbol: string; color: string }) {
   )
 }
 
+*/
+
 // ─── Page ───────────────────────────────────────────────────────────────────
 
 const PER_PAGE = 10
@@ -218,37 +226,26 @@ export default function StocksPage() {
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null)
   const [mobile, setMobile]       = useState("")
 
-  const filtered = useMemo(() => {
-    let list = ALL_STOCKS
+  // Wait for a pause in typing so each keystroke doesn't call the API.
+  const [debouncedSearch, setDebouncedSearch] = useState("")
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search.trim()), 300)
+    return () => clearTimeout(timer)
+  }, [search])
 
-    if (quickLink) {
-      const ql = QUICK_LINKS.find((q) => q.id === quickLink)
-      if (ql) list = list.filter(ql.fn)
-    } else {
-      if (sector !== "All") list = list.filter((s) => s.sector === sector)
-      if (cap !== "all")    list = list.filter((s) => s.capCategory === cap)
-    }
+  const activeQuickLink = QUICK_LINKS.find((q) => q.id === quickLink)
+  const activeSector = activeQuickLink ? activeQuickLink.sector : sector !== "All" ? sector : undefined
+  const activeCap = activeQuickLink ? activeQuickLink.cap : cap !== "all" ? cap : undefined
 
-    if (search.trim()) {
-      const q = search.trim().toLowerCase()
-      list = list.filter(
-        (s) =>
-          s.symbol.toLowerCase().includes(q) ||
-          s.name.toLowerCase().includes(q) ||
-          s.sector.toLowerCase().includes(q)
-      )
-    }
+  const { data: stockList, error: stockListError, loading: stockListLoading, retry: retryStockList } = useStockList({
+    page,
+    search: debouncedSearch || undefined,
+    sector: activeSector,
+    cap: activeCap,
+  })
 
-    return [...list].sort((a, b) => b.marketCapCr - a.marketCapCr)
-  }, [search, sector, cap, quickLink])
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE))
-  const pageData   = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE)
-
-  const topGainers = useMemo(
-    () => [...ALL_STOCKS].sort((a, b) => b.change - a.change).slice(0, 3),
-    []
-  )
+  const pageData   = stockList?.items ?? []
+  const totalPages = stockList?.totalPages ?? 1
 
   const toggleWatchlist = (symbol: string) =>
     setWatchlist((prev) => {
@@ -324,7 +321,7 @@ export default function StocksPage() {
               </div>
             </div>
 
-            {/* Hero visual — top gainers card */}
+            {/* Hidden: top gainers need a quote for every stock, and CMOTS has no bulk quote API yet.
             <div className="hidden lg:block">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -352,6 +349,7 @@ export default function StocksPage() {
                 </div>
               </motion.div>
             </div>
+            */}
           </div>
         </div>
       </section>
@@ -514,7 +512,7 @@ export default function StocksPage() {
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs text-muted-foreground">
               Showing{" "}
-              <span className="font-bold text-foreground">{filtered.length}</span> stocks
+              <span className="font-bold text-foreground">{stockList?.total ?? NO_VALUE}</span> stocks
               {quickLink && (
                 <span className="ml-1.5 text-burgundy font-semibold">
                   · {QUICK_LINKS.find((q) => q.id === quickLink)?.label}
@@ -539,11 +537,10 @@ export default function StocksPage() {
             {/* Header — desktop only */}
             <div
               className="hidden sm:grid px-4 py-2.5 border-b border-border bg-cream/70"
-              style={{ gridTemplateColumns: "36px 1fr 84px 140px 110px 96px 32px" }}
+              style={{ gridTemplateColumns: "36px 1fr 140px 110px 96px 32px" }}
             >
               <div />
               <div className="pl-3 text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">Company</div>
-              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-center">Chart</div>
               <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">LTP (₹)</div>
               <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right hidden lg:block">Market Cap</div>
               <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">Change</div>
@@ -552,7 +549,19 @@ export default function StocksPage() {
 
             {/* Rows */}
             <AnimatePresence mode="popLayout">
-              {pageData.length === 0 ? (
+              {stockListError && !stockList ? (
+                <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-16 text-center text-sm">
+                  <p className="font-black text-foreground">Unable to load stocks</p>
+                  <p className="text-xs text-muted-foreground mt-1.5">{stockListError.message}</p>
+                  <button onClick={retryStockList} className="mt-3 text-xs font-bold text-burgundy hover:underline">Try again</button>
+                </motion.div>
+              ) : stockListLoading && !stockList ? (
+                <motion.div key="loading" className="p-4 space-y-3 animate-pulse" aria-label="Loading stocks">
+                  {Array.from({ length: PER_PAGE }, (_, i) => (
+                    <div key={i} className="h-12 rounded-[6px] bg-secondary/60" />
+                  ))}
+                </motion.div>
+              ) : pageData.length === 0 ? (
                 <motion.div
                   key="empty"
                   initial={{ opacity: 0 }}
@@ -563,34 +572,36 @@ export default function StocksPage() {
                 </motion.div>
               ) : (
                 pageData.map((stock, idx) => {
-                  const up  = stock.change >= 0
+                  const change = stock.quote?.changePct ?? null
+                  const up  = (change ?? 0) >= 0
                   const inWL = watchlist.has(stock.symbol)
+                  const price = stock.quote?.price
+                  const priceLabel = price == null ? NO_VALUE : `₹${formatPrice(price)}`
+                  const changeIcon = change === null ? null : up ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />
                   return (
                     <motion.div
-                      key={stock.symbol}
+                      key={stock.slug}
                       initial={{ opacity: 0, y: 4 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.14, delay: idx * 0.018 }}
                       className="group border-b border-border/40 last:border-0 hover:bg-cream/30 transition-colors duration-150 cursor-pointer"
-                      onClick={() => router.push(`/stocks/${toSlug(stock.symbol)}`)}
+                      onClick={() => router.push(`/stocks/${stock.slug}`)}
                     >
                       {/* Mobile layout */}
                       <div className="sm:hidden flex items-center justify-between px-4 py-3 gap-3">
                         <div className="flex items-center gap-3 min-w-0">
-                          <StockAvatar symbol={stock.symbol} color={stock.color} />
+                          <StockAvatar symbol={stock.symbol} name={stock.name} logoUrl={stock.logoUrl} className="w-9 h-9 text-[11px]" />
                           <div className="min-w-0">
                             <div className="font-extrabold text-sm text-foreground truncate">{stock.symbol}</div>
                             <div className="text-[11px] text-muted-foreground truncate">{stock.name}</div>
                           </div>
                         </div>
                         <div className="text-right shrink-0">
-                          <div className="text-sm font-extrabold text-foreground tabular-nums">
-                            ₹{stock.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                          </div>
+                          <div className="text-sm font-extrabold text-foreground tabular-nums">{priceLabel}</div>
                           <div className={`text-xs font-black flex items-center justify-end gap-0.5 ${up ? "text-profit" : "text-loss"}`}>
-                            {up ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                            {up ? "+" : ""}{stock.change.toFixed(2)}%
+                            {changeIcon}
+                            {formatPercent(change)}
                           </div>
                         </div>
                       </div>
@@ -598,9 +609,9 @@ export default function StocksPage() {
                       {/* Desktop layout */}
                       <div
                         className="hidden sm:grid px-4 py-3"
-                        style={{ gridTemplateColumns: "36px 1fr 84px 140px 110px 96px 32px" }}
+                        style={{ gridTemplateColumns: "36px 1fr 140px 110px 96px 32px" }}
                       >
-                        <StockAvatar symbol={stock.symbol} color={stock.color} />
+                        <StockAvatar symbol={stock.symbol} name={stock.name} logoUrl={stock.logoUrl} className="w-9 h-9 text-[11px]" />
 
                         <div className="pl-3 min-w-0 flex flex-col justify-center">
                           <div className="font-extrabold text-sm text-foreground leading-tight truncate">{stock.symbol}</div>
@@ -613,24 +624,18 @@ export default function StocksPage() {
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-center">
-                          <Sparkline data={stock.spark} up={up} />
-                        </div>
-
                         <div className="flex items-center justify-end">
-                          <span className="text-sm font-extrabold text-foreground tabular-nums">
-                            ₹{stock.price.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                          </span>
+                          <span className="text-sm font-extrabold text-foreground tabular-nums">{priceLabel}</span>
                         </div>
 
                         <div className="hidden lg:flex items-center justify-end">
-                          <span className="text-[11px] font-semibold text-muted-foreground">{stock.marketCapLabel}</span>
+                          <span className="text-[11px] font-semibold text-muted-foreground">{stock.capLabel ?? NO_VALUE}</span>
                         </div>
 
                         <div className="flex items-center justify-end">
                           <span className={`text-xs font-black flex items-center gap-0.5 ${up ? "text-profit" : "text-loss"}`}>
-                            {up ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                            {up ? "+" : ""}{stock.change.toFixed(2)}%
+                            {changeIcon}
+                            {formatPercent(change)}
                           </span>
                         </div>
 
@@ -906,12 +911,14 @@ export default function StocksPage() {
                   <p className="text-base font-black text-foreground">₹4,12,650</p>
                   <p className="text-[10px] font-bold text-profit">+₹26,940 (7.2%)</p>
                 </div>
+                {/* Hidden with the top gainers card above.
                 {topGainers.map((s) => (
                   <div key={s.symbol} className="flex items-center justify-between">
                     <span className="text-[9px] font-semibold text-foreground truncate pr-2">{s.symbol}</span>
                     <span className="text-[9px] font-bold text-profit shrink-0">+{s.change.toFixed(2)}%</span>
                   </div>
                 ))}
+                */}
               </div>
             </div>
           </div>
