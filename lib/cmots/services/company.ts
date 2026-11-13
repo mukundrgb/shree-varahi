@@ -8,6 +8,7 @@ import { CMOTS_ENDPOINTS } from "../endpoints"
 import { CmotsError } from "../errors"
 import type { CmotsCompany, CmotsCompanyProfile } from "../types/company"
 import type { CapCategory } from "@/lib/stocks/types"
+import { toCategory } from "../mappers/category"
 
 export interface CompanyRecord {
   coCode: number
@@ -17,6 +18,8 @@ export interface CompanyRecord {
   sector: string
   sectorCode: string | null
   industry: string
+  /** Website filter group, such as Auto or Pharma. */
+  category: string
   exchange: string
   capCategory: CapCategory | null
   capLabel: string | null
@@ -61,6 +64,7 @@ function toCompanyRecord(company: CmotsCompany): CompanyRecord {
     sector: company.SectorName?.trim() || "—",
     sectorCode: company.SectorCode?.trim() || null,
     industry: company.industryname?.trim() || "",
+    category: toCategory(company.SectorName, company.industryname),
     exchange: [company.NSEListed === "Yes" && "NSE", company.BSEListed === "Yes" && "BSE"]
       .filter(Boolean)
       .join(", "),
@@ -84,8 +88,10 @@ function buildIndex(live: CmotsCompany[]): CompanyIndex {
     merged.set(Math.trunc(company.co_code), company)
   }
 
+  // Companies listed only on BSE are never shown on the website, so they are left out
+  // of the list, search, peers and stock pages.
   const companies = [...merged.values()]
-    .filter((company) => company.NSEListed === "Yes" || company.BSEListed === "Yes")
+    .filter((company) => company.NSEListed === "Yes")
     .map(toCompanyRecord)
 
   const bySlug = new Map<string, CompanyRecord>()

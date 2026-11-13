@@ -31,11 +31,17 @@ export interface StockSummary {
   quote: StockQuote | null
 }
 
+export type StockSort = "name-asc" | "name-desc" | "change-desc" | "change-asc"
+
+export const STOCK_SORTS: readonly StockSort[] = ["name-asc", "name-desc", "change-desc", "change-asc"]
+
 export interface StockListParams {
   page?: number
   search?: string
+  /** A category from StockListResult.categories. */
   sector?: string
   cap?: string
+  sort?: StockSort
 }
 
 export interface StockListResult {
@@ -43,6 +49,8 @@ export interface StockListResult {
   total: number
   page: number
   totalPages: number
+  /** Every category that has at least one listed company, for the filter chips. */
+  categories: string[]
 }
 
 export interface StockSearchResult {

@@ -39,12 +39,13 @@ async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
 const bySlug = (slug: string) => `/${encodeURIComponent(slug)}`
 
 export const stocksApi = {
-  list({ page, search, sector, cap }: StockListParams, signal?: AbortSignal) {
+  list({ page, search, sector, cap, sort }: StockListParams, signal?: AbortSignal) {
     const query = new URLSearchParams()
     if (page) query.set("page", String(page))
     if (search) query.set("search", search)
     if (sector) query.set("sector", sector)
     if (cap) query.set("cap", cap)
+    if (sort) query.set("sort", sort)
     return get<StockListResult>(`?${query}`, signal)
   },
   search: (query: string, signal?: AbortSignal) =>

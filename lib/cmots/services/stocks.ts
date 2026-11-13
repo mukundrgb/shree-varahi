@@ -6,7 +6,8 @@ import { toCorporateActions } from "../mappers/corporate-actions"
 import { toFinancialsTable } from "../mappers/financials"
 import { toStockNews } from "../mappers/news"
 import { selectPeers } from "../mappers/peers"
-import { filterCompanies, searchCompanies, toStockSummary } from "../mappers/stock-list"
+import { listCategories } from "../mappers/category"
+import { byChange, byName, filterCompanies, searchCompanies, toStockSummary } from "../mappers/stock-list"
 import { findCompany, getCompanies, getCompanyProfile, type CompanyRecord } from "./company"
 import { getCorporateActions } from "./corporate-actions"
 import { getFinancialResults } from "./financials"
@@ -33,13 +34,42 @@ async function toSummary(company: CompanyRecord): Promise<StockSummary> {
   return toStockSummary(company, quote, logoUrl)
 }
 
+/** Quote requests sent to CMOTS at once when every match needs a quote. */
+const QUOTE_CONCURRENCY = 10
+
+async function mapLimited<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
+  const results = new Array<R>(items.length)
+  let next = 0
+  const worker = async () => {
+    while (next < items.length) {
+      const i = next++
+      results[i] = await fn(items[i])
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker))
+  return results
+}
+
 export async function listStocks(params: StockListParams): Promise<StockListResult> {
-  const matches = filterCompanies(await getCompanies(), params)
+  const companies = await getCompanies()
+  const categories = listCategories(companies.map((company) => company.category))
+  const matches = filterCompanies(companies, params)
   const totalPages = Math.max(1, Math.ceil(matches.length / PAGE_SIZE))
   const page = Math.min(Math.max(1, params.page ?? 1), totalPages)
-  const visible = matches.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+  const pageSlice = <T,>(rows: T[]) => rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
-  return { items: await Promise.all(visible.map(toSummary)), total: matches.length, page, totalPages }
+  let items: StockSummary[]
+  if (params.sort === "change-desc" || params.sort === "change-asc") {
+    // CMOTS has no bulk quote API, so every match needs its own (cached) quote call.
+    const summaries = await mapLimited(matches, QUOTE_CONCURRENCY, toSummary)
+    items = pageSlice(summaries.sort(byChange(params.sort === "change-asc" ? "asc" : "desc")))
+  } else {
+    if (params.sort === "name-asc") matches.sort(byName)
+    if (params.sort === "name-desc") matches.sort((a, b) => byName(b, a))
+    items = await Promise.all(pageSlice(matches).map(toSummary))
+  }
+
+  return { items, total: matches.length, page, totalPages, categories }
 }
 
 export async function searchStocks(query: string): Promise<StockSearchResult[]> {

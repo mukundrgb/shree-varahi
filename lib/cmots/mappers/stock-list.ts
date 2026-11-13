@@ -43,19 +43,6 @@ export function toStockSummary(
   }
 }
 
-/** Website sector chips, matched against CMOTS sector and industry names. */
-const SECTOR_PATTERNS: Record<string, RegExp> = {
-  Banking: /\bbanks?\b|\bbanking\b/i,
-  IT: /^it\b|\bit - |information technology/i,
-  Auto: /\bauto/i,
-  Pharma: /pharma|\bdrugs?\b/i,
-  FMCG: /fmcg|tobacco|personal care|consumer food/i,
-  Power: /\bpower\b/i,
-  Energy: /\boil\b|\bgas\b|refiner|energy/i,
-  NBFC: /\bnbfc\b|\bfinance\b/i,
-  Telecom: /telecom/i,
-}
-
 const CAP_RANK: Record<string, number> = { large: 0, mid: 1, small: 2 }
 
 export function byCapThenName(a: CompanyRecord, b: CompanyRecord): number {
@@ -68,11 +55,10 @@ export function filterCompanies(
   { search, sector, cap }: { search?: string; sector?: string; cap?: string },
 ): CompanyRecord[] {
   const query = search?.trim().toLowerCase()
-  const sectorPattern = sector ? SECTOR_PATTERNS[sector] : undefined
 
   return companies
     .filter((company) => {
-      if (sectorPattern && !sectorPattern.test(`${company.sector} ${company.industry}`)) return false
+      if (sector && company.category !== sector) return false
       if (cap && company.capCategory !== cap) return false
       if (!query) return true
       return (
@@ -82,6 +68,20 @@ export function filterCompanies(
       )
     })
     .sort(byCapThenName)
+}
+
+export function byName(a: { name: string }, b: { name: string }): number {
+  return a.name.localeCompare(b.name, "en", { sensitivity: "base" })
+}
+
+/** Sorts by % change; stocks without a quote always go last. */
+export function byChange(direction: "asc" | "desc") {
+  return (a: StockSummary, b: StockSummary): number => {
+    const x = a.quote?.changePct ?? null
+    const y = b.quote?.changePct ?? null
+    if (x === null || y === null) return (x === null ? 1 : 0) - (y === null ? 1 : 0) || byName(a, b)
+    return (direction === "asc" ? x - y : y - x) || byName(a, b)
+  }
 }
 
 const MAX_SEARCH_RESULTS = 8

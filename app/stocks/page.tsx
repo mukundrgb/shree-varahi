@@ -7,7 +7,7 @@ import {
   Search, TrendingUp, TrendingDown, Star,
   ChevronLeft, ChevronRight, Newspaper, Clock,
   ArrowUpRight, X, Plus, FileSearch, LineChart, Zap,
-  ShieldCheck, PieChart, Eye, RotateCcw, Bell, CheckCircle2,
+  ShieldCheck, PieChart, Eye, RotateCcw, Bell, CheckCircle2, ArrowUpDown,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -16,6 +16,7 @@ import { StockAvatar } from "@/components/stock-avatar"
 import { TradingViewCredit, TradingViewMiniChart } from "@/components/tradingview-chart"
 import { useStockList } from "@/hooks/stocks/use-stock-list"
 import { NO_VALUE, formatPercent, formatPrice } from "@/lib/stocks/format"
+import type { StockSort } from "@/lib/stocks/types"
 import Link from "next/link"
 
 /* ─── Dummy data (replaced by the CMOTS API; kept for reference) ──────────────
@@ -77,10 +78,11 @@ const ALL_STOCKS: Stock[] = [
 
 ─────────────────────────────────────────────────────────────────────────────── */
 
-const SECTOR_FILTERS = ["All", "Banking", "IT", "Auto", "Pharma", "FMCG", "Power", "Energy", "NBFC", "Telecom"]
+// Category chips come from the API (StockListResult.categories), so a chip only
+// appears when at least one listed company is in that category.
 
+// No "All" here: the "All" category chip already clears the cap filter too.
 const CAP_OPTIONS = [
-  { label: "All",       value: "all"   },
   { label: "Large Cap", value: "large" },
   { label: "Mid Cap",   value: "mid"   },
   { label: "Small Cap", value: "small" },
@@ -222,6 +224,7 @@ export default function StocksPage() {
   const [sector, setSector]       = useState("All")
   const [cap, setCap]             = useState("all")
   const [quickLink, setQuickLink] = useState<string | null>(null)
+  const [sort, setSort]           = useState<StockSort | undefined>(undefined)
   const [page, setPage]           = useState(1)
   const [watchlist, setWatchlist] = useState<Set<string>>(new Set())
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null)
@@ -243,10 +246,19 @@ export default function StocksPage() {
     search: debouncedSearch || undefined,
     sector: activeSector,
     cap: activeCap,
+    sort,
   })
 
   const pageData   = stockList?.items ?? []
   const totalPages = stockList?.totalPages ?? 1
+
+  // Keep the last category list so the chips don't vanish while a new page loads.
+  const [categories, setCategories] = useState<string[]>([])
+  useEffect(() => {
+    if (stockList?.categories) setCategories(stockList.categories)
+  }, [stockList?.categories])
+  const sectorFilters = ["All", ...categories]
+  const quickLinks = QUICK_LINKS.filter((ql) => !ql.sector || categories.includes(ql.sector))
 
   const toggleWatchlist = (symbol: string) =>
     setWatchlist((prev) => {
@@ -256,14 +268,20 @@ export default function StocksPage() {
     })
 
   const pickSector = (s: string) => { setSector(s); setQuickLink(null); setPage(1) }
-  const pickCap    = (c: string) => { setCap(c);    setQuickLink(null); setPage(1) }
+  // Clicking the selected cap again clears it.
+  const pickCap    = (c: string) => { setCap((prev) => (prev === c ? "all" : c)); setQuickLink(null); setPage(1) }
+  // First click sorts A→Z (or change High→Low); the next click reverses it.
+  const toggleNameSort   = () => { setSort((prev) => (prev === "name-asc" ? "name-desc" : "name-asc")); setPage(1) }
+  const toggleChangeSort = () => { setSort((prev) => (prev === "change-desc" ? "change-asc" : "change-desc")); setPage(1) }
+  const nameSortLabel   = sort === "name-desc" ? "Z → A" : "A → Z"
+  const changeSortLabel = sort === "change-asc" ? "Change: Low → High" : "Change: High → Low"
   const pickQL     = (id: string) => {
     setQuickLink((prev) => (prev === id ? null : id))
     setSector("All"); setCap("all"); setPage(1)
   }
-  const clearAll = () => { setSector("All"); setCap("all"); setQuickLink(null); setSearch(""); setPage(1) }
+  const clearAll = () => { setSector("All"); setCap("all"); setQuickLink(null); setSearch(""); setSort(undefined); setPage(1) }
 
-  const hasFilter = !!(quickLink || sector !== "All" || cap !== "all" || search)
+  const hasFilter = !!(quickLink || sector !== "All" || cap !== "all" || search || sort)
 
   return (
     <main className="min-h-screen bg-background">
@@ -439,7 +457,7 @@ export default function StocksPage() {
             <span className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-widest whitespace-nowrap mr-1 shrink-0">
               Quick Links
             </span>
-            {QUICK_LINKS.map((ql) => (
+            {quickLinks.map((ql) => (
               <button
                 key={ql.id}
                 onClick={() => pickQL(ql.id)}
@@ -463,23 +481,23 @@ export default function StocksPage() {
           {/* Filter bar */}
           <div className="flex flex-wrap gap-2.5 mb-4">
             {/* Search */}
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search stocks..."
                 value={search}
                 onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-                className="pl-9 pr-3 py-2 text-sm rounded-[5px] border border-border bg-cream/50 placeholder:text-muted-foreground/55 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40 w-44"
+                className="pl-9 pr-3 py-2 text-sm rounded-[5px] border border-border bg-cream/50 placeholder:text-muted-foreground/55 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40 w-full sm:w-80"
               />
             </div>
 
             {/* Sector chips */}
             <div className="flex gap-1.5 flex-wrap">
-              {SECTOR_FILTERS.map((s) => (
+              {sectorFilters.map((s) => (
                 <button
                   key={s}
-                  onClick={() => pickSector(s)}
+                  onClick={() => (s === "All" ? (pickSector("All"), setCap("all")) : pickSector(s))}
                   className={`px-3 py-1.5 rounded-[5px] text-[11px] font-bold whitespace-nowrap border transition-all duration-200 ${
                     sector === s && !quickLink
                       ? "bg-burgundy text-white border-burgundy"
@@ -510,8 +528,8 @@ export default function StocksPage() {
           </div>
 
           {/* Results row */}
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-xs text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-y-2 mb-3">
+            <p className="text-xs text-muted-foreground mr-auto">
               Showing{" "}
               <span className="font-bold text-foreground">{stockList?.total ?? NO_VALUE}</span> stocks
               {quickLink && (
@@ -523,6 +541,33 @@ export default function StocksPage() {
                 <span className="ml-1.5 font-semibold text-foreground">· {sector}</span>
               )}
             </p>
+            <div className="flex items-center gap-1.5 mr-3">
+              <span className="hidden sm:inline text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mr-0.5">Sort</span>
+              <button
+                onClick={toggleNameSort}
+                aria-pressed={sort === "name-asc" || sort === "name-desc"}
+                title="Sort by company name"
+                className={`px-2.5 py-1 rounded-[5px] text-[11px] font-bold whitespace-nowrap border flex items-center gap-1 transition-all duration-200 ${
+                  sort === "name-asc" || sort === "name-desc"
+                    ? "bg-burgundy text-white border-burgundy"
+                    : "bg-white text-muted-foreground border-border hover:border-burgundy/25 hover:text-foreground"
+                }`}
+              >
+                <ArrowUpDown className="w-3 h-3" /> {nameSortLabel}
+              </button>
+              <button
+                onClick={toggleChangeSort}
+                aria-pressed={sort === "change-desc" || sort === "change-asc"}
+                title="Sort by % change"
+                className={`px-2.5 py-1 rounded-[5px] text-[11px] font-bold whitespace-nowrap border flex items-center gap-1 transition-all duration-200 ${
+                  sort === "change-desc" || sort === "change-asc"
+                    ? "bg-burgundy text-white border-burgundy"
+                    : "bg-white text-muted-foreground border-border hover:border-burgundy/25 hover:text-foreground"
+                }`}
+              >
+                <ArrowUpDown className="w-3 h-3" /> {changeSortLabel}
+              </button>
+            </div>
             {hasFilter && (
               <button
                 onClick={clearAll}
