@@ -36,7 +36,9 @@ export default function SilverRateCityPage() {
           <nav className="flex items-center gap-1.5 text-xs text-muted-foreground flex-wrap">
             <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3" />
-            <Link href="/commodity" className="hover:text-foreground transition-colors">Gold &amp; Silver</Link>
+            {/* Commodity pages are hidden for now.
+            <Link href="/commodity" className="hover:text-foreground transition-colors">Gold &amp; Silver</Link> */}
+            <span>Gold &amp; Silver</span>
             <ChevronRight className="w-3 h-3" />
             <span className="text-foreground font-semibold">Silver Rate in {cityName}</span>
           </nav>
@@ -58,9 +60,11 @@ export default function SilverRateCityPage() {
             ))}
           </div>
 
+          {/* Commodity pages are hidden for now.
           <Button className="bg-burgundy hover:bg-burgundy-deep text-white rounded-[5px] h-10 px-6 text-sm font-bold" asChild>
             <Link href="/commodity/futures/mcx-silver">Trade MCX Silver →</Link>
           </Button>
+          */}
         </div>
       </main>
       <Footer />

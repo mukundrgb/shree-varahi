@@ -198,6 +198,7 @@ const products: Product[] = [
     accentColor: "#8B0D19",
     bgHover: "rgba(217,178,124,0.06)",
   },
+  /* Commodities is hidden for now.
   {
     icon: Box,
     title: "Commodities MCX",
@@ -209,6 +210,7 @@ const products: Product[] = [
     bgHover: "rgba(139,13,25,0.04)",
     href: "/commodity",
   },
+  */
   {
     customIcon: GlobeMarketIcon,
     title: "US Stocks",

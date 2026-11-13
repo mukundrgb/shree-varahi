@@ -23,7 +23,7 @@ const footerLinks: Record<string, { name: string; href: string }[]> = {
     { name: "Algo & API", href: "#" },
     { name: "Stocks Intraday", href: "/stocks" },
     { name: "Futures", href: "/futures-options" },
-    { name: "Commodities MCX", href: "/commodity" },
+    // { name: "Commodities MCX", href: "/commodity" },
     { name: "MTF", href: "/mtf" },
   ],
   Invest: [
@@ -42,7 +42,7 @@ const footerLinks: Record<string, { name: string; href: string }[]> = {
     { name: "Strategy Builder", href: "/futures-options" },
     { name: "Market News", href: "#" },
     { name: "Research Reports", href: "#" },
-    { name: "SIP Calculator", href: "#" },
+    // { name: "SIP Calculator", href: "#" },
     { name: "Brokerage Calc", href: "#" },
     { name: "Webinars", href: "#" },
   ],
@@ -111,7 +111,7 @@ const marketTabs: MarketTab[] = [
       { name: "Debt Funds", href: "#" }, { name: "Hybrid Funds", href: "#" },
       { name: "Index Funds", href: "#" }, { name: "Sectoral Funds", href: "#" },
       { name: "NFO Today", href: "/nfo" }, { name: "Fund Performance", href: "#" },
-      { name: "SIP Calculator", href: "#" }, { name: "Goal-based SIP", href: "#" },
+      /* { name: "SIP Calculator", href: "#" }, */ { name: "Goal-based SIP", href: "#" },
       { name: "Lumpsum Calculator", href: "#" }, { name: "XIRR Calculator", href: "#" },
       { name: "STP & SWP", href: "#" }, { name: "International Funds", href: "#" },
       { name: "Overnight Funds", href: "#" }, { name: "Liquid Funds", href: "#" },
@@ -136,6 +136,7 @@ const marketTabs: MarketTab[] = [
       { name: "IPO FAQs", href: "#" }, { name: "How to Apply for IPO", href: "#" },
     ],
   },
+  /* Commodities is hidden for now.
   {
     id: "commodities",
     label: "Commodities",
@@ -154,6 +155,7 @@ const marketTabs: MarketTab[] = [
       { name: "MCX Circuit Limits", href: "/commodity" }, { name: "Commodity News", href: "/commodity" },
     ],
   },
+  */
   {
     id: "etf",
     label: "ETFs",
@@ -176,7 +178,7 @@ const marketTabs: MarketTab[] = [
     id: "tools",
     label: "Calculators",
     links: [
-      { name: "SIP Calculator", href: "#" }, { name: "Lumpsum Calculator", href: "#" },
+      /* { name: "SIP Calculator", href: "#" }, */ { name: "Lumpsum Calculator", href: "#" },
       { name: "Brokerage Calculator", href: "#" }, { name: "XIRR Calculator", href: "#" },
       { name: "FD vs SIP", href: "#" }, { name: "Inflation Calculator", href: "#" },
       { name: "Goal Planner", href: "#" }, { name: "Retirement Calculator", href: "#" },
@@ -316,6 +318,7 @@ const exploreCategories: ExploreCategory[] = [
     { name: "Punjab National Bank", href: "/stocks" }, { name: "Vedanta", href: "/stocks" }, { name: "IRFC", href: "/stocks" },
     { name: "Adani Green Energy", href: "/stocks" },
   ]},
+  /* Commodities is hidden for now.
   { label: "All Commodity Futures", links: [
     { name: "Aluminium", href: "/commodity" }, { name: "Aluminium Mini", href: "/commodity" }, { name: "Copper", href: "/commodity" },
     { name: "Cotton Candy", href: "/commodity" }, { name: "Crude Oil", href: "/commodity" }, { name: "Crude Oil Mini", href: "/commodity" },
@@ -325,6 +328,7 @@ const exploreCategories: ExploreCategory[] = [
     { name: "Silver", href: "/commodity" }, { name: "Silver Mini", href: "/commodity" }, { name: "Silver Micro", href: "/commodity" },
     { name: "Zinc", href: "/commodity" }, { name: "Zinc Mini", href: "/commodity" },
   ]},
+  */
   { label: "Most Searched ETFs", links: [
     { name: "ICICI Pru Nifty 50 ETF", href: "/etf" }, { name: "ICICI Pru Bharat 22 ETF", href: "/etf" }, { name: "SBI Nifty 50 ETF", href: "/etf" },
     { name: "SBI Nifty IT ETF", href: "/etf" }, { name: "Nippon India Nifty 50 ETF", href: "/etf" }, { name: "Nippon India Nifty Consumption ETF", href: "/etf" },
@@ -336,7 +340,7 @@ const exploreCategories: ExploreCategory[] = [
   ]},
   { label: "Calculators", links: [
     { name: "Brokerage Calculator", href: "#" }, { name: "Margin Calculator", href: "#" }, { name: "MTF Calculator", href: "#" },
-    { name: "SIP Calculator", href: "#" }, { name: "SIP Calculator with Inflation", href: "#" }, { name: "Lumpsum Calculator", href: "#" },
+    /* { name: "SIP Calculator", href: "#" }, { name: "SIP Calculator with Inflation", href: "#" }, */ { name: "Lumpsum Calculator", href: "#" },
     { name: "ETF Return Calculator", href: "#" }, { name: "CAGR Calculator", href: "#" }, { name: "PPF Calculator", href: "#" },
     { name: "FD Calculator", href: "#" }, { name: "RD Calculator", href: "#" }, { name: "Compound Interest Calculator", href: "#" },
     { name: "EPF Calculator", href: "#" }, { name: "NPS Calculator", href: "#" }, { name: "NSC Calculator", href: "#" },
@@ -383,12 +387,14 @@ const exploreCategories: ExploreCategory[] = [
     { name: "UTI Mutual Fund", href: "#" }, { name: "Axis Mutual Fund", href: "#" }, { name: "Mirae Asset Mutual Fund", href: "#" },
     { name: "Edelweiss Mutual Fund", href: "#" }, { name: "View All AMCs", href: "#" },
   ]},
+  /* SIP calculators are hidden for now.
   { label: "Mutual Fund Calculators", links: [
     { name: "SBI SIP Calculator", href: "#" }, { name: "ICICI SIP Calculator", href: "#" }, { name: "HDFC SIP Calculator", href: "#" },
     { name: "Nippon SIP Calculator", href: "#" }, { name: "HSBC SIP Calculator", href: "#" }, { name: "Franklin SIP Calculator", href: "#" },
     { name: "Canara SIP Calculator", href: "#" }, { name: "Invesco SIP Calculator", href: "#" }, { name: "PPFAS SIP Calculator", href: "#" },
     { name: "Sundaram SIP Calculator", href: "#" },
   ]},
+  */
   { label: "Margin Stocks / Mutual Funds", links: [
     { name: "Intraday Margin Stocks List", href: "#" }, { name: "MTF Stocks List", href: "#" }, { name: "Margin Pledge Stocks List", href: "#" },
     { name: "Mutual Funds for Margin Benefit", href: "#" }, { name: "ETFs & Bonds Pledge List", href: "#" }, { name: "G-Sec & TB Pledge List", href: "#" },
@@ -462,6 +468,7 @@ const exploreCategories: ExploreCategory[] = [
     { name: "Nifty Midcap 100 Gainers", href: "/stocks" }, { name: "Nifty Midcap 100 Losers", href: "/stocks" }, { name: "Bank Nifty Gainers", href: "/stocks" },
     { name: "Bank Nifty Losers", href: "/stocks" },
   ]},
+  /* These point to /commodity, which is hidden for now.
   { label: "Gold Rates Today", links: [
     { name: "Gold Rate in Mumbai", href: "/commodity" }, { name: "Gold Rate in Delhi", href: "/commodity" }, { name: "Gold Rate in Chennai", href: "/commodity" },
     { name: "Gold Rate in Kolkata", href: "/commodity" }, { name: "Gold Rate in Bangalore", href: "/commodity" }, { name: "Gold Rate in Hyderabad", href: "/commodity" },
@@ -472,6 +479,7 @@ const exploreCategories: ExploreCategory[] = [
     { name: "Silver Rate in Kolkata", href: "/commodity" }, { name: "Silver Rate in Bangalore", href: "/commodity" }, { name: "Silver Rate in Hyderabad", href: "/commodity" },
     { name: "Silver Rate in Ahmedabad", href: "/commodity" }, { name: "Silver Rate in Pune", href: "/commodity" },
   ]},
+  */
   { label: "Popular US Stocks", links: [
     { name: "NVIDIA Share Price", href: "/#global-investing" }, { name: "Alphabet Inc Share Price", href: "/#global-investing" }, { name: "Apple Inc Share Price", href: "/#global-investing" },
     { name: "Microsoft Share Price", href: "/#global-investing" }, { name: "Amazon Share Price", href: "/#global-investing" }, { name: "SpaceX Share Price", href: "/#global-investing" },
@@ -772,10 +780,10 @@ export function Footer() {
           <MarketTabsSection />
         </div> */}
 
-        {/* ── Explore | Sitemap ── */}
+        {/* ── Explore | Sitemap (hidden for now) ──
         <div style={{ borderTop: "1px solid rgba(58,20,20,0.12)" }}>
           <ExploreSitemapSection />
-        </div>
+        </div> */}
 
         {/* ── Others + Stocks A-Z ── */}
         <div style={{ borderTop: "1px solid rgba(58,20,20,0.12)" }}>

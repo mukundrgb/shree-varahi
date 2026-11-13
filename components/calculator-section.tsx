@@ -10,7 +10,8 @@ import {
 /* ─── Calculator data ─── */
 
 const calcs = [
-  { name: "SIP Calculator",        icon: TrendingUp,  href: "#", hint: "Monthly SIP returns & corpus" },
+  // SIP Calculator is hidden for now.
+  // { name: "SIP Calculator",        icon: TrendingUp,  href: "#", hint: "Monthly SIP returns & corpus" },
   { name: "Brokerage Calculator",  icon: Calculator,  href: "#", hint: "Know your exact cost per trade" },
   { name: "Margin Calculator",     icon: Layers,      href: "#", hint: "Available intraday margin" },
   { name: "Lumpsum Calculator",    icon: BarChart2,   href: "#", hint: "One-time investment returns" },

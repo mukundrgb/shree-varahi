@@ -382,7 +382,8 @@ function Ava({ symbol, color }: { symbol: string; color: string }) {
 
 // ─── Tab definitions ─────────────────────────────────────────────────────────
 
-const TABS = ["Fundamental", "Financials", "Shareholding", "Corp. Actions", "Peers", "About"] as const
+// "Fundamental" and "Shareholding" are hidden for now.
+const TABS = [/* "Fundamental", */ "Financials", /* "Shareholding", */ "Corp. Actions", "Peers", "About"] as const
 type Tab = typeof TABS[number]
 
 const ACTION_ICONS: Record<CorporateAction["type"], string> = { Dividend: "💰", Bonus: "🎁", Split: "✂️" }
@@ -671,7 +672,8 @@ function StockDetail({ slug, stock }: { slug: string; stock: StockSummary }) {
                   >
 
                     {/* ── FUNDAMENTAL ── */}
-                    {tab === "Fundamental" && <Notice title="Fundamental data is not available yet" />}
+                    {/* Hidden for now.
+                    {tab === "Fundamental" && <Notice title="Fundamental data is not available yet" />} */}
 
                     {/* ── FINANCIALS ── */}
                     {tab === "Financials" && (
@@ -767,7 +769,8 @@ function StockDetail({ slug, stock }: { slug: string; stock: StockSummary }) {
                     )}
 
                     {/* ── SHAREHOLDING ── */}
-                    {tab === "Shareholding" && <Notice title="Shareholding data is not available yet" />}
+                    {/* Hidden for now.
+                    {tab === "Shareholding" && <Notice title="Shareholding data is not available yet" />} */}
 
                     {/* ── CORPORATE ACTIONS ── */}
                     {tab === "Corp. Actions" && (
