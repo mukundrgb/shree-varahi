@@ -2,13 +2,7 @@ import { ArrowRight, Layers, Users, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
-const BASKET_HOLDINGS = [
-  { name: "HDFC Bank",  weight: 18 },
-  { name: "Reliance",   weight: 15 },
-  { name: "TCS",        weight: 12 },
-  { name: "ICICI Bank", weight: 11 },
-  { name: "L&T",        weight: 9 },
-]
+const BASKETS = ["VS Bluechip Edge Fundamental", "VS Emerging Winners Fundamental"]
 
 export function AdvisoryBasketsSection() {
   return (
@@ -73,30 +67,19 @@ export function AdvisoryBasketsSection() {
             {/* Right Side: Static basket visual */}
             <div className="min-h-[280px]">
               <div className="bg-secondary/25 border border-border/80 rounded-[12px] p-6 space-y-4 h-full flex flex-col justify-center">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
-                    India Consumption Basket
-                  </span>
-                  <span className="text-xs font-bold text-profit bg-profit/10 px-2 py-0.5 rounded">
-                    +24.8% (1Y)
-                  </span>
-                </div>
-                <div className="space-y-2.5">
-                  {BASKET_HOLDINGS.map((h) => (
-                    <div key={h.name} className="bg-white border border-border rounded-[8px] p-3 flex items-center justify-between">
-                      <span className="font-bold text-sm text-foreground">{h.name}</span>
-                      <div className="flex items-center gap-2 w-28">
-                        <div className="flex-1 h-1.5 rounded-full bg-secondary overflow-hidden">
-                          <div className="h-full bg-gold rounded-full" style={{ width: `${h.weight * 4}%` }} />
-                        </div>
-                        <span className="text-[11px] font-bold text-muted-foreground w-8 text-right">{h.weight}%</span>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
+                  Our Advisory Baskets
+                </span>
+                <div className="space-y-3">
+                  {BASKETS.map((name) => (
+                    <div key={name} className="bg-white border border-border rounded-[8px] p-4 flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-[6px] bg-burgundy/[0.06] border border-burgundy/10 flex items-center justify-center shrink-0">
+                        <Layers className="h-4 w-4 text-burgundy" />
                       </div>
+                      <span className="font-bold text-sm sm:text-base text-foreground">{name}</span>
                     </div>
                   ))}
                 </div>
-                <p className="text-[10px] text-muted-foreground text-center pt-1">
-                  12 stocks · Medium Risk · Rebalanced quarterly
-                </p>
               </div>
             </div>
           </div>

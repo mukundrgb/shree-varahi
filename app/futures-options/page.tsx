@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
+import Link from "next/link"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -244,19 +245,23 @@ export default function FuturesOptionsPage() {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                <Button 
-                  size="lg" 
+                <Button
+                  asChild
+                  size="lg"
                   className="w-full sm:w-auto bg-burgundy hover:bg-burgundy-deep text-white px-8 h-14 text-base font-bold rounded-[5px] shadow-lg shadow-burgundy/20 transition-transform hover:scale-[1.01]"
                 >
-                  Start Trading
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <Link href="/login">
+                    Start Trading
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
                 </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
                   className="w-full sm:w-auto border-border text-foreground hover:bg-white px-8 h-14 text-base font-bold rounded-[5px] bg-transparent"
                 >
-                  Open Account
+                  <Link href="/login">Open Account</Link>
                 </Button>
               </div>
 

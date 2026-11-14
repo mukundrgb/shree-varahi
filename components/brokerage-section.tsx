@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { motion, useInView } from "framer-motion"
+import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 
@@ -67,10 +68,11 @@ export function BrokerageSection() {
           </p>
           <div className="mt-8">
             <Button
+              asChild
               size="lg"
               className="bg-burgundy hover:bg-burgundy-deep text-white px-8 h-12 text-sm font-bold rounded-[5px]"
             >
-              Open Free Account
+              <Link href="/login">Open Free Account</Link>
             </Button>
           </div>
         </motion.div>

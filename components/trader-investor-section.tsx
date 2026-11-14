@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 import { Check, ChevronDown, ChevronUp, BarChart2, LineChart } from "lucide-react"
 
 const traderFeatures = [
@@ -299,8 +300,8 @@ export function TraderInvestorSection() {
                 headingColor="#8B0D19"
               />
 
-              <Button className="self-start rounded-[6px] bg-burgundy hover:bg-burgundy-deep text-white">
-                Start Trading Now
+              <Button asChild className="self-start rounded-[6px] bg-burgundy hover:bg-burgundy-deep text-white">
+                <Link href="/login">Start Trading Now</Link>
               </Button>
             </div>
           </motion.div>
@@ -346,11 +347,12 @@ export function TraderInvestorSection() {
               />
 
               <Button
+                asChild
                 variant="outline"
                 className="self-start rounded-[6px]"
                 style={{ border: "1px solid rgba(184,146,74,0.45)", color: "#8C6A2F", background: "rgba(184,146,74,0.07)" }}
               >
-                Start Investing Now
+                <Link href="/login">Start Investing Now</Link>
               </Button>
             </div>
           </motion.div>

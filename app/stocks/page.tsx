@@ -321,11 +321,11 @@ export default function StocksPage() {
                 Trade and invest in 5,000+ NSE &amp; BSE listed stocks with Margin Trading Facility, pledge benefits, and powerful research tools — all on one platform.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Button className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
-                  Start Trading
+                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
+                  <Link href="/login">Start Trading</Link>
                 </Button>
-                <Button variant="outline" className="border-border px-7 h-11 font-bold rounded-[5px] hover:bg-secondary">
-                  Open Account
+                <Button asChild variant="outline" className="border-border px-7 h-11 font-bold rounded-[5px] hover:bg-secondary">
+                  <Link href="/login">Open Account</Link>
                 </Button>
               </div>
               <div className="flex flex-wrap gap-4 pt-1">

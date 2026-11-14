@@ -96,11 +96,11 @@ export default function MTFPage() {
                 Trade now, pay later. Use Shree Varahi&apos;s Margin Trading Facility to fund part of your purchase and unlock more buying power on 1,700+ eligible stocks — at just 0.041% interest per day.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Button className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
-                  Trade Now
+                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
+                  <Link href="/login">Trade Now</Link>
                 </Button>
-                <Button variant="outline" className="border-border px-7 h-11 font-bold rounded-[5px] hover:bg-secondary">
-                  Open Account
+                <Button asChild variant="outline" className="border-border px-7 h-11 font-bold rounded-[5px] hover:bg-secondary">
+                  <Link href="/login">Open Account</Link>
                 </Button>
               </div>
               <div className="flex flex-wrap gap-4 pt-1">
@@ -217,13 +217,13 @@ export default function MTFPage() {
                 <div className="flex justify-between"><span className="text-muted-foreground font-semibold">Profit</span><span className="font-black text-profit">+₹1,000</span></div>
               </div>
             </div>
-            <div className="bg-burgundy text-white rounded-[10px] p-6 shadow-[0_8px_30px_rgba(139,13,25,0.2)]">
-              <p className="text-[10px] font-extrabold uppercase tracking-wide text-gold-champagne mb-3">With 4× MTF</p>
+            <div className="bg-burgundy/[0.04] border border-burgundy/25 rounded-[10px] p-6 shadow-[0_8px_30px_rgba(139,13,25,0.08)]">
+              <p className="text-[10px] font-extrabold uppercase tracking-wide text-burgundy mb-3">With 4× MTF</p>
               <div className="space-y-2.5 text-[13px]">
-                <div className="flex justify-between"><span className="text-white/70">Capital Used</span><span className="font-bold">₹10,000 + ₹30,000 funded</span></div>
-                <div className="flex justify-between"><span className="text-white/70">Shares Bought</span><span className="font-bold">40</span></div>
-                <div className="flex justify-between border-t border-white/20 pt-2.5"><span className="text-white/70">Value After 10%</span><span className="font-bold">₹44,000</span></div>
-                <div className="flex justify-between"><span className="text-white/90 font-semibold">Profit (before interest)</span><span className="font-black text-gold-champagne">+₹4,000</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Capital Used</span><span className="font-bold text-foreground">₹10,000 + ₹30,000 funded</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Shares Bought</span><span className="font-bold text-foreground">40</span></div>
+                <div className="flex justify-between border-t border-burgundy/15 pt-2.5"><span className="text-muted-foreground">Value After 10%</span><span className="font-bold text-foreground">₹44,000</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground font-semibold">Profit (before interest)</span><span className="font-black text-profit">+₹4,000</span></div>
               </div>
             </div>
           </div>

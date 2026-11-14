@@ -12,6 +12,9 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { getEtfCards } from "@/lib/etf/dummy-data"
+import { formatPrice } from "@/lib/stocks/format"
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 
@@ -35,47 +38,22 @@ const CATEGORIES: { id: Category; label: string; icon: React.ElementType; color:
   { id: "Global",    label: "Global ETFs",    icon: Globe,     color: "#8B0D19", desc: "Get exposure to companies and economies around the world through a single investment." },
 ]
 
-const ETFS: Record<Category, { name: string; price: string; change: number }[]> = {
-  Equity: [
-    { name: "Nifty 50 ETF",      price: "243.50",  change: 0.62 },
-    { name: "Nifty Bank ETF",    price: "512.80",  change: 0.34 },
-    { name: "Nifty Next 50 ETF", price: "68.90",   change: 0.48 },
-    { name: "Sensex ETF",        price: "812.40",  change: 0.55 },
-    { name: "Nifty IT ETF",       price: "38.40", change: 0.72 },
-    { name: "Nifty PSU Bank ETF", price: "86.20", change: 0.58 },
-    { name: "Nifty Pharma ETF",   price: "24.98", change: 0.41 },
-    { name: "Nifty Auto ETF",     price: "26.97", change: 0.36 },
-  ],
-  Commodity: [
-    { name: "Nippon Gold BeES",     price: "68.20", change: 0.21 },
-    { name: "SBI Gold ETF",         price: "71.10", change: 0.18 },
-    { name: "HDFC Gold ETF",        price: "70.45", change: 0.24 },
-    { name: "ICICI Pru Gold ETF",   price: "69.85", change: 0.20 },
-    { name: "ICICI Pru Silver ETF",      price: "98.40", change: 0.45 },
-    { name: "Aditya Birla SL Silver ETF",price: "97.10", change: 0.42 },
-    { name: "Nippon Silver ETF",         price: "99.20", change: 0.50 },
-    { name: "Kotak Silver ETF",          price: "96.80", change: 0.38 },
-  ],
-  Debt: [
-    { name: "Bharat Bond ETF Apr 2030", price: "1,142.50", change: 0.05 },
-    { name: "Bharat Bond ETF Apr 2033", price: "1,098.20", change: 0.06 },
-    { name: "Edelweiss Bharat Bond FOF",price: "24.80",    change: 0.04 },
-    { name: "Nippon Liquid BeES",       price: "1,002.10", change: 0.02 },
-  ],
-  Global: [
-    { name: "Motilal Oswal Nasdaq 100 ETF", price: "142.60", change: 0.88 },
-    { name: "ICICI Pru Nasdaq 100 ETF",     price: "98.40",  change: 0.85 },
-    { name: "Mirae Asset NYSE FANG+ ETF",   price: "84.20",  change: 1.05 },
-    { name: "Motilal Oswal S&P 500 ETF",    price: "38.60",  change: 0.62 },
-  ],
-}
+// Card data comes from the shared ETF data module so the cards and /etf/[slug] stay in sync.
+// TODO: replace with the ETF API.
+const ETFS = Object.fromEntries(
+  (["Equity", "Commodity", "Debt", "Global"] as const).map((c) => [
+    c,
+    getEtfCards(c).map((etf) => ({ slug: etf.slug, name: etf.name, price: formatPrice(etf.price), change: etf.changePct ?? 0 })),
+  ]),
+) as Record<Category, { slug: string; name: string; price: string; change: number }[]>
 
-const RESEARCH_PARAMS = [
-  { icon: LineChart,   title: "ETF Price",            desc: "Track real-time ETF prices and market movements to stay updated on current valuations and trading activity." },
-  { icon: Landmark,    title: "AUM",                   desc: "Analyze Assets Under Management (AUM) to understand the size, scale, and investor participation within an ETF." },
-  { icon: Percent,     title: "Expense Ratio",         desc: "Compare expense ratios across ETFs to evaluate fund costs and their potential impact on long-term investment returns." },
-  { icon: ListChecks,  title: "Holdings",              desc: "Review the underlying securities held within an ETF to understand portfolio composition and investment exposure." },
-  { icon: TrendingUp,  title: "Returns",               desc: "Evaluate historical returns across different time periods to assess past performance and investment consistency." },
+// Items with an href open that research page; the rest only switch the preview on the right.
+const RESEARCH_PARAMS: { icon: React.ElementType; title: string; desc: string; href?: string }[] = [
+  { icon: LineChart,   title: "ETF Price",            href: "/etf/compare?sort=price",    desc: "Track real-time ETF prices and market movements to stay updated on current valuations and trading activity." },
+  { icon: Landmark,    title: "AUM",                   href: "/etf/compare?sort=aum",      desc: "Analyze Assets Under Management (AUM) to understand the size, scale, and investor participation within an ETF." },
+  { icon: Percent,     title: "Expense Ratio",         href: "/etf/compare?sort=expense",  desc: "Compare expense ratios across ETFs to evaluate fund costs and their potential impact on long-term investment returns." },
+  { icon: ListChecks,  title: "Holdings",              href: "/etf/holdings",              desc: "Review the underlying securities held within an ETF to understand portfolio composition and investment exposure." },
+  { icon: TrendingUp,  title: "Returns",               href: "/etf/compare?sort=return1Y", desc: "Evaluate historical returns across different time periods to assess past performance and investment consistency." },
   { icon: Target,      title: "Tracking Index",        desc: "Identify the benchmark index tracked by the ETF and understand how the fund seeks to replicate index performance." },
   { icon: PieChart,    title: "Sector Allocation",     desc: "Examine sector-wise distribution to understand which industries contribute most to the ETF's overall portfolio." },
   { icon: Layers,      title: "Asset Allocation",      desc: "Review the allocation of assets across equities, commodities, debt instruments, or other investment categories depending on the ETF type." },
@@ -117,6 +95,7 @@ const CANDLES = Array.from({ length: 26 }, (_, i) => {
 // ─── Page ───────────────────────────────────────────────────────────────────
 
 export default function ETFPage() {
+  const router = useRouter()
   const [activeCat, setActiveCat]     = useState<Category>("Equity")
   const [mobile, setMobile]           = useState("")
   const [activeParam, setActiveParam] = useState(0)
@@ -295,9 +274,10 @@ export default function ETFPage() {
               className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8"
             >
               {ETFS[activeCat].map((etf) => (
-                <div
-                  key={etf.name}
-                  className="bg-white border border-border rounded-[8px] p-4 hover:border-gold/40 hover:shadow-sm transition-all duration-200 cursor-pointer"
+                <Link
+                  key={etf.slug}
+                  href={`/etf/${etf.slug}`}
+                  className="block bg-white border border-border rounded-[8px] p-4 hover:border-gold/40 hover:shadow-sm transition-all duration-200"
                 >
                   <div
                     className="w-8 h-8 rounded-[6px] flex items-center justify-center mb-3 text-[10px] font-black"
@@ -314,7 +294,7 @@ export default function ETFPage() {
                       <ArrowUpRight className="w-3 h-3" />{etf.change}%
                     </span>
                   </div>
-                </div>
+                </Link>
               ))}
             </motion.div>
           </AnimatePresence>
@@ -345,7 +325,7 @@ export default function ETFPage() {
                     <motion.button
                       key={p.title}
                       type="button"
-                      onClick={() => setActiveParam(i)}
+                      onClick={() => { setActiveParam(i); if (p.href) router.push(p.href) }}
                       initial={{ opacity: 0, x: -8 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}

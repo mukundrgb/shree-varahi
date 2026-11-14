@@ -168,6 +168,7 @@ const products: Product[] = [
     accentColor: "#8B0D19",
     bgHover: "rgba(217,178,124,0.06)",
   },
+  /* SIP Auto-Invest is hidden for now.
   {
     icon: RotateCcw,
     title: "SIP Auto-Invest",
@@ -178,6 +179,7 @@ const products: Product[] = [
     accentColor: "#8B0D19",
     bgHover: "rgba(5,150,105,0.04)",
   },
+  */
   {
     icon: Target,
     title: "IPO",
@@ -542,7 +544,8 @@ function PromoSlider() {
 
 /* ── Stacking cards section (CSS sticky, same technique as kashivaibhavtours.com) ── */
 function ProductStackSection() {
-  const PAIRS: [number, number][] = [[0, 1], [2, 3], [4, 5], [6, 7]]
+  // Pairs of product indexes, built from the list so hiding a product leaves no empty row.
+  const PAIRS: [number, number][] = Array.from({ length: Math.ceil(products.length / 2) }, (_, i) => [i * 2, i * 2 + 1])
 
   return (
     <section className="relative bg-cream py-24">

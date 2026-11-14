@@ -662,7 +662,7 @@ export default function IpoPage() {
 
 
       {/* ── MAIN CONTENT ── */}
-      <section className="bg-background py-8 lg:py-12">
+      <section id="ipo-list" className="bg-background py-8 lg:py-12 scroll-mt-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-[1fr_300px] gap-8">
 
@@ -983,11 +983,11 @@ export default function IpoPage() {
             Open a free Demat account with Shree Varahi and apply to IPOs with zero commission, ASBA protection, and real-time allotment updates.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <Button size="lg" className="bg-white hover:bg-gold-champagne text-burgundy font-black px-8 h-11 text-sm rounded-[5px] shadow-xl">
-              Open Free Account →
+            <Button asChild size="lg" className="bg-white hover:bg-gold-champagne text-burgundy font-black px-8 h-11 text-sm rounded-[5px] shadow-xl">
+              <Link href="/login">Open Free Account →</Link>
             </Button>
-            <Button size="lg" variant="outline" className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white px-8 h-11 text-sm rounded-[5px]">
-              View Open IPOs
+            <Button asChild size="lg" variant="outline" className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white px-8 h-11 text-sm rounded-[5px]">
+              <a href="#ipo-list">View Open IPOs</a>
             </Button>
           </div>
         </div>

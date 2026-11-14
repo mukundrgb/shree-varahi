@@ -34,9 +34,8 @@ const steps = [
 
 function Step1Visual() {
   const portfolios = [
-    { id: 0, name: "India Consumption", stocks: 12, return: "+24.8% (1Y)", risk: "Medium" },
-    { id: 1, name: "Banking & Finance", stocks: 8, return: "+19.2% (1Y)", risk: "Low" },
-    { id: 2, name: "Green Energy & EV", stocks: 10, return: "+31.5% (1Y)", risk: "High" },
+    { id: 0, name: "VS Bluechip Edge Fundamental" },
+    { id: 1, name: "VS Emerging Winners Fundamental" },
   ]
   const [selected, setSelected] = useState(0)
 
@@ -64,14 +63,8 @@ function Step1Visual() {
                 }`}>
                   {isSel && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                 </div>
-                <div>
-                  <span className="font-bold text-sm text-foreground block">{p.name}</span>
-                  <span className="text-[10px] text-muted-foreground">{p.stocks} stocks · {p.risk} Risk</span>
-                </div>
+                <span className="font-bold text-sm text-foreground block">{p.name}</span>
               </div>
-              <span className="text-xs font-bold text-profit bg-profit/10 px-2 py-0.5 rounded">
-                {p.return}
-              </span>
             </div>
           )
         })}
@@ -324,7 +317,8 @@ export function ValuestocksSection() {
 
         {/* Big Step Details Card */}
         <div className="bg-white border border-border rounded-[16px] p-6 sm:p-10 shadow-sm max-w-5xl mx-auto">
-          <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-8 lg:gap-12 items-center">
+          {/* Only "Pick a Portfolio" has a visual; the other steps are text only. */}
+          <div className={`grid gap-8 lg:gap-12 items-center ${activeStep === 0 ? "lg:grid-cols-[1.1fr_0.9fr]" : ""}`}>
             {/* Left Side: Step Content */}
             <div className="flex flex-col justify-between space-y-6">
               <div className="space-y-4">
@@ -353,23 +347,24 @@ export function ValuestocksSection() {
               </div>
             </div>
 
-            {/* Right Side: Visual representation */}
-            <div className="min-h-[280px]">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeStep}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
-                  transition={{ duration: 0.25 }}
-                  className="h-full w-full"
-                >
-                  {activeStep === 0 && <Step1Visual />}
-                  {activeStep === 1 && <Step2Visual />}
-                  {activeStep === 2 && <Step3Visual />}
-                </motion.div>
-              </AnimatePresence>
-            </div>
+            {/* Right Side: Visual (Pick a Portfolio only). The Step2Visual and Step3Visual
+                illustrations are kept above but hidden for now. */}
+            {activeStep === 0 && (
+              <div className="min-h-[280px]">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeStep}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -15 }}
+                    transition={{ duration: 0.25 }}
+                    className="h-full w-full"
+                  >
+                    <Step1Visual />
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            )}
           </div>
         </div>
       </div>

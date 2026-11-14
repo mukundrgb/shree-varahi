@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
+import Link from "next/link"
 import { ArrowRight, Coins, ShieldCheck, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -130,11 +131,14 @@ export function GlobalInvestingSection() {
 
           <div className="pt-2 flex justify-center">
             <Button
+              asChild
               size="lg"
               className="bg-burgundy hover:bg-burgundy-deep text-white px-8 h-12 text-sm font-bold rounded-[5px] shadow-lg shadow-burgundy/10 group"
             >
-              <span>Explore Global Investing</span>
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <Link href="/global-investing">
+                <span>Explore Global Investing</span>
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
             </Button>
           </div>
         </div>
