@@ -37,37 +37,15 @@ function Step1Visual() {
     { id: 0, name: "VS Bluechip Edge Fundamental" },
     { id: 1, name: "VS Emerging Winners Fundamental" },
   ]
-  const [selected, setSelected] = useState(0)
-
+  // Names only — nothing to select here.
   return (
-    <div className="bg-secondary/25 border border-border/80 rounded-[12px] p-6 space-y-4 h-full flex flex-col justify-center">
-      <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold block mb-1">
-        Select a Portfolio Bucket
-      </span>
+    <div className="bg-secondary/25 border border-border/80 rounded-[12px] p-6 h-full flex flex-col justify-center">
       <div className="space-y-3">
-        {portfolios.map((p) => {
-          const isSel = selected === p.id
-          return (
-            <div
-              key={p.id}
-              onClick={() => setSelected(p.id)}
-              className={`border rounded-[8px] p-3 flex items-center justify-between cursor-pointer transition-all bg-white ${
-                isSel
-                  ? "border-gold shadow-xs ring-1 ring-gold/40"
-                  : "border-border hover:border-gold/30 hover:shadow-xs"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${
-                  isSel ? "border-gold bg-gold text-white" : "border-border bg-white"
-                }`}>
-                  {isSel && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
-                </div>
-                <span className="font-bold text-sm text-foreground block">{p.name}</span>
-              </div>
-            </div>
-          )
-        })}
+        {portfolios.map((p) => (
+          <div key={p.id} className="border border-border rounded-[8px] p-3 bg-white">
+            <span className="font-bold text-sm text-foreground block">{p.name}</span>
+          </div>
+        ))}
       </div>
     </div>
   )

@@ -7,9 +7,13 @@ import Link from "next/link"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
+import { useFnoCards } from "@/hooks/use-fno"
+import type { FnoCategory } from "@/lib/fno/api-client"
 import { 
-  ArrowRight, 
-  ChevronRight, 
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  TrendingDown,
   Plus,
   X,
   Percent,
@@ -48,25 +52,19 @@ function ElegantBgGrid() {
 
 export default function FuturesOptionsPage() {
   // ── 1. TICKER LOGIC (FOR DYNAMIC FEEDS) ──
-  const [niftyPrice, setNiftyPrice] = useState(23456.75)
-  const [niftyChange, setNiftyChange] = useState(1.25)
-  const [bankNiftyPrice, setBankNiftyPrice] = useState(50120.40)
-  const [reliancePrice, setReliancePrice] = useState(2945.30)
+  // NIFTY and BANK NIFTY use the near-month index futures from the backend (/api/v1/fno).
+  const indexFutures = useFnoCards("index-futures")
+  const niftyCard = indexFutures.data?.items.find((c) => c.symbol === "NIFTY")
+  const bankNiftyCard = indexFutures.data?.items.find((c) => c.symbol === "BANKNIFTY")
+  const niftyPrice = niftyCard?.ltp ?? 0
+  const niftyChange = Math.round((niftyCard?.changePct ?? 0) * 100) / 100
+  const bankNiftyPrice = bankNiftyCard?.ltp ?? 0
+  // MCX commodity F&O is not available from CMOTS, so gold/crude stay illustrative.
   const [goldPrice, setGoldPrice] = useState(72400)
   const [crudePrice, setCrudePrice] = useState(6450)
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const niftyTick = (Math.random() - 0.5) * 3
-      setNiftyPrice(prev => Number((prev + niftyTick).toFixed(2)))
-      setNiftyChange(prev => Number((prev + niftyTick * 0.005).toFixed(2)))
-
-      const bankNiftyTick = (Math.random() - 0.5) * 12
-      setBankNiftyPrice(prev => Number((prev + bankNiftyTick).toFixed(2)))
-
-      const relianceTick = (Math.random() - 0.5) * 0.8
-      setReliancePrice(prev => Number((prev + relianceTick).toFixed(2)))
-
       const goldTick = (Math.random() - 0.5) * 15
       setGoldPrice(prev => Math.round(prev + goldTick))
 
@@ -143,43 +141,24 @@ export default function FuturesOptionsPage() {
   // ── 10. MARKETS TAB STATE ──
   type MarketsTabKey = "Index Future" | "Stocks Future" | "Index Option" | "Stock Option"
   const [marketsTab, setMarketsTab] = useState<MarketsTabKey>("Index Future")
+  const [marketsPage, setMarketsPage] = useState(1)
+  const MARKETS_PER_PAGE = 10
 
-  type MarketInstrument = { icon: string; name: string; price: number; change: number; changePct: number; href: string }
-  type MarketInstrumentSource = Omit<MarketInstrument, "href"> & { futHref: string; optHref: string }
-
-  // Same underlying index/stock feeds both the Future and Option tab for that
-  // asset — avoids keeping four copies of the same price/change numbers.
-  const INDEX_INSTRUMENTS: MarketInstrumentSource[] = [
-    { icon: "📈", name: "NIFTY 50",       price: niftyPrice,     change: niftyChange, changePct: niftyChange / niftyPrice * 100, futHref: "/futures/nifty-50-futures",            optHref: "/options/nifty-50-options" },
-    { icon: "🏦", name: "BANK NIFTY",     price: bankNiftyPrice, change: -120.40,     changePct: -0.24,                          futHref: "/futures/bank-nifty-futures",          optHref: "/options/bank-nifty-options" },
-    { icon: "💹", name: "FINNIFTY",       price: 23812.50,       change: 45.30,       changePct: 0.19,                           futHref: "/futures/finnifty-futures",            optHref: "/options/finnifty-options" },
-    { icon: "📊", name: "MIDCAP NIFTY",   price: 52340.25,       change: -215.80,     changePct: -0.41,                          futHref: "/futures/nifty-midcap-select-futures", optHref: "/options/nifty-midcap-select-options" },
-    { icon: "🌐", name: "SENSEX",         price: 76820.40,       change: 183.60,      changePct: 0.24,                           futHref: "/futures/sensex-futures",              optHref: "/options/sensex-options" },
-    { icon: "🔷", name: "NIFTY NEXT 50",  price: 67421.00,       change: -98.50,      changePct: -0.15,                          futHref: "/futures/nifty-next-50-futures",       optHref: "/options/nifty-next-50-options" },
-    { icon: "📉", name: "NIFTY IT",       price: 35218.75,       change: 312.40,      changePct: 0.89,                           futHref: "/futures/nifty-it-futures",            optHref: "/options/nifty-it-options" },
-    { icon: "💰", name: "NIFTY PSU BANK", price: 5812.30,        change: -41.20,      changePct: -0.70,                          futHref: "/futures/nifty-psu-bank-futures",      optHref: "/options/nifty-psu-bank-options" },
-  ]
-
-  const STOCK_INSTRUMENTS: MarketInstrumentSource[] = [
-    { icon: "🛢️", name: "RELIANCE",    price: reliancePrice, change: 12.30,  changePct: 0.42,  futHref: "/futures/reliance-industries-ltd-futures-summary",               optHref: "/options/reliance-industries-ltd-options-summary" },
-    { icon: "💻", name: "TCS",         price: 3840.40,       change: -28.60, changePct: -0.74, futHref: "/futures/tcs-tata-consultancy-services-ltd-futures-summary",     optHref: "/options/tcs-tata-consultancy-services-ltd-options-summary" },
-    { icon: "🔵", name: "INFY",        price: 1485.00,       change: 18.50,  changePct: 1.26,  futHref: "/futures/infosys-ltd-futures-summary",                            optHref: "/options/infosys-ltd-options-summary" },
-    { icon: "🏧", name: "HDFC BANK",   price: 1620.80,       change: -9.40,  changePct: -0.58, futHref: "/futures/hdfc-bank-ltd-futures-summary",                          optHref: "/options/hdfc-bank-ltd-options-summary" },
-    { icon: "🚗", name: "TATA MOTORS", price: 952.10,        change: 32.60,  changePct: 3.55,  futHref: "/futures/tata-motors-ltd-futures-summary",                        optHref: "/options/tata-motors-ltd-options-summary" },
-    { icon: "⚡", name: "ADANI GREEN", price: 1842.35,       change: -54.80, changePct: -2.89, futHref: "/futures/adani-green-energy-ltd-futures-summary",                optHref: "/options/adani-green-energy-ltd-options-summary" },
-    { icon: "🏗️", name: "L&T",        price: 3315.50,       change: 47.20,  changePct: 1.44,  futHref: "/futures/larsen-toubro-ltd-futures-summary",                      optHref: "/options/larsen-toubro-ltd-options-summary" },
-    { icon: "💊", name: "SUN PHARMA",  price: 1741.20,       change: -23.10, changePct: -1.31, futHref: "/futures/sun-pharmaceutical-industries-ltd-futures-summary",      optHref: "/options/sun-pharmaceutical-industries-ltd-options-summary" },
-  ]
-
-  const toInstruments = (source: MarketInstrumentSource[], kind: "fut" | "opt"): MarketInstrument[] =>
-    source.map(({ futHref, optHref, ...rest }) => ({ ...rest, href: kind === "fut" ? futHref : optHref }))
-
-  const marketsData: Record<MarketsTabKey, MarketInstrument[]> = {
-    "Index Future":  toInstruments(INDEX_INSTRUMENTS, "fut"),
-    "Index Option":  toInstruments(INDEX_INSTRUMENTS, "opt"),
-    "Stocks Future": toInstruments(STOCK_INSTRUMENTS, "fut"),
-    "Stock Option":  toInstruments(STOCK_INSTRUMENTS, "opt"),
+  const MARKET_CATEGORY: Record<MarketsTabKey, FnoCategory> = {
+    "Index Future": "index-futures",
+    "Stocks Future": "stock-futures",
+    "Index Option": "index-options",
+    "Stock Option": "stock-options",
   }
+  const marketCategory = MARKET_CATEGORY[marketsTab]
+  const markets = useFnoCards(marketCategory, { page: marketsPage, limit: MARKETS_PER_PAGE })
+  // Ignore a response left over from the previous tab or page while the new one loads.
+  const marketsData =
+    markets.data?.category === marketCategory && markets.data.page === marketsPage ? markets.data : null
+  const marketRows = marketsData?.items ?? []
+  // Keep the page count from the same tab so the pagination doesn't flicker while a page loads.
+  const marketsTotalPages = markets.data?.category === marketCategory ? markets.data.totalPages : 1
+  const pickMarketsTab = (tab: MarketsTabKey) => { setMarketsTab(tab); setMarketsPage(1) }
 
   // ── 9. SMS CTA STATE ──
   const [smsNum, setSmsNum] = useState("")
@@ -740,7 +719,7 @@ export default function FuturesOptionsPage() {
               {(["Index Future", "Stocks Future", "Index Option", "Stock Option"] as const).map((tab) => (
                 <button
                   key={tab}
-                  onClick={() => setMarketsTab(tab)}
+                  onClick={() => pickMarketsTab(tab)}
                   className={`px-5 py-2 rounded-[6px] text-sm font-bold transition-all duration-200 cursor-pointer ${
                     marketsTab === tab
                       ? "bg-burgundy text-white shadow-sm"
@@ -753,34 +732,121 @@ export default function FuturesOptionsPage() {
             </div>
           </div>
 
-          {/* Instrument Cards Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {marketsData[marketsTab].map((item, idx) => {
-              const isPos = item.change >= 0
-              return (
-                <motion.div
-                  key={`${marketsTab}-${idx}`}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.04, duration: 0.3 }}
-                  className="bg-white border border-border/70 rounded-[12px] p-4 hover:border-gold/40 hover:shadow-[0_4px_20px_rgba(184,146,74,0.06)] transition-all duration-300"
-                >
-                  {/* Icon */}
-                  <div className="text-2xl mb-3">{item.icon}</div>
-                  {/* Name */}
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">{item.name}</p>
-                  {/* Price */}
-                  <p className="text-base font-black text-foreground">
-                    {item.price.toLocaleString("en-IN", { minimumFractionDigits: item.price > 10000 ? 0 : 2 })}
-                  </p>
-                  {/* Change */}
-                  <p className={`text-[11px] font-bold mt-0.5 ${isPos ? "text-profit" : "text-loss"}`}>
-                    {isPos ? "+" : ""}{item.change.toFixed(2)} ({isPos ? "+" : ""}{item.changePct.toFixed(2)}%) {isPos ? "▲" : "▼"}
-                  </p>
-                </motion.div>
-              )
-            })}
+          {/* Markets table — same style as the All Stocks table; rows are not clickable. */}
+          <div className="rounded-[8px] border border-border overflow-hidden bg-white shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
+            {/* Header */}
+            <div
+              className="grid grid-cols-[minmax(0,1fr)_84px_64px_72px] sm:grid-cols-[minmax(0,1fr)_120px_110px_100px] gap-x-2 px-4 py-2.5 border-b border-border bg-cream/70"
+            >
+              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">Name</div>
+              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">Price (₹)</div>
+              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">Change</div>
+              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">% Change</div>
+            </div>
+
+            {/* Rows */}
+            {markets.error && !marketsData ? (
+              <div className="py-16 text-center text-sm">
+                <p className="font-black text-foreground">Unable to load prices</p>
+                <p className="text-xs text-muted-foreground mt-1.5">{markets.error.message}</p>
+                <button onClick={markets.retry} className="mt-3 text-xs font-bold text-burgundy hover:underline">Try again</button>
+              </div>
+            ) : !marketsData ? (
+              <div className="p-4 space-y-3 animate-pulse" aria-label="Loading prices">
+                {Array.from({ length: MARKETS_PER_PAGE }, (_, i) => (
+                  <div key={i} className="h-10 rounded-[6px] bg-secondary/60" />
+                ))}
+              </div>
+            ) : marketRows.length === 0 ? (
+              <div className="py-16 text-center text-muted-foreground text-sm">No contracts available.</div>
+            ) : (
+              marketRows.map((row, idx) => {
+                const hasChange = row.change !== null && row.changePct !== null
+                const up = (row.change ?? 0) >= 0
+                const tone = !hasChange ? "text-muted-foreground" : up ? "text-profit" : "text-loss"
+                const sign = hasChange && up ? "+" : ""
+                return (
+                  <motion.div
+                    key={`${marketCategory}-${row.symbol}`}
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.14, delay: idx * 0.018 }}
+                    className="grid grid-cols-[minmax(0,1fr)_84px_64px_72px] sm:grid-cols-[minmax(0,1fr)_120px_110px_100px] gap-x-2 px-4 py-3 border-b border-border/40 last:border-0 hover:bg-cream/30 transition-colors duration-150"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      {row.logoUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={row.logoUrl} alt="" className="hidden sm:block w-8 h-8 shrink-0 rounded-[6px] object-contain bg-white" loading="lazy" />
+                      ) : (
+                        <div className="hidden sm:flex w-8 h-8 shrink-0 rounded-[6px] bg-burgundy/10 text-burgundy items-center justify-center text-[10px] font-black">
+                          {row.symbol.slice(0, 2)}
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <div className="font-extrabold text-sm text-foreground truncate">{row.name}</div>
+                        {row.symbol !== row.name && (
+                          <div className="text-[11px] text-muted-foreground truncate">{row.symbol}</div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-end text-sm font-extrabold text-foreground tabular-nums">
+                      {row.ltp === null ? "—" : row.ltp.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </div>
+                    <div className={`flex items-center justify-end text-xs font-black tabular-nums ${tone}`}>
+                      {row.change === null ? "—" : `${sign}${row.change.toFixed(2)}`}
+                    </div>
+                    <div className={`flex items-center justify-end gap-0.5 text-xs font-black tabular-nums ${tone}`}>
+                      {hasChange && (up ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />)}
+                      {row.changePct === null ? "—" : `${sign}${row.changePct.toFixed(2)}%`}
+                    </div>
+                  </motion.div>
+                )
+              })
+            )}
           </div>
+
+          {/* Pagination */}
+          {marketsTotalPages > 1 && (
+            <div className="flex items-center justify-between mt-4">
+              <p className="text-xs text-muted-foreground">
+                Page {marketsPage} of {marketsTotalPages}
+              </p>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setMarketsPage((p) => Math.max(1, p - 1))}
+                  disabled={marketsPage === 1}
+                  aria-label="Previous page"
+                  className="w-8 h-8 rounded-[5px] border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/25 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                {Array.from({ length: Math.min(5, marketsTotalPages) }, (_, i) => {
+                  const pg = Math.max(1, Math.min(marketsTotalPages - 4, marketsPage - 2)) + i
+                  return (
+                    <button
+                      key={pg}
+                      onClick={() => setMarketsPage(pg)}
+                      className={`w-8 h-8 rounded-[5px] border text-xs font-bold transition-all ${
+                        pg === marketsPage
+                          ? "bg-burgundy text-white border-burgundy"
+                          : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/20"
+                      }`}
+                    >
+                      {pg}
+                    </button>
+                  )
+                })}
+                <button
+                  onClick={() => setMarketsPage((p) => Math.min(marketsTotalPages, p + 1))}
+                  disabled={marketsPage === marketsTotalPages}
+                  aria-label="Next page"
+                  className="w-8 h-8 rounded-[5px] border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/25 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
 
         </div>
       </section>

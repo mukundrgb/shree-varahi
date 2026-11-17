@@ -35,9 +35,9 @@ export type FuturesPageData = {
   ltp: number
   chg: number
   chgPct: number
-  open: number
-  high52: number
-  low52: number
+  open: number | null
+  high52: number | null
+  low52: number | null
   exchanges: string[]
   asOf: string
   oiBreakup: ExpiryOI[]
@@ -47,6 +47,12 @@ export type FuturesPageData = {
 }
 
 const TABS = ["Overview", "Live Markets", "15-Mins Built Up"] as const
+
+/** "—" for values CMOTS does not provide. */
+const fmtNum = (v: number | null) => (v === null ? "—" : v.toLocaleString("en-IN"))
+const fmtFixed = (v: number | null, digits: number) => (v === null ? "—" : v.toFixed(digits))
+const oiNum = (v: string) => parseFloat(v.replace(/,/g, "")) || 0
+
 
 export function FuturesDetailPage({ data }: { data: FuturesPageData }) {
   const [tab, setTab] = useState<typeof TABS[number]>("Overview")
@@ -98,15 +104,15 @@ export function FuturesDetailPage({ data }: { data: FuturesPageData }) {
             <div className="flex items-center gap-4">
               <div className="text-center">
                 <div className="text-[10px] text-muted-foreground font-semibold">Open</div>
-                <div className="text-sm font-bold text-foreground tabular-nums mt-0.5">{d.open.toLocaleString("en-IN")}</div>
+                <div className="text-sm font-bold text-foreground tabular-nums mt-0.5">{fmtNum(d.open)}</div>
               </div>
               <div className="text-center">
                 <div className="text-[10px] text-muted-foreground font-semibold">52W High</div>
-                <div className="text-sm font-bold text-foreground tabular-nums mt-0.5">{d.high52.toLocaleString("en-IN")}</div>
+                <div className="text-sm font-bold text-foreground tabular-nums mt-0.5">{fmtNum(d.high52)}</div>
               </div>
               <div className="text-center">
                 <div className="text-[10px] text-muted-foreground font-semibold">52W Low</div>
-                <div className="text-sm font-bold text-foreground tabular-nums mt-0.5">{d.low52.toLocaleString("en-IN")}</div>
+                <div className="text-sm font-bold text-foreground tabular-nums mt-0.5">{fmtNum(d.low52)}</div>
               </div>
               <Button className="bg-burgundy hover:bg-burgundy-deep text-white rounded-[5px] h-9 px-6 text-sm font-bold" asChild>
                 <Link href="/signup/register">Trade Now →</Link>

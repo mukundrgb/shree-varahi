@@ -2,7 +2,7 @@
 
 import { stocksApi } from "@/lib/stocks/api-client"
 import type { FinancialsPeriod, FinancialsType } from "@/lib/stocks/types"
-import { useStockResource } from "./use-stock-resource"
+import { useApiResource } from "@/hooks/use-api-resource"
 
 export function useStockFinancials(
   slug: string,
@@ -10,7 +10,7 @@ export function useStockFinancials(
   type: FinancialsType,
   enabled: boolean,
 ) {
-  return useStockResource(enabled ? `${slug}:${period}:${type}` : null, (signal) =>
+  return useApiResource(enabled ? `${slug}:${period}:${type}` : null, (signal) =>
     stocksApi.financials(slug, period, type, signal),
   )
 }

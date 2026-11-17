@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ChevronRight, TrendingUp, Bell,
@@ -11,8 +11,13 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { useIpoPage } from "@/hooks/use-ipos"
+import type { ClosedIpoApi, OpenIpoApi, UpcomingIpoApi } from "@/lib/ipo/api-client"
+import { formatDate } from "@/lib/stocks/format"
 
 // ─── Types ─────────────────────────────────────────────────────────────────
+// Card shapes used by this page. Data comes from the backend (/api/v1/ipos) via the adapters below.
+// CMOTS does not provide GMP, subscription or allotment dates, so those are not shown.
 
 type IpoType = "Mainboard" | "SME" | "InvIT" | "REIT"
 
@@ -21,20 +26,16 @@ interface OpenIpo {
   company: string
   ipoType: IpoType
   color: string
+  logoUrl: string | null
   openDate: string
   closeDate: string
-  allotDate: string
   listDate: string
   exchange: string
-  priceMin: number
-  priceMax: number
-  issueSizeCr: number
-  lotSize: number
-  gmp: number
-  subscQIB: number
-  subscHNI: number
-  subscRII: number
-  subscTotal: number
+  priceMin: number | null
+  priceMax: number | null
+  issueSizeCr: number | null
+  lotSize: number | null
+  minInvestment: number | null
 }
 
 interface UpcomingIpo {
@@ -42,230 +43,102 @@ interface UpcomingIpo {
   company: string
   ipoType: IpoType
   color: string
+  logoUrl: string | null
   openDate: string
   closeDate: string
-  estSizeCr: number
-  minInvestment: number
+  estSizeCr: number | null
+  minInvestment: number | null
 }
 
 interface ClosedIpo {
   id: string
   company: string
   color: string
+  logoUrl: string | null
   openDate: string
   closeDate: string
   listDate: string
   exchange: string
-  issuePrice: number
-  listingPrice: number
-  listingGainPct: number
-  subscTotal: number
-  issueSizeCr: number
+  issuePrice: number | null
+  listingPrice: number | null
+  listingGainPct: number | null
+  issueSizeCr: number | null
   ipoType: IpoType
 }
 
-// ─── Mock Data ──────────────────────────────────────────────────────────────
+// ─── Adapters: backend IPO data → card shapes ──────────────────────────────
 
-const OPEN_IPOS: OpenIpo[] = [
-  {
-    id: "ather",
-    company: "Ather Energy Ltd.",
-    ipoType: "Mainboard",
-    color: "#15803D",
-    openDate: "28 Apr 2026",
-    closeDate: "30 Apr 2026",
-    allotDate: "2 May 2026",
-    listDate: "6 May 2026",
-    exchange: "NSE, BSE",
-    priceMin: 304,
-    priceMax: 321,
-    issueSizeCr: 3100,
-    lotSize: 46,
-    gmp: 28,
-    subscQIB: 8.2,
-    subscHNI: 5.4,
-    subscRII: 4.1,
-    subscTotal: 5.8,
-  },
-  {
-    id: "citius",
-    company: "Citius Transnet InvIT",
-    ipoType: "InvIT",
-    color: "#1E40AF",
-    openDate: "28 Apr 2026",
-    closeDate: "30 Apr 2026",
-    allotDate: "3 May 2026",
-    listDate: "7 May 2026",
-    exchange: "NSE",
-    priceMin: 100,
-    priceMax: 100,
-    issueSizeCr: 1105,
-    lotSize: 1500,
-    gmp: 5,
-    subscQIB: 3.2,
-    subscHNI: 2.1,
-    subscRII: 2.8,
-    subscTotal: 2.9,
-  },
-  {
-    id: "propshare",
-    company: "Property Share REIT",
-    ipoType: "REIT",
-    color: "#D97706",
-    openDate: "26 Apr 2026",
-    closeDate: "29 Apr 2026",
-    allotDate: "30 Apr 2026",
-    listDate: "5 May 2026",
-    exchange: "BSE",
-    priceMin: 10,
-    priceMax: 10,
-    issueSizeCr: 244,
-    lotSize: 10000,
-    gmp: 0,
-    subscQIB: 1.2,
-    subscHNI: 0.8,
-    subscRII: 1.4,
-    subscTotal: 1.2,
-  },
-]
+const BADGE_COLORS = ["#15803D", "#1E40AF", "#D97706", "#7C3AED", "#BE123C", "#0F766E", "#1D4ED8", "#B45309"]
 
-const UPCOMING_IPOS: UpcomingIpo[] = [
-  {
-    id: "jio",
-    company: "Reliance Jio Platforms Ltd.",
-    ipoType: "Mainboard",
-    color: "#1E40AF",
-    openDate: "12 Jan 2027 (Est.)",
-    closeDate: "14 Jan 2027 (Est.)",
-    estSizeCr: 92000,
-    minInvestment: 15200,
-  },
-  {
-    id: "zepto",
-    company: "Zepto (KiranaKart Technologies)",
-    ipoType: "Mainboard",
-    color: "#7C3AED",
-    openDate: "18 Aug 2026 (Est.)",
-    closeDate: "20 Aug 2026 (Est.)",
-    estSizeCr: 35000,
-    minInvestment: 14500,
-  },
-  {
-    id: "meesho",
-    company: "Meesho Inc.",
-    ipoType: "Mainboard",
-    color: "#DC2626",
-    openDate: "22 Oct 2026 (Est.)",
-    closeDate: "24 Oct 2026 (Est.)",
-    estSizeCr: 42000,
-    minInvestment: 14800,
-  },
-  {
-    id: "pw",
-    company: "PhysicsWallah Pvt. Ltd.",
-    ipoType: "Mainboard",
-    color: "#0891B2",
-    openDate: "9 Sep 2026 (Est.)",
-    closeDate: "11 Sep 2026 (Est.)",
-    estSizeCr: 8000,
-    minInvestment: 14200,
-  },
-  {
-    id: "bluestone",
-    company: "BlueStone Jewellery Ltd.",
-    ipoType: "Mainboard",
-    color: "#B45309",
-    openDate: "15 Jul 2026 (Est.)",
-    closeDate: "17 Jul 2026 (Est.)",
-    estSizeCr: 1500,
-    minInvestment: 13900,
-  },
-]
+/** Stable accent colour per company. */
+function colorFor(id: number): string {
+  return BADGE_COLORS[Math.abs(id) % BADGE_COLORS.length]
+}
 
-const CLOSED_IPOS: ClosedIpo[] = [
-  {
-    id: "hyundai",
-    company: "Hyundai Motor India Ltd.",
-    color: "#1D4ED8",
-    ipoType: "Mainboard",
-    openDate: "15 Oct 2025",
-    closeDate: "17 Oct 2025",
-    listDate: "22 Oct 2025",
-    exchange: "NSE, BSE",
-    issuePrice: 1960,
-    listingPrice: 1934,
-    listingGainPct: -1.33,
-    subscTotal: 2.37,
-    issueSizeCr: 27870,
-  },
-  {
-    id: "swiggy",
-    company: "Swiggy Ltd.",
-    color: "#EA580C",
-    ipoType: "Mainboard",
-    openDate: "6 Nov 2025",
-    closeDate: "8 Nov 2025",
-    listDate: "13 Nov 2025",
-    exchange: "NSE, BSE",
-    issuePrice: 390,
-    listingPrice: 412,
-    listingGainPct: 5.64,
-    subscTotal: 3.59,
-    issueSizeCr: 11327,
-  },
-  {
-    id: "ntpcgreen",
-    company: "NTPC Green Energy Ltd.",
-    color: "#15803D",
-    ipoType: "Mainboard",
-    openDate: "19 Nov 2025",
-    closeDate: "22 Nov 2025",
-    listDate: "27 Nov 2025",
-    exchange: "NSE, BSE",
-    issuePrice: 108,
-    listingPrice: 111,
-    listingGainPct: 2.78,
-    subscTotal: 2.55,
-    issueSizeCr: 10000,
-  },
-  {
-    id: "sagility",
-    company: "Sagility India Ltd.",
-    color: "#7C3AED",
-    ipoType: "Mainboard",
-    openDate: "5 Nov 2025",
-    closeDate: "7 Nov 2025",
-    listDate: "12 Nov 2025",
-    exchange: "NSE, BSE",
-    issuePrice: 30,
-    listingPrice: 31.06,
-    listingGainPct: 3.53,
-    subscTotal: 3.21,
-    issueSizeCr: 2106,
-  },
-  {
-    id: "acme",
-    company: "ACME Solar Holdings Ltd.",
-    color: "#D97706",
-    ipoType: "Mainboard",
-    openDate: "6 Nov 2025",
-    closeDate: "8 Nov 2025",
-    listDate: "13 Nov 2025",
-    exchange: "NSE, BSE",
-    issuePrice: 289,
-    listingPrice: 279,
-    listingGainPct: -3.46,
-    subscTotal: 2.75,
-    issueSizeCr: 2900,
-  },
-]
+const showDate = (value: string | null) => (value ? formatDate(value) : "—")
 
-// ─── Sub-components ─────────────────────────────────────────────────────────
+function toOpenIpo(ipo: OpenIpoApi): OpenIpo {
+  return {
+    id: String(ipo.id),
+    company: ipo.company,
+    ipoType: ipo.category,
+    color: colorFor(ipo.id),
+    logoUrl: ipo.logoUrl,
+    openDate: showDate(ipo.openDate),
+    closeDate: showDate(ipo.closeDate),
+    listDate: showDate(ipo.listingDate),
+    exchange: ipo.exchanges.join(", ") || "—",
+    priceMin: ipo.priceMin,
+    priceMax: ipo.priceMax,
+    issueSizeCr: ipo.issueSizeCr,
+    lotSize: ipo.lotSize,
+    minInvestment: ipo.minInvestment,
+  }
+}
+
+function toUpcomingIpo(ipo: UpcomingIpoApi): UpcomingIpo {
+  return {
+    id: String(ipo.id),
+    company: ipo.company,
+    ipoType: ipo.category,
+    color: colorFor(ipo.id),
+    logoUrl: ipo.logoUrl,
+    openDate: showDate(ipo.openDate),
+    closeDate: showDate(ipo.closeDate),
+    estSizeCr: ipo.issueSizeCr,
+    minInvestment: ipo.minInvestment,
+  }
+}
+
+function toClosedIpo(ipo: ClosedIpoApi): ClosedIpo {
+  return {
+    id: String(ipo.id),
+    company: ipo.company,
+    color: colorFor(ipo.id),
+    logoUrl: ipo.logoUrl,
+    openDate: showDate(ipo.openDate),
+    closeDate: showDate(ipo.closeDate),
+    listDate: showDate(ipo.listingDate),
+    exchange: ipo.exchanges.join(", ") || "—",
+    issuePrice: ipo.issuePrice,
+    listingPrice: ipo.listingPrice,
+    listingGainPct: ipo.listingGainPct,
+    issueSizeCr: ipo.issueSizeCr,
+    ipoType: ipo.category,
+  }
+}
+
+const rupees = (value: number | null) => (value === null ? "—" : `₹${value.toLocaleString("en-IN")}`)
+const crore = (value: number | null) => (value === null ? "—" : `₹${value.toLocaleString("en-IN")} Cr`)
+
+/** Number of closed IPOs shown under "Recently Closed". */
+const RECENTLY_CLOSED = 10
+
 
 function CompanyBadge({
-  company, color, size = "md",
+  company, color, logoUrl = null, size = "md",
 }: {
-  company: string; color: string; size?: "sm" | "md" | "lg"
+  company: string; color: string; logoUrl?: string | null; size?: "sm" | "md" | "lg"
 }) {
   const initials = company
     .split(" ")
@@ -278,6 +151,15 @@ function CompanyBadge({
     sm: "w-8 h-8 text-[10px]",
     md: "w-11 h-11 text-[12px]",
     lg: "w-14 h-14 text-[14px]",
+  }
+
+  if (logoUrl) {
+    return (
+      <div className={`${sizeMap[size]} rounded-[8px] bg-white border border-border flex items-center justify-center overflow-hidden shrink-0`}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={logoUrl} alt={company} className="w-full h-full object-contain p-1" loading="lazy" />
+      </div>
+    )
   }
 
   return (
@@ -326,7 +208,7 @@ function SubscBar({ label, value, max = 10 }: { label: string; value: number; ma
 // ─── Open IPO Card ──────────────────────────────────────────────────────────
 
 function OpenIpoCard({ ipo }: { ipo: OpenIpo }) {
-  const minInvestment = ipo.priceMax * ipo.lotSize
+  const minInvestment = ipo.minInvestment ?? (ipo.priceMax !== null && ipo.lotSize !== null ? ipo.priceMax * ipo.lotSize : null)
 
   return (
     <motion.div
@@ -342,7 +224,7 @@ function OpenIpoCard({ ipo }: { ipo: OpenIpo }) {
         {/* Header */}
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="flex items-center gap-3">
-            <CompanyBadge company={ipo.company} color={ipo.color} size="md" />
+            <CompanyBadge company={ipo.company} color={ipo.color} logoUrl={ipo.logoUrl} size="md" />
             <div>
               <div className="font-extrabold text-sm text-foreground leading-tight">{ipo.company}</div>
               <div className="flex items-center gap-1.5 mt-1.5">
@@ -370,9 +252,9 @@ function OpenIpoCard({ ipo }: { ipo: OpenIpo }) {
         {/* Price / Issue / Lot */}
         <div className="grid grid-cols-3 gap-2 mb-4">
           {[
-            { label: "Price Band", val: ipo.priceMin === ipo.priceMax ? `₹${ipo.priceMin}` : `₹${ipo.priceMin}–${ipo.priceMax}` },
-            { label: "Issue Size",  val: `₹${ipo.issueSizeCr.toLocaleString("en-IN")} Cr` },
-            { label: "Lot Size",    val: `${ipo.lotSize} shares` },
+            { label: "Price Band", val: ipo.priceMin === null ? "—" : ipo.priceMin === ipo.priceMax ? `₹${ipo.priceMin}` : `₹${ipo.priceMin}–${ipo.priceMax}` },
+            { label: "Issue Size",  val: crore(ipo.issueSizeCr) },
+            { label: "Lot Size",    val: ipo.lotSize === null ? "—" : `${ipo.lotSize} shares` },
           ].map((d) => (
             <div key={d.label}>
               <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-wide mb-0.5">{d.label}</div>
@@ -384,7 +266,7 @@ function OpenIpoCard({ ipo }: { ipo: OpenIpo }) {
         {/* Min investment */}
         <div className="flex items-center justify-between mb-4 py-2 px-3 rounded-[5px] bg-burgundy/[0.04] border border-burgundy/10">
           <span className="text-[10px] font-bold text-muted-foreground">Min. Investment</span>
-          <span className="text-sm font-black text-burgundy">₹{minInvestment.toLocaleString("en-IN")}</span>
+          <span className="text-sm font-black text-burgundy">{rupees(minInvestment)}</span>
         </div>
 
         {/* Actions */}
@@ -421,7 +303,7 @@ function UpcomingIpoCard({ ipo, index }: { ipo: UpcomingIpo; index: number }) {
       className="bg-white border border-border rounded-[10px] p-5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:border-gold/25 transition-all duration-300"
     >
       <div className="flex items-start gap-3 mb-4">
-        <CompanyBadge company={ipo.company} color={ipo.color} />
+        <CompanyBadge company={ipo.company} color={ipo.color} logoUrl={ipo.logoUrl} />
         <div className="min-w-0">
           <div className="font-extrabold text-sm text-foreground leading-tight truncate">{ipo.company}</div>
           <div className="mt-1.5">
@@ -434,7 +316,7 @@ function UpcomingIpoCard({ ipo, index }: { ipo: UpcomingIpo; index: number }) {
         {[
           { label: "Opens",      val: ipo.openDate },
           { label: "Closes",     val: ipo.closeDate },
-          { label: "Issue Size", val: `₹${ipo.estSizeCr.toLocaleString("en-IN")} Cr` },
+          { label: "Issue Size", val: crore(ipo.estSizeCr) },
         ].map((d) => (
           <div key={d.label} className="bg-cream/70 rounded-[5px] px-2.5 py-2 text-center">
             <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-wide mb-0.5">{d.label}</div>
@@ -446,7 +328,7 @@ function UpcomingIpoCard({ ipo, index }: { ipo: UpcomingIpo; index: number }) {
       {/* Min investment */}
       <div className="flex items-center justify-between mb-4 py-2 px-3 rounded-[5px] bg-burgundy/[0.04] border border-burgundy/10">
         <span className="text-[10px] font-bold text-muted-foreground">Min. Investment</span>
-        <span className="text-sm font-black text-burgundy">₹{ipo.minInvestment.toLocaleString("en-IN")}</span>
+        <span className="text-sm font-black text-burgundy">{rupees(ipo.minInvestment)}</span>
       </div>
 
       <button
@@ -480,7 +362,7 @@ function ClosedIpoRow({ ipo, index }: { ipo: ClosedIpo; index: number }) {
     >
       {/* Logo */}
       <div className="flex items-center py-3.5 pr-2">
-        <CompanyBadge company={ipo.company} color={ipo.color} size="sm" />
+        <CompanyBadge company={ipo.company} color={ipo.color} logoUrl={ipo.logoUrl} size="sm" />
       </div>
 
       {/* Company */}
@@ -494,13 +376,18 @@ function ClosedIpoRow({ ipo, index }: { ipo: ClosedIpo; index: number }) {
       {/* Issue price */}
       <div className="flex flex-col justify-center py-3.5">
         <div className="text-[9px] font-bold text-muted-foreground mb-0.5">Issue Price</div>
-        <div className="text-sm font-extrabold text-foreground">₹{ipo.issuePrice}</div>
+        <div className="text-sm font-extrabold text-foreground">{rupees(ipo.issuePrice)}</div>
       </div>
 
       {/* Listing price */}
       <div className="flex flex-col justify-center py-3.5">
         <div className="text-[9px] font-bold text-muted-foreground mb-0.5">Listed At</div>
-        <div className="text-sm font-extrabold text-foreground">₹{ipo.listingPrice}</div>
+        <div className="text-sm font-extrabold text-foreground">{rupees(ipo.listingPrice)}</div>
+        {ipo.listingGainPct !== null && (
+          <div className={`text-[10px] font-bold ${ipo.listingGainPct >= 0 ? "text-profit" : "text-loss"}`}>
+            {ipo.listingGainPct >= 0 ? "+" : ""}{ipo.listingGainPct.toFixed(2)}%
+          </div>
+        )}
       </div>
 
       {/* Opened */}
@@ -572,7 +459,7 @@ function AllotmentChecker() {
           </div>
           <div>
             <p className="font-extrabold text-sm text-foreground mb-1">Allotment Pending</p>
-            <p className="text-[11px] text-muted-foreground">Allotment results for open IPOs will be available after {OPEN_IPOS[0].allotDate}.</p>
+            <p className="text-[11px] text-muted-foreground">Allotment results are usually published a few days after an IPO closes.</p>
           </div>
           <button
             onClick={() => { setPan(""); setChecked(false) }}
@@ -593,7 +480,26 @@ type Tab = "open" | "upcoming" | "closed"
 export default function IpoPage() {
   const [tab, setTab] = useState<Tab>("open")
 
-  const totalOpenSize = OPEN_IPOS.reduce((s, i) => s + i.issueSizeCr, 0)
+  const ipoData = useIpoPage()
+  const OPEN_IPOS = useMemo(() => (ipoData.data?.open ?? []).map(toOpenIpo), [ipoData.data])
+  const UPCOMING_IPOS = useMemo(() => (ipoData.data?.upcoming ?? []).map(toUpcomingIpo), [ipoData.data])
+  const CLOSED_IPOS = useMemo(
+    () => (ipoData.data?.closed ?? []).slice(0, RECENTLY_CLOSED).map(toClosedIpo),
+    [ipoData.data],
+  )
+  const totalOpenSize = OPEN_IPOS.reduce((s, i) => s + (i.issueSizeCr ?? 0), 0)
+
+  /** Loading / error message for a tab, or null once data is in. */
+  const listStatus = ipoData.loading && !ipoData.data
+    ? "Loading IPOs…"
+    : ipoData.error
+      ? <>Unable to load IPOs. <button onClick={ipoData.retry} className="text-burgundy font-bold hover:underline">Retry</button></>
+      : null
+
+  // Key dates sidebar: open IPOs, or upcoming ones when nothing is open.
+  const DATES = OPEN_IPOS.length
+    ? OPEN_IPOS.map((i) => ({ id: i.id, company: i.company, color: i.color, logoUrl: i.logoUrl, open: i.openDate, close: i.closeDate, listing: i.listDate }))
+    : UPCOMING_IPOS.map((i) => ({ id: i.id, company: i.company, color: i.color, logoUrl: i.logoUrl, open: i.openDate, close: i.closeDate, listing: "—" }))
 
   return (
     <main className="min-h-screen bg-background">
@@ -645,7 +551,7 @@ export default function IpoPage() {
               {[
                 { v: OPEN_IPOS.length.toString(),    l: "Open Now",      dot: true  },
                 { v: UPCOMING_IPOS.length.toString(),l: "Upcoming",      dot: false },
-                { v: `₹${(totalOpenSize / 100).toFixed(0)}+ Cr`, l: "Total Issue Size", dot: false },
+                { v: totalOpenSize ? crore(Math.round(totalOpenSize)) : "—", l: "Open Issue Size", dot: false },
               ].map((s) => (
                 <div key={s.l} className="bg-white border border-border/60 rounded-[6px] px-4 py-3 min-w-[110px]">
                   <div className="flex items-center gap-1.5 mb-0.5">
@@ -706,7 +612,7 @@ export default function IpoPage() {
                     transition={{ duration: 0.25 }}
                   >
                     {OPEN_IPOS.length === 0 ? (
-                      <div className="text-center py-16 text-muted-foreground text-sm">No IPOs open right now. Check Upcoming IPOs.</div>
+                      <div className="text-center py-16 text-muted-foreground text-sm">{listStatus ?? "No IPOs open right now. Check Upcoming IPOs."}</div>
                     ) : (
                       <div className="grid sm:grid-cols-2 gap-5">
                         {OPEN_IPOS.map((ipo) => <OpenIpoCard key={ipo.id} ipo={ipo} />)}
@@ -725,6 +631,9 @@ export default function IpoPage() {
                     transition={{ duration: 0.25 }}
                     className="grid sm:grid-cols-2 gap-5"
                   >
+                    {UPCOMING_IPOS.length === 0 && (
+                      <div className="sm:col-span-2 text-center py-16 text-muted-foreground text-sm">{listStatus ?? "No upcoming IPOs announced yet."}</div>
+                    )}
                     {UPCOMING_IPOS.map((ipo, i) => <UpcomingIpoCard key={ipo.id} ipo={ipo} index={i} />)}
                   </motion.div>
                 )}
@@ -753,6 +662,9 @@ export default function IpoPage() {
                         <div />
                       </div>
                       <div className="px-4">
+                        {CLOSED_IPOS.length === 0 && (
+                          <div className="text-center py-12 text-muted-foreground text-sm">{listStatus ?? "No recently closed IPOs."}</div>
+                        )}
                         {CLOSED_IPOS.map((ipo, i) => <ClosedIpoRow key={ipo.id} ipo={ipo} index={i} />)}
                       </div>
                     </div>
@@ -768,7 +680,7 @@ export default function IpoPage() {
                             className="bg-white border border-border rounded-[8px] p-4"
                           >
                             <div className="flex items-center gap-3 mb-3">
-                              <CompanyBadge company={ipo.company} color={ipo.color} size="sm" />
+                              <CompanyBadge company={ipo.company} color={ipo.color} logoUrl={ipo.logoUrl} size="sm" />
                               <div className="min-w-0">
                                 <div className="font-extrabold text-sm text-foreground truncate">{ipo.company}</div>
                                 <div className="text-[10px] text-muted-foreground"> Listed {ipo.listDate}</div>
@@ -777,11 +689,11 @@ export default function IpoPage() {
                             <div className="grid grid-cols-4 gap-2 mb-3">
                               <div className="text-center">
                                 <div className="text-[9px] font-bold text-muted-foreground">Issue</div>
-                                <div className="text-sm font-extrabold">₹{ipo.issuePrice}</div>
+                                <div className="text-sm font-extrabold">{rupees(ipo.issuePrice)}</div>
                               </div>
                               <div className="text-center">
                                 <div className="text-[9px] font-bold text-muted-foreground">Listed</div>
-                                <div className="text-sm font-extrabold">₹{ipo.listingPrice}</div>
+                                <div className="text-sm font-extrabold">{rupees(ipo.listingPrice)}</div>
                               </div>
                               <div className="text-center">
                                 <div className="text-[9px] font-bold text-muted-foreground">Opened</div>
@@ -816,18 +728,18 @@ export default function IpoPage() {
                   Important IPO Dates
                 </h3>
                 <div className="space-y-3">
-                  {OPEN_IPOS.map((ipo) => (
+                  {DATES.length === 0 && <p className="text-[11px] text-muted-foreground">{listStatus ?? "No IPO dates to show."}</p>}
+                  {DATES.map((ipo) => (
                     <div key={ipo.id} className="border-b border-border/40 last:border-0 pb-3 last:pb-0">
                       <div className="flex items-center gap-2 mb-1.5">
-                        <CompanyBadge company={ipo.company} color={ipo.color} size="sm" />
+                        <CompanyBadge company={ipo.company} color={ipo.color} logoUrl={ipo.logoUrl} size="sm" />
                         <span className="font-bold text-xs text-foreground">{ipo.company.split(" ")[0]} {ipo.company.split(" ")[1]}</span>
                       </div>
                       <div className="grid grid-cols-2 gap-1 pl-10">
                         {[
-                          { l: "Open",     v: ipo.openDate   },
-                          { l: "Close",    v: ipo.closeDate  },
-                          { l: "Allotment",v: ipo.allotDate  },
-                          { l: "Listing",  v: ipo.listDate   },
+                          { l: "Open",     v: ipo.open    },
+                          { l: "Close",    v: ipo.close   },
+                          { l: "Listing",  v: ipo.listing },
                         ].map((d) => (
                           <div key={d.l}>
                             <span className="text-[9px] font-bold text-muted-foreground">{d.l}: </span>

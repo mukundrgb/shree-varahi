@@ -1,51 +1,46 @@
 "use client"
 
-import { useMemo } from "react"
 import { useParams } from "next/navigation"
-import { MutualFundListPage } from "@/components/mutual-fund-list-page"
-import { synthesizeMutualFundList, synthesizeAmcFundList, titleFromSlug } from "@/lib/synthesize-mf-etf"
+import { MutualFundListPage, type MutualFundListPageData } from "@/components/mutual-fund-list-page"
+import { useFundList } from "@/hooks/use-mutual-funds"
 
-const CATEGORY_MAP: Record<string, string> = {
-  "equity-funds": "Equity", "debt-funds": "Debt", "hybrid-funds": "Hybrid", "index-funds": "Equity", "elss-funds": "Equity",
-}
+const titleFromSlug = (slug: string) =>
+  slug.replace(/-/g, " ").split(" ").filter(Boolean).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
 
-const AMC_NAMES: Record<string, string> = {
-  "sbi-mutual-fund": "SBI", "mirae-asset-mutual-fund": "Mirae Asset", "edelweiss-mutual-fund": "Edelweiss",
-  "icici-prudential-mutual-fund": "ICICI Prudential", "hdfc-mutual-fund": "HDFC", "dsp-mutual-fund": "DSP",
-  "nippon-india-mutual-fund": "Nippon India", "tata-mutual-fund": "Tata", "bandhan-mutual-fund": "Bandhan",
-  "kotak-mahindra-mutual-fund": "Kotak Mahindra", "aditya-birla-sun-life-mutual-fund": "Aditya Birla Sun Life",
-  "hsbc-mutual-fund": "HSBC", "uti-mutual-fund": "UTI", "canara-robeco-mutual-fund": "Canara Robeco", "axis-mutual-fund": "Axis",
-}
-
+/**
+ * Category / AMC / curated list pages, e.g. /mutual-funds/equity-funds/large-cap-funds
+ * or /mutual-funds/amc/hdfc-mutual-fund. Funds come from /api/v1/mutual-funds/lists/...
+ */
 export default function MutualFundsCatchAllPage() {
   const params = useParams()
-  const parts = Array.isArray(params.slug) ? params.slug : [params.slug].filter(Boolean) as string[]
-  const [top, sub] = parts
+  const parts = (Array.isArray(params.slug) ? params.slug : [params.slug]).filter(Boolean) as string[]
+  const list = useFundList(parts)
 
-  const data = useMemo(() => {
-    if (top === "amc" && sub) {
-      const amcKey = sub.replace(/-mutual-fund$/, "")
-      const amcName = AMC_NAMES[sub] ?? titleFromSlug(amcKey)
-      return synthesizeAmcFundList(sub, amcName)
-    }
-    if (top === "mf-to-invest" && sub) {
-      return synthesizeMutualFundList(sub, { crumbCategory: "MF To Invest", titleOverride: titleFromSlug(sub.replace(/^best-/, "")) })
-    }
-    if (sub) {
-      // e.g. /mutual-funds/equity-funds/large-cap-funds/
-      return synthesizeMutualFundList(sub, {
-        crumbCategory: titleFromSlug(top),
-        titleOverride: titleFromSlug(sub),
-        category: CATEGORY_MAP[top] ?? "Equity",
-      })
-    }
-    // single-level e.g. /mutual-funds/equity-funds/
-    return synthesizeMutualFundList(top ?? "equity-funds", {
-      crumbCategory: "By Category",
-      titleOverride: titleFromSlug(top ?? "equity-funds"),
-      category: CATEGORY_MAP[top] ?? "Equity",
-    })
-  }, [top, sub])
+  const data: MutualFundListPageData = list.data
+    ? {
+        slug: list.data.slug,
+        crumbCategory: list.data.crumb,
+        title: list.data.title,
+        updatedAt: list.data.updatedAt,
+        description: list.data.description,
+        funds: list.data.funds,
+      }
+    : {
+        slug: parts.join("/"),
+        crumbCategory: parts[0] === "amc" ? "AMC" : "Mutual Funds",
+        title: titleFromSlug(parts[parts.length - 1] ?? ""),
+        updatedAt: null,
+        description: "",
+        funds: [],
+      }
 
-  return <MutualFundListPage data={data} />
+  const status = list.loading && !list.data
+    ? "Loading funds…"
+    : list.error && !list.data
+      ? list.error.status === 404
+        ? "This fund list is not available."
+        : <>Unable to load funds. <button onClick={list.retry} className="text-burgundy font-bold hover:underline">Retry</button></>
+      : null
+
+  return <MutualFundListPage data={data} status={status} />
 }

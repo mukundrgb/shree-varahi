@@ -167,6 +167,7 @@ const products: Product[] = [
     badgeColor: "bg-gold/20 text-gold-deep",
     accentColor: "#8B0D19",
     bgHover: "rgba(217,178,124,0.06)",
+    href: "/mutual-funds",
   },
   /* SIP Auto-Invest is hidden for now.
   {
@@ -189,6 +190,7 @@ const products: Product[] = [
     badgeColor: "bg-profit/15 text-profit",
     accentColor: "#8B0D19",
     bgHover: "rgba(5,150,105,0.04)",
+    href: "/ipo",
   },
   {
     icon: Layers,
@@ -199,6 +201,7 @@ const products: Product[] = [
     badgeColor: "bg-gold/20 text-gold-deep",
     accentColor: "#8B0D19",
     bgHover: "rgba(217,178,124,0.06)",
+    href: "/etf",
   },
   /* Commodities is hidden for now.
   {

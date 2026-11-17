@@ -1,6 +1,8 @@
-// Display formatting shared by the stock pages.
+// Display formatting shared by the market data pages. Times are shown in IST.
 
 export const NO_VALUE = "—"
+
+const IST = "Asia/Kolkata"
 
 export function formatPrice(value: number | null | undefined): string {
   if (value === null || value === undefined) return NO_VALUE
@@ -23,18 +25,26 @@ export function formatVolume(value: number | null | undefined): string {
   return value.toLocaleString("en-IN")
 }
 
-export function formatDate(value: string | null | undefined): string {
-  if (!value) return NO_VALUE
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return NO_VALUE
-  return date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
+/** Accepts "2026-11-13", "2026-11-13T00:00:00" or "2026-11-13T09:15:00+05:30". */
+function toDate(value: string): Date {
+  // A bare date or a time without an offset is IST.
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return new Date(`${value}T00:00:00+05:30`)
+  if (/T\d{2}:\d{2}(:\d{2})?$/.test(value)) return new Date(`${value}+05:30`)
+  return new Date(value)
 }
 
-/** CMOTS sends a midnight time for end-of-day quotes, so those show the date only. */
+export function formatDate(value: string | null | undefined): string {
+  if (!value) return NO_VALUE
+  const date = toDate(value)
+  if (Number.isNaN(date.getTime())) return NO_VALUE
+  return date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: IST })
+}
+
+/** End-of-day quotes carry a midnight time, so those show the date only. */
 export function formatQuoteTime(value: string | null | undefined): string {
   if (!value) return NO_VALUE
-  if (value.endsWith("T00:00:00")) return formatDate(value)
-  const date = new Date(value)
+  if (/T00:00:00(\+05:30)?$/.test(value)) return formatDate(value)
+  const date = toDate(value)
   if (Number.isNaN(date.getTime())) return NO_VALUE
-  return date.toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })
+  return date.toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: IST })
 }

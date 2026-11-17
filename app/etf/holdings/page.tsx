@@ -7,13 +7,14 @@ import { ChevronRight, ChevronDown, ArrowUpRight, Search, X } from "lucide-react
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { StockAvatar } from "@/components/stock-avatar"
-import { getEtfCards, getEtfHoldings } from "@/lib/etf/dummy-data"
-import { NO_VALUE, formatPercent, formatRupees } from "@/lib/stocks/format"
+import { useEtfHoldings, useEtfList } from "@/hooks/etf/use-etf"
+import { ALL_ETFS } from "@/lib/etf/api-client"
+import { NO_VALUE, formatDate, formatPercent, formatRupees } from "@/lib/stocks/format"
 
-// TODO: replace getEtfCards / getEtfHoldings with the ETF API.
+// Equity ETFs (largest AUM first) and their holdings come from the backend (/api/v1/etfs).
 // Holdings data is available for equity ETFs only, so only those are listed.
 
-const DEFAULT_ETF = "nifty-50-etf"
+const EQUITY_ETFS = { category: "Equity", sort: "aum", order: "desc", limit: ALL_ETFS } as const
 
 const changeColor = (value: number | null) =>
   value === null ? "text-muted-foreground" : value >= 0 ? "text-profit" : "text-loss"
@@ -29,13 +30,18 @@ export default function EtfHoldingsPage() {
 
 function EtfHoldings() {
   const params = useSearchParams()
-  const etfs = useMemo(() => getEtfCards("Equity"), [])
+  const etfList = useEtfList(EQUITY_ETFS)
+  const etfs = useMemo(() => etfList.data?.items ?? [], [etfList.data])
   const requested = params.get("etf")
 
-  const [slug, setSlug] = useState(etfs.some((e) => e.slug === requested) ? requested! : DEFAULT_ETF)
+  const [picked, setPicked] = useState<string | null>(null)
   const [search, setSearch] = useState("")
-  const etf = etfs.find((e) => e.slug === slug) ?? etfs[0]
-  const holdings = useMemo(() => getEtfHoldings(etf.slug), [etf.slug])
+  // Picked ETF, else the one in ?etf=, else the largest equity ETF.
+  const slug = picked ?? (requested && etfs.some((e) => e.slug === requested) ? requested : etfs[0]?.slug ?? "")
+  const result = useEtfHoldings(slug)
+  const data = result.data?.slug === slug ? result.data : null
+  const etf = etfs.find((e) => e.slug === slug) ?? { slug, name: data?.name ?? "", symbol: data?.name ?? "" }
+  const holdings = data?.holdings ?? []
 
   const query = search.trim().toLowerCase()
   const visible = query
@@ -44,7 +50,7 @@ function EtfHoldings() {
   const maxWeight = Math.max(...holdings.map((h) => h.weight), 1)
   const grid = "minmax(220px,2fr) minmax(150px,1.2fr) minmax(100px,0.8fr) minmax(90px,0.7fr)"
 
-  const pickEtf = (next: string) => { setSlug(next); setSearch("") }
+  const pickEtf = (next: string) => { setPicked(next); setSearch("") }
 
   return (
     <main className="min-h-screen bg-background">
@@ -124,6 +130,7 @@ function EtfHoldings() {
                 {query
                   ? <>Showing <span className="font-bold text-foreground">{visible.length}</span> of {holdings.length} equity holdings</>
                   : <><span className="font-bold text-foreground">{holdings.length}</span> equity holdings</>}
+                {data?.portfolioDate && <> · as of {formatDate(data.portfolioDate)}</>}
               </p>
             </div>
           </div>
@@ -139,11 +146,14 @@ function EtfHoldings() {
 
                 {visible.length === 0 ? (
                   <div className="py-16 text-center text-muted-foreground text-sm">
-                    {query ? "No holdings match your search." : "No equity holdings data for this ETF."}
+                    {etfList.error || result.error ? (
+                      <>Unable to load holdings. <button onClick={() => { etfList.retry(); result.retry() }} className="text-burgundy font-bold hover:underline">Retry</button></>
+                    ) : etfList.loading || (slug && !data) ? "Loading holdings…"
+                      : query ? "No holdings match your search." : "No equity holdings data for this ETF."}
                   </div>
                 ) : (
                   visible.map((h) => (
-                    <div key={h.name} className="grid px-4 py-3 border-b border-border/40 last:border-0 hover:bg-cream/30 transition-colors items-center" style={{ gridTemplateColumns: grid }}>
+                    <div key={h.isin ?? h.name} className="grid px-4 py-3 border-b border-border/40 last:border-0 hover:bg-cream/30 transition-colors items-center" style={{ gridTemplateColumns: grid }}>
                       <div className="min-w-0 pr-3">
                         <div className="text-sm font-extrabold text-foreground truncate">{h.name}</div>
                         <div className="text-[11px] text-muted-foreground truncate mt-0.5">{h.sector}</div>

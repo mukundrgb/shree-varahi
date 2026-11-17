@@ -304,10 +304,6 @@ export default function GlobalInvestingPage() {
                 <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
                   <Link href="/signup/register">Open Account</Link>
                 </Button>
-                {/* TODO: link to the user guidelines document once it exists. */}
-                <Button asChild variant="outline" className="border-border px-7 h-11 font-bold rounded-[5px] hover:bg-secondary">
-                  <a href="#">User Guidelines</a>
-                </Button>
               </div>
             </div>
 

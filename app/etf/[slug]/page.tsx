@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState, type ReactNode } from "react"
+import { useState, type ReactNode } from "react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { ChevronRight, ArrowUpRight, ArrowDownRight, Info, Zap } from "lucide-react"
@@ -8,9 +8,9 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { StockAvatar } from "@/components/stock-avatar"
 import { EtfPriceChart } from "@/components/etf-price-chart"
-import { getEtfChart, getEtfDetail } from "@/lib/etf/dummy-data"
+import { useEtfChart, useEtfDetail } from "@/hooks/etf/use-etf"
 import type { ChartRange, EtfDetail, EtfSummary, Riskometer } from "@/lib/etf/types"
-import { NO_VALUE, formatPercent, formatPrice, formatRupees, formatQuoteTime } from "@/lib/stocks/format"
+import { NO_VALUE, formatDate, formatPercent, formatPrice, formatRupees, formatQuoteTime } from "@/lib/stocks/format"
 
 // ─── Formatting ─────────────────────────────────────────────────────────────
 
@@ -33,7 +33,7 @@ function formatRatio(value: number | null | undefined): string {
 const changeColor = (value: number | null | undefined) =>
   value === null || value === undefined ? "text-muted-foreground" : value >= 0 ? "text-profit" : "text-loss"
 
-const RISK_STYLE: Record<Riskometer, string> = {
+const RISK_STYLE: Record<Riskometer | string, string> = {
   "Low": "bg-profit/10 text-profit",
   "Low to Moderate": "bg-profit/10 text-profit",
   "Moderate": "bg-gold/15 text-gold-deep",
@@ -160,14 +160,31 @@ function PageShell({ children }: { children: ReactNode }) {
 export default function EtfDetailPage() {
   const params = useParams()
   const slug = typeof params.slug === "string" ? params.slug : params.slug?.[0] ?? ""
-  // TODO: replace with the ETF API (loading and error states like the stock page).
-  const etf = getEtfDetail(slug)
+  const { data: etf, error, retry } = useEtfDetail(slug)
 
-  if (!etf) {
+  if (error?.status === 404) {
     return (
       <PageShell>
         <p className="text-2xl font-black text-foreground">ETF not found</p>
         <Link href="/etf" className="text-burgundy font-semibold hover:underline">← Back to ETFs</Link>
+      </PageShell>
+    )
+  }
+
+  if (error) {
+    return (
+      <PageShell>
+        <p className="text-lg font-black text-foreground">Unable to load this ETF</p>
+        <p className="text-sm text-muted-foreground">{error.message}</p>
+        <button onClick={retry} className="text-burgundy font-semibold hover:underline">Try again</button>
+      </PageShell>
+    )
+  }
+
+  if (!etf) {
+    return (
+      <PageShell>
+        <p className="text-sm text-muted-foreground">Loading ETF…</p>
       </PageShell>
     )
   }
@@ -177,8 +194,8 @@ export default function EtfDetailPage() {
 
 function EtfDetailView({ etf }: { etf: EtfDetail }) {
   const [chartRange, setChartRange] = useState<ChartRange>("1D")
-  // TODO: replace with the ETF chart API.
-  const chartPoints = useMemo(() => getEtfChart(etf.slug, chartRange), [etf.slug, chartRange])
+  const chart = useEtfChart(etf.slug, chartRange)
+  const chartPoints = chart.data?.range === chartRange ? chart.data.points : []
   const p = etf.performance
   const f = etf.fundamentals
   const isUp = (etf.changePct ?? 0) >= 0
@@ -273,7 +290,7 @@ function EtfDetailView({ etf }: { etf: EtfDetail }) {
                     label: "Riskometer",
                     help: HELP.riskometer,
                     value: f.riskometer
-                      ? <span className={`text-[11px] font-black px-2 py-0.5 rounded-[4px] ${RISK_STYLE[f.riskometer]}`}>{f.riskometer}</span>
+                      ? <span className={`text-[11px] font-black px-2 py-0.5 rounded-[4px] ${RISK_STYLE[f.riskometer] ?? "bg-gold/15 text-gold-deep"}`}>{f.riskometer}</span>
                       : NO_VALUE,
                   },
                   { label: "P/E ratio",   value: formatRatio(f.pe),       help: HELP.pe },
@@ -326,10 +343,10 @@ function EtfDetailView({ etf }: { etf: EtfDetail }) {
 
               {/* About */}
               <Card title="About">
-                <p className="text-[13px] text-muted-foreground leading-relaxed">{etf.about.description}</p>
+                <p className="text-[13px] text-muted-foreground leading-relaxed">{etf.about.description || NO_VALUE}</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-5 pt-4 border-t border-border/60">
                   {[
-                    { label: "Founded",      value: etf.about.founded ?? NO_VALUE },
+                    { label: "Founded",      value: etf.about.founded ? formatDate(etf.about.founded) : NO_VALUE },
                     { label: "AMC",          value: etf.about.amc ?? NO_VALUE },
                     { label: "Fund manager", value: etf.about.fundManagers.join(", ") || NO_VALUE },
                   ].map((item) => (

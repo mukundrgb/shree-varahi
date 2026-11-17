@@ -7,11 +7,11 @@ import { ChevronRight, ChevronLeft, ChevronUp, ChevronDown, Search, X } from "lu
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { StockAvatar } from "@/components/stock-avatar"
-import { getEtfList } from "@/lib/etf/dummy-data"
+import { useEtfList } from "@/hooks/etf/use-etf"
 import type { EtfCategory, EtfListRow } from "@/lib/etf/types"
 import { NO_VALUE, formatPercent, formatPrice, formatRupees } from "@/lib/stocks/format"
 
-// TODO: replace getEtfList with the ETF API.
+// Every ETF is loaded once from the backend (/api/v1/etfs); search, filter, sort and paging run here.
 
 const CATEGORIES: ("All" | EtfCategory)[] = ["All", "Equity", "Commodity", "Debt", "Global"]
 const PER_PAGE = 10
@@ -64,7 +64,8 @@ function EtfCompare() {
   const [sortDir, setSortDir] = useState<SortDir>(FIRST_DIR[startKey])
   const [page, setPage] = useState(1)
 
-  const all = useMemo(() => getEtfList(), [])
+  const list = useEtfList()
+  const all = useMemo(() => list.data?.items ?? [], [list.data])
 
   const rows = useMemo(() => {
     const query = search.trim().toLowerCase()
@@ -188,7 +189,11 @@ function EtfCompare() {
 
                 {/* Rows */}
                 {pageRows.length === 0 ? (
-                  <div className="py-16 text-center text-muted-foreground text-sm">No ETFs match your filters.</div>
+                  <div className="py-16 text-center text-muted-foreground text-sm">
+                    {list.loading ? "Loading ETFs…" : list.error ? (
+                      <>Unable to load ETFs. <button onClick={list.retry} className="text-burgundy font-bold hover:underline">Retry</button></>
+                    ) : "No ETFs match your filters."}
+                  </div>
                 ) : (
                   pageRows.map((r) => (
                     <div

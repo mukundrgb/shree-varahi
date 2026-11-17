@@ -11,6 +11,8 @@ import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { MTFSection } from "@/components/mtf-section"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useMtfSummary } from "@/hooks/use-mtf"
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 
@@ -22,7 +24,7 @@ const TOP_MTF_STOCKS = [
 
 const KEY_BENEFITS = [
   "Buy Up To 4× More Shares", "Unlimited Holding Period", "0% Interest For First 30 Days",
-  "1,700+ MTF Eligible Stocks", "Automatic Pledge & Unpledge", "Transparent Charges, No Hidden Fees",
+  "MTF Eligible Stocks", "Automatic Pledge & Unpledge", "Transparent Charges, No Hidden Fees",
   "Trade From Your Existing Account", "Same-Day Margin Activation",
 ]
 
@@ -56,6 +58,12 @@ function CheckPill({ label }: { label: string }) {
 
 export default function MTFPage() {
   const [mobile, setMobile] = useState("")
+  const router = useRouter()
+  // Stock count from the MTF margin list file (/api/v1/mtf).
+  const mtf = useMtfSummary()
+  const stockCount = mtf.data ? mtf.data.totalStocks.toLocaleString("en-IN") : null
+  const eligibleStocks = stockCount ? `${stockCount} eligible stocks` : "eligible stocks"
+  const benefits = KEY_BENEFITS.map((b) => (b === "MTF Eligible Stocks" && stockCount ? `${stockCount} MTF Eligible Stocks` : b))
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null)
 
   return (
@@ -93,7 +101,7 @@ export default function MTFPage() {
                 <span className="text-burgundy">4× More Shares</span>
               </h1>
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-lg">
-                Trade now, pay later. Use Shree Varahi&apos;s Margin Trading Facility to fund part of your purchase and unlock more buying power on 1,700+ eligible stocks — at just 0.041% interest per day.
+                Trade now, pay later. Use Shree Varahi&apos;s Margin Trading Facility to fund part of your purchase and unlock more buying power on {eligibleStocks} — at just 0.041% interest per day.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
@@ -156,8 +164,8 @@ export default function MTFPage() {
                 Avail MTF @ 0% Interest Rate <span className="font-semibold text-white/80">— for the first 30 days, on borrowing up to ₹1,00,000.</span>
               </p>
             </div>
-            <Button size="sm" className="bg-white hover:bg-gold-champagne text-burgundy font-black text-[12px] h-9 px-5 rounded-[5px] shrink-0">
-              Open Account
+            <Button asChild size="sm" className="bg-white hover:bg-gold-champagne text-burgundy font-black text-[12px] h-9 px-5 rounded-[5px] shrink-0">
+              <Link href="/login">Open Account</Link>
             </Button>
           </div>
         </div>
@@ -271,7 +279,7 @@ export default function MTFPage() {
           </div>
 
           <div className="hidden sm:flex flex-wrap justify-center gap-2.5 mt-10">
-            {KEY_BENEFITS.map((b) => <CheckPill key={b} label={b} />)}
+            {benefits.map((b) => <CheckPill key={b} label={b} />)}
           </div>
         </div>
       </section>
@@ -359,14 +367,14 @@ export default function MTFPage() {
                 Avail MTF<br className="hidden sm:inline" /> @ 0% Interest Rate
               </h2>
               <p className="text-sm font-semibold text-white/85">
-                Trade Now. Pay Later. Unlock up to 4× buying power on 1,700+ eligible stocks through Shree Varahi.
+                Trade Now. Pay Later. Unlock up to 4× buying power on {eligibleStocks} through Shree Varahi.
               </p>
               <div className="flex items-center justify-center lg:justify-start gap-1.5 text-sm font-bold text-white/85">
                 4.5 <Star className="w-4 h-4 fill-gold-champagne text-gold-champagne" /> App Rating
               </div>
 
               <form
-                onSubmit={(e) => e.preventDefault()}
+                onSubmit={(e) => { e.preventDefault(); router.push("/login") }}
                 className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto lg:mx-0"
               >
                 <input

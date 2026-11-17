@@ -1,8 +1,9 @@
-// Shared loading, error, refresh and cancellation logic for the stock hooks.
+// Shared loading, error, refresh and cancellation logic for every backend data hook.
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { StockApiError } from "@/lib/stocks/api-client"
+import { ApiError } from "@/lib/api/client"
 
+/** Prices are refreshed this often in the background. */
 export const QUOTE_REFRESH_MS = 30_000
 
 interface Options {
@@ -11,13 +12,13 @@ interface Options {
 }
 
 /** Loads data for `key`. Pass a null key to wait, such as until a tab is opened. */
-export function useStockResource<T>(
+export function useApiResource<T>(
   key: string | null,
   load: (signal: AbortSignal) => Promise<T>,
   { refreshMs }: Options = {},
 ) {
   const [data, setData] = useState<T | null>(null)
-  const [error, setError] = useState<StockApiError | null>(null)
+  const [error, setError] = useState<ApiError | null>(null)
   const [loading, setLoading] = useState(key !== null)
   const [attempt, setAttempt] = useState(0)
 
@@ -41,7 +42,7 @@ export function useStockResource<T>(
         },
         (reason: unknown) => {
           if (controller.signal.aborted || background) return
-          setError(reason instanceof StockApiError ? reason : new StockApiError("Unable to load market data", 0))
+          setError(reason instanceof ApiError ? reason : new ApiError("Unable to load market data", 0))
           setLoading(false)
         },
       )

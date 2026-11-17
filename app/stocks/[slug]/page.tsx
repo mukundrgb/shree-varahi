@@ -974,7 +974,7 @@ function StockDetail({ slug, stock }: { slug: string; stock: StockSummary }) {
                         <span className="text-[9px] font-extrabold px-1.5 py-0.5 bg-burgundy/10 text-burgundy rounded-[3px] uppercase tracking-wide">{n.tag}</span>
                         <p className="text-xs font-bold text-foreground mt-1.5 leading-relaxed line-clamp-2">{n.headline}</p>
                         <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
-                          <Calendar className="w-2.5 h-2.5" /> {formatDate(n.date)}
+                          <Calendar className="w-2.5 h-2.5" /> {formatDate(n.publishedAt)}
                         </p>
                       </div>
                     ))}

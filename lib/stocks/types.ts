@@ -1,4 +1,4 @@
-// UI-facing stock types shared by routes, hooks and pages.
+// Stock types returned by the backend (/api/v1/stocks) and used by hooks and pages.
 
 export type CapCategory = "large" | "mid" | "small"
 export type FinancialsPeriod = "quarterly" | "yearly"
@@ -20,14 +20,25 @@ export interface StockQuote {
 
 export interface StockSummary {
   slug: string
+  coCode: number
   symbol: string
   name: string
   sector: string
+  industry: string
+  /** "NSE, BSE" */
   exchange: string
+  exchanges: string[]
+  isin: string | null
   capCategory: CapCategory | null
   capLabel: string | null
   logoUrl: string | null
   tradingViewSymbol: string | null
+  quote: StockQuote | null
+}
+
+export interface StockQuoteResult {
+  slug: string
+  symbol: string
   quote: StockQuote | null
 }
 
@@ -48,6 +59,7 @@ export interface StockListResult {
   items: StockSummary[]
   total: number
   page: number
+  limit: number
   totalPages: number
   /** Every category that has at least one listed company, for the filter chips. */
   categories: string[]
@@ -94,7 +106,11 @@ export interface StockNewsItem {
   id: string
   tag: string
   headline: string
-  date: string | null
+  caption: string | null
+  /** HTML article text */
+  body: string | null
+  /** ISO date-time (IST) */
+  publishedAt: string | null
 }
 
 export interface StockNews {

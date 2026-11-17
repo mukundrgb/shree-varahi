@@ -12,6 +12,8 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { useNfos } from "@/hooks/use-mutual-funds"
+import type { NfoApi } from "@/lib/mutual-funds/api-client"
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 
@@ -32,55 +34,46 @@ const KEY_BENEFITS_1 = [
   "Research-Driven Decision Making", "Seamless Investment Experience",
 ]
 
-type Category = "Equity" | "Debt" | "Hybrid" | "Index" | "Sector" | "International"
+const ALL = "All"
 
-const CATEGORIES: { id: Category; icon: React.ElementType; color: string; desc: string }[] = [
-  { id: "Equity",        icon: TrendingUp, color: "#8B0D19", desc: "Growth-focused funds investing primarily in equity markets to help you capture long-term wealth creation opportunities." },
-  { id: "Debt",          icon: Landmark,   color: "#8B0D19", desc: "Fixed-income funds focused on stability and steady income generation for predictable financial growth." },
-  { id: "Hybrid",        icon: Scale,      color: "#8B0D19", desc: "A balanced mix of equity and debt investments designed to deliver growth with stability and controlled risk." },
-  { id: "Index",         icon: BarChart3,  color: "#8B0D19", desc: "Passive funds tracking benchmark market indices to deliver simple, low-cost, market-matching returns." },
-  { id: "Sector",        icon: Target,     color: "#8B0D19", desc: "Focused exposure to specific sectors and investment themes to capture targeted growth opportunities in the market." },
-  { id: "International", icon: Globe2,     color: "#8B0D19", desc: "Invest in global markets and international opportunities to diversify your portfolio and capture worldwide growth potential." },
-]
-
-const NFOS: Record<Category, { name: string; status: "Open" | "Upcoming"; closes: string; min: string }[]> = {
-  Equity: [
-    { name: "Varahi Flexicap Growth Fund",     status: "Open",     closes: "28 Jun", min: "₹500" },
-    { name: "Varahi Midcap Opportunities Fund", status: "Open",     closes: "30 Jun", min: "₹1,000" },
-    { name: "Varahi Smallcap Discovery Fund",  status: "Upcoming", closes: "05 Jul", min: "₹500" },
-    { name: "Varahi Focused Equity Fund",      status: "Upcoming", closes: "08 Jul", min: "₹1,000" },
-  ],
-  Debt: [
-    { name: "Varahi Corporate Bond Fund",      status: "Open",     closes: "27 Jun", min: "₹1,000" },
-    { name: "Varahi Banking & PSU Debt Fund",  status: "Open",     closes: "29 Jun", min: "₹500" },
-    { name: "Varahi Short Duration Fund",      status: "Upcoming", closes: "04 Jul", min: "₹1,000" },
-    { name: "Varahi Gilt Fund",                status: "Upcoming", closes: "10 Jul", min: "₹500" },
-  ],
-  Hybrid: [
-    { name: "Varahi Balanced Advantage Fund",  status: "Open",     closes: "28 Jun", min: "₹1,000" },
-    { name: "Varahi Equity Savings Fund",      status: "Open",     closes: "01 Jul", min: "₹500" },
-    { name: "Varahi Multi Asset Allocation Fund", status: "Upcoming", closes: "06 Jul", min: "₹1,000" },
-    { name: "Varahi Conservative Hybrid Fund", status: "Upcoming", closes: "09 Jul", min: "₹500" },
-  ],
-  Index: [
-    { name: "Varahi Nifty 50 Index Fund",      status: "Open",     closes: "27 Jun", min: "₹100" },
-    { name: "Varahi Nifty Next 50 Index Fund", status: "Open",     closes: "30 Jun", min: "₹100" },
-    { name: "Varahi Sensex Index Fund",        status: "Upcoming", closes: "05 Jul", min: "₹100" },
-    { name: "Varahi Nifty Midcap 150 Index Fund", status: "Upcoming", closes: "11 Jul", min: "₹100" },
-  ],
-  Sector: [
-    { name: "Varahi Banking & Financial Services Fund", status: "Open", closes: "28 Jun", min: "₹500" },
-    { name: "Varahi Technology Fund",          status: "Open",     closes: "01 Jul", min: "₹500" },
-    { name: "Varahi Pharma & Healthcare Fund", status: "Upcoming", closes: "07 Jul", min: "₹500" },
-    { name: "Varahi Infrastructure Fund",      status: "Upcoming", closes: "12 Jul", min: "₹500" },
-  ],
-  International: [
-    { name: "Varahi US Equity Opportunities Fund", status: "Open",     closes: "29 Jun", min: "₹1,000" },
-    { name: "Varahi Global Innovation Fund",   status: "Open",     closes: "02 Jul", min: "₹1,000" },
-    { name: "Varahi Emerging Markets Fund",    status: "Upcoming", closes: "08 Jul", min: "₹1,000" },
-    { name: "Varahi China Opportunities Fund", status: "Upcoming", closes: "13 Jul", min: "₹1,000" },
-  ],
+/** Icon for a Reedos NFO category (names are used as Reedos sends them). */
+function categoryIcon(name: string): React.ElementType {
+  const n = name.toLowerCase()
+  if (/index/.test(n)) return BarChart3
+  if (/etf/.test(n)) return LineChart
+  if (/fof|overseas|international|global/.test(n)) return Globe2
+  if (/hybrid|balanced|arbitrage|multi asset/.test(n)) return Scale
+  if (/fmp|debt|bond|gilt|liquid|duration|money market|credit|income/.test(n)) return Landmark
+  if (/sector|thematic/.test(n)) return Target
+  return TrendingUp
 }
+
+const shortDate = (iso: string | null) =>
+  iso ? new Date(`${iso}T00:00:00`).toLocaleDateString("en-IN", { day: "2-digit", month: "short" }) : "—"
+
+const rupees = (v: number | null) => (v === null ? "—" : `₹${v.toLocaleString("en-IN")}`)
+
+/** "Closes 17 Nov" for open offers, "Opens 20 Nov" for upcoming ones. */
+const keyDate = (f: NfoApi) =>
+  f.status === "Open" ? `Closes ${shortDate(f.closingDate)}` : `Opens ${shortDate(f.launchDate)}`
+
+function AmcLogo({ nfo, size = "w-8 h-8" }: { nfo: NfoApi; size?: string }) {
+  const [failed, setFailed] = useState(false)
+  if (nfo.amcLogoUrl && !failed) {
+    return (
+      <div className={`${size} rounded-[6px] bg-white border border-border/60 flex items-center justify-center overflow-hidden shrink-0`}>
+        <img src={nfo.amcLogoUrl} alt="" loading="lazy" onError={() => setFailed(true)} className="w-full h-full object-contain p-0.5" />
+      </div>
+    )
+  }
+  return (
+    <div className={`${size} rounded-[6px] flex items-center justify-center text-[10px] font-black bg-burgundy/10 text-burgundy border border-burgundy/15 shrink-0`}>
+      {(nfo.amcName ?? nfo.name).slice(0, 2).toUpperCase()}
+    </div>
+  )
+}
+
+const statusClass = (s: NfoApi["status"]) => (s === "Open" ? "text-profit" : "text-gold-deep")
 
 const WHY_EXPLORE = [
   "Discover New Investment Themes", "Access Multiple Fund Categories", "Diversify Across Asset Classes",
@@ -154,11 +147,23 @@ function CheckPill({ label }: { label: string }) {
 // ─── Page ───────────────────────────────────────────────────────────────────
 
 export default function NFOPage() {
-  const [activeCat, setActiveCat] = useState<Category>("Equity")
+  const [activeCat, setActiveCat] = useState<string>(ALL)
   const [activeParam, setActiveParam] = useState(0)
   const [mobile, setMobile] = useState("")
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null)
-  const activeCatMeta = CATEGORIES.find((c) => c.id === activeCat)!
+
+  const nfoData = useNfos()
+  const nfos = nfoData.data?.nfos ?? []
+  const tabs = [{ name: ALL, count: nfos.length }, ...(nfoData.data?.categories ?? [])]
+  const shown = activeCat === ALL ? nfos : nfos.filter((f) => (f.category ?? "Other") === activeCat)
+  const featured = nfos[0] ?? null
+  const nfoStatus = nfoData.loading && !nfoData.data
+    ? "Loading NFOs…"
+    : nfoData.error && !nfoData.data
+      ? <>Unable to load NFOs. <button onClick={nfoData.retry} className="text-burgundy font-bold hover:underline">Retry</button></>
+      : nfos.length === 0
+        ? "No NFOs are open or upcoming right now. Please check back soon."
+        : null
 
   return (
     <main className="min-h-screen bg-background">
@@ -198,11 +203,11 @@ export default function NFOPage() {
                 Discover New Opportunities. Invest Early. Build Your Portfolio With Confidence — with live NFO tracking, research, and a unified fund dashboard.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Button className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
-                  Explore NFOs
+                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
+                  <a href="#explore-nfos">Explore NFOs</a>
                 </Button>
-                <Button variant="outline" className="border-border px-7 h-11 font-bold rounded-[5px] hover:bg-secondary">
-                  Open Account
+                <Button asChild variant="outline" className="border-border px-7 h-11 font-bold rounded-[5px] hover:bg-secondary">
+                  <Link href="/login">Open Account</Link>
                 </Button>
               </div>
               <div className="flex flex-wrap gap-4 pt-1">
@@ -227,20 +232,27 @@ export default function NFOPage() {
               >
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-extrabold uppercase tracking-wider text-gold-deep">Live NFOs Today</span>
-                  <span className="text-[9px] font-bold text-muted-foreground">CLOSES</span>
+                  <span className="text-[9px] font-bold text-muted-foreground">
+                    {nfoData.data ? `${nfoData.data.stats.open} OPEN` : "DATES"}
+                  </span>
                 </div>
-                {NFOS.Equity.slice(0, 3).map((f) => (
-                  <div key={f.name} className="flex items-center justify-between gap-2">
-                    <span className="text-[11px] font-semibold text-foreground truncate pr-2">{f.name}</span>
-                    <div className="text-right shrink-0">
-                      <div className={`text-[10px] font-bold ${f.status === "Open" ? "text-profit" : "text-gold-deep"}`}>{f.status}</div>
-                      <div className="text-[9px] text-muted-foreground font-semibold">{f.closes}</div>
+                {nfoStatus ? (
+                  <p className="text-[11px] text-muted-foreground">{nfoStatus}</p>
+                ) : (
+                  nfos.slice(0, 3).map((f) => (
+                    <div key={f.schemeCode} className="flex items-center justify-between gap-2">
+                      <AmcLogo nfo={f} size="w-6 h-6" />
+                      <span className="flex-1 min-w-0 text-[11px] font-semibold text-foreground truncate pr-2" title={f.name}>{f.name}</span>
+                      <div className="text-right shrink-0">
+                        <div className={`text-[10px] font-bold ${statusClass(f.status)}`}>{f.status}</div>
+                        <div className="text-[9px] text-muted-foreground font-semibold">{keyDate(f)}</div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
                 <div className="pt-1 border-t border-border/40">
-                  <Button size="sm" className="w-full bg-burgundy hover:bg-burgundy-deep text-white text-[11px] font-bold rounded-[5px] h-8">
-                    Invest Now
+                  <Button asChild size="sm" className="w-full bg-burgundy hover:bg-burgundy-deep text-white text-[11px] font-bold rounded-[5px] h-8">
+                    <a href="#explore-nfos">View All NFOs</a>
                   </Button>
                 </div>
               </motion.div>
@@ -290,76 +302,84 @@ export default function NFOPage() {
       </section>
 
       {/* ── EXPLORE NFO OPPORTUNITIES ── */}
-      <section className="py-12 lg:py-16 bg-cream border-t border-border/40">
+      <section id="explore-nfos" className="py-12 lg:py-16 bg-cream border-t border-border/40 scroll-mt-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">Explore NFO Opportunities</p>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground">Track New Investment Opportunities</h2>
+            {nfoData.data && nfos.length > 0 && (
+              <p className="text-sm text-muted-foreground mt-3">
+                {nfoData.data.stats.open} open · {nfoData.data.stats.upcoming} upcoming
+              </p>
+            )}
           </div>
 
-          {/* Category tabs */}
-          <div className="flex flex-wrap justify-center gap-2 mb-8">
-            {CATEGORIES.map((c) => {
-              const Icon = c.icon
-              const active = activeCat === c.id
-              return (
-                <button
-                  key={c.id}
-                  onClick={() => setActiveCat(c.id)}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-[6px] text-[12px] font-bold border transition-all duration-200 ${
-                    active
-                      ? "bg-burgundy text-white border-burgundy shadow-sm"
-                      : "bg-white text-muted-foreground border-border hover:border-burgundy/25 hover:text-foreground"
-                  }`}
-                >
-                  <Icon className="w-3.5 h-3.5" style={{ color: active ? "#fff" : c.color }} />
-                  {c.id} NFOs
-                </button>
-              )
-            })}
-          </div>
-
-          <p className="text-center text-sm text-muted-foreground max-w-xl mx-auto mb-8 -mt-2">
-            {activeCatMeta.desc}
-          </p>
-
-          {/* NFO grid */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeCat}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8"
-            >
-              {NFOS[activeCat].map((f) => (
-                <div
-                  key={f.name}
-                  className="bg-white border border-border rounded-[8px] p-4 hover:border-gold/40 hover:shadow-sm transition-all duration-200 cursor-pointer"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <div
-                      className="w-8 h-8 rounded-[6px] flex items-center justify-center text-[10px] font-black"
-                      style={{ background: activeCatMeta.color + "14", color: activeCatMeta.color, border: `1px solid ${activeCatMeta.color}22` }}
+          {nfoStatus ? (
+            <div className="bg-white border border-border rounded-[8px] py-14 text-center text-sm text-muted-foreground mb-8">
+              {nfoStatus}
+            </div>
+          ) : (
+            <>
+              {/* Category tabs — Reedos category names as sent */}
+              <div className="flex flex-wrap justify-center gap-2 mb-8">
+                {tabs.map((c) => {
+                  const Icon = c.name === ALL ? Layers : categoryIcon(c.name)
+                  const active = activeCat === c.name
+                  return (
+                    <button
+                      key={c.name}
+                      onClick={() => setActiveCat(c.name)}
+                      className={`flex items-center gap-2 px-4 py-2.5 rounded-[6px] text-[12px] font-bold border transition-all duration-200 ${
+                        active
+                          ? "bg-burgundy text-white border-burgundy shadow-sm"
+                          : "bg-white text-muted-foreground border-border hover:border-burgundy/25 hover:text-foreground"
+                      }`}
                     >
-                      {f.name.split(" ").slice(1, 3).map((w) => w[0]).join("")}
+                      <Icon className="w-3.5 h-3.5" style={{ color: active ? "#fff" : "#8B0D19" }} />
+                      {c.name === ALL ? "All NFOs" : c.name}
+                      <span className={`text-[10px] font-black ${active ? "text-white/80" : "text-muted-foreground/70"}`}>{c.count}</span>
+                    </button>
+                  )
+                })}
+              </div>
+
+              {/* NFO grid */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeCat}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8"
+                >
+                  {shown.map((f) => (
+                    <div
+                      key={f.schemeCode}
+                      className="bg-white border border-border rounded-[8px] p-4 hover:border-gold/40 hover:shadow-sm transition-all duration-200 flex flex-col"
+                    >
+                      <div className="flex items-center justify-between gap-2 mb-3">
+                        <AmcLogo nfo={f} />
+                        <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${f.status === "Open" ? "bg-profit/10 text-profit" : "bg-gold/15 text-gold-deep"}`}>
+                          {f.status}
+                        </span>
+                      </div>
+                      <div className="font-extrabold text-[12px] text-foreground leading-tight mb-1 line-clamp-2 min-h-[28px]" title={f.name}>
+                        {f.name}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground font-semibold mb-3 truncate">
+                        {[f.amcName, f.category].filter(Boolean).join(" · ")}
+                      </div>
+                      <div className="mt-auto flex items-center justify-between gap-2">
+                        <span className="text-[10px] text-muted-foreground font-semibold">Min {rupees(f.minInvestment)}</span>
+                        <span className="text-[11px] font-bold text-foreground">{keyDate(f)}</span>
+                      </div>
                     </div>
-                    <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${f.status === "Open" ? "bg-profit/10 text-profit" : "bg-gold/15 text-gold-deep"}`}>
-                      {f.status}
-                    </span>
-                  </div>
-                  <div className="font-extrabold text-[12px] text-foreground leading-tight mb-2 line-clamp-2 min-h-[28px]">
-                    {f.name}
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-muted-foreground font-semibold">Min {f.min}</span>
-                    <span className="text-[11px] font-bold text-foreground">Closes {f.closes}</span>
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-          </AnimatePresence>
+                  ))}
+                </motion.div>
+              </AnimatePresence>
+            </>
+          )}
 
         </div>
       </section>
@@ -421,47 +441,43 @@ export default function NFOPage() {
                   <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/60 bg-cream/50">
                     <div className="flex-1 flex items-center gap-2 bg-white border border-border rounded-[5px] px-2.5 py-1.5">
                       <Activity className="w-3 h-3 text-muted-foreground/60" />
-                      <span className="text-[10px] text-muted-foreground truncate">{RESEARCH_PARAMS[activeParam].title} · Varahi Flexicap Growth Fund</span>
+                      <span className="text-[10px] text-muted-foreground truncate">
+                        {RESEARCH_PARAMS[activeParam].title}{featured ? ` · ${featured.name}` : ""}
+                      </span>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/40">
-                    <span className="text-[13px] font-extrabold text-foreground">
-                      Varahi Flexicap Growth Fund <span className="text-muted-foreground font-semibold">· Equity</span>
-                    </span>
-                    <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-profit/10 text-profit">Open</span>
+                  <div className="flex items-center justify-between gap-3 px-4 py-2.5 border-b border-border/40">
+                    {featured ? (
+                      <span className="flex items-center gap-2 min-w-0">
+                        <AmcLogo nfo={featured} size="w-7 h-7" />
+                        <span className="text-[13px] font-extrabold text-foreground truncate" title={featured.name}>{featured.name}</span>
+                      </span>
+                    ) : (
+                      <span className="text-[13px] font-extrabold text-muted-foreground">{nfoStatus ?? "—"}</span>
+                    )}
+                    {featured && (
+                      <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full shrink-0 ${featured.status === "Open" ? "bg-profit/10 text-profit" : "bg-gold/15 text-gold-deep"}`}>
+                        {featured.status}
+                      </span>
+                    )}
                   </div>
 
-                  {/* Fund detail rows driven by activeParam */}
+                  {/* Live details of the NFO closing soonest */}
                   <div className="p-5 space-y-3.5">
                     {[
-                      { l: "Fund Category",      v: "Equity · Flexicap" },
-                      { l: "Risk Profile",       v: "Very High" },
-                      { l: "Benchmark Index",    v: "Nifty 500 TRI" },
-                      { l: "Fund Manager",       v: "A. Sharma, 14 Yrs" },
-                      { l: "Subscription Dates", v: "18 Jun – 28 Jun" },
-                      { l: "Minimum Investment", v: "₹500" },
+                      { l: "Fund Category",      v: featured?.category ?? "—" },
+                      { l: "Fund House",         v: featured?.amcName ?? "—" },
+                      { l: "Subscription Dates", v: featured ? `${shortDate(featured.launchDate)} – ${shortDate(featured.closingDate)}` : "—" },
+                      { l: "Face Value",         v: featured?.faceValue != null ? rupees(featured.faceValue) : "—" },
+                      { l: "Minimum Investment", v: rupees(featured?.minInvestment ?? null) },
+                      { l: "Minimum SIP",        v: featured ? (featured.minSip !== null ? rupees(featured.minSip) : "Not available") : "—" },
                     ].map((row) => (
-                      <div key={row.l} className="flex items-center justify-between border-b border-border/30 pb-3 last:border-0 last:pb-0">
-                        <span className="text-[11px] text-muted-foreground font-semibold">{row.l}</span>
-                        <span className="text-[12px] font-bold text-foreground">{row.v}</span>
+                      <div key={row.l} className="flex items-center justify-between gap-4 border-b border-border/30 pb-3 last:border-0 last:pb-0">
+                        <span className="text-[11px] text-muted-foreground font-semibold shrink-0">{row.l}</span>
+                        <span className="text-[12px] font-bold text-foreground text-right">{row.v}</span>
                       </div>
                     ))}
-                  </div>
-
-                  {/* Asset allocation bar */}
-                  <div className="px-5 pb-5 space-y-2">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide">Asset Allocation</span>
-                    <div className="h-2.5 w-full rounded-full overflow-hidden flex bg-border/40">
-                      <div className="bg-burgundy h-full" style={{ width: "80%" }} />
-                      <div className="bg-gold h-full" style={{ width: "15%" }} />
-                      <div className="bg-muted-foreground/40 h-full" style={{ width: "5%" }} />
-                    </div>
-                    <div className="flex items-center gap-4 text-[10px] font-semibold text-muted-foreground">
-                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-burgundy inline-block" />Equity 80%</span>
-                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-gold inline-block" />Debt 15%</span>
-                      <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-muted-foreground/40 inline-block" />Cash 5%</span>
-                    </div>
                   </div>
                 </div>
 
@@ -469,16 +485,17 @@ export default function NFOPage() {
                 <div className="hidden sm:block absolute -bottom-8 -right-5 w-36 rounded-[16px] border-[5px] border-foreground bg-white shadow-2xl overflow-hidden">
                   <div className="px-3 py-3 space-y-2.5">
                     <div>
-                      <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-wide">Varahi Flexicap</p>
+                      <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-wide truncate">{featured?.amcName ?? "NFO"}</p>
                       <p className="text-[13px] font-black text-foreground">
-                        Min ₹500 <span className="text-profit text-[9px]">Open</span>
+                        Min {rupees(featured?.minInvestment ?? null)}{" "}
+                        {featured && <span className={`${statusClass(featured.status)} text-[9px]`}>{featured.status}</span>}
                       </p>
                     </div>
                     <div className="space-y-1.5 pt-2 border-t border-border/50">
                       {[
-                        { l: "Category", v: "Equity" },
-                        { l: "Risk", v: "Very High" },
-                        { l: "Closes", v: "28 Jun" },
+                        { l: "Category", v: featured?.category ?? "—" },
+                        { l: "Opens", v: shortDate(featured?.launchDate ?? null) },
+                        { l: "Closes", v: shortDate(featured?.closingDate ?? null) },
                       ].map((s) => (
                         <div key={s.l} className="flex items-center justify-between">
                           <span className="text-[8px] text-muted-foreground font-semibold">{s.l}</span>
@@ -728,10 +745,10 @@ export default function NFOPage() {
                   <p className="text-base font-black text-foreground">₹1,25,000</p>
                   <p className="text-[10px] font-bold text-profit">4 Active Subscriptions</p>
                 </div>
-                {NFOS.Equity.slice(0, 3).map((f) => (
-                  <div key={f.name} className="flex items-center justify-between">
+                {nfos.slice(0, 3).map((f) => (
+                  <div key={f.schemeCode} className="flex items-center justify-between">
                     <span className="text-[9px] font-semibold text-foreground truncate pr-2">{f.name}</span>
-                    <span className={`text-[9px] font-bold shrink-0 ${f.status === "Open" ? "text-profit" : "text-gold-deep"}`}>{f.status}</span>
+                    <span className={`text-[9px] font-bold shrink-0 ${statusClass(f.status)}`}>{f.status}</span>
                   </div>
                 ))}
               </div>

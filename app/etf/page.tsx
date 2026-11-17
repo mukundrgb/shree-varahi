@@ -1,19 +1,20 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  ChevronRight, Plus, X, Layers, Repeat, Eye, LayoutDashboard, FileSearch, Zap,
+  ChevronLeft, ChevronRight, TrendingDown, Plus, X, Layers, Repeat, Eye, LayoutDashboard, FileSearch, Zap,
   Activity, PieChart, Coins, Landmark, Globe,
   LineChart, Percent, ListChecks, TrendingUp, Target, BarChart3,
-  ArrowUpRight, Star,
+  Star,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { getEtfCards } from "@/lib/etf/dummy-data"
+import { useEtfList } from "@/hooks/etf/use-etf"
+import type { EtfListRow } from "@/lib/etf/types"
 import { formatPrice } from "@/lib/stocks/format"
 
 // ─── Data ───────────────────────────────────────────────────────────────────
@@ -38,14 +39,35 @@ const CATEGORIES: { id: Category; label: string; icon: React.ElementType; color:
   { id: "Global",    label: "Global ETFs",    icon: Globe,     color: "#8B0D19", desc: "Get exposure to companies and economies around the world through a single investment." },
 ]
 
-// Card data comes from the shared ETF data module so the cards and /etf/[slug] stay in sync.
-// TODO: replace with the ETF API.
-const ETFS = Object.fromEntries(
-  (["Equity", "Commodity", "Debt", "Global"] as const).map((c) => [
-    c,
-    getEtfCards(c).map((etf) => ({ slug: etf.slug, name: etf.name, price: formatPrice(etf.price), change: etf.changePct ?? 0 })),
-  ]),
-) as Record<Category, { slug: string; name: string; price: string; change: number }[]>
+// ETF rows come from the backend (/api/v1/etfs), grouped by category tab.
+type EtfCard = { slug: string; symbol: string; name: string; price: string; changeAmt: number | null; change: number | null }
+
+const CARD_CATEGORIES = ["Equity", "Commodity", "Debt", "Global"] as const
+
+/** Rows per page in the category table. */
+const ETFS_PER_PAGE = 10
+
+function toCards(rows: EtfListRow[]): Record<Category, EtfCard[]> {
+  const cards = Object.fromEntries(CARD_CATEGORIES.map((c) => [c, [] as EtfCard[]])) as Record<Category, EtfCard[]>
+  for (const etf of rows) {
+    cards[etf.category as Category]?.push({
+      slug: etf.slug,
+      symbol: etf.symbol,
+      name: etf.name,
+      price: formatPrice(etf.price),
+      changeAmt: etf.changeAmt,
+      change: etf.changePct,
+    })
+  }
+  return cards
+}
+
+/** Shown in the decorative previews until the ETF list has loaded. */
+const PLACEHOLDER_CARD: EtfCard = { slug: "", symbol: "", name: "Nifty 50 ETF", price: "—", changeAmt: null, change: null }
+
+const changeText = (value: number | null) => (value === null ? "—" : `${value >= 0 ? "+" : ""}${value.toFixed(2)}%`)
+const changeClass = (value: number | null) =>
+  value === null ? "text-muted-foreground" : value >= 0 ? "text-profit" : "text-loss"
 
 // Items with an href open that research page; the rest only switch the preview on the right.
 const RESEARCH_PARAMS: { icon: React.ElementType; title: string; desc: string; href?: string }[] = [
@@ -101,6 +123,17 @@ export default function ETFPage() {
   const [activeParam, setActiveParam] = useState(0)
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null)
   const activeCatMeta = CATEGORIES.find((c) => c.id === activeCat)!
+
+  const etfList = useEtfList()
+  const ETFS = useMemo(() => toCards(etfList.data?.items ?? []), [etfList.data])
+  const lead = ETFS.Equity[0] ?? PLACEHOLDER_CARD
+
+  // Category table: 10 rows per page; switching category goes back to page 1.
+  const [etfPage, setEtfPage] = useState(1)
+  const catRows = ETFS[activeCat]
+  const etfTotalPages = Math.max(1, Math.ceil(catRows.length / ETFS_PER_PAGE))
+  const etfPageRows = catRows.slice((etfPage - 1) * ETFS_PER_PAGE, etfPage * ETFS_PER_PAGE)
+  const pickCategory = (c: Category) => { setActiveCat(c); setEtfPage(1) }
 
   return (
     <main className="min-h-screen bg-background">
@@ -176,7 +209,7 @@ export default function ETFPage() {
                     <span className="text-[11px] font-semibold text-foreground truncate pr-2">{etf.name}</span>
                     <div className="text-right shrink-0">
                       <div className="text-[12px] font-black text-foreground">₹{etf.price}</div>
-                      <div className="text-[10px] font-bold text-profit">+{etf.change}%</div>
+                      <div className={`text-[10px] font-bold ${changeClass(etf.change)}`}>{changeText(etf.change)}</div>
                     </div>
                   </div>
                 ))}
@@ -245,7 +278,7 @@ export default function ETFPage() {
               return (
                 <button
                   key={c.id}
-                  onClick={() => setActiveCat(c.id)}
+                  onClick={() => pickCategory(c.id)}
                   className={`flex items-center gap-2 px-4 py-2.5 rounded-[6px] text-[12px] font-bold border transition-all duration-200 ${
                     active
                       ? "bg-burgundy text-white border-burgundy shadow-sm"
@@ -263,41 +296,122 @@ export default function ETFPage() {
             {activeCatMeta.desc}
           </p>
 
-          {/* ETF grid */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeCat}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8"
-            >
-              {ETFS[activeCat].map((etf) => (
-                <Link
-                  key={etf.slug}
-                  href={`/etf/${etf.slug}`}
-                  className="block bg-white border border-border rounded-[8px] p-4 hover:border-gold/40 hover:shadow-sm transition-all duration-200"
-                >
-                  <div
-                    className="w-8 h-8 rounded-[6px] flex items-center justify-center mb-3 text-[10px] font-black"
-                    style={{ background: activeCatMeta.color + "14", color: activeCatMeta.color, border: `1px solid ${activeCatMeta.color}22` }}
+          {/* ETF table — same style as the All Stocks table, 10 rows per page */}
+          <div className="max-w-5xl mx-auto mb-8">
+            <div className="rounded-[8px] border border-border overflow-hidden bg-white shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
+              {/* Header */}
+              <div className="grid grid-cols-[minmax(0,1fr)_84px_64px_72px] sm:grid-cols-[minmax(0,1fr)_120px_110px_100px] gap-x-2 px-4 py-2.5 border-b border-border bg-cream/70">
+                <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">Name</div>
+                <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">Price (₹)</div>
+                <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">Change</div>
+                <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">% Change</div>
+              </div>
+
+              {/* Rows */}
+              {etfList.error && !etfList.data ? (
+                <div className="py-16 text-center text-sm">
+                  <p className="font-black text-foreground">Unable to load ETFs</p>
+                  <p className="text-xs text-muted-foreground mt-1.5">{etfList.error.message}</p>
+                  <button onClick={etfList.retry} className="mt-3 text-xs font-bold text-burgundy hover:underline">Try again</button>
+                </div>
+              ) : !etfList.data ? (
+                <div className="p-4 space-y-3 animate-pulse" aria-label="Loading ETFs">
+                  {Array.from({ length: ETFS_PER_PAGE }, (_, i) => (
+                    <div key={i} className="h-10 rounded-[6px] bg-secondary/60" />
+                  ))}
+                </div>
+              ) : etfPageRows.length === 0 ? (
+                <div className="py-16 text-center text-muted-foreground text-sm">No ETFs in this category yet.</div>
+              ) : (
+                etfPageRows.map((etf, idx) => {
+                  const up = (etf.change ?? 0) >= 0
+                  const sign = etf.change !== null && up ? "+" : ""
+                  return (
+                    <motion.div
+                      key={`${activeCat}-${etf.slug}`}
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.14, delay: idx * 0.018 }}
+                      className="border-b border-border/40 last:border-0"
+                    >
+                      <Link
+                        href={`/etf/${etf.slug}`}
+                        className="grid grid-cols-[minmax(0,1fr)_84px_64px_72px] sm:grid-cols-[minmax(0,1fr)_120px_110px_100px] gap-x-2 px-4 py-3 hover:bg-cream/30 transition-colors duration-150"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div
+                            className="hidden sm:flex w-8 h-8 shrink-0 rounded-[6px] items-center justify-center text-[10px] font-black"
+                            style={{ background: activeCatMeta.color + "14", color: activeCatMeta.color, border: `1px solid ${activeCatMeta.color}22` }}
+                          >
+                            {etf.name.split(" ").slice(0, 2).map((w) => w[0]).join("")}
+                          </div>
+                          <div className="min-w-0">
+                            <div className="font-extrabold text-sm text-foreground truncate">{etf.name}</div>
+                            {etf.symbol && etf.symbol !== etf.name && (
+                              <div className="text-[11px] text-muted-foreground truncate">{etf.symbol}</div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-end text-sm font-extrabold text-foreground tabular-nums">
+                          {etf.price}
+                        </div>
+                        <div className={`flex items-center justify-end text-xs font-black tabular-nums ${changeClass(etf.change)}`}>
+                          {etf.changeAmt === null ? "—" : `${sign}${etf.changeAmt.toFixed(2)}`}
+                        </div>
+                        <div className={`flex items-center justify-end gap-0.5 text-xs font-black tabular-nums ${changeClass(etf.change)}`}>
+                          {etf.change !== null && (up ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />)}
+                          {changeText(etf.change)}
+                        </div>
+                      </Link>
+                    </motion.div>
+                  )
+                })
+              )}
+            </div>
+
+            {/* Pagination */}
+            {etfTotalPages > 1 && (
+              <div className="flex items-center justify-between mt-4">
+                <p className="text-xs text-muted-foreground">
+                  Page {etfPage} of {etfTotalPages}
+                </p>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => setEtfPage((p) => Math.max(1, p - 1))}
+                    disabled={etfPage === 1}
+                    aria-label="Previous page"
+                    className="w-8 h-8 rounded-[5px] border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/25 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                   >
-                    {etf.name.split(" ").slice(0, 2).map((w) => w[0]).join("")}
-                  </div>
-                  <div className="font-extrabold text-[12px] text-foreground leading-tight mb-2 line-clamp-2 min-h-[28px]">
-                    {etf.name}
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-black text-foreground">₹{etf.price}</span>
-                    <span className="text-[11px] font-bold text-profit flex items-center gap-0.5">
-                      <ArrowUpRight className="w-3 h-3" />{etf.change}%
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </motion.div>
-          </AnimatePresence>
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  {Array.from({ length: Math.min(5, etfTotalPages) }, (_, i) => {
+                    const pg = Math.max(1, Math.min(etfTotalPages - 4, etfPage - 2)) + i
+                    return (
+                      <button
+                        key={pg}
+                        onClick={() => setEtfPage(pg)}
+                        className={`w-8 h-8 rounded-[5px] border text-xs font-bold transition-all ${
+                          pg === etfPage
+                            ? "bg-burgundy text-white border-burgundy"
+                            : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/20"
+                        }`}
+                      >
+                        {pg}
+                      </button>
+                    )
+                  })}
+                  <button
+                    onClick={() => setEtfPage((p) => Math.min(etfTotalPages, p + 1))}
+                    disabled={etfPage === etfTotalPages}
+                    aria-label="Next page"
+                    className="w-8 h-8 rounded-[5px] border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/25 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
 
 
         </div>
@@ -362,7 +476,7 @@ export default function ETFPage() {
                   <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/60 bg-cream/50">
                     <div className="flex-1 flex items-center gap-2 bg-white border border-border rounded-[5px] px-2.5 py-1.5">
                       <Activity className="w-3 h-3 text-muted-foreground/60" />
-                      <span className="text-[10px] text-muted-foreground truncate">{RESEARCH_PARAMS[activeParam].title} · {ETFS.Equity[0].name}</span>
+                      <span className="text-[10px] text-muted-foreground truncate">{RESEARCH_PARAMS[activeParam].title} · {lead.name}</span>
                     </div>
                     <div className="hidden sm:flex gap-1.5">
                       {["ORDERS", "POSITIONS", "BUY", "SELL"].map((label, i) => (
@@ -385,10 +499,10 @@ export default function ETFPage() {
                   {/* Ticker header */}
                   <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/40">
                     <span className="text-[13px] font-extrabold text-foreground">
-                      {ETFS.Equity[0].name} <span className="text-muted-foreground font-semibold">· NSE</span>
+                      {lead.name} <span className="text-muted-foreground font-semibold">· NSE</span>
                     </span>
-                    <span className="text-[12px] font-black text-profit">
-                      ₹{ETFS.Equity[0].price} <span className="text-[10px] font-bold">(+{ETFS.Equity[0].change}%)</span>
+                    <span className={`text-[12px] font-black ${changeClass(lead.change)}`}>
+                      ₹{lead.price} <span className="text-[10px] font-bold">({changeText(lead.change)})</span>
                     </span>
                   </div>
 
@@ -417,9 +531,9 @@ export default function ETFPage() {
                 <div className="hidden sm:block absolute -bottom-8 -right-5 w-36 rounded-[16px] border-[5px] border-foreground bg-white shadow-2xl overflow-hidden">
                   <div className="px-3 py-3 space-y-2.5">
                     <div>
-                      <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-wide">{ETFS.Equity[0].name}</p>
+                      <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-wide">{lead.name}</p>
                       <p className="text-[13px] font-black text-foreground">
-                        ₹{ETFS.Equity[0].price} <span className="text-profit text-[9px]">+{ETFS.Equity[0].change}%</span>
+                        ₹{lead.price} <span className={`text-[9px] ${changeClass(lead.change)}`}>{changeText(lead.change)}</span>
                       </p>
                     </div>
                     <div className="space-y-1.5 pt-2 border-t border-border/50">
@@ -590,7 +704,7 @@ export default function ETFPage() {
                 {ETFS.Equity.slice(0, 3).map((etf) => (
                   <div key={etf.name} className="flex items-center justify-between">
                     <span className="text-[9px] font-semibold text-foreground truncate pr-2">{etf.name}</span>
-                    <span className="text-[9px] font-bold text-profit shrink-0">+{etf.change}%</span>
+                    <span className={`text-[9px] font-bold shrink-0 ${changeClass(etf.change)}`}>{changeText(etf.change)}</span>
                   </div>
                 ))}
               </div>

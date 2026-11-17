@@ -13,12 +13,12 @@ export type StrikeRow = {
   ceOI: string
   ceOIChg: number
   ceVol: string
-  ceIV: number
-  ceLTP: number
+  ceIV: number | null
+  ceLTP: number | null
   ceChg: number
-  peLTP: number
+  peLTP: number | null
   peChg: number
-  peIV: number
+  peIV: number | null
   peVol: string
   peOIChg: number
   peOI: string
@@ -42,9 +42,9 @@ export type OptionsPageData = {
   ltp: number
   chg: number
   chgPct: number
-  open: number
-  high52: number
-  low52: number
+  open: number | null
+  high52: number | null
+  low52: number | null
   exchanges: string[]
   asOf: string
   totalCallOI: string
@@ -57,11 +57,17 @@ export type OptionsPageData = {
 
 const TABS = ["Option Chain", "Open Interest", "Top Contracts"] as const
 
+/** "—" for values CMOTS does not provide. */
+const fmtNum = (v: number | null) => (v === null ? "—" : v.toLocaleString("en-IN"))
+const fmtFixed = (v: number | null, digits: number) => (v === null ? "—" : v.toFixed(digits))
+const oiNum = (v: string) => parseFloat(v.replace(/,/g, "")) || 0
+
+
 export function OptionsDetailPage({ data }: { data: OptionsPageData }) {
   const [tab, setTab] = useState<typeof TABS[number]>("Option Chain")
   const d = data
   const isPos = d.chg >= 0
-  const maxOI = Math.max(...d.strikes.map(s => Math.max(parseFloat(s.ceOI.replace(/,/g, "")), parseFloat(s.peOI.replace(/,/g, "")))))
+  const maxOI = Math.max(1, ...d.strikes.map(s => Math.max(oiNum(s.ceOI), oiNum(s.peOI))))
 
   return (
     <>
@@ -108,7 +114,7 @@ export function OptionsDetailPage({ data }: { data: OptionsPageData }) {
             <div className="flex items-center gap-4">
               <div className="text-center">
                 <div className="text-[10px] text-muted-foreground font-semibold">Open</div>
-                <div className="text-sm font-bold text-foreground tabular-nums mt-0.5">{d.open.toLocaleString("en-IN")}</div>
+                <div className="text-sm font-bold text-foreground tabular-nums mt-0.5">{fmtNum(d.open)}</div>
               </div>
               <div className="text-center">
                 <div className="text-[10px] text-muted-foreground font-semibold">PCR</div>
@@ -179,11 +185,11 @@ export function OptionsDetailPage({ data }: { data: OptionsPageData }) {
                         <td className="text-right px-3 py-2.5 text-xs text-muted-foreground tabular-nums">{s.ceOI}</td>
                         <td className={`text-right px-3 py-2.5 text-xs font-semibold tabular-nums ${s.ceOIChg >= 0 ? "text-emerald-600" : "text-red-500"}`}>{s.ceOIChg >= 0 ? "+" : ""}{s.ceOIChg.toFixed(1)}%</td>
                         <td className="text-right px-3 py-2.5 text-xs text-muted-foreground tabular-nums">{s.ceVol}</td>
-                        <td className="text-right px-3 py-2.5 text-xs text-muted-foreground tabular-nums">{s.ceIV.toFixed(1)}</td>
-                        <td className={`text-right px-3 py-2.5 text-xs font-bold tabular-nums border-r border-border ${s.ceChg >= 0 ? "text-emerald-600" : "text-red-500"}`}>{s.ceLTP.toFixed(2)}</td>
+                        <td className="text-right px-3 py-2.5 text-xs text-muted-foreground tabular-nums">{fmtFixed(s.ceIV, 1)}</td>
+                        <td className={`text-right px-3 py-2.5 text-xs font-bold tabular-nums border-r border-border ${s.ceChg >= 0 ? "text-emerald-600" : "text-red-500"}`}>{fmtFixed(s.ceLTP, 2)}</td>
                         <td className={`text-center px-3 py-2.5 text-sm tabular-nums ${s.isATM ? "font-black text-burgundy" : "font-bold text-foreground"}`}>{s.strike.toLocaleString("en-IN")}</td>
-                        <td className={`text-left px-3 py-2.5 text-xs font-bold tabular-nums border-l border-border ${s.peChg >= 0 ? "text-emerald-600" : "text-red-500"}`}>{s.peLTP.toFixed(2)}</td>
-                        <td className="text-left px-3 py-2.5 text-xs text-muted-foreground tabular-nums">{s.peIV.toFixed(1)}</td>
+                        <td className={`text-left px-3 py-2.5 text-xs font-bold tabular-nums border-l border-border ${s.peChg >= 0 ? "text-emerald-600" : "text-red-500"}`}>{fmtFixed(s.peLTP, 2)}</td>
+                        <td className="text-left px-3 py-2.5 text-xs text-muted-foreground tabular-nums">{fmtFixed(s.peIV, 1)}</td>
                         <td className="text-left px-3 py-2.5 text-xs text-muted-foreground tabular-nums">{s.peVol}</td>
                         <td className={`text-left px-3 py-2.5 text-xs font-semibold tabular-nums ${s.peOIChg >= 0 ? "text-emerald-600" : "text-red-500"}`}>{s.peOIChg >= 0 ? "+" : ""}{s.peOIChg.toFixed(1)}%</td>
                         <td className="text-left px-3 py-2.5 text-xs text-muted-foreground tabular-nums">{s.peOI}</td>
@@ -218,8 +224,8 @@ export function OptionsDetailPage({ data }: { data: OptionsPageData }) {
                 </div>
                 <div className="px-4 sm:px-5 py-4 space-y-2.5">
                   {d.strikes.map(s => {
-                    const ceVal = parseFloat(s.ceOI.replace(/,/g, ""))
-                    const peVal = parseFloat(s.peOI.replace(/,/g, ""))
+                    const ceVal = oiNum(s.ceOI)
+                    const peVal = oiNum(s.peOI)
                     return (
                       <div key={s.strike} className="flex items-center gap-3">
                         <div className="w-16 text-right text-xs text-muted-foreground tabular-nums shrink-0">{s.ceOI}</div>
