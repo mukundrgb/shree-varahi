@@ -54,7 +54,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${manrope.variable} ${dmSans.variable} ${dmMono.variable} ${cormorant.variable} bg-background overflow-x-clip`}>
-      <body className="font-sans antialiased bg-background text-foreground overflow-x-clip">
+      {/* Browser extensions (e.g. ColorZilla's cz-shortcut-listen) add attributes to <body>; don't warn about those. */}
+      <body className="font-sans antialiased bg-background text-foreground overflow-x-clip" suppressHydrationWarning>
         <ScrollProgress />
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
