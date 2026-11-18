@@ -12,6 +12,7 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { CardGridSkeleton, ListSkeleton } from "@/components/skeletons"
 import { useNfos } from "@/hooks/use-mutual-funds"
 import type { NfoApi } from "@/lib/mutual-funds/api-client"
 
@@ -157,6 +158,7 @@ export default function NFOPage() {
   const tabs = [{ name: ALL, count: nfos.length }, ...(nfoData.data?.categories ?? [])]
   const shown = activeCat === ALL ? nfos : nfos.filter((f) => (f.category ?? "Other") === activeCat)
   const featured = nfos[0] ?? null
+  const nfoLoading = nfoData.loading && !nfoData.data
   const nfoStatus = nfoData.loading && !nfoData.data
     ? "Loading NFOs…"
     : nfoData.error && !nfoData.data
@@ -236,7 +238,9 @@ export default function NFOPage() {
                     {nfoData.data ? `${nfoData.data.stats.open} OPEN` : "DATES"}
                   </span>
                 </div>
-                {nfoStatus ? (
+                {nfoLoading ? (
+                  <ListSkeleton rows={3} label="Loading NFOs" />
+                ) : nfoStatus ? (
                   <p className="text-[11px] text-muted-foreground">{nfoStatus}</p>
                 ) : (
                   nfos.slice(0, 3).map((f) => (
@@ -314,7 +318,9 @@ export default function NFOPage() {
             )}
           </div>
 
-          {nfoStatus ? (
+          {nfoLoading ? (
+            <CardGridSkeleton count={6} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8" cardClassName="h-44" />
+          ) : nfoStatus ? (
             <div className="bg-white border border-border rounded-[8px] py-14 text-center text-sm text-muted-foreground mb-8">
               {nfoStatus}
             </div>
@@ -387,7 +393,7 @@ export default function NFOPage() {
       {/* ── NFO RESEARCH & FUND DATA ── */}
       <section className="py-12 lg:py-16 bg-background border-t border-border/40">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-10 lg:gap-14 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-14 items-center [&>*]:min-w-0">
             {/* Left — scrollable feature list */}
             <div>
               <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-3">NFO Research</p>

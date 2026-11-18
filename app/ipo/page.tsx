@@ -11,6 +11,7 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { CardGridSkeleton, TableRowsSkeleton } from "@/components/skeletons"
 import { useIpoPage } from "@/hooks/use-ipos"
 import type { ClosedIpoApi, OpenIpoApi, UpcomingIpoApi } from "@/lib/ipo/api-client"
 import { formatDate } from "@/lib/stocks/format"
@@ -490,6 +491,7 @@ export default function IpoPage() {
   const totalOpenSize = OPEN_IPOS.reduce((s, i) => s + (i.issueSizeCr ?? 0), 0)
 
   /** Loading / error message for a tab, or null once data is in. */
+  const ipoLoading = ipoData.loading && !ipoData.data
   const listStatus = ipoData.loading && !ipoData.data
     ? "Loading IPOs…"
     : ipoData.error
@@ -570,7 +572,7 @@ export default function IpoPage() {
       {/* ── MAIN CONTENT ── */}
       <section id="ipo-list" className="bg-background py-8 lg:py-12 scroll-mt-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-[1fr_300px] gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-8 [&>*]:min-w-0">
 
             {/* LEFT: Tabs + IPO listings */}
             <div>
@@ -612,7 +614,8 @@ export default function IpoPage() {
                     transition={{ duration: 0.25 }}
                   >
                     {OPEN_IPOS.length === 0 ? (
-                      <div className="text-center py-16 text-muted-foreground text-sm">{listStatus ?? "No IPOs open right now. Check Upcoming IPOs."}</div>
+                      ipoLoading ? <CardGridSkeleton count={4} className="grid sm:grid-cols-2 gap-5" cardClassName="h-48" />
+                        : <div className="text-center py-16 text-muted-foreground text-sm">{listStatus ?? "No IPOs open right now. Check Upcoming IPOs."}</div>
                     ) : (
                       <div className="grid sm:grid-cols-2 gap-5">
                         {OPEN_IPOS.map((ipo) => <OpenIpoCard key={ipo.id} ipo={ipo} />)}
@@ -631,8 +634,9 @@ export default function IpoPage() {
                     transition={{ duration: 0.25 }}
                     className="grid sm:grid-cols-2 gap-5"
                   >
-                    {UPCOMING_IPOS.length === 0 && (
-                      <div className="sm:col-span-2 text-center py-16 text-muted-foreground text-sm">{listStatus ?? "No upcoming IPOs announced yet."}</div>
+                    {UPCOMING_IPOS.length === 0 && (ipoLoading
+                      ? <CardGridSkeleton count={4} className="sm:col-span-2 grid sm:grid-cols-2 gap-5" cardClassName="h-40" />
+                      : <div className="sm:col-span-2 text-center py-16 text-muted-foreground text-sm">{listStatus ?? "No upcoming IPOs announced yet."}</div>
                     )}
                     {UPCOMING_IPOS.map((ipo, i) => <UpcomingIpoCard key={ipo.id} ipo={ipo} index={i} />)}
                   </motion.div>
@@ -662,8 +666,9 @@ export default function IpoPage() {
                         <div />
                       </div>
                       <div className="px-4">
-                        {CLOSED_IPOS.length === 0 && (
-                          <div className="text-center py-12 text-muted-foreground text-sm">{listStatus ?? "No recently closed IPOs."}</div>
+                        {CLOSED_IPOS.length === 0 && (ipoLoading
+                          ? <TableRowsSkeleton rows={5} columns="minmax(0,1fr) 96px 96px" avatar label="Loading IPOs" className="px-0" />
+                          : <div className="text-center py-12 text-muted-foreground text-sm">{listStatus ?? "No recently closed IPOs."}</div>
                         )}
                         {CLOSED_IPOS.map((ipo, i) => <ClosedIpoRow key={ipo.id} ipo={ipo} index={i} />)}
                       </div>

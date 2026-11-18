@@ -1,19 +1,22 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { Suspense, useEffect, useRef, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Search, TrendingUp, TrendingDown, Star,
   ChevronLeft, ChevronRight, Newspaper, Clock,
   ArrowUpRight, X, Plus, FileSearch, LineChart, Zap,
-  ShieldCheck, PieChart, Eye, RotateCcw, Bell, CheckCircle2, ArrowUpDown,
+  ShieldCheck, PieChart, Eye, RotateCcw, Bell, CheckCircle2, ArrowUpDown, ArrowUp, ArrowDown,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { StockAvatar } from "@/components/stock-avatar"
 import { TradingViewCredit, TradingViewMiniChart } from "@/components/tradingview-chart"
+import { TableRowsSkeleton } from "@/components/skeletons"
+import { NewsCarousel } from "@/components/news-cards"
+import { useMarketBeat } from "@/hooks/use-market-news"
 import { useStockList } from "@/hooks/stocks/use-stock-list"
 import { NO_VALUE, formatPercent, formatPrice } from "@/lib/stocks/format"
 import type { StockSort } from "@/lib/stocks/types"
@@ -96,6 +99,7 @@ const QUICK_LINKS: { label: string; id: string; sector?: string; cap?: string }[
   // { label: "NSE Top Losers",  id: "lose", fn: (s: Stock) => s.change < 0    },
   { label: "Large Cap", id: "lc",   cap: "large"     },
   { label: "Mid Cap",   id: "mc",   cap: "mid"       },
+  { label: "Small Cap", id: "sc",   cap: "small"     },
   { label: "Banking",   id: "bank", sector: "Banking" },
   { label: "IT Sector", id: "it",   sector: "IT"      },
 ]
@@ -132,7 +136,7 @@ const NEWS = [
 const TOOLS = [
   { icon: FileSearch,  color: "#8B0D19", title: "Stock Research",          desc: "Dive into financials, valuation metrics, earnings history, and company fundamentals before making any investment decision." },
   { icon: LineChart,   color: "#8B0D19", title: "Technical Analysis",      desc: "Analyse price action with advanced charts, 100+ indicators, and drawing tools across multiple timeframes." },
-  { icon: Zap,         color: "#8B0D19", title: "Margin Trading (MTF)",    desc: "Get up to 4× buying power on 1,700+ stocks. Invest more without liquidating your existing holdings." },
+  { icon: Zap,         color: "#8B0D19", title: "Margin Trading (MTF)",    desc: "Get up to 3× buying power on 1,700+ stocks. Invest more without liquidating your existing holdings." },
   { icon: ShieldCheck, color: "#8B0D19", title: "Pledge Stocks Benefits",  desc: "Use your existing holdings as collateral to unlock additional margin and put your idle portfolio to work." },
   { icon: PieChart,    color: "#8B0D19", title: "Portfolio Tracking",      desc: "Monitor your holdings, returns, XIRR performance, dividend payouts, and corporate actions — all in one view." },
   { icon: Eye,         color: "#8B0D19", title: "Watchlists",              desc: "Track your favourite stocks in real time. Get price alerts and stay on top of every opportunity as it moves." },
@@ -217,6 +221,22 @@ function StockAvatar({ symbol, color }: { symbol: string; color: string }) {
 // ─── Page ───────────────────────────────────────────────────────────────────
 
 const PER_PAGE = 10
+/** Default table order: highest LTP first. */
+const DEFAULT_STOCK_SORT: StockSort = "price-desc"
+
+/**
+ * Footer A–Z links open /stocks?letter=A (or ?letter=0-9 for "Others"). Reads the letter,
+ * also when a link is clicked while this page is open. useSearchParams needs Suspense.
+ */
+function LetterFromUrl({ onLetter }: { onLetter: (letter: string | null) => void }) {
+  const params = useSearchParams()
+  const raw = params.get("letter")
+  const letter = raw && /^([a-z]|0-9)$/i.test(raw) ? raw.toUpperCase() : null
+  const ref = useRef(onLetter)
+  ref.current = onLetter
+  useEffect(() => { ref.current(letter) }, [letter])
+  return null
+}
 
 export default function StocksPage() {
   const router = useRouter()
@@ -224,11 +244,19 @@ export default function StocksPage() {
   const [sector, setSector]       = useState("All")
   const [cap, setCap]             = useState("all")
   const [quickLink, setQuickLink] = useState<string | null>(null)
-  const [sort, setSort]           = useState<StockSort | undefined>(undefined)
+  const [sort, setSort]           = useState<StockSort>(DEFAULT_STOCK_SORT)
+  /** First-letter filter from the footer A–Z links; "0-9" = starts with a number. */
+  const [letter, setLetter]       = useState<string | null>(null)
+  const pickLetterFromUrl = (l: string | null) => {
+    setLetter(l)
+    setPage(1)
+    if (l) document.getElementById("all-stocks")?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
   const [page, setPage]           = useState(1)
   const [watchlist, setWatchlist] = useState<Set<string>>(new Set())
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null)
   const [mobile, setMobile]       = useState("")
+  const marketNews = useMarketBeat(5)
 
   // Wait for a pause in typing so each keystroke doesn't call the API.
   const [debouncedSearch, setDebouncedSearch] = useState("")
@@ -241,13 +269,21 @@ export default function StocksPage() {
   const activeSector = activeQuickLink ? activeQuickLink.sector : sector !== "All" ? sector : undefined
   const activeCap = activeQuickLink ? activeQuickLink.cap : cap !== "all" ? cap : undefined
 
+  // An older backend rejects the price sort (400 "Invalid sort"); then the table loads
+  // without it instead of failing, so the page works whichever side is deployed first.
+  const [priceSortUnsupported, setPriceSortUnsupported] = useState(false)
+  const sentSort = priceSortUnsupported && sort.startsWith("price") ? undefined : sort
   const { data: stockList, error: stockListError, loading: stockListLoading, retry: retryStockList } = useStockList({
     page,
     search: debouncedSearch || undefined,
     sector: activeSector,
     cap: activeCap,
-    sort,
+    letter: letter ?? undefined,
+    sort: sentSort,
   })
+  useEffect(() => {
+    if (stockListError?.status === 400 && sort.startsWith("price") && /sort/i.test(stockListError.message)) setPriceSortUnsupported(true)
+  }, [stockListError, sort])
 
   const pageData   = stockList?.items ?? []
   const totalPages = stockList?.totalPages ?? 1
@@ -273,19 +309,26 @@ export default function StocksPage() {
   // First click sorts A→Z (or change High→Low); the next click reverses it.
   const toggleNameSort   = () => { setSort((prev) => (prev === "name-asc" ? "name-desc" : "name-asc")); setPage(1) }
   const toggleChangeSort = () => { setSort((prev) => (prev === "change-desc" ? "change-asc" : "change-desc")); setPage(1) }
+  // LTP: first click = highest first (arrow up), next click = lowest first (arrow down).
+  const togglePriceSort  = () => { setSort((prev) => (prev === "price-desc" ? "price-asc" : "price-desc")); setPage(1) }
+  const clearLetter = () => { setLetter(null); setPage(1); router.replace("/stocks", { scroll: false }) }
   const nameSortLabel   = sort === "name-desc" ? "Z → A" : "A → Z"
   const changeSortLabel = sort === "change-asc" ? "Change: Low → High" : "Change: High → Low"
   const pickQL     = (id: string) => {
     setQuickLink((prev) => (prev === id ? null : id))
     setSector("All"); setCap("all"); setPage(1)
   }
-  const clearAll = () => { setSector("All"); setCap("all"); setQuickLink(null); setSearch(""); setSort(undefined); setPage(1) }
+  const clearAll = () => {
+    setSector("All"); setCap("all"); setQuickLink(null); setSearch(""); setSort(DEFAULT_STOCK_SORT); setPage(1)
+    if (letter) clearLetter()
+  }
 
-  const hasFilter = !!(quickLink || sector !== "All" || cap !== "all" || search || sort)
+  const hasFilter = !!(quickLink || sector !== "All" || cap !== "all" || search || sort !== DEFAULT_STOCK_SORT || letter)
 
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
+      <Suspense fallback={null}><LetterFromUrl onLetter={pickLetterFromUrl} /></Suspense>
 
       {/* ── HERO ── */}
       <section className="relative bg-cream border-b border-border/40 pt-28 pb-16 overflow-hidden">
@@ -410,8 +453,8 @@ export default function StocksPage() {
 
       {/* ── SECTION 3 — STOCK DISCOVERY (left as-is) ── */}
 
-      {/* ── PAGE HEADER ── */}
-      <section className="bg-background border-b border-border/40 pt-8 pb-8">
+      {/* ── PAGE HEADER ── (the footer A–Z links scroll here) */}
+      <section id="all-stocks" className="bg-background border-b border-border/40 pt-8 pb-8 scroll-mt-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
@@ -540,6 +583,12 @@ export default function StocksPage() {
               {sector !== "All" && !quickLink && (
                 <span className="ml-1.5 font-semibold text-foreground">· {sector}</span>
               )}
+              {letter && (
+                <button onClick={clearLetter} aria-label="Remove letter filter"
+                  className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] bg-burgundy/8 border border-burgundy/20 text-[11px] font-bold text-burgundy hover:bg-burgundy/12 align-middle">
+                  {letter === "0-9" ? "Starting with a number" : `Starting with ${letter}`} <X className="w-3 h-3" />
+                </button>
+              )}
             </p>
             <div className="flex items-center gap-1.5 mr-3">
               <span className="hidden sm:inline text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mr-0.5">Sort</span>
@@ -588,7 +637,13 @@ export default function StocksPage() {
               <div />
               <div className="pl-3 text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">Company</div>
               <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-center">Chart (1M)</div>
-              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">LTP (₹)</div>
+              <button type="button" onClick={togglePriceSort}
+                aria-sort={sort === "price-desc" ? "descending" : sort === "price-asc" ? "ascending" : "none"}
+                title={sort === "price-desc" ? "Highest to lowest" : sort === "price-asc" ? "Lowest to highest" : "Sort by LTP"}
+                className={`flex items-center justify-end gap-1 text-[10px] font-extrabold uppercase tracking-wider transition-colors ${sort === "price-desc" || sort === "price-asc" ? "text-burgundy" : "text-muted-foreground hover:text-foreground"}`}>
+                LTP (₹)
+                {sort === "price-desc" ? <ArrowUp className="w-3 h-3" /> : sort === "price-asc" ? <ArrowDown className="w-3 h-3" /> : <ArrowUpDown className="w-3 h-3 opacity-50" />}
+              </button>
               <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right hidden lg:block">Market Cap</div>
               <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">Change</div>
               <div />
@@ -603,10 +658,8 @@ export default function StocksPage() {
                   <button onClick={retryStockList} className="mt-3 text-xs font-bold text-burgundy hover:underline">Try again</button>
                 </motion.div>
               ) : stockListLoading && !stockList ? (
-                <motion.div key="loading" className="p-4 space-y-3 animate-pulse" aria-label="Loading stocks">
-                  {Array.from({ length: PER_PAGE }, (_, i) => (
-                    <div key={i} className="h-12 rounded-[6px] bg-secondary/60" />
-                  ))}
+                <motion.div key="loading">
+                  <TableRowsSkeleton rows={PER_PAGE} columns="minmax(0,1fr) 128px 110px 96px" avatar label="Loading stocks" />
                 </motion.div>
               ) : pageData.length === 0 ? (
                 <motion.div
@@ -673,7 +726,7 @@ export default function StocksPage() {
 
                         <div className="flex items-center justify-center">
                           {stock.tradingViewSymbol ? (
-                            <TradingViewMiniChart symbol={stock.tradingViewSymbol} className="h-12 w-[112px]" />
+                            <TradingViewMiniChart symbol={stock.tradingViewSymbol} width={128} height={56} />
                           ) : (
                             <span className="text-[11px] text-muted-foreground">{NO_VALUE}</span>
                           )}
@@ -995,60 +1048,21 @@ export default function StocksPage() {
                 Latest Market News
               </h2>
             </div>
-            <Link
-              href="#"
-              className="text-[11px] font-bold text-burgundy hover:text-burgundy-deep flex items-center gap-1 transition-colors"
-            >
-              View all <ArrowUpRight className="w-3.5 h-3.5" />
-            </Link>
+            <span className="hidden sm:inline text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Market Beat</span>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {NEWS.map((article, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.08 }}
-                className="bg-white rounded-[8px] border border-border overflow-hidden hover:shadow-[0_4px_20px_rgba(0,0,0,0.07)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer group"
-              >
-                <div
-                  className="h-[108px] relative overflow-hidden flex items-center justify-center"
-                  style={{ background: `linear-gradient(135deg, ${article.color}12, ${article.color}05)` }}
-                >
-                  <Newspaper className="w-14 h-14 opacity-[0.08]" style={{ color: article.color }} />
-                  <div className="absolute top-3 left-3">
-                    <span
-                      className="text-[9px] font-extrabold uppercase tracking-wider px-2 py-1 rounded-[3px]"
-                      style={{
-                        background: article.color + "18",
-                        color: article.color,
-                        border: `1px solid ${article.color}28`,
-                      }}
-                    >
-                      {article.category}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="p-4">
-                  <h3 className="font-extrabold text-sm text-foreground leading-snug mb-2 group-hover:text-burgundy transition-colors line-clamp-2">
-                    {article.headline}
-                  </h3>
-                  <p className="text-[12px] text-muted-foreground leading-relaxed line-clamp-2 mb-3">
-                    {article.excerpt}
-                  </p>
-                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground/65">
-                    <Clock className="w-3 h-3" />
-                    <span>{article.date}</span>
-                    <span>·</span>
-                    <span>{article.readTime}</span>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          {/* Live CMOTS Market Beat stories: at most 5 cards, scrolling sideways. */}
+          {marketNews.error && !marketNews.data ? (
+            <div className="rounded-[8px] border border-border bg-white py-12 text-center text-sm">
+              <p className="font-black text-foreground">Unable to load market news</p>
+              <button onClick={marketNews.retry} className="mt-2 text-xs font-bold text-burgundy hover:underline">Try again</button>
+            </div>
+          ) : marketNews.data && marketNews.data.items.length === 0 ? (
+            <div className="rounded-[8px] border border-border bg-white py-12 text-center text-sm text-muted-foreground">No market news right now.</div>
+          ) : (
+            <NewsCarousel items={marketNews.data?.items ?? []} max={5} loading={!marketNews.data}
+              label="Latest market news" cardWidth="w-[285px] sm:w-[330px]" />
+          )}
         </div>
       </section>
 

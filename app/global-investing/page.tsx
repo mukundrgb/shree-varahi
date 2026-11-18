@@ -304,6 +304,10 @@ export default function GlobalInvestingPage() {
                 <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
                   <Link href="/signup/register">Open Account</Link>
                 </Button>
+                {/* Existing customers go straight to login */}
+                <Button asChild variant="outline" className="border-burgundy/30 text-burgundy hover:bg-burgundy/5 hover:text-burgundy px-7 h-11 font-bold rounded-[5px]">
+                  <Link href="/login">Login</Link>
+                </Button>
               </div>
             </div>
 

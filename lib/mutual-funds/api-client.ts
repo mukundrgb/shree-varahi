@@ -35,6 +35,8 @@ export interface MutualFundApi {
   expenseRatio: number | null
   /** % */
   returns: FundReturns
+  /** Find Your Fund table only (from GetFundOverview); [] when unavailable */
+  fundManagers?: string[]
 }
 
 export interface AmcPartnerApi {
@@ -66,6 +68,8 @@ export interface FundQuery {
   /** Single sub-categories */
   category?: string[]
   risk?: string
+  /** 0–5 stars; 0 = not rated */
+  rating?: number
   amc?: number
   index?: boolean
   sort?: FundSort

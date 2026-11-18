@@ -16,8 +16,8 @@ import type {
 } from "./types"
 
 export const stocksApi = {
-  list: ({ page, search, sector, cap, sort }: StockListParams, signal?: AbortSignal) =>
-    apiGet<StockListResult>("/stocks", { query: { page, search, sector, cap, sort }, signal }),
+  list: ({ page, search, sector, cap, letter, sort, limit }: StockListParams, signal?: AbortSignal) =>
+    apiGet<StockListResult>("/stocks", { query: { page, search, sector, cap, letter, sort, limit }, signal }),
   search: (query: string, signal?: AbortSignal) =>
     apiGet<StockSearchResult[]>("/stocks/search", { query: { q: query }, signal }),
   overview: (slug: string, signal?: AbortSignal) => apiGet<StockSummary>(`/stocks${seg(slug)}`, { signal }),

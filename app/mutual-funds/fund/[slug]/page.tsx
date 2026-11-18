@@ -9,11 +9,14 @@ import {
   ChevronRight, ArrowUpRight, ArrowDownRight, Star, Zap, Target, UserCheck,
   Calendar, Fingerprint, Lock, BarChart3, Percent, Wallet, Coins, Activity, Gauge,
 } from "lucide-react"
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import {
+  Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis,
+} from "recharts"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { useFundDetail } from "@/hooks/use-mutual-funds"
 import { FundReturnCalculator } from "@/components/fund-return-calculator"
+import { DetailPageSkeleton } from "@/components/skeletons"
 import type { ChartPeriod, FundDetailApi, FundReturns } from "@/lib/mutual-funds/api-client"
 
 // ─── Formatting ──────────────────────────────────────────────────────────────
@@ -144,11 +147,10 @@ function FundLoader({ slug }: { slug: string }) {
   }
 
   return (
-    <PageShell>
-      <div className="w-full max-w-3xl space-y-3 animate-pulse" aria-label="Loading">
-        {Array.from({ length: 6 }, (_, i) => <div key={i} className="h-10 rounded-[6px] bg-secondary/60" />)}
-      </div>
-    </PageShell>
+    <main className="min-h-screen bg-background">
+      <Navbar />
+      <DetailPageSkeleton label="Loading fund" />
+    </main>
   )
 }
 
@@ -239,6 +241,7 @@ function FundDetail({ fund }: { fund: FundDetailApi }) {
                   <p className="text-sm font-black text-foreground">Historical Returns</p>
                   <p className="text-[11px] text-muted-foreground mt-0.5">Returns over 1 year are annualised</p>
                 </div>
+                <ReturnsChart returns={fund.returns} />
                 <div className="overflow-x-auto" style={{ scrollbarWidth: "thin" }}>
                   <table className="w-full border-collapse min-w-[760px]">
                     <thead>
@@ -375,6 +378,49 @@ function InfoList({ rows }: { rows: InfoRow[] }) {
           <div className={`text-xs font-bold text-foreground leading-relaxed break-words ${r.mono ? "font-mono tracking-wide" : ""}`}>{r.value}</div>
         </div>
       ))}
+    </div>
+  )
+}
+
+// ─── Historical returns chart (same numbers as the table below it) ───────────
+
+const UP = "#059669"   // --profit
+const DOWN = "#DC2626" // --loss
+
+function ReturnsChart({ returns }: { returns: FundReturns }) {
+  const data = RETURN_COLS
+    .map((c) => ({ label: c.label.replace("Since Inception", "Since Launch"), value: returns[c.key] }))
+    .filter((d): d is { label: string; value: number } => d.value !== null)
+  if (data.length < 2) return null
+
+  return (
+    <div className="h-[220px] sm:h-[240px] px-2 pt-4 pb-1" role="img"
+      aria-label={`Returns by period: ${data.map((d) => `${d.label} ${signedPct(d.value)}`).join(", ")}`}>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} margin={{ top: 8, right: 12, bottom: 0, left: 0 }} barCategoryGap="28%">
+          <CartesianGrid vertical={false} stroke="#e5e7eb" strokeDasharray="4 4" />
+          <XAxis dataKey="label" tick={{ fontSize: 10, fill: "#6b7280" }} tickLine={false} axisLine={false} interval={0} />
+          <YAxis tick={{ fontSize: 10, fill: "#9ca3af" }} tickLine={false} axisLine={false} width={44}
+            tickFormatter={(v: number) => `${v}%`} />
+          <ReferenceLine y={0} stroke="#9ca3af" />
+          <Tooltip
+            cursor={{ fill: "rgba(0,0,0,0.04)" }}
+            content={({ active, payload }) => {
+              const p = active && (payload?.[0]?.payload as { label: string; value: number } | undefined)
+              if (!p) return null
+              return (
+                <div className="bg-white border border-border rounded-[6px] shadow-md px-3 py-2">
+                  <div className="text-[10px] text-muted-foreground font-semibold">{p.label}</div>
+                  <div className={`text-xs font-black tabular-nums ${p.value >= 0 ? "text-profit" : "text-loss"}`}>{signedPct(p.value)}</div>
+                </div>
+              )
+            }}
+          />
+          <Bar dataKey="value" maxBarSize={36} radius={[4, 4, 0, 0]} isAnimationActive={false}>
+            {data.map((d) => <Cell key={d.label} fill={d.value >= 0 ? UP : DOWN} />)}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   )
 }

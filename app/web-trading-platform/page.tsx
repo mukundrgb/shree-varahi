@@ -66,7 +66,7 @@ const FEATURES = [
   },
   {
     icon: Percent, tag: null, title: "Margin Trading Facility",
-    desc: "Buy more with less! Get up to 4× leverage for swing trading and BTST on 1,700+ stocks. Check margin benefits for each scrip with the MTF Estimator — with an unlimited holding period on your MTF positions.",
+    desc: "Buy more with less! Get up to 3× leverage for swing trading and BTST on 1,700+ stocks. Check margin benefits for each scrip with the MTF Estimator — with an unlimited holding period on your MTF positions.",
   },
 ]
 

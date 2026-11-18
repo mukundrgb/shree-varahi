@@ -2,6 +2,7 @@
 
 import { Suspense, useMemo, useState } from "react"
 import Link from "next/link"
+import { TableRowsSkeleton } from "@/components/skeletons"
 import { useSearchParams } from "next/navigation"
 import { ChevronRight, ChevronDown, ArrowUpRight, Search, X } from "lucide-react"
 import { Navbar } from "@/components/navbar"
@@ -144,7 +145,9 @@ function EtfHoldings() {
                   ))}
                 </div>
 
-                {visible.length === 0 ? (
+                {visible.length === 0 && !(etfList.error || result.error) && (etfList.loading || (slug && !data)) ? (
+                  <TableRowsSkeleton rows={10} columns="minmax(0,1fr) 140px 90px" label="Loading holdings" />
+                ) : visible.length === 0 ? (
                   <div className="py-16 text-center text-muted-foreground text-sm">
                     {etfList.error || result.error ? (
                       <>Unable to load holdings. <button onClick={() => { etfList.retry(); result.retry() }} className="text-burgundy font-bold hover:underline">Retry</button></>

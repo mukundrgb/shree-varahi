@@ -15,6 +15,8 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { StockAvatar } from "@/components/stock-avatar"
 import { TradingViewPriceChart } from "@/components/tradingview-chart"
+import { NewsCarousel } from "@/components/news-cards"
+import { DetailPageSkeleton, TableRowsSkeleton } from "@/components/skeletons"
 import { useCorporateActions } from "@/hooks/stocks/use-corporate-actions"
 import { useStockAbout } from "@/hooks/stocks/use-stock-about"
 import { useStockFinancials } from "@/hooks/stocks/use-stock-financials"
@@ -416,13 +418,7 @@ function ErrorNotice({ message, onRetry }: { message: string; onRetry: () => voi
 }
 
 function LoadingRows({ rows = 4 }: { rows?: number }) {
-  return (
-    <div className="space-y-3 animate-pulse" aria-label="Loading">
-      {Array.from({ length: rows }, (_, i) => (
-        <div key={i} className="h-10 rounded-[6px] bg-secondary/60" />
-      ))}
-    </div>
-  )
+  return <TableRowsSkeleton rows={rows} columns="minmax(0,1fr) 96px 96px 96px" className="px-0" />
 }
 
 function StockPageShell({ children }: { children: ReactNode }) {
@@ -468,9 +464,10 @@ function StockLoader({ slug }: { slug: string }) {
   }
 
   return (
-    <StockPageShell>
-      <div className="w-full max-w-3xl"><LoadingRows rows={6} /></div>
-    </StockPageShell>
+    <main className="min-h-screen bg-background">
+      <Navbar />
+      <DetailPageSkeleton label="Loading stock" />
+    </main>
   )
 }
 
@@ -612,10 +609,10 @@ function StockDetail({ slug, stock }: { slug: string; stock: StockSummary }) {
       {/* ── MAIN GRID ── */}
       <section className="py-6 lg:py-8 bg-background overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-[1fr_340px] gap-6 lg:gap-8 items-start pb-20 lg:pb-0">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] gap-6 lg:gap-8 items-start pb-20 lg:pb-0">
 
             {/* ── LEFT COLUMN ── */}
-            <div className="space-y-5">
+            <div className="space-y-5 min-w-0">
 
               {/* Chart card */}
               <div className="border border-border rounded-[10px] bg-white overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
@@ -963,21 +960,12 @@ function StockDetail({ slug, stock }: { slug: string; stock: StockSummary }) {
                 </div>
                 {news.error ? (
                   <ErrorNotice message={news.error.message} onRetry={news.retry} />
-                ) : news.loading || !news.data ? (
-                  <div className="p-5"><LoadingRows rows={3} /></div>
-                ) : news.data.items.length === 0 ? (
+                ) : news.data && news.data.items.length === 0 ? (
                   <Notice title="No recent news" />
                 ) : (
-                  <div className="divide-y divide-border/40">
-                    {news.data.items.map(n => (
-                      <div key={n.id} className="px-5 py-4">
-                        <span className="text-[9px] font-extrabold px-1.5 py-0.5 bg-burgundy/10 text-burgundy rounded-[3px] uppercase tracking-wide">{n.tag}</span>
-                        <p className="text-xs font-bold text-foreground mt-1.5 leading-relaxed line-clamp-2">{n.headline}</p>
-                        <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
-                          <Calendar className="w-2.5 h-2.5" /> {formatDate(n.publishedAt)}
-                        </p>
-                      </div>
-                    ))}
+                  // All stories the API sends (up to 10) as scrollable cards with their text.
+                  <div className="p-4 sm:p-5 bg-cream/30">
+                    <NewsCarousel items={news.data?.items ?? []} loading={news.loading && !news.data} label="Latest news" />
                   </div>
                 )}
               </div>
@@ -1028,7 +1016,6 @@ function StockDetail({ slug, stock }: { slug: string; stock: StockSummary }) {
                     className={`w-full py-3 rounded-[7px] font-black text-sm text-white text-center block transition-opacity hover:opacity-90 ${tradeMode === "buy" ? "bg-profit" : "bg-loss"}`}>
                     {tradeMode === "buy" ? "Buy" : "Sell"} {stock.symbol} →
                   </Link>
-                  <p className="text-[9px] text-muted-foreground text-center">Login required. SEBI registered broker.</p>
                 </div>
               </div>
 
@@ -1071,7 +1058,6 @@ function StockDetail({ slug, stock }: { slug: string; stock: StockSummary }) {
                     className="w-full py-3 rounded-[7px] bg-gold text-[#4A0709] font-black text-sm text-center block hover:bg-gold/90 transition-colors">
                     Open Free Account →
                   </Link>
-                  <p className="text-[9px] text-white/40 text-center mt-2">SEBI Reg. No. INZ000229134 · CDSL DP-2100</p>
                 </div>
               </div>
 

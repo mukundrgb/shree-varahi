@@ -80,8 +80,8 @@ const promoSlides: PromoSlide[] = [
     kind: "image",
     src: "/mtf-banner.png",
     badge: "MARGIN TRADING",
-    label: "Trade with 4× leverage",
-    sublabel: "Margin Trading Facility — up to 4× on eligible stocks",
+    label: "Trade with 3× leverage",
+    sublabel: "Margin Trading Facility — up to 3× on eligible stocks",
     href: "/",
   },
   {

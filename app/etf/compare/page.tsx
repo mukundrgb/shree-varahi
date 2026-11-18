@@ -3,7 +3,8 @@
 import { Suspense, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { ChevronRight, ChevronLeft, ChevronUp, ChevronDown, Search, X } from "lucide-react"
+import { ChevronRight, ChevronLeft, ArrowUp, ArrowDown, ArrowUpDown, Search, X } from "lucide-react"
+import { TableRowsSkeleton } from "@/components/skeletons"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { StockAvatar } from "@/components/stock-avatar"
@@ -56,7 +57,8 @@ function EtfCompare() {
   const router = useRouter()
   const params = useSearchParams()
   const initialSort = params.get("sort")
-  const startKey: SortKey = isSortKey(initialSort) ? initialSort : "aum"
+  // Default: highest current price first.
+  const startKey: SortKey = isSortKey(initialSort) ? initialSort : "price"
 
   const [search, setSearch] = useState("")
   const [category, setCategory] = useState<"All" | EtfCategory>("All")
@@ -171,26 +173,32 @@ function EtfCompare() {
                 <div className="grid px-4 py-2.5 border-b border-border bg-cream/70" style={{ gridTemplateColumns: grid }}>
                   {COLUMNS.map((c, i) => {
                     const active = c.key === sortKey
+                    // Every column shows it can be sorted. Arrow up = highest → lowest (Z → A for names),
+                    // arrow down = lowest → highest (A → Z).
+                    const Icon = !active ? ArrowUpDown : sortDir === "desc" ? ArrowUp : ArrowDown
                     return (
                       <button
                         key={c.key}
                         onClick={() => sortBy(c.key)}
                         aria-sort={active ? (sortDir === "asc" ? "ascending" : "descending") : "none"}
-                        className={`flex items-center gap-0.5 text-[10px] font-extrabold uppercase tracking-wider transition-colors ${
+                        title={active ? (sortDir === "desc" ? "Highest to lowest" : "Lowest to highest") : `Sort by ${c.label}`}
+                        className={`flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider transition-colors ${
                           i === 0 ? "justify-start" : "justify-end"
                         } ${active ? "text-burgundy" : "text-muted-foreground hover:text-foreground"}`}
                       >
                         {c.label}
-                        {active && (sortDir === "asc" ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />)}
+                        <Icon className={`w-3 h-3 shrink-0 ${active ? "" : "opacity-50"}`} />
                       </button>
                     )
                   })}
                 </div>
 
                 {/* Rows */}
-                {pageRows.length === 0 ? (
+                {list.loading && !list.data ? (
+                  <TableRowsSkeleton rows={PER_PAGE} columns={grid} cells={7} avatar label="Loading ETFs" />
+                ) : pageRows.length === 0 ? (
                   <div className="py-16 text-center text-muted-foreground text-sm">
-                    {list.loading ? "Loading ETFs…" : list.error ? (
+                    {list.error ? (
                       <>Unable to load ETFs. <button onClick={list.retry} className="text-burgundy font-bold hover:underline">Retry</button></>
                     ) : "No ETFs match your filters."}
                   </div>

@@ -42,5 +42,7 @@ export default function MutualFundsCatchAllPage() {
         : <>Unable to load funds. <button onClick={list.retry} className="text-burgundy font-bold hover:underline">Retry</button></>
       : null
 
-  return <MutualFundListPage data={data} status={status} />
+  // AMC pages open biggest funds first; curated lists keep their own order.
+  const defaultSort = parts[0] === "amc" ? ({ key: "aum", order: "desc" } as const) : null
+  return <MutualFundListPage data={data} status={status} loading={list.loading && !list.data} defaultSort={defaultSort} />
 }

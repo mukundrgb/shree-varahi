@@ -42,9 +42,9 @@ export interface StockQuoteResult {
   quote: StockQuote | null
 }
 
-export type StockSort = "name-asc" | "name-desc" | "change-desc" | "change-asc"
+export type StockSort = "name-asc" | "name-desc" | "change-desc" | "change-asc" | "price-desc" | "price-asc"
 
-export const STOCK_SORTS: readonly StockSort[] = ["name-asc", "name-desc", "change-desc", "change-asc"]
+export const STOCK_SORTS: readonly StockSort[] = ["name-asc", "name-desc", "change-desc", "change-asc", "price-desc", "price-asc"]
 
 export interface StockListParams {
   page?: number
@@ -52,7 +52,11 @@ export interface StockListParams {
   /** A category from StockListResult.categories. */
   sector?: string
   cap?: string
+  /** "A"–"Z" = company names starting with that letter; "0-9" = names starting with a number */
+  letter?: string
   sort?: StockSort
+  /** Rows per page (backend default 10, max 50). */
+  limit?: number
 }
 
 export interface StockListResult {
@@ -109,6 +113,8 @@ export interface StockNewsItem {
   caption: string | null
   /** HTML article text */
   body: string | null
+  /** The same story as plain text (paragraphs separated by blank lines) */
+  text: string | null
   /** ISO date-time (IST) */
   publishedAt: string | null
 }

@@ -6,7 +6,7 @@ import {
   ChevronLeft, ChevronRight, TrendingDown, Plus, X, Layers, Repeat, Eye, LayoutDashboard, FileSearch, Zap,
   Activity, PieChart, Coins, Landmark, Globe,
   LineChart, Percent, ListChecks, TrendingUp, Target, BarChart3,
-  Star,
+  Star, ArrowUp, ArrowDown, ArrowUpDown,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation"
 import { useEtfList } from "@/hooks/etf/use-etf"
 import type { EtfListRow } from "@/lib/etf/types"
 import { formatPrice } from "@/lib/stocks/format"
+import { TableRowsSkeleton } from "@/components/skeletons"
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 
@@ -40,7 +41,24 @@ const CATEGORIES: { id: Category; label: string; icon: React.ElementType; color:
 ]
 
 // ETF rows come from the backend (/api/v1/etfs), grouped by category tab.
-type EtfCard = { slug: string; symbol: string; name: string; price: string; changeAmt: number | null; change: number | null }
+type EtfCard = {
+  slug: string; symbol: string; name: string
+  /** Formatted for display */
+  price: string
+  /** Raw price, for sorting */
+  priceValue: number | null
+  changeAmt: number | null; change: number | null
+}
+
+/** Sortable columns of the category table; arrow up = highest → lowest. */
+type EtfSortCol = "priceValue" | "changeAmt" | "change"
+const ETF_SORT_COLS: { key: EtfSortCol; label: string }[] = [
+  { key: "priceValue", label: "Price (₹)" },
+  { key: "changeAmt",  label: "Change" },
+  { key: "change",     label: "% Change" },
+]
+/** Default: highest price first. */
+const DEFAULT_ETF_SORT = { key: "priceValue" as EtfSortCol, order: "desc" as "asc" | "desc" }
 
 const CARD_CATEGORIES = ["Equity", "Commodity", "Debt", "Global"] as const
 
@@ -55,6 +73,7 @@ function toCards(rows: EtfListRow[]): Record<Category, EtfCard[]> {
       symbol: etf.symbol,
       name: etf.name,
       price: formatPrice(etf.price),
+      priceValue: etf.price,
       changeAmt: etf.changeAmt,
       change: etf.changePct,
     })
@@ -63,7 +82,7 @@ function toCards(rows: EtfListRow[]): Record<Category, EtfCard[]> {
 }
 
 /** Shown in the decorative previews until the ETF list has loaded. */
-const PLACEHOLDER_CARD: EtfCard = { slug: "", symbol: "", name: "Nifty 50 ETF", price: "—", changeAmt: null, change: null }
+const PLACEHOLDER_CARD: EtfCard = { slug: "", symbol: "", name: "Nifty 50 ETF", price: "—", priceValue: null, changeAmt: null, change: null }
 
 const changeText = (value: number | null) => (value === null ? "—" : `${value >= 0 ? "+" : ""}${value.toFixed(2)}%`)
 const changeClass = (value: number | null) =>
@@ -130,7 +149,22 @@ export default function ETFPage() {
 
   // Category table: 10 rows per page; switching category goes back to page 1.
   const [etfPage, setEtfPage] = useState(1)
-  const catRows = ETFS[activeCat]
+  const [etfSort, setEtfSort] = useState(DEFAULT_ETF_SORT)
+  // Rows with no value always go last, whichever way the column is sorted.
+  const catRows = useMemo(() => {
+    const dir = etfSort.order === "desc" ? -1 : 1
+    return [...ETFS[activeCat]].sort((a, b) => {
+      const x = a[etfSort.key], y = b[etfSort.key]
+      if (x === null) return y === null ? 0 : 1
+      if (y === null) return -1
+      return dir * (x - y)
+    })
+  }, [ETFS, activeCat, etfSort])
+  // First click on a column: highest first (arrow up); next click: lowest first (arrow down).
+  const sortEtfs = (key: EtfSortCol) => {
+    setEtfSort((s) => (s.key === key ? { key, order: s.order === "desc" ? "asc" : "desc" } : { key, order: "desc" }))
+    setEtfPage(1)
+  }
   const etfTotalPages = Math.max(1, Math.ceil(catRows.length / ETFS_PER_PAGE))
   const etfPageRows = catRows.slice((etfPage - 1) * ETFS_PER_PAGE, etfPage * ETFS_PER_PAGE)
   const pickCategory = (c: Category) => { setActiveCat(c); setEtfPage(1) }
@@ -262,8 +296,8 @@ export default function ETFPage() {
         </div>
       </section>
 
-      {/* ── EXPLORE ETF CATEGORIES ── */}
-      <section className="py-12 lg:py-16 bg-cream border-t border-border/40">
+      {/* ── EXPLORE ETF CATEGORIES ── (navbar "ETF Screener" links here) */}
+      <section id="etf-table" className="py-12 lg:py-16 bg-cream border-t border-border/40 scroll-mt-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">EXPLORE ETF CATEGORIES</p>
@@ -302,9 +336,17 @@ export default function ETFPage() {
               {/* Header */}
               <div className="grid grid-cols-[minmax(0,1fr)_84px_64px_72px] sm:grid-cols-[minmax(0,1fr)_120px_110px_100px] gap-x-2 px-4 py-2.5 border-b border-border bg-cream/70">
                 <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">Name</div>
-                <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">Price (₹)</div>
-                <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">Change</div>
-                <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">% Change</div>
+                {ETF_SORT_COLS.map((c) => {
+                  const active = etfSort.key === c.key
+                  const Icon = !active ? ArrowUpDown : etfSort.order === "desc" ? ArrowUp : ArrowDown
+                  return (
+                    <button key={c.key} type="button" onClick={() => sortEtfs(c.key)}
+                      aria-label={`Sort by ${c.label}${active ? (etfSort.order === "desc" ? ", highest first" : ", lowest first") : ""}`}
+                      className={`flex items-center justify-end gap-1 text-[10px] font-extrabold uppercase tracking-wider transition-colors ${active ? "text-burgundy" : "text-muted-foreground hover:text-foreground"}`}>
+                      <span className="truncate">{c.label}</span> <Icon className={`w-3 h-3 shrink-0 ${active ? "" : "opacity-50"}`} />
+                    </button>
+                  )
+                })}
               </div>
 
               {/* Rows */}
@@ -315,11 +357,7 @@ export default function ETFPage() {
                   <button onClick={etfList.retry} className="mt-3 text-xs font-bold text-burgundy hover:underline">Try again</button>
                 </div>
               ) : !etfList.data ? (
-                <div className="p-4 space-y-3 animate-pulse" aria-label="Loading ETFs">
-                  {Array.from({ length: ETFS_PER_PAGE }, (_, i) => (
-                    <div key={i} className="h-10 rounded-[6px] bg-secondary/60" />
-                  ))}
-                </div>
+                <TableRowsSkeleton rows={ETFS_PER_PAGE} columns="minmax(0,1fr) 84px 64px 72px" avatar label="Loading ETFs" />
               ) : etfPageRows.length === 0 ? (
                 <div className="py-16 text-center text-muted-foreground text-sm">No ETFs in this category yet.</div>
               ) : (

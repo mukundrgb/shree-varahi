@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
+import { TableRowsSkeleton } from "@/components/skeletons"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -695,8 +696,8 @@ export default function FuturesOptionsPage() {
         </div>
       </section>
 
-      {/* ── SECTION 3: WHAT YOU CAN TRADE (MARKETS) ── */}
-      <section className="bg-cream py-20 lg:py-28 overflow-hidden border-b border-border/50">
+      {/* ── SECTION 3: WHAT YOU CAN TRADE (MARKETS) ── (navbar "F&O Screener" links here) */}
+      <section id="fno-markets" className="bg-cream py-20 lg:py-28 overflow-hidden border-b border-border/50 scroll-mt-16">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 
           {/* Centered Header */}
@@ -752,11 +753,7 @@ export default function FuturesOptionsPage() {
                 <button onClick={markets.retry} className="mt-3 text-xs font-bold text-burgundy hover:underline">Try again</button>
               </div>
             ) : !marketsData ? (
-              <div className="p-4 space-y-3 animate-pulse" aria-label="Loading prices">
-                {Array.from({ length: MARKETS_PER_PAGE }, (_, i) => (
-                  <div key={i} className="h-10 rounded-[6px] bg-secondary/60" />
-                ))}
-              </div>
+              <TableRowsSkeleton rows={MARKETS_PER_PAGE} columns="minmax(0,1fr) 84px 64px 72px" label="Loading prices" />
             ) : marketRows.length === 0 ? (
               <div className="py-16 text-center text-muted-foreground text-sm">No contracts available.</div>
             ) : (

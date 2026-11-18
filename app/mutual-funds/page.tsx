@@ -1,21 +1,22 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { Suspense, useEffect, useMemo, useRef, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Search, TrendingUp, ChevronLeft, ChevronRight,
   Calculator, Shield, Star, Check,
-  Zap, BarChart2, Users, Award, X, ArrowUpDown,
+  Zap, BarChart2, Users, Award, X, ArrowUpDown, ArrowUp, ArrowDown,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useFundSearch, useMutualFundsPage } from "@/hooks/use-mutual-funds"
-import { fundHref, type FundSort } from "@/lib/mutual-funds/api-client"
-import {
-  FundCategoryFilter, EMPTY_CATEGORY_SELECTION, selectionChips, type CategorySelection,
-} from "@/components/fund-category-filter"
+import { fundHref, type FundSort, type MutualFundApi } from "@/lib/mutual-funds/api-client"
+import { FundCategoryFilter, NO_CATEGORY, categoryQuery, type CategoryPick } from "@/components/fund-category-filter"
+import { FundHouseFilter } from "@/components/fund-house-filter"
+import { CardGridSkeleton, ListSkeleton, TableRowsSkeleton } from "@/components/skeletons"
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 // All fund data comes from the backend (/api/v1/mutual-funds, sourced from Reedos).
@@ -31,9 +32,30 @@ const EXPLORER_TABS: Array<{ id: string; label: string; sort: FundSort; index?: 
 
 const CATEGORY_ICONS = [BarChart2, TrendingUp, Zap, Shield, Award, Star, Users]
 const AMC_PREVIEW = 17
+/** Categories shown before "More Categories" (with the More card: 3 full rows of 5). */
+const CATEGORY_PREVIEW = 14
 const PER_PAGE = 10
 const SEARCH_DEBOUNCE_MS = 300
-const TABLE_COLUMNS = "40px 1fr 104px 96px 72px 72px 72px"
+/** Logo · Fund · Category · Fund Manager · Risk · Rating · AUM · 1Y · 3Y · 5Y */
+const TABLE_COLUMNS = "40px minmax(0,1fr) 140px 140px 100px 56px 104px 66px 66px 66px"
+
+type SortOrder = "asc" | "desc"
+interface TableSort { key: FundSort; order: SortOrder }
+/** Default order of the table: biggest funds (AUM) first. */
+const DEFAULT_SORT: TableSort = { key: "aum", order: "desc" }
+/** Rating chips: any, 5★ … 1★, not rated (0). */
+const RATING_FILTERS: { label: string; value: number | null }[] = [
+  { label: "All Ratings", value: null },
+  { label: "5", value: 5 }, { label: "4", value: 4 }, { label: "3", value: 3 }, { label: "2", value: 2 }, { label: "1", value: 1 },
+  { label: "Not Rated", value: 0 },
+]
+/** Columns with sort arrows. */
+const SORT_COLUMNS: { key: FundSort; label: string }[] = [
+  { key: "aum", label: "AUM" },
+  { key: "1y",  label: "1Y" },
+  { key: "3y",  label: "3Y" },
+  { key: "5y",  label: "5Y" },
+]
 
 const AMC_COLORS = ["#1D4ED8", "#DC2626", "#D97706", "#16A34A", "#7C3AED", "#0891B2", "#B91C1C", "#15803D", "#B45309", "#0369A1", "#6D28D9"]
 const colorFor = (id: number | null) => AMC_COLORS[Math.abs(id ?? 0) % AMC_COLORS.length]
@@ -107,33 +129,79 @@ function ReturnCell({ val }: { val: number | null }) {
   )
 }
 
-function StarRating({ rating }: { rating: number }) {
+/** Rating number; blank when the fund is not rated (0). */
+function RatingCell({ rating }: { rating: number }) {
   if (!rating) return null
   return (
-    <div className="flex gap-0.5">
-      {[1, 2, 3, 4, 5].map((i) => (
-        <Star
-          key={i}
-          className="w-2.5 h-2.5"
-          style={{ color: i <= rating ? "#D9B27C" : "#E5E7EB", fill: i <= rating ? "#D9B27C" : "transparent" }}
-        />
-      ))}
-    </div>
+    <span className="inline-flex items-center gap-0.5 text-sm font-extrabold text-foreground tabular-nums" title={`${rating} star rating`}>
+      {rating}
+      <Star className="w-3 h-3 fill-gold-deep text-gold-deep" aria-hidden />
+    </span>
   )
+}
+
+/**
+ * Sortable column header. Arrow up = highest → lowest, arrow down = lowest → highest;
+ * the first click on a column sorts highest first.
+ */
+function SortHeader({ label, k, sort, onSort }: { label: string; k: FundSort; sort: TableSort; onSort: (k: FundSort) => void }) {
+  const active = sort.key === k
+  const Icon = !active ? ArrowUpDown : sort.order === "desc" ? ArrowUp : ArrowDown
+  return (
+    <button
+      type="button"
+      onClick={() => onSort(k)}
+      aria-label={`Sort by ${label}${active ? (sort.order === "desc" ? ", highest first" : ", lowest first") : ""}`}
+      title={active && sort.order === "desc" ? "Highest to lowest" : active ? "Lowest to highest" : `Sort by ${label}`}
+      className={`ml-auto flex items-center justify-end gap-1 text-[10px] font-extrabold uppercase tracking-wider transition-colors ${
+        active ? "text-burgundy" : "text-muted-foreground hover:text-foreground"
+      }`}
+    >
+      {label} <Icon className={`w-3 h-3 ${active ? "" : "opacity-50"}`} />
+    </button>
+  )
+}
+
+/**
+ * Applies ?category=<main category>&sub=<sub-category> (links from the navbar's Markets menu),
+ * also when the link is clicked while this page is already open.
+ */
+function CategoryFromUrl({ onPick }: { onPick: (pick: CategoryPick) => void }) {
+  const params = useSearchParams()
+  const main = params.get("category")
+  const sub = params.get("sub")
+  const pickRef = useRef(onPick)
+  pickRef.current = onPick
+  useEffect(() => {
+    if (main) pickRef.current({ main, subs: sub ? [sub] : [] })
+  }, [main, sub])
+  return null
 }
 
 // ─── Page ───────────────────────────────────────────────────────────────────
 
 export default function MutualFundsPage() {
   const [activeTab, setActiveTab]     = useState("all")
-  const [categories, setCategories]   = useState<CategorySelection>(EMPTY_CATEGORY_SELECTION)
+  const [category, setCategory]       = useState<CategoryPick>(NO_CATEGORY)
   const [risk, setRisk]               = useState("")
+  /** Star rating filter; null = any rating, 0 = not rated */
+  const [rating, setRating]           = useState<number | null>(null)
+  /** Fund house (AMC id) filter; null = all fund houses */
+  const [amc, setAmc]                 = useState<number | null>(null)
   const [search, setSearch]           = useState("")
   const [query, setQuery]             = useState("")
   const [page, setPage]               = useState(1)
   const [showAllAmcs, setShowAllAmcs] = useState(false)
-  /** Fund name A→Z / Z→A; null keeps the tab's own order. */
-  const [nameSort, setNameSort]       = useState<"asc" | "desc" | null>(null)
+  const [showAllCategories, setShowAllCategories] = useState(false)
+  /** Table order: AUM high → low by default; column headers and the name button change it. */
+  const [sort, setSort]               = useState<TableSort>(DEFAULT_SORT)
+
+  // Links from the Markets menu (see CategoryFromUrl below).
+  const pickFromUrl = (pick: CategoryPick) => {
+    setCategory(pick)
+    setPage(1)
+    document.getElementById("find-your-fund")?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
 
   // Search waits for the user to stop typing before asking the server.
   useEffect(() => {
@@ -148,38 +216,61 @@ export default function MutualFundsPage() {
   const fundQuery = useMemo(
     () => ({
       q: query || undefined,
-      assetClass: categories.assetClasses,
-      category: categories.categories,
+      ...categoryQuery(category),
       risk: risk || undefined,
+      rating: rating ?? undefined,
+      amc: amc ?? undefined,
       index: tab.index,
-      sort: nameSort ? ("name" as const) : tab.sort,
-      order: nameSort ?? ("desc" as const),
+      sort: sort.key,
+      order: sort.order,
       page,
       limit: PER_PAGE,
     }),
-    [query, categories, risk, tab, nameSort, page],
+    [query, category, risk, rating, amc, tab, sort, page],
   )
   const fundsResult = useFundSearch(fundQuery)
   const funds       = fundsResult.data
   const rows        = funds?.items ?? []
   const totalPages  = funds?.totalPages ?? 1
 
-  // A tab brings its own order (e.g. High Returns = 3Y return), so it clears the name sort.
-  const switchTab = (id: string) => { setActiveTab(id); setNameSort(null); setPage(1) }
-  // First click sorts A→Z; the next click reverses it.
-  const toggleNameSort = () => { setNameSort((prev) => (prev === "asc" ? "desc" : "asc")); setPage(1) }
-  const pickCategories = (v: CategorySelection) => { setCategories(v); setPage(1) }
+  // A tab brings its own order (e.g. High Returns = 3Y return, highest first).
+  const tabSort = (t: (typeof EXPLORER_TABS)[number]): TableSort => ({ key: t.sort, order: "desc" })
+  const switchTab = (id: string) => {
+    setActiveTab(id)
+    setSort(tabSort(EXPLORER_TABS.find((t) => t.id === id) ?? EXPLORER_TABS[0]))
+    setPage(1)
+  }
+  // Numeric columns: first click = highest → lowest (arrow up), next click = lowest → highest (arrow down).
+  const sortBy = (key: FundSort) => {
+    setSort((prev) => (prev.key === key ? { key, order: prev.order === "desc" ? "asc" : "desc" } : { key, order: "desc" }))
+    setPage(1)
+  }
+  // Name: first click sorts A→Z; the next click reverses it.
+  const toggleNameSort = () => {
+    setSort((prev) => ({ key: "name", order: prev.key === "name" && prev.order === "asc" ? "desc" : "asc" }))
+    setPage(1)
+  }
+  const pickCategory = (v: CategoryPick) => { setCategory(v); setPage(1) }
   const pickRisk  = (v: string)  => { setRisk(v); setPage(1) }
+  const pickRating = (v: number | null) => { setRating(v); setPage(1) }
+  const pickAmc = (v: number | null) => { setAmc(v); setPage(1) }
   // Like the stocks page: resets search, categories, risk and sort (the tab stays).
   const clearAll = () => {
-    setCategories(EMPTY_CATEGORY_SELECTION); setRisk(""); setSearch(""); setQuery(""); setNameSort(null); setPage(1)
+    setCategory(NO_CATEGORY); setRisk(""); setRating(null); setAmc(null); setSearch(""); setQuery(""); setSort(tabSort(tab)); setPage(1)
   }
-  const hasFilter = !!(search || risk || nameSort || categories.assetClasses.length || categories.categories.length)
+  const sortChanged = sort.key !== tab.sort || sort.order !== "desc"
+  const mobileReturn =
+    sort.key === "1y" ? { label: "1Y", value: (f: MutualFundApi) => f.returns.oneYear } :
+    sort.key === "5y" ? { label: "5Y", value: (f: MutualFundApi) => f.returns.fiveYear } :
+                        { label: "3Y", value: (f: MutualFundApi) => f.returns.threeYear }
+  const hasFilter = !!(search || risk || rating !== null || amc !== null || sortChanged || category.main)
 
   const totalFunds = formatCount(info?.stats.totalFunds)
   const totalAmcs  = formatCount(info?.stats.totalAmcs)
   const amcs       = info?.amcs ?? []
   const visibleAmcs = showAllAmcs ? amcs : amcs.slice(0, AMC_PREVIEW)
+  const categories = info?.categories ?? []
+  const visibleCategories = showAllCategories ? categories : categories.slice(0, CATEGORY_PREVIEW)
 
   const tableStatus = fundsResult.loading && !funds
     ? "Loading funds…"
@@ -196,6 +287,8 @@ export default function MutualFundsPage() {
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
+      {/* useSearchParams needs a Suspense boundary in the App Router */}
+      <Suspense fallback={null}><CategoryFromUrl onPick={pickFromUrl} /></Suspense>
 
       {/* ── HERO ── */}
       <section className="relative bg-cream border-b border-border/40 pt-28 pb-14 overflow-hidden">
@@ -281,7 +374,7 @@ export default function MutualFundsPage() {
                     </span>
                   </Link>
                 ))}
-                {!info && <p className="text-[11px] text-muted-foreground py-4 text-center">{sectionStatus}</p>}
+                {!info && (pageData.error ? <p className="text-[11px] text-muted-foreground py-4 text-center">{sectionStatus}</p> : <ListSkeleton rows={3} label="Loading top performers" />)}
 
                 <div className="pt-1 border-t border-border/40">
                   <Button size="sm" className="w-full bg-burgundy hover:bg-burgundy-deep text-white text-[11px] font-bold rounded-[5px] h-8">
@@ -322,21 +415,20 @@ export default function MutualFundsPage() {
           </div>
 
           {/* Filters */}
-          <div className="flex flex-wrap gap-2 mb-5">
+          <div className="space-y-3 mb-5">
+          <div className="flex flex-wrap gap-2">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
               <input
                 type="text"
-                placeholder="Search funds, AMCs..."
+                placeholder="Search funds, AMCs, fund managers..."
+                aria-label="Search by fund name, fund house or fund manager"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-9 pr-3 py-2 text-sm rounded-[5px] border border-border bg-white placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40 w-48"
+                className="pl-9 pr-3 py-2 text-sm rounded-[5px] border border-border bg-white placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40 w-64 max-w-full"
               />
             </div>
-
-            {/* Categories: main categories → their sub-categories */}
-            <FundCategoryFilter mains={info?.assetClasses ?? []} value={categories} onApply={pickCategories} />
 
             {/* Risk filter */}
             <div className="flex flex-wrap gap-1.5">
@@ -354,6 +446,33 @@ export default function MutualFundsPage() {
                 </button>
               ))}
             </div>
+
+            {/* Fund house filter */}
+            <FundHouseFilter amcs={info?.amcs ?? []} value={amc} onChange={pickAmc} />
+
+            {/* Rating filter */}
+            <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label="Rating">
+              {RATING_FILTERS.map((f) => (
+                <button
+                  key={f.label}
+                  role="radio"
+                  aria-checked={rating === f.value}
+                  onClick={() => pickRating(f.value)}
+                  className={`px-3 py-1.5 rounded-[5px] text-[11px] font-bold border inline-flex items-center gap-1 transition-all duration-200 ${
+                    rating === f.value
+                      ? "bg-gold/15 text-gold-deep border-gold/35"
+                      : "bg-white text-muted-foreground border-border hover:border-gold/25 hover:text-foreground"
+                  }`}
+                >
+                  {f.label}
+                  {f.value !== null && f.value > 0 && <Star className="w-3 h-3 fill-gold-deep text-gold-deep" aria-hidden />}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Categories: main categories, then the picked one's sub-categories (horizontal scroll) */}
+          <FundCategoryFilter mains={info?.assetClasses ?? []} value={category} onChange={pickCategory} />
           </div>
 
           {/* Result count + active category */}
@@ -366,27 +485,21 @@ export default function MutualFundsPage() {
               <span className="hidden sm:inline text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mr-0.5">Sort</span>
               <button
                 onClick={toggleNameSort}
-                aria-pressed={nameSort !== null}
+                aria-pressed={sort.key === "name"}
                 title="Sort by fund name"
                 className={`px-2.5 py-1 rounded-[5px] text-[11px] font-bold whitespace-nowrap border flex items-center gap-1 transition-all duration-200 ${
-                  nameSort
+                  sort.key === "name"
                     ? "bg-burgundy text-white border-burgundy"
                     : "bg-white text-muted-foreground border-border hover:border-burgundy/25 hover:text-foreground"
                 }`}
               >
-                <ArrowUpDown className="w-3 h-3" /> {nameSort === "desc" ? "Z → A" : "A → Z"}
+                <ArrowUpDown className="w-3 h-3" /> {sort.key === "name" && sort.order === "desc" ? "Z → A" : "A → Z"}
               </button>
+              {/* Phones have no column headers, so the column sorts live here */}
+              <div className="lg:hidden flex items-center gap-2.5 ml-1">
+                {SORT_COLUMNS.map((c) => <SortHeader key={c.key} label={c.label} k={c.key} sort={sort} onSort={sortBy} />)}
+              </div>
             </div>
-            {selectionChips(info?.assetClasses ?? [], categories).map((chip) => (
-              <button
-                key={chip.key}
-                onClick={() => pickCategories(chip.remove(categories))}
-                aria-label={`Remove ${chip.label}`}
-                className="flex items-center gap-1 px-2 py-0.5 rounded-[4px] bg-burgundy/8 border border-burgundy/20 text-[11px] font-bold text-burgundy hover:bg-burgundy/12"
-              >
-                {chip.label} <X className="w-3 h-3" />
-              </button>
-            ))}
             {hasFilter && (
               <button
                 onClick={clearAll}
@@ -401,16 +514,16 @@ export default function MutualFundsPage() {
           <div className="rounded-[8px] border border-border bg-white overflow-hidden shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
             {/* Header */}
             <div
-              className="hidden md:grid px-4 py-2.5 border-b border-border bg-cream/60"
+              className="hidden lg:grid items-center px-4 py-2.5 border-b border-border bg-cream/60"
               style={{ gridTemplateColumns: TABLE_COLUMNS }}
             >
               <div />
               <div className="pl-3 text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">Fund</div>
+              <div className="pr-3 text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">Category</div>
+              <div className="pr-3 text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">Fund Manager</div>
               <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">Risk</div>
-              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">AUM</div>
-              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">1Y</div>
-              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">3Y</div>
-              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">5Y</div>
+              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-center">Rating</div>
+              {SORT_COLUMNS.map((c) => <SortHeader key={c.key} label={c.label} k={c.key} sort={sort} onSort={sortBy} />)}
               {/* Min SIP column disabled for now (needs GetFundOverview per fund)
               <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">Min SIP</div>
               */}
@@ -418,7 +531,12 @@ export default function MutualFundsPage() {
 
             {/* Rows */}
             <AnimatePresence mode="popLayout">
-              {tableStatus ? (
+              {fundsResult.loading && !funds ? (
+                <motion.div key="skeleton" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                  <div className="hidden lg:block"><TableRowsSkeleton rows={PER_PAGE} columns={TABLE_COLUMNS} cells={9} label="Loading funds" /></div>
+                  <div className="lg:hidden"><TableRowsSkeleton rows={PER_PAGE} columns="minmax(0,1fr) 64px" avatar label="Loading funds" /></div>
+                </motion.div>
+              ) : tableStatus ? (
                 <motion.div key="status" initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                   className="py-14 text-center text-muted-foreground text-sm">
                   {tableStatus}
@@ -440,7 +558,7 @@ export default function MutualFundsPage() {
                   >
                     <Link href={fundHref(fund)} className="block" aria-label={`${fund.name} details`}>
                     {/* Mobile */}
-                    <div className="md:hidden flex items-center justify-between px-4 py-3.5 gap-3">
+                    <div className="lg:hidden flex items-center justify-between px-4 py-3.5 gap-3">
                       <div className="flex items-center gap-3 min-w-0">
                         <AmcLogo name={fund.amcName ?? fund.name} logoUrl={fund.amcLogoUrl} colorId={fund.amcId} />
                         <div className="min-w-0">
@@ -452,29 +570,50 @@ export default function MutualFundsPage() {
                         </div>
                       </div>
                       <div className="text-right shrink-0 space-y-0.5">
-                        <div className="text-[10px] font-semibold text-muted-foreground">3Y</div>
-                        <ReturnCell val={fund.returns.threeYear} />
+                        {/* The column being sorted (3Y unless a return column is picked) */}
+                        <div className="text-[10px] font-semibold text-muted-foreground">{mobileReturn.label}</div>
+                        <ReturnCell val={mobileReturn.value(fund)} />
                       </div>
                     </div>
 
                     {/* Desktop */}
                     <div
-                      className="hidden md:grid px-4 py-3"
+                      className="hidden lg:grid px-4 py-3"
                       style={{ gridTemplateColumns: TABLE_COLUMNS }}
                     >
                       <AmcLogo name={fund.amcName ?? fund.name} logoUrl={fund.amcLogoUrl} colorId={fund.amcId} />
 
-                      <div className="pl-3 min-w-0 flex flex-col justify-center gap-0.5">
-                        <div className="font-extrabold text-sm text-foreground group-hover:text-burgundy transition-colors leading-tight truncate">{fund.name}</div>
+                      <div className="pl-3 pr-3 min-w-0 flex flex-col justify-center gap-0.5">
+                        <div className="font-extrabold text-sm text-foreground group-hover:text-burgundy transition-colors leading-tight line-clamp-2" title={fund.name}>{fund.name}</div>
                         <div className="flex items-center gap-1.5 min-w-0">
                           <AssetClassBadge assetClass={fund.assetClass} />
-                          <span className="text-[9px] text-muted-foreground/85 truncate">{fund.category}</span>
                         </div>
-                        <StarRating rating={fund.rating} />
+                      </div>
+
+                      <div className="flex items-center pr-3 min-w-0">
+                        <span className="text-xs font-semibold text-foreground/80 leading-snug line-clamp-2" title={fund.category ?? undefined}>{fund.category ?? "—"}</span>
+                      </div>
+
+                      {/* Fund manager(s): first name, then "+N more"; hover shows everyone */}
+                      <div className="flex items-center pr-3 min-w-0">
+                        {fund.fundManagers && fund.fundManagers.length > 0 ? (
+                          <span className="min-w-0 text-xs text-foreground/80 leading-snug" title={fund.fundManagers.join(", ")}>
+                            <span className="block font-semibold truncate">{fund.fundManagers[0]}</span>
+                            {fund.fundManagers.length > 1 && (
+                              <span className="block text-[10px] text-muted-foreground">+{fund.fundManagers.length - 1} more</span>
+                            )}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
                       </div>
 
                       <div className="flex items-center pr-2">
                         <RiskBadge level={fund.risk} />
+                      </div>
+
+                      <div className="flex items-center justify-center">
+                        <RatingCell rating={fund.rating} />
                       </div>
 
                       <div className="flex items-center justify-end">
@@ -540,10 +679,10 @@ export default function MutualFundsPage() {
             </div>
           </div>
 
-          {!info && <p className="py-10 text-center text-sm text-muted-foreground">{sectionStatus}</p>}
+          {!info && (pageData.error ? <p className="py-10 text-center text-sm text-muted-foreground">{sectionStatus}</p> : <CardGridSkeleton count={10} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3" />)}
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            {(info?.categories ?? []).map((cat, i) => {
+            {visibleCategories.map((cat, i) => {
               const Icon = CATEGORY_ICONS[i % CATEGORY_ICONS.length]
               const color = "#8B0D19"
               return (
@@ -568,6 +707,25 @@ export default function MutualFundsPage() {
                 </motion.div>
               )
             })}
+
+            {/* Show the rest — same as AMC Partners */}
+            {categories.length > CATEGORY_PREVIEW && (
+              <motion.button
+                type="button"
+                onClick={() => setShowAllCategories((v) => !v)}
+                aria-expanded={showAllCategories}
+                whileHover={{ scale: 1.03 }}
+                transition={{ duration: 0.15 }}
+                className="bg-cream border border-border/50 rounded-[8px] p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-gold/30 min-h-[118px]"
+              >
+                <div className="w-12 h-12 rounded-[8px] bg-gold/10 border border-gold/20 flex items-center justify-center">
+                  <span className="text-gold-deep font-black text-base">
+                    {showAllCategories ? "−" : `+${categories.length - CATEGORY_PREVIEW}`}
+                  </span>
+                </div>
+                <span className="text-[10px] font-bold text-muted-foreground text-center">{showAllCategories ? "Show Less" : "More Categories"}</span>
+              </motion.button>
+            )}
           </div>
         </div>
       </section>
@@ -652,7 +810,7 @@ export default function MutualFundsPage() {
             <h2 className="text-xl sm:text-2xl font-black text-foreground">AMC Partners</h2>
           </div>
 
-          {!info && <p className="py-10 text-center text-sm text-muted-foreground">{sectionStatus}</p>}
+          {!info && (pageData.error ? <p className="py-10 text-center text-sm text-muted-foreground">{sectionStatus}</p> : <CardGridSkeleton count={12} className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3" cardClassName="h-28 flex flex-col items-center" />)}
 
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
             {visibleAmcs.map((amc) => (

@@ -1,13 +1,14 @@
 "use client"
 
-// "Categories" dropdown for the Find Your Fund table.
-// Level 1 lists the main categories (Reedos asset classes); each opens its sub-categories,
-// headed by an "All" option that selects every fund in that main category.
-// Choices are a draft until Apply; closing the panel without Apply discards them.
+// Category filter for the Find Your Fund table (no dropdown):
+//   row 1 — "All" + the main categories (Reedos asset classes), one at a time
+//   row 2 — once a main category is picked: "All <main>" + its sub-categories in a
+//           horizontal scroll row; several sub-categories can be picked together.
+// Every category the API lists is shown; ones with no funds yet are greyed out.
 
-import { useState } from "react"
-import { Check, ChevronDown, ChevronLeft, ChevronRight, Minus } from "lucide-react"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { useRef } from "react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChipsSkeleton } from "@/components/skeletons"
 
 export interface MainCategory {
   /** As Reedos sends it, e.g. "Equity Schemes" */
@@ -18,200 +19,103 @@ export interface MainCategory {
   categories: { name: string; count: number }[]
 }
 
-/**
- * `assetClasses` = main categories picked as a whole ("All").
- * `categories`   = single sub-categories, only for main categories not picked as a whole.
- */
-export interface CategorySelection {
-  assetClasses: string[]
-  categories: string[]
+/** null main = all funds; empty subs = the whole main category. */
+export interface CategoryPick {
+  main: string | null
+  subs: string[]
 }
 
-export const EMPTY_CATEGORY_SELECTION: CategorySelection = { assetClasses: [], categories: [] }
+export const NO_CATEGORY: CategoryPick = { main: null, subs: [] }
 
-export const selectionSize = (s: CategorySelection) => s.assetClasses.length + s.categories.length
+/** The query the backend expects: whole main categories or single sub-categories. */
+export const categoryQuery = (pick: CategoryPick) => ({
+  assetClass: pick.main && pick.subs.length === 0 ? [pick.main] : [],
+  category: pick.subs,
+})
 
-type CheckState = boolean | "some"
+const chip = (active: boolean, disabled = false) =>
+  `shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold border whitespace-nowrap transition-all duration-200 ${
+    active
+      ? "bg-burgundy text-white border-burgundy"
+      : disabled
+        ? "bg-white text-muted-foreground/40 border-border/60 cursor-not-allowed"
+        : "bg-white text-muted-foreground border-border hover:border-burgundy/25 hover:text-foreground"
+  }`
 
-function CheckBox({ state }: { state: CheckState }) {
-  const on = state !== false
-  return (
-    <span
-      aria-hidden
-      className={`w-4 h-4 rounded-[4px] border flex items-center justify-center shrink-0 transition-colors ${
-        on ? "bg-burgundy border-burgundy text-white" : "bg-white border-border"
-      }`}
-    >
-      {state === true && <Check className="w-3 h-3" strokeWidth={3} />}
-      {state === "some" && <Minus className="w-3 h-3" strokeWidth={3} />}
-    </span>
-  )
-}
-
-/** One main category's state within a selection. */
-function stateOf(main: MainCategory, s: CategorySelection): CheckState {
-  if (s.assetClasses.includes(main.name)) return true
-  return main.categories.some((c) => s.categories.includes(c.name)) ? "some" : false
-}
-
-const subNames = (main: MainCategory) => main.categories.map((c) => c.name)
-
-/** Picking or dropping a whole main category. */
-function toggleMain(main: MainCategory, s: CategorySelection): CategorySelection {
-  const subs = subNames(main)
-  const categories = s.categories.filter((c) => !subs.includes(c))
-  return s.assetClasses.includes(main.name)
-    ? { assetClasses: s.assetClasses.filter((a) => a !== main.name), categories }
-    : { assetClasses: [...s.assetClasses, main.name], categories }
-}
-
-/** Picking or dropping one sub-category. Every sub picked = the whole main category. */
-function toggleSub(main: MainCategory, sub: string, s: CategorySelection): CategorySelection {
-  const subs = subNames(main)
-  const whole = s.assetClasses.includes(main.name)
-  const picked = whole ? subs : subs.filter((c) => s.categories.includes(c))
-  const next = picked.includes(sub) ? picked.filter((c) => c !== sub) : [...picked, sub]
-
-  const assetClasses = s.assetClasses.filter((a) => a !== main.name)
-  const others = s.categories.filter((c) => !subs.includes(c))
-  return next.length === subs.length
-    ? { assetClasses: [...assetClasses, main.name], categories: others }
-    : { assetClasses, categories: [...others, ...next] }
-}
+const countCls = (active: boolean) => `text-[10px] font-semibold tabular-nums ${active ? "text-white/75" : "text-muted-foreground/70"}`
 
 export function FundCategoryFilter({
   mains,
   value,
-  onApply,
+  onChange,
 }: {
   mains: MainCategory[]
-  value: CategorySelection
-  onApply: (next: CategorySelection) => void
+  value: CategoryPick
+  onChange: (next: CategoryPick) => void
 }) {
-  const [open, setOpen] = useState(false)
-  const [draft, setDraft] = useState(value)
-  /** The main category whose sub-categories are showing; null = the main list. */
-  const [openMain, setOpenMain] = useState<string | null>(null)
+  const scroller = useRef<HTMLDivElement>(null)
+  const main = mains.find((m) => m.name === value.main) ?? null
 
-  const onOpenChange = (next: boolean) => {
-    if (next) { setDraft(value); setOpenMain(null) }
-    setOpen(next)
+  const pickMain = (name: string | null) => onChange({ main: name, subs: [] })
+  const toggleSub = (sub: string) => {
+    if (!main) return
+    const subs = value.subs.includes(sub) ? value.subs.filter((s) => s !== sub) : [...value.subs, sub]
+    // Every sub-category picked = the whole main category.
+    const all = main.categories.filter((c) => c.count > 0).every((c) => subs.includes(c.name))
+    onChange({ main: main.name, subs: all ? [] : subs })
   }
+  const scrollBy = (dx: number) => scroller.current?.scrollBy({ left: dx, behavior: "smooth" })
 
-  const apply = () => { onApply(draft); setOpen(false) }
-  const main = mains.find((m) => m.name === openMain) ?? null
-  const active = selectionSize(value)
-  const changed = JSON.stringify(draft) !== JSON.stringify(value)
-
-  const row = "w-full flex items-center gap-3 px-4 py-2.5 text-left hover:bg-cream/60 transition-colors"
+  if (mains.length === 0) return <ChipsSkeleton count={6} />
 
   return (
-    <Popover open={open} onOpenChange={onOpenChange}>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          className={`h-[38px] px-3.5 rounded-full text-[12px] font-bold border flex items-center gap-1.5 transition-all duration-200 ${
-            open || active
-              ? "border-burgundy/40 text-burgundy bg-burgundy/5"
-              : "bg-white text-foreground border-border hover:border-burgundy/25"
-          }`}
-        >
-          Categories
-          {active > 0 && (
-            <span className="min-w-4 h-4 px-1 rounded-full bg-burgundy text-white text-[9px] font-black flex items-center justify-center">
-              {active}
-            </span>
-          )}
-          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
+    <div className="space-y-2.5 min-w-0">
+      {/* Main categories */}
+      <div className="flex gap-1.5 overflow-x-auto pb-0.5" style={{ scrollbarWidth: "none" }} role="radiogroup" aria-label="Main category">
+        <button type="button" role="radio" aria-checked={!value.main} onClick={() => pickMain(null)} className={chip(!value.main)}>
+          All Categories
         </button>
-      </PopoverTrigger>
+        {mains.map((m) => {
+          const active = value.main === m.name
+          return (
+            <button key={m.name} type="button" role="radio" aria-checked={active} onClick={() => pickMain(m.name)} className={chip(active)}>
+              {m.label} <span className={countCls(active)}>{m.count.toLocaleString("en-IN")}</span>
+            </button>
+          )
+        })}
+      </div>
 
-      <PopoverContent align="start" sideOffset={8} className="w-[min(320px,calc(100vw-32px))] p-0 rounded-[12px] bg-white overflow-hidden">
-        {/* Header (sub-category view only) */}
-        {main && (
-          <button type="button" onClick={() => setOpenMain(null)}
-            className="w-full flex items-center gap-2 px-4 py-3 border-b border-border/60 text-[13px] font-extrabold text-foreground hover:bg-cream/60">
-            <ChevronLeft className="w-4 h-4 text-muted-foreground" />
-            {main.label}
+      {/* Sub-categories of the picked main category — horizontal scroll */}
+      {main && (
+        <div className="flex items-center gap-1.5 min-w-0">
+          <button type="button" onClick={() => scrollBy(-240)} aria-label="Scroll sub-categories left"
+            className="hidden sm:flex shrink-0 w-7 h-7 rounded-full border border-border bg-white items-center justify-center text-muted-foreground hover:text-foreground">
+            <ChevronLeft className="w-3.5 h-3.5" />
           </button>
-        )}
-
-        <div className="max-h-[320px] overflow-y-auto py-1.5" role="group" aria-label={main ? `${main.label} categories` : "Categories"}>
-          {!main && mains.length === 0 && (
-            <p className="px-4 py-6 text-center text-xs text-muted-foreground">Loading categories…</p>
-          )}
-
-          {!main && mains.map((m) => {
-            const state = stateOf(m, draft)
-            return (
-            <div key={m.name} className="flex items-center hover:bg-cream/60 transition-colors">
-              <button type="button" role="checkbox" aria-checked={state === "some" ? "mixed" : state}
-                aria-label={`All ${m.label} funds`}
-                onClick={() => setDraft((d) => toggleMain(m, d))} className="pl-4 pr-1 py-3">
-                <CheckBox state={state} />
-              </button>
-              <button type="button" onClick={() => setOpenMain(m.name)}
-                className="flex-1 min-w-0 flex items-center gap-2 pl-2 pr-4 py-3 text-left">
-                <span className="flex-1 text-[13px] font-semibold text-foreground">{m.label}</span>
-                <span className="text-[10px] font-semibold text-muted-foreground tabular-nums">{m.count.toLocaleString("en-IN")}</span>
-                <ChevronRight className="w-4 h-4 text-muted-foreground/60" />
-              </button>
-            </div>
-            )
-          })}
-
-          {main && (
-            <>
-              <button type="button" role="checkbox" aria-checked={draft.assetClasses.includes(main.name)}
-                onClick={() => setDraft((d) => toggleMain(main, d))} className={`${row} border-b border-border/40`}>
-                <CheckBox state={draft.assetClasses.includes(main.name)} />
-                <span className="flex-1 text-[13px] font-bold text-foreground">All {main.label} Funds</span>
-                <span className="text-[10px] font-semibold text-muted-foreground tabular-nums">{main.count.toLocaleString("en-IN")}</span>
-              </button>
-              {main.categories.map((c) => {
-                const on = draft.assetClasses.includes(main.name) || draft.categories.includes(c.name)
-                return (
-                  <button key={c.name} type="button" role="checkbox" aria-checked={on}
-                    onClick={() => setDraft((d) => toggleSub(main, c.name, d))} className={row}>
-                    <CheckBox state={on} />
-                    <span className="flex-1 min-w-0 text-[13px] font-medium text-foreground">{c.name}</span>
-                    <span className="text-[10px] font-semibold text-muted-foreground tabular-nums">{c.count.toLocaleString("en-IN")}</span>
-                  </button>
-                )
-              })}
-            </>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="grid grid-cols-2 gap-2 p-3 border-t border-border/60">
-          <button type="button" onClick={() => setDraft(EMPTY_CATEGORY_SELECTION)} disabled={selectionSize(draft) === 0}
-            className="h-9 rounded-[6px] text-[12px] font-bold text-burgundy hover:bg-burgundy/5 disabled:text-muted-foreground/50 disabled:hover:bg-transparent transition-colors">
-            Clear All
-          </button>
-          <button type="button" onClick={apply} disabled={!changed}
-            className="h-9 rounded-[6px] text-[12px] font-bold bg-burgundy text-white hover:bg-burgundy-deep disabled:bg-secondary disabled:text-muted-foreground/60 transition-colors">
-            Apply
+          <div ref={scroller} className="flex-1 min-w-0 flex gap-1.5 overflow-x-auto scroll-smooth py-0.5" style={{ scrollbarWidth: "thin" }}
+            role="group" aria-label={`${main.label} sub-categories`}>
+            <button type="button" aria-pressed={value.subs.length === 0} onClick={() => pickMain(main.name)}
+              className={chip(value.subs.length === 0)}>
+              All {main.label} <span className={countCls(value.subs.length === 0)}>{main.count.toLocaleString("en-IN")}</span>
+            </button>
+            {main.categories.map((c) => {
+              const active = value.subs.includes(c.name)
+              const empty = c.count === 0
+              return (
+                <button key={c.name} type="button" aria-pressed={active} disabled={empty && !active}
+                  title={empty ? "No funds in this category yet" : undefined}
+                  onClick={() => toggleSub(c.name)} className={chip(active, empty)}>
+                  {c.name} <span className={countCls(active)}>{c.count.toLocaleString("en-IN")}</span>
+                </button>
+              )
+            })}
+          </div>
+          <button type="button" onClick={() => scrollBy(240)} aria-label="Scroll sub-categories right"
+            className="hidden sm:flex shrink-0 w-7 h-7 rounded-full border border-border bg-white items-center justify-center text-muted-foreground hover:text-foreground">
+            <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>
-      </PopoverContent>
-    </Popover>
+      )}
+    </div>
   )
-}
-
-/** Chips naming what is picked, e.g. "All Equity", "Liquid Fund". */
-export function selectionChips(mains: MainCategory[], s: CategorySelection) {
-  const label = (name: string) => mains.find((m) => m.name === name)?.label ?? name.replace(/\s*Schemes$/i, "")
-  return [
-    ...s.assetClasses.map((name) => ({
-      key: `class:${name}`,
-      label: `All ${label(name)}`,
-      remove: (x: CategorySelection) => ({ ...x, assetClasses: x.assetClasses.filter((a) => a !== name) }),
-    })),
-    ...s.categories.map((name) => ({
-      key: `cat:${name}`,
-      label: name,
-      remove: (x: CategorySelection) => ({ ...x, categories: x.categories.filter((c) => c !== name) }),
-    })),
-  ]
 }

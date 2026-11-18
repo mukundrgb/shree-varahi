@@ -58,9 +58,9 @@ const features = [
     id: "mtf",
     icon: TrendingUp,
     title: "Margin Trading Facility",
-    subtitle: "4× Buying Power",
+    subtitle: "3× Buying Power",
     description:
-      "Turn ₹10,000 into ₹40,000 buying power. 1,700+ eligible stocks. Competitive interest rates.",
+      "Turn ₹10,000 into ₹30,000 buying power. 1,700+ eligible stocks. Competitive interest rates.",
     visual: "mtf",
     color: "#D9B27C",
   },

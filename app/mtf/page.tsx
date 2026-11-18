@@ -13,17 +13,15 @@ import { MTFSection } from "@/components/mtf-section"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useMtfSummary } from "@/hooks/use-mtf"
+import { formatMultiplier } from "@/lib/mtf/api-client"
+import { ListSkeleton } from "@/components/skeletons"
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 
-const TOP_MTF_STOCKS = [
-  { symbol: "RELIANCE",  price: "2,945", ratio: 4 },
-  { symbol: "TCS",       price: "4,125", ratio: 4 },
-  { symbol: "HDFC BANK", price: "1,687", ratio: 4 },
-]
+// The hero cards show the first popular stocks from the MTF margin list (/api/v1/mtf).
 
 const KEY_BENEFITS = [
-  "Buy Up To 4× More Shares", "Unlimited Holding Period", "0% Interest For First 30 Days",
+  "Buy Up To 3× More Shares", "Unlimited Holding Period", "0% Interest For First 30 Days",
   "MTF Eligible Stocks", "Automatic Pledge & Unpledge", "Transparent Charges, No Hidden Fees",
   "Trade From Your Existing Account", "Same-Day Margin Activation",
 ]
@@ -63,6 +61,7 @@ export default function MTFPage() {
   const mtf = useMtfSummary()
   const stockCount = mtf.data ? mtf.data.totalStocks.toLocaleString("en-IN") : null
   const eligibleStocks = stockCount ? `${stockCount} eligible stocks` : "eligible stocks"
+  const topMtfStocks = (mtf.data?.popular ?? []).slice(0, 3)
   const benefits = KEY_BENEFITS.map((b) => (b === "MTF Eligible Stocks" && stockCount ? `${stockCount} MTF Eligible Stocks` : b))
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null)
 
@@ -98,7 +97,7 @@ export default function MTFPage() {
               </p>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground tracking-tight leading-tight">
                 Buy Up To<br />
-                <span className="text-burgundy">4× More Shares</span>
+                <span className="text-burgundy">3× More Shares</span>
               </h1>
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-lg">
                 Trade now, pay later. Use Shree Varahi&apos;s Margin Trading Facility to fund part of your purchase and unlock more buying power on {eligibleStocks} — at just 0.041% interest per day.
@@ -132,15 +131,16 @@ export default function MTFPage() {
               <div className="w-[280px] rounded-[12px] bg-white border border-border shadow-xl p-5 space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-extrabold uppercase tracking-wider text-gold-deep">Top MTF Stocks</span>
-                  <span className="text-[9px] font-bold text-muted-foreground">RATIO</span>
+                  <span className="text-[9px] font-bold text-muted-foreground">MULTIPLIER</span>
                 </div>
-                {TOP_MTF_STOCKS.map((s) => (
+                {topMtfStocks.length === 0 && <ListSkeleton rows={3} label="Loading MTF stocks" />}
+                {topMtfStocks.map((s) => (
                   <div key={s.symbol} className="flex items-center justify-between">
-                    <span className="text-[11px] font-semibold text-foreground truncate pr-2">{s.symbol}</span>
-                    <div className="text-right shrink-0 flex items-center gap-2">
-                      <span className="text-[12px] font-black text-foreground">₹{s.price}</span>
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-[4px] bg-emerald-50 text-emerald-700 border border-emerald-200">{s.ratio}x</span>
-                    </div>
+                    <span className="min-w-0 pr-2">
+                      <span className="block text-[11px] font-semibold text-foreground truncate">{s.symbol}</span>
+                      <span className="block text-[9px] text-muted-foreground">Margin {s.marginPct.toFixed(2)}%</span>
+                    </span>
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-[4px] bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">{formatMultiplier(s.multiplier)}</span>
                   </div>
                 ))}
                 <div className="pt-1 border-t border-border/40">
@@ -178,7 +178,7 @@ export default function MTFPage() {
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">What Is MTF</p>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">How Does Margin Trading Facility Work?</h2>
             <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
-              MTF lets you purchase shares worth up to 4× your available cash — Shree Varahi funds the remaining amount, so your capital goes further.
+              MTF lets you purchase shares worth up to 3× your available cash — Shree Varahi funds the remaining amount, so your capital goes further.
             </p>
           </div>
 
@@ -192,13 +192,13 @@ export default function MTFPage() {
             <div className="w-full sm:w-auto flex-1 bg-white border border-border rounded-[10px] p-5 text-center">
               <ShieldCheck className="w-6 h-6 text-[#8B0D19] mx-auto mb-2" strokeWidth={1.8} />
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide mb-1">Varahi Funds</p>
-              <p className="text-xl font-black text-burgundy">₹30,000</p>
+              <p className="text-xl font-black text-burgundy">₹20,000</p>
             </div>
             <Equal className="w-5 h-5 text-muted-foreground shrink-0" />
             <div className="w-full sm:w-auto flex-1 bg-burgundy text-white rounded-[10px] p-5 text-center">
               <TrendingUp className="w-6 h-6 text-gold-champagne mx-auto mb-2" strokeWidth={1.8} />
               <p className="text-[10px] font-bold text-white/80 uppercase tracking-wide mb-1">Buy Stocks Worth</p>
-              <p className="text-xl font-black">₹40,000</p>
+              <p className="text-xl font-black">₹30,000</p>
             </div>
           </div>
         </div>
@@ -226,12 +226,12 @@ export default function MTFPage() {
               </div>
             </div>
             <div className="bg-burgundy/[0.04] border border-burgundy/25 rounded-[10px] p-6 shadow-[0_8px_30px_rgba(139,13,25,0.08)]">
-              <p className="text-[10px] font-extrabold uppercase tracking-wide text-burgundy mb-3">With 4× MTF</p>
+              <p className="text-[10px] font-extrabold uppercase tracking-wide text-burgundy mb-3">With 3× MTF</p>
               <div className="space-y-2.5 text-[13px]">
-                <div className="flex justify-between"><span className="text-muted-foreground">Capital Used</span><span className="font-bold text-foreground">₹10,000 + ₹30,000 funded</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Shares Bought</span><span className="font-bold text-foreground">40</span></div>
-                <div className="flex justify-between border-t border-burgundy/15 pt-2.5"><span className="text-muted-foreground">Value After 10%</span><span className="font-bold text-foreground">₹44,000</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground font-semibold">Profit (before interest)</span><span className="font-black text-profit">+₹4,000</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Capital Used</span><span className="font-bold text-foreground">₹10,000 + ₹20,000 funded</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Shares Bought</span><span className="font-bold text-foreground">30</span></div>
+                <div className="flex justify-between border-t border-burgundy/15 pt-2.5"><span className="text-muted-foreground">Value After 10%</span><span className="font-bold text-foreground">₹33,000</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground font-semibold">Profit (before interest)</span><span className="font-black text-profit">+₹3,000</span></div>
               </div>
             </div>
           </div>
@@ -367,7 +367,7 @@ export default function MTFPage() {
                 Avail MTF<br className="hidden sm:inline" /> @ 0% Interest Rate
               </h2>
               <p className="text-sm font-semibold text-white/85">
-                Trade Now. Pay Later. Unlock up to 4× buying power on {eligibleStocks} through Shree Varahi.
+                Trade Now. Pay Later. Unlock up to 3× buying power on {eligibleStocks} through Shree Varahi.
               </p>
               <div className="flex items-center justify-center lg:justify-start gap-1.5 text-sm font-bold text-white/85">
                 4.5 <Star className="w-4 h-4 fill-gold-champagne text-gold-champagne" /> App Rating
@@ -429,13 +429,13 @@ export default function MTFPage() {
                 </div>
                 <div className="bg-cream rounded-[8px] p-3 space-y-1">
                   <p className="text-[8px] font-semibold text-muted-foreground uppercase">Buying Power</p>
-                  <p className="text-base font-black text-foreground">₹4,00,000</p>
+                  <p className="text-base font-black text-foreground">₹3,00,000</p>
                   <p className="text-[10px] font-bold text-profit">On ₹1,00,000 Capital</p>
                 </div>
-                {TOP_MTF_STOCKS.map((s) => (
+                {topMtfStocks.map((s) => (
                   <div key={s.symbol} className="flex items-center justify-between">
                     <span className="text-[9px] font-semibold text-foreground truncate pr-2">{s.symbol}</span>
-                    <span className="text-[9px] font-bold text-profit shrink-0">{s.ratio}x MTF</span>
+                    <span className="text-[9px] font-bold text-profit shrink-0">{formatMultiplier(s.multiplier)} MTF</span>
                   </div>
                 ))}
               </div>

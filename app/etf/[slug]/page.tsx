@@ -8,6 +8,8 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { StockAvatar } from "@/components/stock-avatar"
 import { EtfPriceChart } from "@/components/etf-price-chart"
+import { DetailPageSkeleton } from "@/components/skeletons"
+import { Bar, BarChart, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { useEtfChart, useEtfDetail } from "@/hooks/etf/use-etf"
 import type { ChartRange, EtfDetail, EtfSummary, Riskometer } from "@/lib/etf/types"
 import { NO_VALUE, formatDate, formatPercent, formatPrice, formatRupees, formatQuoteTime } from "@/lib/stocks/format"
@@ -155,6 +157,56 @@ function PageShell({ children }: { children: ReactNode }) {
   )
 }
 
+// ─── Category returns chart: this ETF vs its category average, per period ─────
+// Colours checked with the dataviz palette validator (distinct for colour-blind readers);
+// the table under the chart keeps every number.
+
+const FUND_COLOR = "#A51C2A"
+const AVG_COLOR  = "#B8924A"
+
+function CategoryReturnsChart({ rows }: { rows: EtfDetail["categoryReturns"] }) {
+  const data = rows
+    .filter((r) => r.fund !== null || r.categoryAvg !== null)
+    .map((r) => ({ period: r.period, fund: r.fund, avg: r.categoryAvg }))
+  if (data.length === 0) return null
+
+  return (
+    <div className="mb-4">
+      <div className="flex items-center gap-4 mb-2 text-[11px] font-semibold text-muted-foreground">
+        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-[2px]" style={{ background: FUND_COLOR }} aria-hidden /> This ETF</span>
+        <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-[2px]" style={{ background: AVG_COLOR }} aria-hidden /> Category average</span>
+      </div>
+      <div className="h-[220px]" role="img"
+        aria-label={`Returns by period: ${data.map((d) => `${d.period} this ETF ${formatPercent(d.fund)}, category ${formatPercent(d.avg)}`).join("; ")}`}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }} barGap={3}>
+            <CartesianGrid vertical={false} stroke="#e5e7eb" strokeDasharray="4 4" />
+            <XAxis dataKey="period" tick={{ fontSize: 11, fill: "#6b7280", fontWeight: 600 }} tickLine={false} axisLine={false} />
+            <YAxis tick={{ fontSize: 10, fill: "#9ca3af" }} tickLine={false} axisLine={false} width={44} tickFormatter={(v: number) => `${v}%`} />
+            <ReferenceLine y={0} stroke="#9ca3af" />
+            <Tooltip
+              cursor={{ fill: "rgba(0,0,0,0.04)" }}
+              content={({ active, payload }) => {
+                const d = active && (payload?.[0]?.payload as (typeof data)[number] | undefined)
+                if (!d) return null
+                return (
+                  <div className="bg-white border border-border rounded-[6px] shadow-md px-3 py-2 space-y-0.5">
+                    <div className="text-[10px] text-muted-foreground font-semibold">{d.period}</div>
+                    <div className="text-xs font-bold text-foreground tabular-nums">This ETF: <span className={changeColor(d.fund)}>{formatPercent(d.fund)}</span></div>
+                    <div className="text-xs font-bold text-foreground tabular-nums">Category: <span className={changeColor(d.avg)}>{formatPercent(d.avg)}</span></div>
+                  </div>
+                )
+              }}
+            />
+            <Bar dataKey="fund" name="This ETF" fill={FUND_COLOR} barSize={26} radius={[4, 4, 0, 0]} isAnimationActive={false} />
+            <Bar dataKey="avg" name="Category average" fill={AVG_COLOR} barSize={26} radius={[4, 4, 0, 0]} isAnimationActive={false} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  )
+}
+
 // ─── Page ───────────────────────────────────────────────────────────────────
 
 export default function EtfDetailPage() {
@@ -183,9 +235,10 @@ export default function EtfDetailPage() {
 
   if (!etf) {
     return (
-      <PageShell>
-        <p className="text-sm text-muted-foreground">Loading ETF…</p>
-      </PageShell>
+      <main className="min-h-screen bg-background">
+        <Navbar />
+        <DetailPageSkeleton label="Loading ETF" />
+      </main>
     )
   }
 
@@ -272,6 +325,16 @@ function EtfDetailView({ etf }: { etf: EtfDetail }) {
                 </div>
                 <div className="border-t border-border/60 pt-1">
                   <StatGrid rows={[
+                    {
+                      label: "Price difference",
+                      help: "How much the price has moved today compared with the previous close (CMOTS Pricediff).",
+                      value: etf.changeAmt === null ? NO_VALUE : (
+                        <span className={`font-black tabular-nums ${changeColor(etf.changeAmt)}`}>
+                          {etf.changeAmt >= 0 ? "+" : "-"}₹{formatPrice(Math.abs(etf.changeAmt))}
+                          {etf.changePct !== null && <span className="ml-1 text-[11px] font-bold">({formatPercent(etf.changePct)})</span>}
+                        </span>
+                      ),
+                    },
                     { label: "Open price",     value: formatPrice(p.open),      help: HELP.open },
                     { label: "High price",     value: formatPrice(p.high),      help: HELP.high },
                     { label: "Low price",      value: formatPrice(p.low),       help: HELP.low },
@@ -301,6 +364,7 @@ function EtfDetailView({ etf }: { etf: EtfDetail }) {
 
               {/* Category returns */}
               <Card title="Category returns" subtitle="3Y and 5Y returns are annualised. Rank is this ETF's position within its category.">
+                <CategoryReturnsChart rows={etf.categoryReturns} />
                 <div className="overflow-x-auto -mx-5 px-5">
                   <table className="w-full min-w-[360px] text-[13px]">
                     <thead>

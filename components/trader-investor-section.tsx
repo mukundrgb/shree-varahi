@@ -9,7 +9,7 @@ import { Check, ChevronDown, ChevronUp, BarChart2, LineChart } from "lucide-reac
 const traderFeatures = [
   "5× Intraday Leverage — Trade with up to 5× your capital on NSE & BSE stocks.",
   "Live Option Chain & Greeks — Delta, Theta, Gamma, Vega updating in real time.",
-  "MTF — 4× Buying Power — Turn ₹10,000 into ₹40,000 across 1,700+ stocks.",
+  "MTF — 3× Buying Power — Turn ₹10,000 into ₹30,000 across 1,700+ stocks.",
   "Sub-80ms Order Execution — Trades go through before the market blinks.",
   "Advanced Order Types — GTT, OCO, AMO, CO, BO — full control every time.",
   "50+ Stock Screeners — Breakout scans, OI filters, volume surge alerts live.",

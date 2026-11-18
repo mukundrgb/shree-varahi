@@ -1,6 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
+import { useLiveMarkets, type LiveTab } from "@/components/markets-live"
+import { ListSkeleton } from "@/components/skeletons"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Search,
@@ -41,7 +43,7 @@ const TRADE_INVEST: MenuItem[] = [
   { title: "IPO",       desc: "Apply for upcoming IPOs free",        icon: <Target     className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/ipo" },
   // Commodity is hidden for now.
   // { title: "Commodity", desc: "MCX gold, silver & crude oil",        icon: <Box        className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/commodity" },
-  { title: "MTF",       desc: "4× margin buying power on stocks",   icon: <Zap        className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/mtf" },
+  { title: "MTF",       desc: "3× margin buying power on stocks",   icon: <Zap        className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/mtf" },
 ]
 
 const MF_SIP: MenuItem[] = [
@@ -66,7 +68,7 @@ const LEARN_NEWS: MenuItem[] = [
 // ── Markets mega-menu ─────────────────────────────────────────────────────
 
 type MktExchange = "NSE" | "BSE" | "MCX" | "GLOBAL"
-type MarketItem  = { name: string; href: string; exchange?: MktExchange }
+type MarketItem  = { name: string; href: string; exchange?: MktExchange; meta?: string }
 
 const MARKETS_TABS = ["Indices", "Stocks", "F&O", "Mutual Funds", "ETFs", "Gold & Silver", "Tools"] as const
 
@@ -417,14 +419,43 @@ const MARKETS_DATA: Record<string, Record<string, MarketItem[]>> = {
       { name: "Lumpsum Calculator",   href: "#" },
       { name: "Goal-based SIP",       href: "#" },
     ],
+    // Each screener opens its page at the table section.
     "Screeners": [
-      { name: "Stock Screener", href: "/stocks" },
-      { name: "MF Screener",   href: "/mutual-funds" },
-      { name: "Option Chain",  href: "/futures-options" },
-      { name: "F&O Screener",  href: "/futures-options" },
-      { name: "IPO Screener",  href: "/ipo" },
+      { name: "Stock Screener",       href: "/stocks#all-stocks" },
+      { name: "F&O Screener",         href: "/futures-options#fno-markets" },
+      { name: "IPO Screener",         href: "/ipo#ipo-list" },
+      { name: "Mutual Fund Screener", href: "/mutual-funds#find-your-fund" },
+      { name: "ETF Screener",         href: "/etf#etf-table" },
     ],
   },
+}
+
+/** Stocks keeps these hand-written sub-tabs after the live sector list. */
+const STOCKS_EXTRA_SUBS = ["Market Movers", "US Stocks"]
+
+/** "View all …" link in the menu footer, per tab. */
+const TAB_HOME: Record<string, string> = {
+  "Indices": "/stocks", "Stocks": "/stocks", "F&O": "/futures-options", "Mutual Funds": "/mutual-funds",
+  "ETFs": "/etf/compare", "Gold & Silver": "/gold-rates/gold-rate-today-in-mumbai", "Tools": "/stocks",
+}
+
+/**
+ * Sub-tabs and items for one Markets tab: the live API categories when they have loaded,
+ * the hand-written lists when that tab has no live data or its API failed.
+ * `items` returns null while a list is still loading.
+ */
+function menuFor(tab: string, live: Partial<Record<string, LiveTab>>): { subs: string[]; items: (sub: string) => MarketItem[] | null; live: boolean } {
+  const fallback = { subs: MARKETS_SUBS[tab] ?? [], items: (s: string) => MARKETS_DATA[tab]?.[s] ?? [], live: false }
+  const lt = live[tab]
+  if (!lt || lt.failed) return fallback
+  if (lt.loading) return { subs: [], items: () => null, live: true }
+  const extras = tab === "Stocks" ? STOCKS_EXTRA_SUBS : []
+  if (lt.subs.length === 0) return fallback
+  return {
+    subs: [...lt.subs, ...extras],
+    items: (s) => (extras.includes(s) ? MARKETS_DATA[tab]?.[s] ?? [] : lt.items(s)),
+    live: true,
+  }
 }
 
 function ExchangeBadge({ exchange }: { exchange: MktExchange }) {
@@ -487,9 +518,49 @@ export function Navbar() {
   }, [])
 
   const switchMarketsTab = (tab: string) => {
+    if (tab === marketsTab) return
     setMarketsTab(tab)
-    setMarketsSub(MARKETS_SUBS[tab][0])
+    // Empty = "the first sub-tab of whatever list is showing" (live categories or the fallback).
+    setMarketsSub("")
   }
+
+  // ── Markets open / close: hover grace period + click-to-pin ──
+  const marketsRef = useRef<HTMLDivElement>(null)
+  const closeTimer = useRef<number | undefined>(undefined)
+  const [marketsPinned, setMarketsPinned] = useState(false)
+  const openMarkets = () => { window.clearTimeout(closeTimer.current); setActiveDropdown("Markets") }
+  const closeMarkets = () => { window.clearTimeout(closeTimer.current); setMarketsPinned(false); setActiveDropdown(null) }
+  const scheduleCloseMarkets = () => {
+    if (marketsPinned) return
+    window.clearTimeout(closeTimer.current)
+    closeTimer.current = window.setTimeout(() => setActiveDropdown((d) => (d === "Markets" ? null : d)), 250)
+  }
+  useEffect(() => () => window.clearTimeout(closeTimer.current), [])
+  useEffect(() => {
+    if (!marketsPinned) return
+    const onDown = (e: MouseEvent) => { if (marketsRef.current && !marketsRef.current.contains(e.target as Node)) closeMarkets() }
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") closeMarkets() }
+    document.addEventListener("mousedown", onDown)
+    document.addEventListener("keydown", onKey)
+    return () => { document.removeEventListener("mousedown", onDown); document.removeEventListener("keydown", onKey) }
+  }, [marketsPinned])
+
+  // ── Markets data: live categories from the APIs, hand-written links as the fallback ──
+  const live = useLiveMarkets(activeDropdown === "Markets", marketsTab, marketsSub)
+  const desk = menuFor(marketsTab, live)
+  const deskSubs = desk.subs
+  const deskSub = deskSubs.includes(marketsSub) ? marketsSub : deskSubs[0] ?? ""
+  const deskItems = deskSub ? desk.items(deskSub) : null
+  const deskLive = desk.live
+  // Keep the stored sub-tab in step with the live list, so its items get loaded.
+  useEffect(() => { if (deskSub && deskSub !== marketsSub) setMarketsSub(deskSub) }, [deskSub, marketsSub])
+
+  const mobileLive = useLiveMarkets(mobileMenuOpen && expandedSection === "Markets", mobileMktTab, null)
+  // Mobile lists every sub-tab at once, so only tabs whose data comes in one call use live data.
+  const mobileMenu = mobileMktTab === "Mutual Funds" || mobileMktTab === "ETFs"
+    ? menuFor(mobileMktTab, mobileLive)
+    : menuFor(mobileMktTab, {})
+  const mobileGroups: [string, MarketItem[] | null][] = mobileMenu.subs.map((s) => [s, mobileMenu.items(s)])
 
   const toggleSection = (section: string) => {
     setExpandedSection(prev => prev === section ? null : section)
@@ -499,6 +570,7 @@ export function Navbar() {
     if (activeDropdown !== "Markets") {
       setMarketsTab("Indices")
       setMarketsSub("Major Indices")
+      setMarketsPinned(false)
     }
   }, [activeDropdown])
 
@@ -588,59 +660,82 @@ export function Navbar() {
                 </div>
               ))}
 
-              {/* Markets — mega dropdown */}
-              <div className="relative"
-                onMouseEnter={() => setActiveDropdown("Markets")}
-                onMouseLeave={() => setActiveDropdown(null)}
+              {/* Markets — mega dropdown.
+                  Hover opens it; leaving closes it after a short grace period, and the gap under the
+                  button counts as part of the menu. Clicking a tab or sub-tab pins it open until a
+                  click outside, Esc, or picking a link. */}
+              <div className="relative" ref={marketsRef}
+                onMouseEnter={openMarkets}
+                onMouseLeave={scheduleCloseMarkets}
               >
-                <button className="flex items-center gap-1 px-2.5 py-1.5 text-sm font-medium text-foreground hover:text-burgundy transition-colors whitespace-nowrap">
+                <button
+                  onClick={() => (activeDropdown === "Markets" && marketsPinned ? closeMarkets() : (openMarkets(), setMarketsPinned(true)))}
+                  aria-expanded={activeDropdown === "Markets"}
+                  aria-haspopup="true"
+                  className={`flex items-center gap-1 px-2.5 py-1.5 text-sm font-medium hover:text-burgundy transition-colors whitespace-nowrap ${activeDropdown === "Markets" ? "text-burgundy" : "text-foreground"}`}
+                >
                   Markets
-                  <ChevronDown className="h-3 w-3 shrink-0" />
+                  <ChevronDown className={`h-3 w-3 shrink-0 transition-transform ${activeDropdown === "Markets" ? "rotate-180" : ""}`} />
                 </button>
                 <AnimatePresence>
                   {activeDropdown === "Markets" && (
+                    <div className="absolute top-full left-0 pt-2 z-50">
                     <motion.div key="markets-mega" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.2 }}
-                      className="absolute top-full left-0 mt-2 w-[700px] rounded-[8px] bg-background border border-border shadow-2xl overflow-hidden"
+                      onMouseDown={() => setMarketsPinned(true)}
+                      className="w-[780px] max-w-[calc(100vw-2rem)] rounded-[8px] bg-background border border-border shadow-2xl overflow-hidden"
                     >
                       {/* Tab bar */}
-                      <div className="flex border-b border-border overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+                      <div className="flex border-b border-border overflow-x-auto" style={{ scrollbarWidth: "none" }} role="tablist" aria-label="Markets">
                         {MARKETS_TABS.map((t) => (
-                          <button key={t} onMouseEnter={() => switchMarketsTab(t)}
+                          <button key={t} role="tab" aria-selected={marketsTab === t}
+                            onMouseEnter={() => switchMarketsTab(t)} onClick={() => switchMarketsTab(t)}
                             className={`px-4 py-2.5 text-[11px] font-bold whitespace-nowrap transition-all ${marketsTab === t ? "bg-burgundy text-white" : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"}`}
                           >{t}</button>
                         ))}
                       </div>
-                      {/* Body: sidebar + content */}
-                      <div className="flex" style={{ height: 260 }}>
-                        <div className="w-[160px] border-r border-border shrink-0 py-2" style={{ background: "var(--cream, #FAF8F5)" }}>
-                          {MARKETS_SUBS[marketsTab].map((sub) => (
-                            <button key={sub} onMouseEnter={() => setMarketsSub(sub)}
-                              className={`w-full text-left px-4 py-2.5 text-[12px] font-semibold flex items-center justify-between transition-all ${marketsSub === sub ? "text-burgundy" : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"}`}
+                      {/* Body: sidebar (scrolls when a tab has many sub-tabs) + content */}
+                      <div className="flex h-[340px]">
+                        <div className="w-[190px] border-r border-border shrink-0 py-2 overflow-y-auto overscroll-contain" style={{ background: "var(--cream, #FAF8F5)", scrollbarWidth: "thin" }}>
+                          {deskSubs.length === 0 && <ListSkeleton rows={7} className="px-4 py-2" label="Loading categories" />}
+                          {deskSubs.map((sub) => (
+                            <button key={sub} onMouseEnter={() => setMarketsSub(sub)} onClick={() => setMarketsSub(sub)}
+                              className={`w-full text-left px-4 py-2.5 text-[12px] font-semibold flex items-center justify-between gap-2 transition-all ${deskSub === sub ? "text-burgundy bg-white/60" : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"}`}
                             >
-                              <span>{sub}</span>
-                              {marketsSub === sub && <ChevronRight className="w-3 h-3 shrink-0 text-burgundy" />}
+                              <span className="leading-snug">{sub}</span>
+                              {deskSub === sub && <ChevronRight className="w-3 h-3 shrink-0 text-burgundy" />}
                             </button>
                           ))}
                         </div>
-                        <div className="flex-1 p-4 overflow-y-auto">
-                          <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
-                            {(MARKETS_DATA[marketsTab]?.[marketsSub] ?? []).map((mkt) => (
-                              <Link key={mkt.name} href={mkt.href} className="flex items-center gap-2 py-1.5 px-2 rounded-[4px] hover:bg-secondary/60 group transition-colors">
-                                {mkt.exchange && <ExchangeBadge exchange={mkt.exchange} />}
-                                <span className="text-[13px] font-medium text-foreground/80 group-hover:text-burgundy transition-colors truncate">{mkt.name}</span>
-                              </Link>
-                            ))}
-                          </div>
+                        <div className="flex-1 p-4 overflow-y-auto overscroll-contain" style={{ scrollbarWidth: "thin" }}>
+                          {deskItems === null ? (
+                            <ListSkeleton rows={8} label="Loading" className="grid grid-cols-2 gap-x-3 gap-y-3 space-y-0" />
+                          ) : deskItems.length === 0 ? (
+                            <p className="text-[12px] text-muted-foreground px-2 py-1">Nothing to show here right now.</p>
+                          ) : (
+                            <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
+                              {deskItems.map((mkt) => (
+                                <Link key={mkt.href + mkt.name} href={mkt.href} onClick={closeMarkets} title={mkt.name}
+                                  className="flex items-center gap-2 py-1.5 px-2 rounded-[4px] hover:bg-secondary/60 group transition-colors min-w-0">
+                                  {mkt.exchange && <ExchangeBadge exchange={mkt.exchange} />}
+                                  <span className="flex-1 text-[13px] font-medium text-foreground/80 group-hover:text-burgundy transition-colors truncate">{mkt.name}</span>
+                                  {mkt.meta && <span className="text-[10px] text-muted-foreground tabular-nums shrink-0">{mkt.meta}</span>}
+                                </Link>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       </div>
                       {/* Footer */}
                       <div className="border-t border-border px-5 py-2.5 flex items-center justify-between bg-secondary/30">
-                        <span className="text-[11px] text-muted-foreground font-medium">Live market data powered by NSE &amp; BSE feeds</span>
-                        <Link href="/stocks" className="text-[11px] font-bold text-burgundy hover:underline flex items-center gap-1">
-                          View all markets <ChevronRight className="w-3 h-3" />
+                        <span className="text-[11px] text-muted-foreground font-medium">
+                          {deskLive ? "Live categories from NSE, BSE & fund data" : "Live market data powered by NSE & BSE feeds"}
+                        </span>
+                        <Link href={TAB_HOME[marketsTab] ?? "/stocks"} onClick={closeMarkets} className="text-[11px] font-bold text-burgundy hover:underline flex items-center gap-1">
+                          View all {marketsTab === "Indices" || marketsTab === "Tools" ? "markets" : marketsTab} <ChevronRight className="w-3 h-3" />
                         </Link>
                       </div>
                     </motion.div>
+                    </div>
                   )}
                 </AnimatePresence>
               </div>
@@ -940,12 +1035,14 @@ export function Navbar() {
                         </div>
                         {/* Items grouped by sub-category */}
                         <div className="px-4 pb-4 space-y-3">
-                          {Object.entries(MARKETS_DATA[mobileMktTab] ?? {}).map(([subName, items]) => (
+                          {mobileGroups.length === 0 && <ListSkeleton rows={6} label="Loading" />}
+                          {mobileGroups.map(([subName, items]) => (
                             <div key={subName}>
                               <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 px-1 mb-1.5">{subName}</p>
+                              {items === null && <ListSkeleton rows={4} label="Loading" />}
                               <div className="grid grid-cols-2 gap-1">
-                                {items.map((item) => (
-                                  <Link key={item.name} href={item.href} onClick={() => setMobileMenuOpen(false)}
+                                {(items ?? []).map((item) => (
+                                  <Link key={item.href + item.name} href={item.href} onClick={() => setMobileMenuOpen(false)}
                                     className="flex items-center gap-1.5 px-3 py-2 rounded-[5px] hover:bg-secondary transition-colors group"
                                   >
                                     {item.exchange && (

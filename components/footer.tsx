@@ -218,7 +218,7 @@ const othersLinks = [
   { name: "Regulatory & Other Info", href: "#" }, { name: "Privacy Policy", href: "#" },
   { name: "Disclosure", href: "#" }, { name: "Download Forms", href: "#" },
   { name: "Information Security Practices", href: "#" },
-  { name: "Investor Charter and Grievance", href: "#" }, { name: "Bug Bounty", href: "#" },
+  { name: "Investor Charter and Grievance", href: "#" },
 ]
 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
@@ -805,16 +805,19 @@ export function Footer() {
             {/* Stocks A-Z row */}
             <div className="py-4 flex flex-wrap items-center gap-x-0 gap-y-1.5">
               <span className="text-[12px] font-bold text-[#3a1414]/90 mr-3 flex-shrink-0">Stocks:</span>
+              {/* Each letter opens All Stocks filtered to company names starting with it; Others = starting with a number. */}
               {alphabet.map((letter, i) => (
                 <span key={letter} className="flex items-center">
-                  <Link href="#" className="text-[12px] font-semibold text-[#3a1414]/80 hover:text-[#3a1414] px-1.5 py-0.5 rounded transition-colors">
+                  <Link href={`/stocks?letter=${letter}#all-stocks`} aria-label={`Stocks starting with ${letter}`}
+                    className="text-[12px] font-semibold text-[#3a1414]/80 hover:text-[#3a1414] hover:bg-[#3a1414]/5 px-1.5 py-0.5 rounded transition-colors">
                     {letter}
                   </Link>
                   {i < alphabet.length - 1 && <span className="text-[#3a1414]/40 text-[10px] select-none">|</span>}
                 </span>
               ))}
               <span className="text-[#3a1414]/40 text-[10px] select-none">|</span>
-              <Link href="#" className="text-[12px] font-semibold text-[#3a1414]/80 hover:text-[#3a1414] px-1.5 py-0.5 rounded transition-colors">Others</Link>
+              <Link href="/stocks?letter=0-9#all-stocks" aria-label="Stocks starting with a number"
+                className="text-[12px] font-semibold text-[#3a1414]/80 hover:text-[#3a1414] hover:bg-[#3a1414]/5 px-1.5 py-0.5 rounded transition-colors">Others</Link>
             </div>
           </div>
         </div>

@@ -2,7 +2,8 @@
 
 // MTF calculator (home page and /mtf). Stocks and margins come from the broker's MTF
 // margin list (/api/v1/mtf); the search only finds stocks in that list.
-//   multiplier = 100 ÷ margin %, buying power = capital × multiplier, funding = buying power − capital
+//   margin used = max(listed margin, 33.3%) (applied by the backend)
+//   multiplier = 100 ÷ margin used, buying power = capital × multiplier, funding = buying power − capital
 // Share prices are not shown for now (CMOTS token expired) — the price line appears only when a price exists.
 
 import { useState, useRef, useEffect } from "react"
@@ -13,6 +14,7 @@ import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { useMtfStocks, useMtfSummary } from "@/hooks/use-mtf"
 import { formatMultiplier, mtfMultiplier, type MtfStockApi } from "@/lib/mtf/api-client"
+import { Bone, ChipsSkeleton, SkeletonGroup } from "@/components/skeletons"
 
 /* ─── Types & Data ─── */
 
@@ -50,10 +52,11 @@ function StockAvatar({ stock, size = 32 }: { stock: Stock; size?: number }) {
 
 function RatioBadge({ stock }: { stock: Stock }) {
   const m = mtfMultiplier(stock)
+  // Multipliers run 1.92x–3.00x (33.3% minimum margin): full 3x, mid, low.
   const styles =
-    m >= 4 ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-    m >= 3 ? "bg-blue-50 text-blue-700 border-blue-200" :
-             "bg-amber-50 text-amber-700 border-amber-200"
+    m >= 2.99 ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+    m >= 2.4  ? "bg-blue-50 text-blue-700 border-blue-200" :
+                "bg-amber-50 text-amber-700 border-amber-200"
   return (
     <span className={`text-[11px] font-bold px-2 py-0.5 rounded-[4px] border ${styles} whitespace-nowrap`}>
       {times(m)} MTF
@@ -292,6 +295,7 @@ export function MTFSection() {
                         {stock.symbol}
                       </button>
                     ))}
+                    {!info && !summary.error && <ChipsSkeleton count={8} />}
                     {summary.error && !info && (
                       <p className="text-[11px] text-muted-foreground">
                         Unable to load MTF stocks.{" "}
@@ -325,15 +329,27 @@ export function MTFSection() {
                           </div>
                           {selected.name && <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{selected.name}</p>}
                           {selected.price != null && <p className="text-[11px] font-semibold text-foreground mt-0.5">{fmt(selected.price)} / share</p>}
-                          <p className="text-[11px] text-muted-foreground mt-0.5">Margin required: <span className="font-semibold text-foreground">{selected.marginPct.toFixed(2)}%</span></p>
+                          <p className="text-[11px] text-muted-foreground mt-0.5">
+                            Margin required: <span className="font-semibold text-foreground">{selected.marginPct.toFixed(2)}%</span>
+                            {selected.listedMarginPct < selected.marginPct && (
+                              <span className="ml-1 text-muted-foreground/80" title={`Listed margin ${selected.listedMarginPct.toFixed(2)}%; a minimum of ${selected.marginPct.toFixed(1)}% applies`}>
+                                (min. applied · listed {selected.listedMarginPct.toFixed(2)}%)
+                              </span>
+                            )}
+                          </p>
                         </div>
                         <div className="flex-shrink-0 text-right">
                           <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                           <p className="text-[9px] text-emerald-600 font-bold mt-0.5 uppercase tracking-wide">MTF Eligible</p>
                         </div>
                       </>
+                    ) : summary.error ? (
+                      <p className="text-[12px] text-muted-foreground">MTF stocks are unavailable right now.</p>
                     ) : (
-                      <p className="text-[12px] text-muted-foreground">{summary.error ? "MTF stocks are unavailable right now." : "Loading stocks…"}</p>
+                      <SkeletonGroup label="Loading stock" className="flex items-center gap-3 w-full">
+                        <Bone className="w-9 h-9 rounded-full shrink-0" />
+                        <div className="flex-1 space-y-1.5"><Bone className="h-3.5 w-32" /><Bone className="h-2.5 w-44" /></div>
+                      </SkeletonGroup>
                     )}
                   </motion.div>
                 </AnimatePresence>
@@ -435,18 +451,6 @@ export function MTFSection() {
 
             {/* Bottom CTA */}
             <div className="bg-cream/50 border-t border-border rounded-b-[8px] flex flex-col gap-4 p-5 sm:p-6">
-              <div className="flex items-start gap-3">
-                <div className="bg-white border border-border rounded-[8px] p-2.5 flex flex-col items-center justify-center w-14 h-14 sm:w-16 sm:h-16 shadow-xs flex-shrink-0">
-                  <span className="text-lg sm:text-xl font-extrabold text-burgundy">₹0</span>
-                  <span className="text-[8px] sm:text-[9px] font-bold text-muted-foreground uppercase text-center mt-0.5 leading-none">Interest*</span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-bold text-sm text-foreground leading-tight">Zero Interest for First 30 Days</h4>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Get interest-free MTF funding on eligible stocks for the first 30 days.{totalStocks && ` ${totalStocks} stocks available.`}
-                  </p>
-                </div>
-              </div>
               <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
                 <div className="flex items-center border border-border rounded-[5px] bg-white h-11 px-3 focus-within:border-burgundy focus-within:ring-1 focus-within:ring-burgundy/20 transition-all flex-1">
                   <span className="text-sm font-semibold text-muted-foreground mr-2 border-r border-border/80 pr-2 flex-shrink-0">+91</span>

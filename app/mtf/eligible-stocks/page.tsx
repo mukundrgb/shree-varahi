@@ -9,6 +9,7 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { useMtfStocks } from "@/hooks/use-mtf"
 import type { MtfSort } from "@/lib/mtf/api-client"
+import { TableRowsSkeleton } from "@/components/skeletons"
 
 const PER_PAGE = 25
 const SEARCH_DEBOUNCE_MS = 300
@@ -18,8 +19,9 @@ const longDate = (iso: string | null) =>
   iso ? new Date(`${iso}T00:00:00`).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : null
 
 function multiplierStyle(m: number) {
-  if (m >= 4) return "bg-emerald-50 text-emerald-700 border-emerald-200"
-  if (m >= 3) return "bg-blue-50 text-blue-700 border-blue-200"
+  // Multipliers run 1.92x–3.00x (33.3% minimum margin): full 3x, mid, low.
+  if (m >= 2.99) return "bg-emerald-50 text-emerald-700 border-emerald-200"
+  if (m >= 2.4) return "bg-blue-50 text-blue-700 border-blue-200"
   return "bg-amber-50 text-amber-700 border-amber-200"
 }
 
@@ -88,7 +90,8 @@ export default function MtfEligibleStocksPage() {
           </h1>
           <p className="text-sm text-muted-foreground mt-3 max-w-2xl leading-relaxed">
             {data ? `${data.totalStocks.toLocaleString("en-IN")} stocks` : "Stocks"} you can buy with Shree Varahi&apos;s Margin Trading Facility,
-            with the margin you pay and the buying power you get on each. MTF multiplier = 100 ÷ margin %.
+            with the margin you pay and the buying power you get on each. MTF multiplier = 100 ÷ margin %;
+            a minimum margin of {data?.minMarginPct ?? 33.3}% applies, so stocks listed below it use {data?.minMarginPct ?? 33.3}%.
             {effective && <> Margin list effective {effective}.</>}
           </p>
         </div>
@@ -139,7 +142,12 @@ export default function MtfEligibleStocksPage() {
               {header("multiplier", "Multiplier", "left")}
             </div>
 
-            {status ? (
+            {result.loading && !data ? (
+              <>
+                <div className="hidden md:block"><TableRowsSkeleton rows={10} columns={TABLE_COLUMNS} label="Loading stocks" /></div>
+                <div className="md:hidden"><TableRowsSkeleton rows={10} columns="minmax(0,1fr) 64px" label="Loading stocks" /></div>
+              </>
+            ) : status ? (
               <div className="py-14 text-center text-muted-foreground text-sm">{status}</div>
             ) : rows.length === 0 ? (
               <div className="py-14 text-center text-muted-foreground text-sm">No MTF eligible stock matches your search.</div>
@@ -151,7 +159,9 @@ export default function MtfEligibleStocksPage() {
                     <div className="min-w-0">
                       <div className="font-extrabold text-sm text-foreground truncate">{s.symbol}</div>
                       {s.name && <div className="text-[11px] text-muted-foreground truncate">{s.name}</div>}
-                      <div className="text-[11px] text-muted-foreground mt-0.5">Margin {s.marginPct.toFixed(2)}%</div>
+                      <div className="text-[11px] text-muted-foreground mt-0.5">
+                        Margin {s.marginPct.toFixed(2)}%{s.listedMarginPct < s.marginPct && ` · listed ${s.listedMarginPct.toFixed(2)}%`}
+                      </div>
                     </div>
                     <span className={`text-[12px] font-black px-2 py-0.5 rounded-[4px] border tabular-nums shrink-0 ${multiplierStyle(s.multiplier)}`}>
                       {s.multiplier.toFixed(2)}x
@@ -166,7 +176,12 @@ export default function MtfEligibleStocksPage() {
                       {s.name && <div className="text-[11px] text-muted-foreground truncate">{s.name}</div>}
                     </div>
                     <div className="text-xs text-muted-foreground font-mono tracking-wide">{s.isin ?? "—"}</div>
-                    <div className="text-sm font-bold text-foreground text-right tabular-nums">{s.marginPct.toFixed(2)}%</div>
+                    <div className="text-right tabular-nums">
+                      <div className="text-sm font-bold text-foreground">{s.marginPct.toFixed(2)}%</div>
+                      {s.listedMarginPct < s.marginPct && (
+                        <div className="text-[10px] text-muted-foreground" title="A minimum margin applies to this stock">Listed {s.listedMarginPct.toFixed(2)}%</div>
+                      )}
+                    </div>
                     <div className="text-right">
                       <span className={`text-[12px] font-black px-2 py-0.5 rounded-[4px] border tabular-nums ${multiplierStyle(s.multiplier)}`}>
                         {s.multiplier.toFixed(2)}x

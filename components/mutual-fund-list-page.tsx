@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useRef, useEffect, type ReactNode } from "react"
+import { useMemo, useState, useRef, useEffect, type ReactNode } from "react"
 import Link from "next/link"
-import { ChevronRight, ChevronDown, Star } from "lucide-react"
+import { TableRowsSkeleton } from "@/components/skeletons"
+import { ChevronRight, ChevronDown, Star, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { fundHref, type FundReturns, type MutualFundApi } from "@/lib/mutual-funds/api-client"
@@ -24,6 +25,26 @@ const RET_COLS: { key: keyof FundReturns; label: string }[] = [
   { key: "threeYear",  label: "3 Yr Returns" },
   { key: "fiveYear",   label: "5 Yr Returns" },
 ]
+
+/** Sortable columns, NAV to 5Y. Arrow up = highest → lowest, arrow down = lowest → highest. */
+export type FundListSortKey = "nav" | "aum" | keyof FundReturns
+export interface FundListSort { key: FundListSortKey; order: "asc" | "desc" }
+const sortValue = (f: MutualFundApi, key: FundListSortKey): number | null =>
+  key === "nav" ? f.nav : key === "aum" ? f.aumCr : f.returns[key]
+
+function SortTh({ label, k, sort, onSort, className = "" }: { label: string; k: FundListSortKey; sort: FundListSort | null; onSort: (k: FundListSortKey) => void; className?: string }) {
+  const active = sort?.key === k
+  const Icon = !active ? ArrowUpDown : sort.order === "desc" ? ArrowUp : ArrowDown
+  return (
+    <th className={`text-right text-xs font-bold px-3.5 py-3.5 ${className}`} aria-sort={active ? (sort.order === "asc" ? "ascending" : "descending") : "none"}>
+      <button type="button" onClick={() => onSort(k)}
+        title={active ? (sort.order === "desc" ? "Highest to lowest" : "Lowest to highest") : `Sort by ${label}`}
+        className={`ml-auto inline-flex items-center gap-1 transition-colors ${active ? "text-burgundy" : "text-muted-foreground hover:text-foreground"}`}>
+        {label} <Icon className={`w-3 h-3 shrink-0 ${active ? "" : "opacity-50"}`} />
+      </button>
+    </th>
+  )
+}
 
 const formatUpdated = (iso: string | null) => {
   if (!iso) return "—"
@@ -53,11 +74,32 @@ function FundAvatar({ name, logoUrl, index }: { name: string; logoUrl: string | 
 
 const dash = <span className="text-muted-foreground">—</span>
 
-export function MutualFundListPage({ data, status }: { data: MutualFundListPageData; status?: ReactNode }) {
+export function MutualFundListPage({
+  data, status, loading = false, defaultSort = null,
+}: {
+  data: MutualFundListPageData; status?: ReactNode; loading?: boolean
+  /** Initial table order; null keeps the list's own order (curated lists) until a column is clicked. */
+  defaultSort?: FundListSort | null
+}) {
   const [expanded, setExpanded] = useState(false)
+  const [sort, setSort] = useState<FundListSort | null>(defaultSort)
+  // First click on a column: highest first; the next click reverses it.
+  const sortBy = (key: FundListSortKey) =>
+    setSort((s) => (s?.key === key ? { key, order: s.order === "desc" ? "asc" : "desc" } : { key, order: "desc" }))
   const [isClamped, setIsClamped] = useState(false)
   const descRef = useRef<HTMLParagraphElement>(null)
   const d = data
+  // Funds with no value for the column always go last.
+  const funds = useMemo(() => {
+    if (!sort) return d.funds
+    const dir = sort.order === "desc" ? -1 : 1
+    return [...d.funds].sort((a, b) => {
+      const x = sortValue(a, sort.key), y = sortValue(b, sort.key)
+      if (x === null) return y === null ? 0 : 1
+      if (y === null) return -1
+      return dir * (x - y)
+    })
+  }, [d.funds, sort])
 
   useEffect(() => {
     const check = () => {
@@ -116,7 +158,11 @@ export function MutualFundListPage({ data, status }: { data: MutualFundListPageD
 
         {/* ── Table ───────────────────────────────────────────────────── */}
         <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 mt-5 pb-20">
-          {status ? (
+          {loading ? (
+            <div className="border border-border rounded-[8px] bg-background overflow-hidden">
+              <TableRowsSkeleton rows={10} columns="minmax(0,1.6fr) repeat(5, minmax(0,1fr))" cells={5} avatar label="Loading funds" />
+            </div>
+          ) : status ? (
             <div className="border border-border rounded-[8px] bg-background py-16 text-center text-sm text-muted-foreground">
               {status}
             </div>
@@ -133,10 +179,10 @@ export function MutualFundListPage({ data, status }: { data: MutualFundListPageD
                     <thead>
                       <tr className="border-b border-border bg-secondary/40">
                         <th className="sticky left-0 z-10 bg-secondary/95 backdrop-blur-sm text-left text-xs font-bold text-muted-foreground px-4 py-3.5 min-w-[320px]">Name</th>
-                        <th className="text-right text-xs font-bold text-muted-foreground px-3.5 py-3.5 min-w-[100px]">NAV</th>
-                        <th className="text-right text-xs font-bold text-muted-foreground px-3.5 py-3.5 min-w-[120px]">AUM (Cr.)</th>
+                        <SortTh label="NAV" k="nav" sort={sort} onSort={sortBy} className="min-w-[100px]" />
+                        <SortTh label="AUM (Cr.)" k="aum" sort={sort} onSort={sortBy} className="min-w-[120px]" />
                         {RET_COLS.map(c => (
-                          <th key={c.key} className="text-right text-xs font-bold text-muted-foreground px-3.5 py-3.5 min-w-[110px]">{c.label}</th>
+                          <SortTh key={c.key} label={c.label} k={c.key} sort={sort} onSort={sortBy} className="min-w-[120px]" />
                         ))}
                         <th className="text-center text-xs font-bold text-muted-foreground px-3.5 py-3.5 min-w-[90px]">Rating</th>
                         <th className="text-right text-xs font-bold text-muted-foreground px-3.5 py-3.5 min-w-[100px]">Exp Ratio</th>
@@ -150,7 +196,7 @@ export function MutualFundListPage({ data, status }: { data: MutualFundListPageD
                       </tr>
                     </thead>
                     <tbody>
-                      {d.funds.map((f, i) => (
+                      {funds.map((f, i) => (
                         <tr key={f.schemeCode} className="border-b border-border/50 hover:bg-secondary/30 transition-colors group">
                           <td className="sticky left-0 z-10 bg-background group-hover:bg-secondary/30 transition-colors px-4 py-3">
                             <div className="flex items-center gap-2.5">

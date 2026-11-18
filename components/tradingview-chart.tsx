@@ -57,31 +57,66 @@ function useNearViewport<T extends Element>() {
 interface TradingViewMiniChartProps {
   symbol: string
   className?: string
+  /** Size the chart takes in the table, px. */
+  width?: number
+  height?: number
 }
 
+/**
+ * TradingView's "mini" widget shows only its logo for these (BSE) symbols, so table rows use
+ * the same symbol-overview widget as the detail page — chart only, no axes or grid. It needs
+ * room to draw (about 320×150px), so it is drawn at that size and scaled down into the cell.
+ */
+const MINI_RENDER_WIDTH = 360
+const MINI_RENDER_HEIGHT = 200
+
 /** Small one-month price line for table rows. Clicks pass through to the row. */
-export function TradingViewMiniChart({ symbol, className }: TradingViewMiniChartProps) {
+export function TradingViewMiniChart({ symbol, className, width = 128, height = 56 }: TradingViewMiniChartProps) {
   const { ref, isNear } = useNearViewport<HTMLDivElement>()
   const containerRef = useTradingViewEmbed(
-    "embed-widget-mini-symbol-overview.js",
+    "embed-widget-symbol-overview.js",
     {
-      symbol,
-      width: "100%",
-      height: "100%",
+      symbols: [[symbol, `${symbol}|1D`]],
+      dateRanges: ["1m|1D"],
+      chartOnly: true,
+      hideDateRanges: true,
+      width: MINI_RENDER_WIDTH,
+      height: MINI_RENDER_HEIGHT,
+      autosize: false,
       locale: "en",
-      dateRange: "1M",
       colorTheme: "light",
       isTransparent: true,
-      autosize: true,
-      chartOnly: true,
+      // "area" is the style that honours our colours ("line" ignores lineColor).
+      chartType: "area",
+      lineWidth: 3,
+      // Neutral: a 1-month line's direction isn't known here, so it isn't coloured green/red.
+      lineColor: "#475569",
+      topColor: "rgba(71, 85, 105, 0.12)",
+      bottomColor: "rgba(71, 85, 105, 0)",
+      scalePosition: "no",
+      scaleMode: "Normal",
+      valuesTracking: "0",
+      showVolume: false,
+      showMA: false,
+      hideMarketStatus: true,
+      hideSymbolLogo: true,
       noTimeScale: true,
+      gridLineColor: "rgba(0, 0, 0, 0)",
+      fontSize: "10",
     },
     isNear,
   )
+  const scale = Math.min(width / MINI_RENDER_WIDTH, height / MINI_RENDER_HEIGHT)
 
   return (
-    <div ref={ref} className={cn("pointer-events-none overflow-hidden", className)} aria-hidden="true">
-      <div ref={containerRef} className="tradingview-widget-container h-full w-full" />
+    <div ref={ref} className={cn("pointer-events-none overflow-hidden relative shrink-0", className)}
+      style={{ width, height }} aria-hidden="true">
+      {!isNear && <div className="absolute inset-x-2 top-1/2 h-px bg-secondary" />}
+      <div
+        ref={containerRef}
+        className="tradingview-widget-container absolute left-0 top-0 origin-top-left"
+        style={{ width: MINI_RENDER_WIDTH, height: MINI_RENDER_HEIGHT, transform: `scale(${scale})` }}
+      />
     </div>
   )
 }

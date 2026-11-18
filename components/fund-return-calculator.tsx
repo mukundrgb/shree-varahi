@@ -9,6 +9,7 @@
 
 import { useRef, useState } from "react"
 import { Calculator, Loader2 } from "lucide-react"
+import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts"
 import { ApiError } from "@/lib/api/client"
 import {
   mutualFundsApi, type CalcType, type FundCalculatorApi, type FundReturnCalcApi,
@@ -23,6 +24,98 @@ const money = (v: number | null) =>
 const whole = (v: number) => `₹${v.toLocaleString("en-IN")}`
 const pct = (v: number | null) => (v === null ? "—" : `${v.toFixed(2)}%`)
 const tone = (v: number | null) => (v === null ? "text-foreground" : v >= 0 ? "text-profit" : "text-loss")
+
+// ─── Charts (the numbers stay visible next to each chart) ────────────────────
+// Colours checked with the dataviz palette validator: distinct for colour-blind readers too.
+const INVESTED = "#B8924A" // deep gold
+const GAINED   = "#A51C2A" // brand red
+const FUND     = "#A51C2A"
+const BENCH    = "#9CA3AF" // neutral grey for Bank FD / Gold
+
+/** Donut: how much of the latest value is your money and how much is the gain. */
+function ValueSplit({ invested, gained }: { invested: number | null; gained: number | null }) {
+  if (invested === null || gained === null || invested <= 0) return null
+  // A loss can't be drawn as a slice; the stat tiles above already show it.
+  if (gained <= 0) return null
+  const total = invested + gained
+  const data = [
+    { name: "Invested", value: invested, color: INVESTED },
+    { name: "Wealth Gained", value: gained, color: GAINED },
+  ]
+  return (
+    <div className="rounded-[8px] border border-border/60 px-4 py-3">
+      <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-2">Invested vs Gain</div>
+      <div className="flex items-center gap-4">
+        <div className="relative w-[120px] h-[120px] shrink-0" role="img"
+          aria-label={`Invested ${money(invested)} (${((invested / total) * 100).toFixed(1)}%), wealth gained ${money(gained)} (${((gained / total) * 100).toFixed(1)}%)`}>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie data={data} dataKey="value" innerRadius={38} outerRadius={56} startAngle={90} endAngle={-270}
+                paddingAngle={2} stroke="#fff" strokeWidth={2} isAnimationActive={false}>
+                {data.map((d) => <Cell key={d.name} fill={d.color} />)}
+              </Pie>
+              {/* No hover box: it covered the "Gain %" in the centre, and the legend beside the donut shows the amounts. */}
+            </PieChart>
+          </ResponsiveContainer>
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            <span className="text-[9px] font-bold text-muted-foreground uppercase">Gain</span>
+            <span className="text-sm font-black text-foreground tabular-nums">{((gained / total) * 100).toFixed(0)}%</span>
+          </div>
+        </div>
+        <ul className="space-y-2 min-w-0">
+          {data.map((d) => (
+            <li key={d.name} className="min-w-0">
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground">
+                <span className="w-2.5 h-2.5 rounded-[2px] shrink-0" style={{ background: d.color }} aria-hidden />
+                {d.name} · {((d.value / total) * 100).toFixed(1)}%
+              </div>
+              <div className="text-sm font-black text-foreground tabular-nums break-words">{money(d.value)}</div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+/** Horizontal bars: this fund's 1-year return against Bank FD and Gold, each labelled. */
+function OneYearComparison({ comparison }: { comparison: FundReturnCalcApi["comparison"] }) {
+  const data = [
+    { name: "This Fund", value: comparison.scheme1Y, color: FUND },
+    { name: "Bank FD",   value: comparison.bankFd,   color: BENCH },
+    { name: "Gold",      value: comparison.gold1Y,   color: BENCH },
+  ].filter((d): d is { name: string; value: number; color: string } => d.value !== null)
+  if (data.length === 0) return null
+  // Bars grow left (loss) or right (gain) from a shared zero line. Name and value sit in their
+  // own columns, so a negative return can never push its label onto the name.
+  const min = Math.min(0, ...data.map((d) => d.value))
+  const max = Math.max(0, ...data.map((d) => d.value))
+  const span = max - min || 1
+  const zero = (-min / span) * 100
+
+  return (
+    <div className="rounded-[8px] border border-border/60 px-4 py-3">
+      <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-3">1-Year Comparison</div>
+      <ul className="space-y-3" aria-label={`1-year returns: ${data.map((d) => `${d.name} ${pct(d.value)}`).join(", ")}`}>
+        {data.map((d) => {
+          const width = (Math.abs(d.value) / span) * 100
+          const left = d.value >= 0 ? zero : zero - width
+          return (
+            <li key={d.name} className="grid grid-cols-[72px_minmax(0,1fr)_60px] items-center gap-2" title={`${d.name}: ${pct(d.value)} over 1 year`}>
+              <span className="text-[11px] font-semibold text-foreground/80 truncate">{d.name}</span>
+              <span className="relative h-4 rounded-[3px] bg-secondary/40">
+                {min < 0 && <span className="absolute inset-y-[-3px] w-px bg-border" style={{ left: `${zero}%` }} aria-hidden />}
+                <span className={`absolute inset-y-0 ${d.value >= 0 ? "rounded-r-[4px]" : "rounded-l-[4px]"}`}
+                  style={{ left: `${left}%`, width: `${Math.max(width, 1.5)}%`, background: d.color }} aria-hidden />
+              </span>
+              <span className={`text-right text-[12px] font-black tabular-nums ${tone(d.value)}`}>{pct(d.value)}</span>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
+  )
+}
 
 export function FundReturnCalculator({ slug, settings, card }: { slug: string; settings: FundCalculatorApi; card: string }) {
   const minFor = (t: CalcType) => (t === "S" ? settings.minSip : settings.minLumpsum)
@@ -146,21 +239,9 @@ export function FundReturnCalculator({ slug, settings, card }: { slug: string; s
               ))}
             </div>
 
-            {/* 1-year comparison */}
-            <div className="rounded-[8px] border border-border/60 px-4 py-3">
-              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-2">1-Year Comparison</div>
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { label: "This Fund", value: result.comparison.scheme1Y },
-                  { label: "Bank FD",   value: result.comparison.bankFd },
-                  { label: "Gold",      value: result.comparison.gold1Y },
-                ].map((c) => (
-                  <div key={c.label} className="min-w-0">
-                    <div className="text-[11px] font-semibold text-muted-foreground">{c.label}</div>
-                    <div className={`text-sm font-black tabular-nums ${tone(c.value)}`}>{pct(c.value)}</div>
-                  </div>
-                ))}
-              </div>
+            <div className="grid md:grid-cols-2 gap-4">
+              <ValueSplit invested={result.investedAmount} gained={result.wealthGained} />
+              <OneYearComparison comparison={result.comparison} />
             </div>
           </div>
         )}
