@@ -4,7 +4,7 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ChevronRight, X, Zap, TrendingUp, Wallet, Percent, ShieldCheck,
-  Layers, Clock, CreditCard, ArrowRight, Star, Check, Plus, Equal,
+  Layers, Clock, CreditCard, ArrowRight, Star, Check, Plus, Equal, Info,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -101,6 +101,11 @@ export default function MTFPage() {
               </h1>
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-lg">
                 Trade now, pay later. Use Shree Varahi&apos;s Margin Trading Facility to fund part of your purchase and unlock more buying power on {eligibleStocks} — at just 0.041% interest per day.
+              </p>
+              {/* Funding cap */}
+              <p className="inline-flex items-start gap-2 rounded-[6px] border border-gold/35 bg-gold/10 px-3 py-2 text-[12px] sm:text-[13px] font-semibold text-foreground max-w-lg">
+                <Info className="w-4 h-4 text-gold-deep shrink-0 mt-px" aria-hidden />
+                <span>Maximum funding provided by Shree Varahi is up to <span className="font-black text-burgundy">₹1 crore</span>.</span>
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">

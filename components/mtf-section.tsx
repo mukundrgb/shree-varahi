@@ -3,13 +3,13 @@
 // MTF calculator (home page and /mtf). Stocks and margins come from the broker's MTF
 // margin list (/api/v1/mtf); the search only finds stocks in that list.
 //   margin used = max(listed margin, 33.3%) (applied by the backend)
-//   multiplier = 100 ÷ margin used, buying power = capital × multiplier, funding = buying power − capital
+//   multiplier = 100 ÷ margin used, funding = min(capital × (multiplier − 1), ₹1 crore), buying power = capital + funding
 // Share prices are not shown for now (CMOTS token expired) — the price line appears only when a price exists.
 
 import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { Search, X, ArrowRight, CheckCircle2, Loader2 } from "lucide-react"
+import { Search, X, ArrowRight, CheckCircle2, Loader2, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { useMtfStocks, useMtfSummary } from "@/hooks/use-mtf"
@@ -24,6 +24,29 @@ type Stock = MtfStockApi & {
 }
 
 const SEARCH_DEBOUNCE_MS = 250
+
+/** Varahi funds at most ₹1 crore per position. */
+const MAX_FUNDING = 1_00_00_000
+const MIN_CAPITAL = 5_000
+/** Capital slider / input top end. */
+const MAX_CAPITAL = 1_00_00_000
+const SLIDER_STEPS = 1000
+
+/**
+ * The slider is logarithmic: ₹5K→₹50K, ₹50K→₹5L and ₹5L→₹1Cr each take a similar share of the
+ * track (a straight ₹5K–₹1Cr scale would squeeze everything under ₹1 lakh into 1% of it).
+ * Values snap to round amounts.
+ */
+const niceStep = (v: number) => (v < 1_00_000 ? 5_000 : v < 10_00_000 ? 10_000 : v < 50_00_000 ? 50_000 : 1_00_000)
+function sliderToCapital(pos: number) {
+  const raw = MIN_CAPITAL * Math.pow(MAX_CAPITAL / MIN_CAPITAL, pos / SLIDER_STEPS)
+  const step = niceStep(raw)
+  return Math.min(MAX_CAPITAL, Math.max(MIN_CAPITAL, Math.round(raw / step) * step))
+}
+function capitalToSlider(capital: number) {
+  const c = Math.min(MAX_CAPITAL, Math.max(MIN_CAPITAL, capital))
+  return Math.round((SLIDER_STEPS * Math.log(c / MIN_CAPITAL)) / Math.log(MAX_CAPITAL / MIN_CAPITAL))
+}
 const SEARCH_RESULTS = 7
 
 /* ─── Helpers ─── */
@@ -92,14 +115,20 @@ export function MTFSection() {
 
   const multiplier = selected ? mtfMultiplier(selected) : null
   const m = multiplier ?? 1
-  const buyingPower = capital * m
-  const funding = buyingPower - capital
+  // Varahi funds at most ₹1 crore; beyond that, buying power = capital + ₹1 crore.
+  const fullFunding = capital * (m - 1)
+  const fundingCapped = fullFunding > MAX_FUNDING
+  const funding = Math.min(fullFunding, MAX_FUNDING)
+  const buyingPower = capital + funding
+  /** Buying power ÷ capital after the cap (equals the stock's multiplier when not capped). */
+  const effective = capital > 0 ? buyingPower / capital : m
+  const capitalShare = buyingPower > 0 ? (capital / buyingPower) * 100 : 0
 
   /* Donut math */
   const C = 219.9
-  const ratio = Math.min(capital, 500000) / 500000
-  const capArc = (C * ratio) / m
-  const fundArc = (C * ratio * (m - 1)) / m
+  const ratio = Math.min(capital, MAX_CAPITAL) / MAX_CAPITAL
+  const capArc = (C * ratio) / effective
+  const fundArc = (C * ratio * (effective - 1)) / effective
   const g = capital > 0 ? 1.5 : 0
   const capDash  = `${Math.max(0, capArc  - g)} ${C}`
   const fundDash = `${Math.max(0, fundArc - g)} ${C}`
@@ -124,7 +153,7 @@ export function MTFSection() {
 
   const handleCapitalChange = (raw: string) => {
     const n = parseInt(raw.replace(/[^0-9]/g, ""), 10)
-    if (!isNaN(n)) setCapital(Math.min(n, 1000000))
+    if (!isNaN(n)) setCapital(Math.min(n, MAX_CAPITAL))
     else if (raw === "" || raw === "₹") setCapital(0)
   }
 
@@ -199,16 +228,31 @@ export function MTFSection() {
                   <div className="mt-4">
                     <div className="px-2.5">
                       <Slider
-                        value={[capital]}
-                        onValueChange={(v) => setCapital(v[0])}
-                        min={5000}
-                        max={500000}
-                        step={5000}
+                        value={[capitalToSlider(capital)]}
+                        onValueChange={(v) => setCapital(sliderToCapital(v[0]))}
+                        min={0}
+                        max={SLIDER_STEPS}
+                        step={1}
+                        aria-label="Your capital"
+                        aria-valuetext={fmt(capital)}
                         className="[&_[role=slider]]:bg-burgundy [&_[role=slider]]:border-burgundy [&_[role=slider]]:h-5 [&_[role=slider]]:w-5"
                       />
-                      <div className="flex justify-between text-xs text-muted-foreground font-medium mt-2">
-                        <span>₹5,000</span>
-                        <span>₹5,00,000</span>
+                      {/* Tick labels sit where those amounts fall on the (logarithmic) track */}
+                      <div className="relative h-4 text-xs text-muted-foreground font-medium mt-2">
+                        {[
+                          { v: MIN_CAPITAL, label: "₹5K" },
+                          { v: 50_000, label: "₹50K" },
+                          { v: 5_00_000, label: "₹5L" },
+                          { v: MAX_CAPITAL, label: "₹1Cr" },
+                        ].map((t, i, all) => (
+                          <span key={t.label} className="absolute top-0 whitespace-nowrap"
+                            style={{
+                              left: `${(capitalToSlider(t.v) / SLIDER_STEPS) * 100}%`,
+                              transform: i === 0 ? "none" : i === all.length - 1 ? "translateX(-100%)" : "translateX(-50%)",
+                            }}>
+                            {t.label}
+                          </span>
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -379,7 +423,7 @@ export function MTFSection() {
                       )}
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-xl font-black text-foreground leading-none">{multiplier !== null ? times(multiplier) : "—"}</span>
+                      <span className="text-xl font-black text-foreground leading-none">{multiplier !== null ? times(effective) : "—"}</span>
                       <span className="text-[9px] text-muted-foreground font-semibold mt-0.5">buying power</span>
                     </div>
                   </div>
@@ -388,7 +432,7 @@ export function MTFSection() {
                     <div className="border-l-[3px] border-gold pl-3">
                       <span className="text-[10px] text-muted-foreground block font-medium leading-snug">
                         Your Capital
-                        {selected && <span className="text-muted-foreground/60 ml-1">({selected.marginPct.toFixed(2)}%)</span>}
+                        {selected && <span className="text-muted-foreground/60 ml-1">({capitalShare.toFixed(2)}%)</span>}
                       </span>
                       <AnimatePresence mode="wait">
                         <motion.span
@@ -404,7 +448,7 @@ export function MTFSection() {
                     <div className="border-l-[3px] border-burgundy pl-3">
                       <span className="text-[10px] text-muted-foreground block font-medium leading-snug">
                         Varahi Funding
-                        {selected && <span className="text-muted-foreground/60 ml-1">({(100 - selected.marginPct).toFixed(2)}%)</span>}
+                        {selected && <span className="text-muted-foreground/60 ml-1">({(100 - capitalShare).toFixed(2)}%)</span>}
                       </span>
                       <AnimatePresence mode="wait">
                         <motion.span
@@ -442,9 +486,20 @@ export function MTFSection() {
                     )}
                   </div>
                   <div className="flex-shrink-0 text-right">
-                    <div className="text-3xl sm:text-4xl font-black" style={{ color: "#FF0000", opacity: 0.15 }}>{multiplier !== null ? times(multiplier) : ""}</div>
+                    <div className="text-3xl sm:text-4xl font-black" style={{ color: "#FF0000", opacity: 0.15 }}>{multiplier !== null ? times(effective) : ""}</div>
                   </div>
                 </div>
+
+                {/* Funding cap: shown once ₹1 crore is reached */}
+                {selected && fundingCapped && (
+                  <div role="status" className="rounded-[6px] border border-amber-200 bg-amber-50 px-3 py-2.5 flex items-start gap-2">
+                    <Info className="w-4 h-4 text-amber-600 shrink-0 mt-px" aria-hidden />
+                    <p className="text-[11px] leading-snug text-amber-800">
+                      <span className="font-bold">Maximum funding provided by Varahi is ₹1 crore.</span>{" "}
+                      At {times(multiplier ?? 1)} your funding would be {fmt(fullFunding)}, so buying power is capped at {fmt(capital)} + ₹1,00,00,000.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
             </div>{/* end overflow-x-auto */}

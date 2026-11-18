@@ -65,15 +65,15 @@ type PromoSlide = TextSlide | ImageSlide
 const promoSlides: PromoSlide[] = [
   {
     kind: "text",
-    badge: "ZERO BROKERAGE",
+    badge: "FLAT DELIVERY",
     badgeColor: "#059669",
-    headline: "₹0",
+    headline: "₹17",
     headlineSub: "on Delivery",
-    body: "Buy and hold stocks with absolutely zero brokerage — forever. No hidden charges.",
+    body: "Buy and hold stocks at a flat ₹17 per delivery order. No percentage, no hidden charges.",
     bg: ["#071410", "#0d2418"],
     accent: "#4ade80",
     Icon: TrendingUp,
-    stat: "₹0 forever",
+    stat: "₹17 flat",
     statLabel: "Delivery brokerage",
   },
   {
@@ -139,7 +139,7 @@ const products: Product[] = [
   {
     icon: TrendingUp,
     title: "Stocks",
-    description: "Buy and hold with zero brokerage on every delivery trade.",
+    description: "Buy and hold with a flat ₹17 brokerage on every delivery order.",
     detail: "NSE & BSE listed equities, real-time quotes, margin trading facility.",
     badge: "₹17 Delivery",
     badgeColor: "bg-profit/15 text-profit",
@@ -584,8 +584,8 @@ function ProductStackSection() {
             </p>
             <div className="flex flex-col gap-6 border-t border-border pt-8">
               {[
-                { val: "60,000+",  label: "Active Investors" },
-                { val: "₹0",       label: "Delivery Brokerage" },
+                { val: "1 Lakh+",  label: "Active Investors" },
+                { val: "₹17",      label: "Delivery Brokerage" },
                 { val: "₹17 Flat", label: "Intraday & F&O" },
               ].map(({ val, label }) => (
                 <div key={label} className="flex items-baseline gap-3">
@@ -669,7 +669,7 @@ export function Hero() {
                 className="text-[11px] tracking-[0.22em] uppercase text-gold-deep font-black mb-5 flex items-center gap-2"
               >
                 <span className="w-5 h-px bg-gold-deep inline-block" />
-                Trusted by 60,000+ Investors
+                Trusted by 1 Lakh+ Investors
               </motion.div>
 
               {/* Headline */}
@@ -692,7 +692,7 @@ export function Hero() {
                 className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-[520px] mb-8"
               >
                 Stocks, F&amp;O, Mutual Funds, IPOs, US Equities — one account, one flat fee.
-                Zero delivery brokerage. Flat ₹17 for intraday &amp; F&amp;O.
+                Flat ₹17 brokerage on delivery, intraday &amp; F&amp;O.
               </motion.p>
 
               {/* Buttons */}

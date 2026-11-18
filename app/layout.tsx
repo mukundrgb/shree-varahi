@@ -34,7 +34,7 @@ const cormorant = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   title: 'Shree Varahi | 31 Years of Trust. One Powerful Platform.',
-  description: 'Trade stocks, F&O, mutual funds, IPOs, and US equities with Shree Varahi by Lakshmishree Investment & Securities Ltd. ₹0 delivery, ₹17 flat brokerage. SEBI registered since 1993.',
+  description: 'Trade stocks, F&O, mutual funds, IPOs, and US equities with Shree Varahi by Lakshmishree Investment & Securities Ltd. Flat ₹17 brokerage on delivery, intraday & F&O. SEBI registered since 1993.',
   keywords: ['trading platform', 'stocks', 'F&O', 'mutual funds', 'IPO', 'demat account', 'Lakshmishree', 'SEBI registered'],
   icons: {
     icon: '/favicon.jpg',
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'Shree Varahi | 31 Years of Trust. One Powerful Platform.',
-    description: 'Trade with confidence. SEBI registered since 1993. 60,000+ active investors trust us.',
+    description: 'Trade with confidence. SEBI registered since 1993. 1 Lakh+ active investors trust us.',
     type: 'website',
   },
 }

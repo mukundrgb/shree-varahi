@@ -50,7 +50,7 @@ export function FinalCTA() {
               <span className="text-burgundy">here.</span>
             </h2>
             <p className="text-lg text-muted-foreground">
-              Join 60,000+ investors who trust Shree Varahi for their trading and investment needs.{" "}
+              Join 1 Lakh+ investors who trust Shree Varahi for their trading and investment needs.{" "}
               Open your account in under 10 minutes. Start with ₹0.
             </p>
 
