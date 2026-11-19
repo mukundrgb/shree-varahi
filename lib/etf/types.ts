@@ -123,10 +123,10 @@ export interface EtfHolding {
   weight: number
   price: number | null
   changePct: number | null
-  /** Market value of the ETF's position in this stock, ₹ crore. Not sent by the backend yet. */
-  marketValueCr?: number | null
-  /** Number of shares the ETF holds. Not sent by the backend yet. */
-  totalShares?: number | null
+  /** Market value of the ETF's position in this stock, ₹ crore. */
+  marketValue: number | null
+  /** Number of shares the ETF holds. */
+  totalShares: number | null
 }
 
 export interface EtfHoldings {

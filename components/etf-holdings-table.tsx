@@ -2,7 +2,7 @@
 
 // Equity holdings table, shared by the ETF detail page (Holdings card) and the Equity ETF
 // Holdings page. Columns: Name · Market Value · Holding % · Total Shares · Sector · Price · Change.
-// Market Value and Total Shares show "—" until the backend sends them.
+// Data: /api/v1/etfs/:slug/combined-holdings.
 
 import type { ReactNode } from "react"
 import { TableRowsSkeleton } from "@/components/skeletons"
@@ -55,7 +55,7 @@ export function EtfHoldingsTable({
           holdings.map((h) => (
             <div key={h.isin ?? h.name} className="grid px-4 py-3 border-b border-border/40 last:border-0 hover:bg-cream/30 transition-colors items-center" style={{ gridTemplateColumns: GRID }}>
               <div className="min-w-0 pr-3 text-sm font-extrabold text-foreground truncate" title={h.name}>{h.name}</div>
-              <span className="text-right text-[13px] font-bold text-foreground tabular-nums">{formatMarketValue(h.marketValueCr)}</span>
+              <span className="text-right text-[13px] font-bold text-foreground tabular-nums">{formatMarketValue(h.marketValue)}</span>
               <span className="flex items-center justify-end gap-2">
                 <span className="w-10 h-1.5 rounded-full bg-secondary overflow-hidden">
                   <span className="block h-full bg-gold rounded-full" style={{ width: `${(h.weight / maxWeight) * 100}%` }} />
