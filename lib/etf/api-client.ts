@@ -24,6 +24,6 @@ export const etfApi = {
   detail: (slug: string, signal?: AbortSignal) => apiGet<EtfDetail>(`/etfs${seg(slug)}`, { signal }),
   chart: (slug: string, range: ChartRange, signal?: AbortSignal) =>
     apiGet<EtfChart>(`/etfs${seg(slug)}/chart`, { query: { range }, signal }),
-  /** Equity holdings with market value and share counts (accepts the slug or the ISIN). */
-  holdings: (slug: string, signal?: AbortSignal) => apiGet<EtfHoldings>(`/etfs${seg(slug)}/combined-holdings`, { signal }),
+  /** Equity holdings with market value and share counts. Takes the ETF's ISIN, e.g. INF769K01FN2. */
+  holdings: (isin: string, signal?: AbortSignal) => apiGet<EtfHoldings>(`/etfs${seg(isin.toUpperCase())}/combined-holdings`, { signal }),
 }

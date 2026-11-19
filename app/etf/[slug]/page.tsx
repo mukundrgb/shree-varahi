@@ -11,7 +11,7 @@ import { EtfPriceChart } from "@/components/etf-price-chart"
 import { EtfHoldingsTable } from "@/components/etf-holdings-table"
 import { DetailPageSkeleton } from "@/components/skeletons"
 import { Bar, BarChart, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-import { useEtfChart, useEtfDetail, useEtfHoldings } from "@/hooks/etf/use-etf"
+import { isHoldingsFor, useEtfChart, useEtfDetail, useEtfHoldings } from "@/hooks/etf/use-etf"
 import type { ChartRange, EtfDetail, EtfSummary, Riskometer } from "@/lib/etf/types"
 import { NO_VALUE, formatDate, formatPercent, formatPrice, formatRupees, formatQuoteTime } from "@/lib/stocks/format"
 
@@ -163,9 +163,10 @@ function PageShell({ children }: { children: ReactNode }) {
 /** Rows shown on the detail page; the rest are on the Equity ETF Holdings page. */
 const HOLDINGS_PREVIEW = 10
 
-function HoldingsCard({ slug }: { slug: string }) {
-  const result = useEtfHoldings(slug)
-  const data = result.data?.slug === slug ? result.data : null
+function HoldingsCard({ slug, isin }: { slug: string; isin: string | null }) {
+  // Holdings are looked up by the ETF's ISIN.
+  const result = useEtfHoldings(isin)
+  const data = isHoldingsFor(result.data, isin) ? result.data : null
   const holdings = data?.holdings ?? []
 
   return (
@@ -176,7 +177,7 @@ function HoldingsCard({ slug }: { slug: string }) {
       <div className="-mx-5 border-t border-border/60">
         <EtfHoldingsTable
           holdings={holdings.slice(0, HOLDINGS_PREVIEW)}
-          loading={!data && !result.error}
+          loading={!!isin && !data && !result.error}
           status={result.error
             ? <>Unable to load holdings. <button onClick={result.retry} className="text-burgundy font-bold hover:underline">Retry</button></>
             : undefined}
@@ -399,7 +400,7 @@ function EtfDetailView({ etf }: { etf: EtfDetail }) {
               </Card>
 
               {/* Holdings — equity ETFs only (holdings data exists for equity alone) */}
-              {etf.category === "Equity" && <HoldingsCard slug={etf.slug} />}
+              {etf.category === "Equity" && <HoldingsCard slug={etf.slug} isin={etf.isin} />}
 
               {/* Category returns */}
               <Card title="Category returns" subtitle="3Y and 5Y returns are annualised. Rank is this ETF's position within its category.">

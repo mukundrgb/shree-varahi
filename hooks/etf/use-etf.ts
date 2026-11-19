@@ -21,7 +21,11 @@ export function useEtfChart(slug: string, range: ChartRange) {
   })
 }
 
-/** Equity holdings of one ETF. Pass an empty slug to wait. */
-export function useEtfHoldings(slug: string) {
-  return useApiResource(slug || null, (signal) => etfApi.holdings(slug, signal))
+/** Equity holdings of one ETF, by its ISIN. Pass null/empty to wait. */
+export function useEtfHoldings(isin: string | null) {
+  return useApiResource(isin ? `etf-holdings-${isin}` : null, (signal) => etfApi.holdings(isin ?? "", signal))
 }
+
+/** True when a holdings response belongs to this ISIN (ignores letter case). */
+export const isHoldingsFor = (data: { isin: string } | null | undefined, isin: string | null) =>
+  !!data && !!isin && data.isin?.toUpperCase() === isin.toUpperCase()

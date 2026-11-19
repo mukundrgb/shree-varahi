@@ -8,7 +8,7 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { StockAvatar } from "@/components/stock-avatar"
 import { EtfHoldingsTable } from "@/components/etf-holdings-table"
-import { useEtfHoldings, useEtfList } from "@/hooks/etf/use-etf"
+import { isHoldingsFor, useEtfHoldings, useEtfList } from "@/hooks/etf/use-etf"
 import { ALL_ETFS } from "@/lib/etf/api-client"
 import { formatDate } from "@/lib/stocks/format"
 
@@ -36,8 +36,10 @@ function EtfHoldings() {
   const [search, setSearch] = useState("")
   // Picked ETF, else the one in ?etf=, else the largest equity ETF.
   const slug = picked ?? (requested && etfs.some((e) => e.slug === requested) ? requested : etfs[0]?.slug ?? "")
-  const result = useEtfHoldings(slug)
-  const data = result.data?.slug === slug ? result.data : null
+  // Holdings are looked up by the ETF's ISIN (the slug is only for the URL / picker).
+  const isin = etfs.find((e) => e.slug === slug)?.isin ?? null
+  const result = useEtfHoldings(isin)
+  const data = isHoldingsFor(result.data, isin) ? result.data : null
   const etf = etfs.find((e) => e.slug === slug) ?? { slug, name: data?.name ?? "", symbol: data?.name ?? "" }
   const holdings = data?.holdings ?? []
 
@@ -134,7 +136,7 @@ function EtfHoldings() {
           <div className="rounded-[8px] border border-border overflow-hidden bg-white shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
             <EtfHoldingsTable
               holdings={visible}
-              loading={!(etfList.error || result.error) && (etfList.loading || (!!slug && !data))}
+              loading={!(etfList.error || result.error) && (etfList.loading || (!!isin && !data))}
               status={etfList.error || result.error ? (
                 <>Unable to load holdings. <button onClick={() => { etfList.retry(); result.retry() }} className="text-burgundy font-bold hover:underline">Retry</button></>
               ) : query ? "No holdings match your search." : "No equity holdings data for this ETF."}
