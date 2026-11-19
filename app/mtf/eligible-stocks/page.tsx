@@ -160,7 +160,7 @@ export default function MtfEligibleStocksPage() {
                       <div className="font-extrabold text-sm text-foreground truncate">{s.symbol}</div>
                       {s.name && <div className="text-[11px] text-muted-foreground truncate">{s.name}</div>}
                       <div className="text-[11px] text-muted-foreground mt-0.5">
-                        Margin {s.marginPct.toFixed(2)}%{s.listedMarginPct < s.marginPct && ` · listed ${s.listedMarginPct.toFixed(2)}%`}
+                        Margin {s.marginPct.toFixed(2)}%
                       </div>
                     </div>
                     <span className={`text-[12px] font-black px-2 py-0.5 rounded-[4px] border tabular-nums shrink-0 ${multiplierStyle(s.multiplier)}`}>
@@ -178,9 +178,6 @@ export default function MtfEligibleStocksPage() {
                     <div className="text-xs text-muted-foreground font-mono tracking-wide">{s.isin ?? "—"}</div>
                     <div className="text-right tabular-nums">
                       <div className="text-sm font-bold text-foreground">{s.marginPct.toFixed(2)}%</div>
-                      {s.listedMarginPct < s.marginPct && (
-                        <div className="text-[10px] text-muted-foreground" title="A minimum margin applies to this stock">Listed {s.listedMarginPct.toFixed(2)}%</div>
-                      )}
                     </div>
                     <div className="text-right">
                       <span className={`text-[12px] font-black px-2 py-0.5 rounded-[4px] border tabular-nums ${multiplierStyle(s.multiplier)}`}>

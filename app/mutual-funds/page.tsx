@@ -4,8 +4,8 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-  Search, TrendingUp, ChevronLeft, ChevronRight,
-  Calculator, Shield, Star, Check,
+  Search, ChevronLeft, ChevronRight,
+  Calculator, Star, Check,
   Zap, BarChart2, Users, Award, X, ArrowUpDown, ArrowUp, ArrowDown,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useFundSearch, useMutualFundsPage } from "@/hooks/use-mutual-funds"
 import { fundHref, type FundSort, type MutualFundApi } from "@/lib/mutual-funds/api-client"
-import { FundCategoryFilter, NO_CATEGORY, categoryQuery, type CategoryPick } from "@/components/fund-category-filter"
+import { FundCategoryFilter, SelectedCategoryChips, NO_CATEGORY, categoryQuery, hasCategory, type CategoryPick } from "@/components/fund-category-filter"
 import { FundHouseFilter } from "@/components/fund-house-filter"
 import { CardGridSkeleton, ListSkeleton, TableRowsSkeleton } from "@/components/skeletons"
 
@@ -30,10 +30,7 @@ const EXPLORER_TABS: Array<{ id: string; label: string; sort: FundSort; index?: 
   { id: "index",     label: "Index Funds",  sort: "aum", index: true },
 ]
 
-const CATEGORY_ICONS = [BarChart2, TrendingUp, Zap, Shield, Award, Star, Users]
 const AMC_PREVIEW = 17
-/** Categories shown before "More Categories" (with the More card: 3 full rows of 5). */
-const CATEGORY_PREVIEW = 14
 const PER_PAGE = 10
 const SEARCH_DEBOUNCE_MS = 300
 /** Logo · Fund · Category · Fund Manager · Risk · Rating · AUM · 1Y · 3Y · 5Y */
@@ -173,7 +170,7 @@ function CategoryFromUrl({ onPick }: { onPick: (pick: CategoryPick) => void }) {
   const pickRef = useRef(onPick)
   pickRef.current = onPick
   useEffect(() => {
-    if (main) pickRef.current({ main, subs: sub ? [sub] : [] })
+    if (main) pickRef.current({ [main]: sub ? [sub] : [] })
   }, [main, sub])
   return null
 }
@@ -186,13 +183,12 @@ export default function MutualFundsPage() {
   const [risk, setRisk]               = useState("")
   /** Star rating filter; null = any rating, 0 = not rated */
   const [rating, setRating]           = useState<number | null>(null)
-  /** Fund house (AMC id) filter; null = all fund houses */
-  const [amc, setAmc]                 = useState<number | null>(null)
+  /** Fund house (AMC id) filter; empty = all fund houses */
+  const [amcIds, setAmcIds]           = useState<number[]>([])
   const [search, setSearch]           = useState("")
   const [query, setQuery]             = useState("")
   const [page, setPage]               = useState(1)
   const [showAllAmcs, setShowAllAmcs] = useState(false)
-  const [showAllCategories, setShowAllCategories] = useState(false)
   /** Table order: AUM high → low by default; column headers and the name button change it. */
   const [sort, setSort]               = useState<TableSort>(DEFAULT_SORT)
 
@@ -219,14 +215,14 @@ export default function MutualFundsPage() {
       ...categoryQuery(category),
       risk: risk || undefined,
       rating: rating ?? undefined,
-      amc: amc ?? undefined,
+      amc: amcIds,
       index: tab.index,
       sort: sort.key,
       order: sort.order,
       page,
       limit: PER_PAGE,
     }),
-    [query, category, risk, rating, amc, tab, sort, page],
+    [query, category, risk, rating, amcIds, tab, sort, page],
   )
   const fundsResult = useFundSearch(fundQuery)
   const funds       = fundsResult.data
@@ -253,24 +249,22 @@ export default function MutualFundsPage() {
   const pickCategory = (v: CategoryPick) => { setCategory(v); setPage(1) }
   const pickRisk  = (v: string)  => { setRisk(v); setPage(1) }
   const pickRating = (v: number | null) => { setRating(v); setPage(1) }
-  const pickAmc = (v: number | null) => { setAmc(v); setPage(1) }
+  const pickAmcs = (v: number[]) => { setAmcIds(v); setPage(1) }
   // Like the stocks page: resets search, categories, risk and sort (the tab stays).
   const clearAll = () => {
-    setCategory(NO_CATEGORY); setRisk(""); setRating(null); setAmc(null); setSearch(""); setQuery(""); setSort(tabSort(tab)); setPage(1)
+    setCategory(NO_CATEGORY); setRisk(""); setRating(null); setAmcIds([]); setSearch(""); setQuery(""); setSort(tabSort(tab)); setPage(1)
   }
   const sortChanged = sort.key !== tab.sort || sort.order !== "desc"
   const mobileReturn =
     sort.key === "1y" ? { label: "1Y", value: (f: MutualFundApi) => f.returns.oneYear } :
     sort.key === "5y" ? { label: "5Y", value: (f: MutualFundApi) => f.returns.fiveYear } :
                         { label: "3Y", value: (f: MutualFundApi) => f.returns.threeYear }
-  const hasFilter = !!(search || risk || rating !== null || amc !== null || sortChanged || category.main)
+  const hasFilter = !!(search || risk || rating !== null || amcIds.length > 0 || sortChanged || hasCategory(category))
 
   const totalFunds = formatCount(info?.stats.totalFunds)
   const totalAmcs  = formatCount(info?.stats.totalAmcs)
   const amcs       = info?.amcs ?? []
   const visibleAmcs = showAllAmcs ? amcs : amcs.slice(0, AMC_PREVIEW)
-  const categories = info?.categories ?? []
-  const visibleCategories = showAllCategories ? categories : categories.slice(0, CATEGORY_PREVIEW)
 
   const tableStatus = fundsResult.loading && !funds
     ? "Loading funds…"
@@ -448,7 +442,7 @@ export default function MutualFundsPage() {
             </div>
 
             {/* Fund house filter */}
-            <FundHouseFilter amcs={info?.amcs ?? []} value={amc} onChange={pickAmc} />
+            <FundHouseFilter amcs={info?.amcs ?? []} value={amcIds} onChange={pickAmcs} />
 
             {/* Rating filter */}
             <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label="Rating">
@@ -471,7 +465,7 @@ export default function MutualFundsPage() {
             </div>
           </div>
 
-          {/* Categories: main categories, then the picked one's sub-categories (horizontal scroll) */}
+          {/* Categories: main categories, then the picked ones' sub-categories (auto-scrolling row) */}
           <FundCategoryFilter mains={info?.assetClasses ?? []} value={category} onChange={pickCategory} />
           </div>
 
@@ -500,6 +494,8 @@ export default function MutualFundsPage() {
                 {SORT_COLUMNS.map((c) => <SortHeader key={c.key} label={c.label} k={c.key} sort={sort} onSort={sortBy} />)}
               </div>
             </div>
+            {/* Picked categories, each removable, just before Clear filters */}
+            <SelectedCategoryChips mains={info?.assetClasses ?? []} value={category} onChange={pickCategory} />
             {hasFilter && (
               <button
                 onClick={clearAll}
@@ -666,67 +662,6 @@ export default function MutualFundsPage() {
               </div>
             </div>
           )}
-        </div>
-      </section>
-
-      {/* ── FUND CATEGORIES ── */}
-      <section className="py-12 lg:py-16 bg-cream border-t border-border/40">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-1">Browse by Category</p>
-              <h2 className="text-2xl sm:text-3xl font-black text-foreground">All Fund Categories</h2>
-            </div>
-          </div>
-
-          {!info && (pageData.error ? <p className="py-10 text-center text-sm text-muted-foreground">{sectionStatus}</p> : <CardGridSkeleton count={10} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3" />)}
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            {visibleCategories.map((cat, i) => {
-              const Icon = CATEGORY_ICONS[i % CATEGORY_ICONS.length]
-              const color = "#8B0D19"
-              return (
-                <motion.div
-                  key={cat.name}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.35, delay: Math.min(i, 10) * 0.04 }}
-                  className="text-left bg-white border border-border rounded-[8px] p-4"
-                >
-                  <div
-                    className="w-9 h-9 rounded-[6px] flex items-center justify-center mb-3"
-                    style={{ background: color + "14", border: `1px solid ${color}22` }}
-                  >
-                    <Icon className="w-4.5 h-4.5" style={{ color }} strokeWidth={1.8} />
-                  </div>
-                  <div className="font-extrabold text-sm text-foreground leading-tight mb-1">
-                    {cat.name}
-                  </div>
-                  <div className="text-[10px] text-muted-foreground font-semibold">{cat.count.toLocaleString("en-IN")} funds</div>
-                </motion.div>
-              )
-            })}
-
-            {/* Show the rest — same as AMC Partners */}
-            {categories.length > CATEGORY_PREVIEW && (
-              <motion.button
-                type="button"
-                onClick={() => setShowAllCategories((v) => !v)}
-                aria-expanded={showAllCategories}
-                whileHover={{ scale: 1.03 }}
-                transition={{ duration: 0.15 }}
-                className="bg-cream border border-border/50 rounded-[8px] p-4 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-gold/30 min-h-[118px]"
-              >
-                <div className="w-12 h-12 rounded-[8px] bg-gold/10 border border-gold/20 flex items-center justify-center">
-                  <span className="text-gold-deep font-black text-base">
-                    {showAllCategories ? "−" : `+${categories.length - CATEGORY_PREVIEW}`}
-                  </span>
-                </div>
-                <span className="text-[10px] font-bold text-muted-foreground text-center">{showAllCategories ? "Show Less" : "More Categories"}</span>
-              </motion.button>
-            )}
-          </div>
         </div>
       </section>
 

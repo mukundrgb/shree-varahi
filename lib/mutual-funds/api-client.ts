@@ -70,7 +70,8 @@ export interface FundQuery {
   risk?: string
   /** 0–5 stars; 0 = not rated */
   rating?: number
-  amc?: number
+  /** AMC ids; a fund from any of these matches */
+  amc?: number[]
   index?: boolean
   sort?: FundSort
   order?: "asc" | "desc"
@@ -180,7 +181,7 @@ export const mutualFundsApi = {
 
   funds: ({ index, amc, ...query }: FundQuery, signal?: AbortSignal) =>
     apiGet<FundPageApi>("/mutual-funds/funds", {
-      query: { ...query, amc, index: index ? "true" : undefined },
+      query: { ...query, amc: amc?.map(String), index: index ? "true" : undefined },
       signal,
     }),
 
