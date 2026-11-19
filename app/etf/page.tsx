@@ -96,8 +96,8 @@ const RESEARCH_PARAMS: { icon: React.ElementType; title: string; desc: string; h
   { icon: ListChecks,  title: "Holdings",              href: "/etf/holdings",              desc: "Review the underlying securities held within an ETF to understand portfolio composition and investment exposure." },
   { icon: TrendingUp,  title: "Returns",               href: "/etf/compare?sort=return1Y", desc: "Evaluate historical returns across different time periods to assess past performance and investment consistency." },
   { icon: Target,      title: "Tracking Index",        desc: "Identify the benchmark index tracked by the ETF and understand how the fund seeks to replicate index performance." },
-  { icon: PieChart,    title: "Sector Allocation",     desc: "Examine sector-wise distribution to understand which industries contribute most to the ETF's overall portfolio." },
-  { icon: Layers,      title: "Asset Allocation",      desc: "Review the allocation of assets across equities, commodities, debt instruments, or other investment categories depending on the ETF type." },
+  { icon: PieChart,    title: "Sector Allocation",     href: "/etf/sector-allocation",     desc: "Examine sector-wise distribution to understand which industries contribute most to the ETF's overall portfolio." },
+  { icon: Layers,      title: "Asset Allocation",      href: "/etf/asset-allocation",      desc: "Review the allocation of assets across equities, commodities, debt instruments, or other investment categories depending on the ETF type." },
   { icon: BarChart3,   title: "Historical Performance", desc: "Study long-term performance trends, return patterns, and historical data to support research-driven investment decisions." },
 ]
 
