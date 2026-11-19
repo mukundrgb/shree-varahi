@@ -192,11 +192,19 @@ export function MTFSection() {
           <div className="bg-white border border-border rounded-[8px] shadow-sm">
 
             {/* Card header */}
-            <div className="bg-cream/40 px-4 sm:px-6 py-3 sm:py-4 border-b border-border/60 rounded-t-[8px]">
-              <h3 className="font-bold text-xl text-foreground">MTF Calculator</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Select a stock to see the exact margin trading facility available — different stocks have different MTF limits.
-              </p>
+            <div className="bg-cream/40 px-4 sm:px-6 py-3 sm:py-4 border-b border-border/60 rounded-t-[8px] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <h3 className="font-bold text-xl text-foreground">MTF Calculator</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Select a stock to see the exact margin trading facility available — different stocks have different MTF limits.
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-muted-foreground">
+                <span className="bg-white border border-border px-2.5 py-1 rounded-[4px]">Interest: <strong className="text-foreground">0.049%/day</strong></span>
+                <span className="bg-white border border-border px-2.5 py-1 rounded-[4px]">Brokerage: <strong className="text-foreground">17%</strong></span>
+                <span className="bg-white border border-border px-2.5 py-1 rounded-[4px]">Pledge: <strong className="text-foreground">₹15</strong></span>
+                <span className="bg-white border border-border px-2.5 py-1 rounded-[4px]">Holding: <strong className="text-foreground">Up to 90 Days</strong></span>
+              </div>
             </div>
 
             {/* Two-column layout — scrolls horizontally on mobile */}
@@ -243,7 +251,7 @@ export function MTFSection() {
                           { v: MIN_CAPITAL, label: "₹5K" },
                           { v: 50_000, label: "₹50K" },
                           { v: 5_00_000, label: "₹5L" },
-                          { v: MAX_CAPITAL, label: "₹1Cr" },
+                          { v: MAX_CAPITAL, label: "₹5Cr" },
                         ].map((t, i, all) => (
                           <span key={t.label} className="absolute top-0 whitespace-nowrap"
                             style={{

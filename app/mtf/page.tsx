@@ -21,26 +21,26 @@ import { ListSkeleton } from "@/components/skeletons"
 // The hero cards show the first popular stocks from the MTF margin list (/api/v1/mtf).
 
 const KEY_BENEFITS = [
-  "Buy Up To 3× More Shares", "Unlimited Holding Period", "0% Interest For First 30 Days",
+  "Buy Up To 3× More Shares", "Up to 90 Days Holding Period", "0% Interest For First 30 Days",
   "MTF Eligible Stocks", "Automatic Pledge & Unpledge", "Transparent Charges, No Hidden Fees",
   "Trade From Your Existing Account", "Same-Day Margin Activation",
 ]
 
 const CHARGES = [
-  { icon: Percent,    title: "Interest",          value: "0.041%",  unit: "per day", desc: "Charged only on the borrowed amount, from the buy date until one day before you sell or convert to delivery — including non-trading days." },
-  { icon: CreditCard, title: "Brokerage",          value: "0.1%",    unit: "or ₹20, whichever is lower", desc: "Minimum brokerage of ₹2 per executed order applies on all MTF transactions, same as your regular delivery brokerage plan." },
-  { icon: Layers,     title: "Pledge / Unpledge",  value: "₹20",     unit: "+ GST per ISIN, per request", desc: "Shares bought under MTF are auto-pledged as per SEBI norms, and auto-unpledged on sell or conversion to delivery." },
+  { icon: Percent,    title: "Interest",          value: "0.049%",  unit: "per day", desc: "Charged only on the borrowed amount, from the buy date until one day before you sell or convert to delivery — including non-trading days." },
+  { icon: CreditCard, title: "Brokerage",          value: "17%",     unit: "per executed order", desc: "17% brokerage applies on all MTF transactions." },
+  { icon: Layers,     title: "Pledge / Unpledge",  value: "₹15",     unit: "+ GST per ISIN, per request", desc: "Shares bought under MTF are auto-pledged as per SEBI norms, and auto-unpledged on sell or conversion to delivery." },
 ]
 
 const FAQS = [
   { q: "How do I check if MTF is activated on my account?", a: "Open the Shree Varahi app, go to Account → tap your name, and scroll to the MTF section. If the status shows \"Active,\" your MTF segment is enabled. If not, you can activate it directly from the same screen." },
   { q: "How is MTF interest calculated?", a: "Interest is charged from the buy date until one day before your sell or conversion-to-delivery date, on the borrowed amount — including non-trading days. For example, if you buy on 1st January and sell on 11th January, interest is charged from 1st to 10th January on the funded amount." },
-  { q: "How long can I hold a position bought using MTF?", a: "You can hold your MTF positions for as long as you want. There is no maximum holding period — interest simply continues to accrue on the funded amount each day you hold." },
+  { q: "How long can I hold a position bought using MTF?", a: "You can hold your MTF positions for up to 90 days. Interest continues to accrue on the funded amount each day you hold until squared off or converted to delivery." },
   { q: "Which segments is MTF available in?", a: "MTF is available only in the equity delivery segment, on exchange-approved stocks that meet SEBI's MTF eligibility criteria." },
   { q: "What is Mark-to-Market (MTM) loss in MTF?", a: "If the market value of shares bought using MTF falls below your original buy price, the difference is an MTM loss. This is tracked daily against your funded position." },
   { q: "What happens if I get an MTM loss notification?", a: "When the value of your MTF stock falls below your buy price, you may need to add funds to maintain the minimum margin. If the shortfall isn't covered in time, your MTF position may be squared off automatically." },
   { q: "Can I buy shares using MTF without using extra cash?", a: "Yes. You can pledge your existing eligible holdings as collateral from the app, which adds to your margin and lets you use MTF without bringing in fresh funds." },
-  { q: "What are pledge and unpledge charges?", a: "As per SEBI guidelines, every share bought under MTF is automatically pledged, and unpledged when sold or converted to delivery. A charge of ₹20 + GST applies per pledge/unpledge request, per ISIN." },
+  { q: "What are pledge and unpledge charges?", a: "As per SEBI guidelines, every share bought under MTF is automatically pledged, and unpledged when sold or converted to delivery. A charge of ₹15 + GST applies per pledge/unpledge request, per ISIN." },
 ]
 
 function CheckPill({ label }: { label: string }) {
@@ -100,7 +100,7 @@ export default function MTFPage() {
                 <span className="text-burgundy">3× More Shares</span>
               </h1>
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-lg">
-                Trade now, pay later. Use Shree Varahi&apos;s Margin Trading Facility to fund part of your purchase and unlock more buying power on {eligibleStocks} — at just 0.041% interest per day.
+                Trade now, pay later. Use Shree Varahi&apos;s Margin Trading Facility to fund part of your purchase and unlock more buying power on {eligibleStocks} — at just 0.049% interest per day.
               </p>
               {/* Funding cap */}
               <p className="inline-flex items-start gap-2 rounded-[6px] border border-gold/35 bg-gold/10 px-3 py-2 text-[12px] sm:text-[13px] font-semibold text-foreground max-w-lg">
@@ -117,11 +117,11 @@ export default function MTFPage() {
               </div>
               <div className="flex flex-wrap gap-4 pt-1">
                 <div>
-                  <div className="text-lg font-black text-foreground">0.041%</div>
+                  <div className="text-lg font-black text-foreground">0.049%</div>
                   <div className="text-[10px] text-muted-foreground font-semibold">Interest / Day</div>
                 </div>
                 <div>
-                  <div className="text-lg font-black text-foreground">Unlimited</div>
+                  <div className="text-lg font-black text-foreground">Up to 90 Days</div>
                   <div className="text-[10px] text-muted-foreground font-semibold">Holding Period</div>
                 </div>
                 <div>

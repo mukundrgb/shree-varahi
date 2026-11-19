@@ -163,8 +163,8 @@ const products: Product[] = [
     title: "Mutual Funds",
     description: "Zero commission. Keep every rupee of your return.",
     detail: "5,000+ funds, SIP, STP, SWP, goal-based investing in one click.",
-    badge: "Direct Plans",
-    badgeColor: "bg-gold/20 text-gold-deep",
+    badge: "",
+    badgeColor: "",
     accentColor: "#8B0D19",
     bgHover: "rgba(217,178,124,0.06)",
     href: "/mutual-funds",
@@ -584,7 +584,7 @@ function ProductStackSection() {
             </p>
             <div className="flex flex-col gap-6 border-t border-border pt-8">
               {[
-                { val: "1 Lakh+",  label: "Active Investors" },
+                { val: "1 Lakh+",  label: " Investors" },
                 { val: "₹17",      label: "Delivery Brokerage" },
                 { val: "₹17 Flat", label: "Intraday & F&O" },
               ].map(({ val, label }) => (

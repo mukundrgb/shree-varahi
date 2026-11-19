@@ -12,6 +12,18 @@ const branches = [
   { city: "Chennai", address: "203, OMR Tech Park, Sholinganallur", phone: "+91 44 4080 8080" },
   { city: "Kolkata", address: "701, Camac Street Center", phone: "+91 33 4080 8080" },
   { city: "Hyderabad", address: "401, Banjara Hills, Road No. 12", phone: "+91 40 4080 8080" },
+  { city: "Varanasi", address: "Shree House C -29/61-5, Teliyabag, Varanasi - 221002", phone: "(0542) 6600000" },
+  { city: "Ahmedabad", address: "B-409 Shilp Corporate Park, Rajpath Rangoli Road, Bodakdev, Ahmedabad - 380054", phone: "(+91) 7948910195" },
+  { city: "Surat", address: "403, Cabin A, Luxuria Business Hub, Near VR Mall, Surat – 395007", phone: "(+91) 9313187844" },
+  { city: "Surat", address: "M-32, Shreeji Arcade, Anand Mahal Rd, near Bhulka Bhavan, Adajan Gam, Adajan, Surat - 395009", phone: "(+91) 7705900506" },
+  { city: "Jaipur", address: "Plot No. 1724, Jat Ke Kuao Ka Rasta, Purani Basti, Chandpole Bazar, Jaipur - 302001", phone: "(+91) 9799394123" },
+  { city: "Kanpur", address: "Cabin No. 687 Padam Tower-I, 14/113, 4th Floor, Civil Lines, Kanpur - 208001", phone: "(+91) 9389481008" },
+  { city: "Varanasi", address: "C27/273 K1, Indian Press Colony, Varanasi - 221001", phone: "(+91) 92353 95869" },
+  { city: "Ujjain", address: "316, Siddhi Vinayak Tower, Near Shahid Park, Freeganj, Ujjain - 456010", phone: "(+91) 9039468616" },
+  { city: "Varanasi", address: "CK 58/7, Narayan Katra, Nichi Bagh, Varanasi - 221001", phone: "(+91) 63941 57525" },
+  { city: "Durgapur", address: "5/4, Suhatta Commercial Complex, City Centre, Durgapur - 713216", phone: "(+91) 97351 44277" },
+  { city: "Patna", address: "Verma Karpura House, Flat No 502, 5th Floor, S.P. Verma Road, Patna - 800001", phone: "(+91) 7488341545" },
+  { city: "Dhanbad", address: "Office No. 311, 3rd Floor, Industry House, Shanti Bhawan, Bank More, Dhanbad - 826001", phone: "(+91) 9308308055" },
 ]
 
 // Coordinates mapped to viewBox "0 0 400 450"
@@ -23,6 +35,15 @@ const cityCoordinates: Record<string, { x: number; y: number }> = {
   "Chennai":     { x: 166, y: 360 },
   "Kolkata":     { x: 276, y: 218 },
   "Hyderabad":   { x: 148, y: 294 },
+  "Ahmedabad":   { x: 63, y: 210 },
+  "Surat":       { x: 67, y: 237 },
+  "Jaipur":      { x: 107, y: 151 },
+  "Kanpur":      { x: 170, y: 158 },
+  "Varanasi":    { x: 206, y: 175 },
+  "Ujjain":      { x: 107, y: 207 },
+  "Patna":       { x: 236, y: 171 },
+  "Dhanbad":     { x: 254, y: 198 },
+  "Durgapur":    { x: 266, y: 202 },
 }
 
 export function BranchLocator() {
@@ -190,7 +211,7 @@ export function BranchLocator() {
             <div className="space-y-3 max-h-[380px] overflow-auto pr-2">
               {filteredBranches.map((branch, index) => (
                 <motion.div
-                  key={branch.city}
+                  key={`${branch.city}-${index}`}
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
