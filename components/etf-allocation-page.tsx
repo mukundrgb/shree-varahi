@@ -4,7 +4,7 @@
 // header, "Select ETF" picker, search box, and a Name · Holding % · Total Shares table.
 // Each page passes a hook that turns the picked ETF into allocation rows.
 
-import { useMemo, useState, type ReactNode } from "react"
+import { useEffect, useMemo, useState, type ReactNode } from "react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { ChevronRight, ChevronDown, ArrowUpRight, Search, X } from "lucide-react"
@@ -59,8 +59,8 @@ export function EtfAllocationPage({
   /** What a row is, plural, e.g. "sectors" */
   rowLabel: string
   searchPlaceholder: string
-  /** Must be a stable, module-level hook */
-  useAllocation: (slug: string, isin: string | null) => AllocationResult
+  /** Must be a stable, module-level hook. `search` is the search box text, sent to the API as ?search= */
+  useAllocation: (slug: string, isin: string | null, search: string) => AllocationResult
 }) {
   const params = useSearchParams()
   // Dropdown list: GET /etfs?category=<category>&limit=500, or GET /etfs?limit=500 for every category.
@@ -75,11 +75,16 @@ export function EtfAllocationPage({
   const fromUrl = requested ? etfs.find((e) => e.slug === requested || e.isin?.toUpperCase() === requested.toUpperCase()) : undefined
   const slug = picked ?? fromUrl?.slug ?? etfs[0]?.slug ?? ""
   const etf = etfs.find((e) => e.slug === slug) ?? null
-  const result = useAllocation(slug, etf?.isin ?? null)
+  // The search box is sent to the API as ?search=, a moment after the user stops typing.
+  const [query, setQuery] = useState("")
+  useEffect(() => {
+    const next = search.trim()
+    const timer = setTimeout(() => setQuery(next), next ? 300 : 0)
+    return () => clearTimeout(timer)
+  }, [search])
+  const result = useAllocation(slug, etf?.isin ?? null, query)
 
-  const query = search.trim().toLowerCase()
   const rows = result.rows
-  const visible = query ? rows.filter((r) => r.name.toLowerCase().includes(query)) : rows
   const maxWeight = Math.max(...rows.map((r) => r.weight), 1)
   const loading = !etfList.error && !result.error && (etfList.loading || (!!slug && result.loading))
   const failed = etfList.error || result.error
@@ -89,7 +94,7 @@ export function EtfAllocationPage({
     ? null
     : CATEGORY_ORDER.map((c) => ({ category: c, items: etfs.filter((e) => e.category === c) })).filter((g) => g.items.length)
 
-  const pickEtf = (next: string) => { setPicked(next); setSearch("") }
+  const pickEtf = (next: string) => { setPicked(next); setSearch(""); setQuery("") }
 
   return (
     <main className="min-h-screen bg-background">
@@ -176,9 +181,8 @@ export function EtfAllocationPage({
                   <span className="text-[10px] font-black px-2 py-0.5 bg-gold/15 text-gold-deep rounded-[4px]">{etf.category}</span>
                 </p>
                 {rows.length > 0 && <p className="text-xs text-muted-foreground">
-                  {query
-                    ? <>Showing <span className="font-bold text-foreground">{visible.length}</span> of {rows.length} {rowLabel}</>
-                    : <><span className="font-bold text-foreground">{rows.length}</span> {rowLabel}</>}
+                  <span className="font-bold text-foreground">{rows.length}</span> {rows.length === 1 ? rowLabel.replace(/s$/, "") : rowLabel}
+                  {query && <> matching &ldquo;{query}&rdquo;</>}
                   {result.asOf && <> · as of {formatDate(result.asOf)}</>}
                 </p>}
               </div>
@@ -195,9 +199,9 @@ export function EtfAllocationPage({
                   ))}
                 </div>
 
-                {visible.length === 0 && loading ? (
+                {rows.length === 0 && loading ? (
                   <TableRowsSkeleton rows={8} columns={GRID} label={`Loading ${rowLabel}`} />
-                ) : visible.length === 0 ? (
+                ) : rows.length === 0 ? (
                   <div className="py-16 text-center text-muted-foreground text-sm">
                     {failed ? (
                       <>Unable to load {rowLabel}. <button onClick={() => { etfList.retry(); result.retry() }} className="text-burgundy font-bold hover:underline">Retry</button></>
@@ -205,7 +209,7 @@ export function EtfAllocationPage({
                       : result.emptyText ?? `No ${rowLabel} data for this ETF.`}
                   </div>
                 ) : (
-                  visible.map((r) => (
+                  rows.map((r) => (
                     <div key={r.name} className="grid px-4 py-3 border-b border-border/40 last:border-0 hover:bg-cream/30 transition-colors items-center" style={{ gridTemplateColumns: GRID }}>
                       <div className="min-w-0 pr-3 text-sm font-extrabold text-foreground truncate" title={r.name}>{r.name}</div>
                       <span className="flex items-center justify-end gap-2">

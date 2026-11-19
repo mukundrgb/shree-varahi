@@ -5,12 +5,14 @@ import { EtfAllocationPage, type AllocationResult } from "@/components/etf-alloc
 import { isHoldingsFor, useEtfAssetAllocation } from "@/hooks/etf/use-etf"
 
 // Asset allocation of any ETF (Equity, Commodity, Debt, Global): Name · Holding % · Total Shares.
-// Data: GET /api/v1/etfs/<ISIN>/asset-allocation (it has no share counts, so Total Shares shows "—").
+// Data: GET /api/v1/etfs/<ISIN>/asset-allocation?search=<text> (it has no share counts, so Total Shares shows "—").
 
-function useAssetAllocation(_slug: string, isin: string | null): AllocationResult {
-  const { data, error, retry } = useEtfAssetAllocation(isin)
-  // Ignore a response left over from the previously picked ETF.
+function useAssetAllocation(_slug: string, isin: string | null, search: string): AllocationResult {
+  const { data, error, retry } = useEtfAssetAllocation(isin, search)
+  // Ignore a response left over from the previously picked ETF; while a new search
+  // loads, keep showing this ETF's last rows.
   const current = isHoldingsFor(data, isin) ? data : null
+  const fresh = current?.search === search
   const rows = useMemo(
     () =>
       (current?.assets ?? [])
@@ -20,7 +22,7 @@ function useAssetAllocation(_slug: string, isin: string | null): AllocationResul
   )
   return {
     rows,
-    loading: !!isin && !current && !error,
+    loading: !!isin && !fresh && !error,
     error: !!error && !current,
     retry,
     asOf: current?.portfolioDate ?? null,

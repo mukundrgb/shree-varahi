@@ -25,11 +25,11 @@ export const etfApi = {
   chart: (slug: string, range: ChartRange, signal?: AbortSignal) =>
     apiGet<EtfChart>(`/etfs${seg(slug)}/chart`, { query: { range }, signal }),
   /** Sector split of an equity ETF. Takes the ETF's ISIN. */
-  sectorAllocation: (isin: string, signal?: AbortSignal) =>
-    apiGet<EtfSectorAllocation>(`/etfs${seg(isin.toUpperCase())}/sector-allocation`, { signal }),
+  sectorAllocation: (isin: string, search?: string, signal?: AbortSignal) =>
+    apiGet<EtfSectorAllocation>(`/etfs${seg(isin.toUpperCase())}/sector-allocation`, { query: { search: search || undefined }, signal }),
   /** Asset class split of any ETF. Takes the ETF's ISIN. */
-  assetAllocation: (isin: string, signal?: AbortSignal) =>
-    apiGet<EtfAssetAllocation>(`/etfs${seg(isin.toUpperCase())}/asset-allocation`, { signal }),
+  assetAllocation: (isin: string, search?: string, signal?: AbortSignal) =>
+    apiGet<EtfAssetAllocation>(`/etfs${seg(isin.toUpperCase())}/asset-allocation`, { query: { search: search || undefined }, signal }),
   /** Equity holdings with market value and share counts. Takes the ETF's ISIN, e.g. INF769K01FN2. */
   holdings: (isin: string, signal?: AbortSignal) => apiGet<EtfHoldings>(`/etfs${seg(isin.toUpperCase())}/combined-holdings`, { signal }),
 }

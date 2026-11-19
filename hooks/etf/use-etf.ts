@@ -26,14 +26,20 @@ export function useEtfHoldings(isin: string | null) {
   return useApiResource(isin ? `etf-holdings-${isin}` : null, (signal) => etfApi.holdings(isin ?? "", signal))
 }
 
-/** Sector allocation of one equity ETF, by its ISIN. Pass null/empty to wait. */
-export function useEtfSectorAllocation(isin: string | null) {
-  return useApiResource(isin ? `etf-sectors-${isin}` : null, (signal) => etfApi.sectorAllocation(isin ?? "", signal))
+/** Sector allocation of one equity ETF, by its ISIN, filtered by ?search=. Pass null/empty to wait. */
+export function useEtfSectorAllocation(isin: string | null, search = "") {
+  return useApiResource(isin ? `etf-sectors-${isin}-${search}` : null, async (signal) => ({
+    ...(await etfApi.sectorAllocation(isin ?? "", search, signal)),
+    search,
+  }))
 }
 
-/** Asset allocation of one ETF, by its ISIN. Pass null/empty to wait. */
-export function useEtfAssetAllocation(isin: string | null) {
-  return useApiResource(isin ? `etf-assets-${isin}` : null, (signal) => etfApi.assetAllocation(isin ?? "", signal))
+/** Asset allocation of one ETF, by its ISIN, filtered by ?search=. Pass null/empty to wait. */
+export function useEtfAssetAllocation(isin: string | null, search = "") {
+  return useApiResource(isin ? `etf-assets-${isin}-${search}` : null, async (signal) => ({
+    ...(await etfApi.assetAllocation(isin ?? "", search, signal)),
+    search,
+  }))
 }
 
 /** True when a holdings response belongs to this ISIN (ignores letter case). */

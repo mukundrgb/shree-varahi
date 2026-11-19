@@ -5,12 +5,14 @@ import { EtfAllocationPage, type AllocationResult } from "@/components/etf-alloc
 import { isHoldingsFor, useEtfSectorAllocation } from "@/hooks/etf/use-etf"
 
 // Sector allocation of an equity ETF: Name · Holding % · Total Shares.
-// Data: GET /api/v1/etfs/<ISIN>/sector-allocation
+// Data: GET /api/v1/etfs/<ISIN>/sector-allocation?search=<text>
 
-function useSectorAllocation(_slug: string, isin: string | null): AllocationResult {
-  const { data, error, retry } = useEtfSectorAllocation(isin)
-  // Ignore a response left over from the previously picked ETF.
+function useSectorAllocation(_slug: string, isin: string | null, search: string): AllocationResult {
+  const { data, error, retry } = useEtfSectorAllocation(isin, search)
+  // Ignore a response left over from the previously picked ETF; while a new search
+  // loads, keep showing this ETF's last rows.
   const current = isHoldingsFor(data, isin) ? data : null
+  const fresh = current?.search === search
   const rows = useMemo(
     () =>
       (current?.sectors ?? [])
@@ -20,7 +22,7 @@ function useSectorAllocation(_slug: string, isin: string | null): AllocationResu
   )
   return {
     rows,
-    loading: !!isin && !current && !error,
+    loading: !!isin && !fresh && !error,
     error: !!error && !current,
     retry,
     asOf: current?.portfolioDate ?? null,
