@@ -1,20 +1,30 @@
 "use client"
 
-import { Suspense } from "react"
+import { Suspense, useMemo } from "react"
 import { EtfAllocationPage, type AllocationResult } from "@/components/etf-allocation-page"
+import { isHoldingsFor, useEtfSectorAllocation } from "@/hooks/etf/use-etf"
 
 // Sector allocation of an equity ETF: Name · Holding % · Total Shares.
-// The sector allocation API isn't connected yet, so the table is ready but empty.
-// To plug the data in: fetch it for `slug` here and return it as `rows` (see AllocationRow).
+// Data: GET /api/v1/etfs/<ISIN>/sector-allocation
 
-function useSectorAllocation(_slug: string): AllocationResult {
+function useSectorAllocation(_slug: string, isin: string | null): AllocationResult {
+  const { data, error, retry } = useEtfSectorAllocation(isin)
+  // Ignore a response left over from the previously picked ETF.
+  const current = isHoldingsFor(data, isin) ? data : null
+  const rows = useMemo(
+    () =>
+      (current?.sectors ?? [])
+        .map((s) => ({ name: s.name, weight: s.holdingPercentage, totalShares: s.totalShares }))
+        .sort((a, b) => b.weight - a.weight),
+    [current],
+  )
   return {
-    rows: [],
-    loading: false,
-    error: false,
-    retry: () => {},
-    asOf: null,
-    emptyText: "Sector allocation data for this ETF will be available soon.",
+    rows,
+    loading: !!isin && !current && !error,
+    error: !!error && !current,
+    retry,
+    asOf: current?.portfolioDate ?? null,
+    emptyText: isin ? "No sector allocation data for this ETF." : "Sector allocation isn't available for this ETF.",
   }
 }
 

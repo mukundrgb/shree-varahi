@@ -60,20 +60,22 @@ export function EtfAllocationPage({
   rowLabel: string
   searchPlaceholder: string
   /** Must be a stable, module-level hook */
-  useAllocation: (slug: string) => AllocationResult
+  useAllocation: (slug: string, isin: string | null) => AllocationResult
 }) {
   const params = useSearchParams()
-  const listParams: EtfListParams = { category, sort: "aum", order: "desc", limit: ALL_ETFS }
+  // Dropdown list: GET /etfs?category=<category>&limit=500, or GET /etfs?limit=500 for every category.
+  const listParams: EtfListParams = category ? { category, limit: ALL_ETFS } : { limit: ALL_ETFS }
   const etfList = useEtfList(listParams)
   const etfs = useMemo(() => etfList.data?.items ?? [], [etfList.data])
   const requested = params.get("etf")
 
   const [picked, setPicked] = useState<string | null>(null)
   const [search, setSearch] = useState("")
-  // Picked ETF, else the one in ?etf=, else the largest one.
-  const slug = picked ?? (requested && etfs.some((e) => e.slug === requested) ? requested : etfs[0]?.slug ?? "")
+  // Picked ETF, else the one in ?etf= (slug or ISIN), else the first in the list.
+  const fromUrl = requested ? etfs.find((e) => e.slug === requested || e.isin?.toUpperCase() === requested.toUpperCase()) : undefined
+  const slug = picked ?? fromUrl?.slug ?? etfs[0]?.slug ?? ""
   const etf = etfs.find((e) => e.slug === slug) ?? null
-  const result = useAllocation(slug)
+  const result = useAllocation(slug, etf?.isin ?? null)
 
   const query = search.trim().toLowerCase()
   const rows = result.rows
@@ -208,7 +210,7 @@ export function EtfAllocationPage({
                       <div className="min-w-0 pr-3 text-sm font-extrabold text-foreground truncate" title={r.name}>{r.name}</div>
                       <span className="flex items-center justify-end gap-2">
                         <span className="hidden sm:block w-20 h-1.5 rounded-full bg-secondary overflow-hidden">
-                          <span className="block h-full bg-gold rounded-full" style={{ width: `${(r.weight / maxWeight) * 100}%` }} />
+                          <span className="block h-full bg-gold rounded-full" style={{ width: `${Math.max(0, r.weight / maxWeight) * 100}%` }} />
                         </span>
                         <span className="text-[13px] font-black text-foreground tabular-nums w-14 text-right">{r.weight.toFixed(2)}%</span>
                       </span>

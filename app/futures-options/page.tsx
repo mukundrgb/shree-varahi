@@ -9,7 +9,7 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { useFnoCards } from "@/hooks/use-fno"
-import type { FnoCategory } from "@/lib/fno/api-client"
+import { fnoDetailHref, type FnoCategory } from "@/lib/fno/api-client"
 import { 
   ArrowRight,
   ChevronLeft,
@@ -34,6 +34,8 @@ import {
   Sparkles,
   Star
 } from "lucide-react"
+
+const MotionLink = motion.create(Link)
 
 // ── CUSTOM BG GLOW GRAPHICS ──
 function ElegantBgGrid() {
@@ -733,7 +735,7 @@ export default function FuturesOptionsPage() {
             </div>
           </div>
 
-          {/* Markets table — same style as the All Stocks table; rows are not clickable. */}
+          {/* Markets table — same style as the All Stocks table; each row opens its detail page. */}
           <div className="rounded-[8px] border border-border overflow-hidden bg-white shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
             {/* Header */}
             <div
@@ -763,7 +765,8 @@ export default function FuturesOptionsPage() {
                 const tone = !hasChange ? "text-muted-foreground" : up ? "text-profit" : "text-loss"
                 const sign = hasChange && up ? "+" : ""
                 return (
-                  <motion.div
+                  <MotionLink
+                    href={fnoDetailHref(marketCategory, row.slug)}
                     key={`${marketCategory}-${row.symbol}`}
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -796,7 +799,7 @@ export default function FuturesOptionsPage() {
                       {hasChange && (up ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />)}
                       {row.changePct === null ? "—" : `${sign}${row.changePct.toFixed(2)}%`}
                     </div>
-                  </motion.div>
+                  </MotionLink>
                 )
               })
             )}

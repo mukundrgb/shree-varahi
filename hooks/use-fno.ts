@@ -28,3 +28,22 @@ export function useOptionsDetail(underlying: "index" | "stock", symbol: string, 
   )
 }
 */
+
+/**
+ * Header of an F&O detail page: the underlying's card from its tab list (name, price, change).
+ * Looks through the tab's pages (100 at a time) until it finds the slug.
+ */
+export function useFnoCard(category: FnoCategory, slug: string) {
+  return useApiResource(
+    slug ? `fno-card:${category}:${slug}` : null,
+    async (signal) => {
+      for (let page = 1; ; page++) {
+        const list = await fnoApi.cards(category, { page, limit: 100 }, signal)
+        const card = list.items.find((c) => c.slug === slug)
+        if (card) return { card, list }
+        if (page >= list.totalPages) return { card: null, list }
+      }
+    },
+    { refreshMs: FNO_REFRESH_MS },
+  )
+}
