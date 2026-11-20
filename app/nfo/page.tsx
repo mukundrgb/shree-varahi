@@ -6,7 +6,7 @@ import {
   ChevronRight, Plus, X, Layers, Eye, FileSearch, GitCompare, MonitorSmartphone,
   Bookmark, LineChart, Lightbulb, TrendingUp, Landmark, Scale, Globe2, BarChart3,
   Target, UserCheck, Gauge, CalendarRange, Wallet, PieChart, ListChecks,
-  Star, Check, LayoutDashboard, Bell, Activity,
+  Star, Check, LayoutDashboard, Bell, Activity, ArrowRight,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -366,19 +366,37 @@ export default function NFOPage() {
                     >
                       <div className="flex items-center justify-between gap-2 mb-3">
                         <AmcLogo nfo={f} />
-                        <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${f.status === "Open" ? "bg-profit/10 text-profit" : "bg-gold/15 text-gold-deep"}`}>
-                          {f.status}
-                        </span>
+                        <span className="text-[11px] font-bold text-foreground">Launch {shortDate(f.launchDate)}</span>
                       </div>
                       <div className="font-extrabold text-[12px] text-foreground leading-tight mb-1 line-clamp-2 min-h-[28px]" title={f.name}>
                         {f.name}
                       </div>
-                      <div className="text-[10px] text-muted-foreground font-semibold mb-3 truncate">
-                        {[f.amcName, f.category].filter(Boolean).join(" · ")}
+                      <div className="text-[10px] text-muted-foreground font-semibold mb-3">
+                        Face Value <span className="font-bold text-foreground">{rupees(f.faceValue)}</span>
                       </div>
-                      <div className="mt-auto flex items-center justify-between gap-2">
-                        <span className="text-[10px] text-muted-foreground font-semibold">Min {rupees(f.minInvestment)}</span>
-                        <span className="text-[11px] font-bold text-foreground">{keyDate(f)}</span>
+                      <div className="mt-auto">
+                      <div className="pt-3 border-t border-border/50 grid grid-cols-3 gap-2">
+                        <div className="min-w-0">
+                          <div className="text-[9px] font-extrabold uppercase tracking-wider text-muted-foreground">Min Invest</div>
+                          <div className="text-[11px] font-bold text-foreground tabular-nums">{rupees(f.minInvestment)}</div>
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-[9px] font-extrabold uppercase tracking-wider text-muted-foreground">Min SIP</div>
+                          <div className="text-[11px] font-bold text-foreground tabular-nums">{rupees(f.minSip)}</div>
+                        </div>
+                        <div className="min-w-0 text-right">
+                          <div className="text-[9px] font-extrabold uppercase tracking-wider text-muted-foreground">Closes</div>
+                          <div className="text-[11px] font-bold text-foreground">{shortDate(f.closingDate)}</div>
+                        </div>
+                      </div>
+                      {/* Invest Now */}
+                      <Link
+                        href="/login"
+                        aria-label={`Invest now in ${f.name}`}
+                        className="mt-3 py-2 flex items-center justify-center gap-1.5 rounded-[6px] bg-burgundy text-white text-xs font-black transition-all duration-200 hover:bg-burgundy-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50"
+                      >
+                        Invest Now <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
                       </div>
                     </div>
                   ))}

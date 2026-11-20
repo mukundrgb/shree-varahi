@@ -134,3 +134,28 @@ export function parseFnoSlug(slug: string, kind: "futures" | "options"): { under
   if (base === "stock" || base === "") base = "reliance"
   return { underlying: INDEX_SLUGS.has(base) ? "index" : "stock", symbol: base }
 }
+
+/** URL segment of each Markets tab: /futures-options/<segment>/<slug> */
+export const FNO_CATEGORIES: FnoCategory[] = ["index-futures", "stock-futures", "index-options", "stock-options"]
+export const isFnoCategory = (value: string): value is FnoCategory => (FNO_CATEGORIES as string[]).includes(value)
+export const isOptionsCategory = (category: FnoCategory) => category.endsWith("-options")
+export const fnoDetailHref = (category: FnoCategory, slug: string) => `/futures-options/${category}${seg(slug)}`
+
+/** One row of the "All Indices" table on an F&O detail page. Strike and option type are options only. */
+export interface FnoDetailRow {
+  name: string
+  /** YYYY-MM-DD */
+  expiry: string | null
+  prevLtp: number | null
+  ltp: number | null
+  /** LTP − Prev. LTP */
+  faoDiff: number | null
+  /** Percent change */
+  faoChange: number | null
+  strike?: number | null
+  optionType?: "CE" | "PE" | null
+  openInterest: number | null
+  prevOpenInterest: number | null
+  /** ISO date-time */
+  updatedAt: string | null
+}

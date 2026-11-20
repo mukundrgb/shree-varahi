@@ -123,6 +123,10 @@ export interface EtfHolding {
   weight: number
   price: number | null
   changePct: number | null
+  /** Market value of the ETF's position in this stock, ₹ crore. */
+  marketValue: number | null
+  /** Number of shares the ETF holds. */
+  totalShares: number | null
 }
 
 export interface EtfHoldings {
@@ -133,4 +137,40 @@ export interface EtfHoldings {
   /** YYYY-MM-DD */
   portfolioDate: string | null
   holdings: EtfHolding[]
+}
+
+/** One sector of an ETF (/etf/sector-allocation). */
+export interface EtfSector {
+  name: string
+  /** Share of the ETF's assets, in percent. */
+  holdingPercentage: number
+  totalShares: number | null
+}
+
+export interface EtfSectorAllocation {
+  slug: string
+  isin: string
+  name: string
+  category: EtfCategory
+  /** YYYY-MM-DD */
+  portfolioDate: string | null
+  sectors: EtfSector[]
+}
+
+/** One asset class of an ETF (/etf/asset-allocation): Equity, Reverse Repo, Net CA & Others … */
+export interface EtfAsset {
+  assetCode: number
+  name: string
+  /** Share of the ETF's assets, in percent; can be slightly negative (e.g. Net CA & Others). */
+  holdingPercentage: number
+}
+
+export interface EtfAssetAllocation {
+  slug: string
+  isin: string
+  name: string
+  category: EtfCategory
+  /** YYYY-MM-DD */
+  portfolioDate: string | null
+  assets: EtfAsset[]
 }

@@ -2,23 +2,20 @@
 
 import { Suspense, useMemo, useState } from "react"
 import Link from "next/link"
-import { TableRowsSkeleton } from "@/components/skeletons"
 import { useSearchParams } from "next/navigation"
 import { ChevronRight, ChevronDown, ArrowUpRight, Search, X } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { StockAvatar } from "@/components/stock-avatar"
-import { useEtfHoldings, useEtfList } from "@/hooks/etf/use-etf"
+import { EtfHoldingsTable } from "@/components/etf-holdings-table"
+import { isHoldingsFor, useEtfHoldings, useEtfList } from "@/hooks/etf/use-etf"
 import { ALL_ETFS } from "@/lib/etf/api-client"
-import { NO_VALUE, formatDate, formatPercent, formatRupees } from "@/lib/stocks/format"
+import { formatDate } from "@/lib/stocks/format"
 
 // Equity ETFs (largest AUM first) and their holdings come from the backend (/api/v1/etfs).
 // Holdings data is available for equity ETFs only, so only those are listed.
 
 const EQUITY_ETFS = { category: "Equity", sort: "aum", order: "desc", limit: ALL_ETFS } as const
-
-const changeColor = (value: number | null) =>
-  value === null ? "text-muted-foreground" : value >= 0 ? "text-profit" : "text-loss"
 
 export default function EtfHoldingsPage() {
   // useSearchParams needs a Suspense boundary in the App Router.
@@ -39,8 +36,10 @@ function EtfHoldings() {
   const [search, setSearch] = useState("")
   // Picked ETF, else the one in ?etf=, else the largest equity ETF.
   const slug = picked ?? (requested && etfs.some((e) => e.slug === requested) ? requested : etfs[0]?.slug ?? "")
-  const result = useEtfHoldings(slug)
-  const data = result.data?.slug === slug ? result.data : null
+  // Holdings are looked up by the ETF's ISIN (the slug is only for the URL / picker).
+  const isin = etfs.find((e) => e.slug === slug)?.isin ?? null
+  const result = useEtfHoldings(isin)
+  const data = isHoldingsFor(result.data, isin) ? result.data : null
   const etf = etfs.find((e) => e.slug === slug) ?? { slug, name: data?.name ?? "", symbol: data?.name ?? "" }
   const holdings = data?.holdings ?? []
 
@@ -48,8 +47,6 @@ function EtfHoldings() {
   const visible = query
     ? holdings.filter((h) => h.name.toLowerCase().includes(query) || h.sector.toLowerCase().includes(query))
     : holdings
-  const maxWeight = Math.max(...holdings.map((h) => h.weight), 1)
-  const grid = "minmax(220px,2fr) minmax(150px,1.2fr) minmax(100px,0.8fr) minmax(90px,0.7fr)"
 
   const pickEtf = (next: string) => { setPicked(next); setSearch("") }
 
@@ -137,43 +134,13 @@ function EtfHoldings() {
           </div>
 
           <div className="rounded-[8px] border border-border overflow-hidden bg-white shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
-            <div className="overflow-x-auto">
-              <div className="min-w-[560px]">
-                <div className="grid px-4 py-2.5 border-b border-border bg-cream/70" style={{ gridTemplateColumns: grid }}>
-                  {["Name", "Holding %", "Price", "Change"].map((h, i) => (
-                    <div key={h} className={`text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground ${i === 0 ? "text-left" : "text-right"}`}>{h}</div>
-                  ))}
-                </div>
-
-                {visible.length === 0 && !(etfList.error || result.error) && (etfList.loading || (slug && !data)) ? (
-                  <TableRowsSkeleton rows={10} columns="minmax(0,1fr) 140px 90px" label="Loading holdings" />
-                ) : visible.length === 0 ? (
-                  <div className="py-16 text-center text-muted-foreground text-sm">
-                    {etfList.error || result.error ? (
-                      <>Unable to load holdings. <button onClick={() => { etfList.retry(); result.retry() }} className="text-burgundy font-bold hover:underline">Retry</button></>
-                    ) : etfList.loading || (slug && !data) ? "Loading holdings…"
-                      : query ? "No holdings match your search." : "No equity holdings data for this ETF."}
-                  </div>
-                ) : (
-                  visible.map((h) => (
-                    <div key={h.isin ?? h.name} className="grid px-4 py-3 border-b border-border/40 last:border-0 hover:bg-cream/30 transition-colors items-center" style={{ gridTemplateColumns: grid }}>
-                      <div className="min-w-0 pr-3">
-                        <div className="text-sm font-extrabold text-foreground truncate">{h.name}</div>
-                        <div className="text-[11px] text-muted-foreground truncate mt-0.5">{h.sector}</div>
-                      </div>
-                      <span className="flex items-center justify-end gap-2">
-                        <span className="hidden sm:block w-16 h-1.5 rounded-full bg-secondary overflow-hidden">
-                          <span className="block h-full bg-gold rounded-full" style={{ width: `${(h.weight / maxWeight) * 100}%` }} />
-                        </span>
-                        <span className="text-[13px] font-black text-foreground tabular-nums w-14 text-right">{h.weight.toFixed(2)}%</span>
-                      </span>
-                      <span className="text-right text-sm font-extrabold text-foreground tabular-nums">{h.price === null ? NO_VALUE : formatRupees(h.price)}</span>
-                      <span className={`text-right text-xs font-black tabular-nums ${changeColor(h.changePct)}`}>{formatPercent(h.changePct)}</span>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
+            <EtfHoldingsTable
+              holdings={visible}
+              loading={!(etfList.error || result.error) && (etfList.loading || (!!isin && !data))}
+              status={etfList.error || result.error ? (
+                <>Unable to load holdings. <button onClick={() => { etfList.retry(); result.retry() }} className="text-burgundy font-bold hover:underline">Retry</button></>
+              ) : query ? "No holdings match your search." : "No equity holdings data for this ETF."}
+            />
           </div>
         </div>
       </section>

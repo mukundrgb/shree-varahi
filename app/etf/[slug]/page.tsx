@@ -8,9 +8,10 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { StockAvatar } from "@/components/stock-avatar"
 import { EtfPriceChart } from "@/components/etf-price-chart"
+import { EtfHoldingsTable } from "@/components/etf-holdings-table"
 import { DetailPageSkeleton } from "@/components/skeletons"
 import { Bar, BarChart, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-import { useEtfChart, useEtfDetail } from "@/hooks/etf/use-etf"
+import { isHoldingsFor, useEtfChart, useEtfDetail, useEtfHoldings } from "@/hooks/etf/use-etf"
 import type { ChartRange, EtfDetail, EtfSummary, Riskometer } from "@/lib/etf/types"
 import { NO_VALUE, formatDate, formatPercent, formatPrice, formatRupees, formatQuoteTime } from "@/lib/stocks/format"
 
@@ -154,6 +155,42 @@ function PageShell({ children }: { children: ReactNode }) {
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4 pt-24">{children}</div>
       <Footer />
     </main>
+  )
+}
+
+// ─── Holdings card (equity ETFs only) ───────────────────────────────────────
+
+/** Rows shown on the detail page; the rest are on the Equity ETF Holdings page. */
+const HOLDINGS_PREVIEW = 10
+
+function HoldingsCard({ slug, isin }: { slug: string; isin: string | null }) {
+  // Holdings are looked up by the ETF's ISIN.
+  const result = useEtfHoldings(isin)
+  const data = isHoldingsFor(result.data, isin) ? result.data : null
+  const holdings = data?.holdings ?? []
+
+  return (
+    <Card
+      title="Holdings"
+      subtitle={data?.portfolioDate ? `Stocks this ETF holds, largest first · as of ${formatDate(data.portfolioDate)}` : "Stocks this ETF holds, largest first"}
+    >
+      <div className="-mx-5 border-t border-border/60">
+        <EtfHoldingsTable
+          holdings={holdings.slice(0, HOLDINGS_PREVIEW)}
+          loading={!!isin && !data && !result.error}
+          status={result.error
+            ? <>Unable to load holdings. <button onClick={result.retry} className="text-burgundy font-bold hover:underline">Retry</button></>
+            : undefined}
+        />
+      </div>
+      {holdings.length > HOLDINGS_PREVIEW && (
+        <div className="pt-4 -mb-1 border-t border-border/60 -mx-5 px-5">
+          <Link href={`/etf/holdings?etf=${slug}`} className="text-[12px] font-bold text-burgundy hover:text-burgundy-deep inline-flex items-center gap-1 transition-colors">
+            View all {holdings.length} holdings <ChevronRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+      )}
+    </Card>
   )
 }
 
@@ -361,6 +398,9 @@ function EtfDetailView({ etf }: { etf: EtfDetail }) {
                   { label: "Stock count", value: formatCount(f.stockCount), help: HELP.stockCount },
                 ]} />
               </Card>
+
+              {/* Holdings — equity ETFs only (holdings data exists for equity alone) */}
+              {etf.category === "Equity" && <HoldingsCard slug={etf.slug} isin={etf.isin} />}
 
               {/* Category returns */}
               <Card title="Category returns" subtitle="3Y and 5Y returns are annualised. Rank is this ETF's position within its category.">

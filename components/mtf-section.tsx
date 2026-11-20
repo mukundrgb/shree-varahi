@@ -28,16 +28,17 @@ const SEARCH_DEBOUNCE_MS = 250
 /** Varahi funds at most ₹1 crore per position. */
 const MAX_FUNDING = 1_00_00_000
 const MIN_CAPITAL = 5_000
-/** Capital slider / input top end. */
-const MAX_CAPITAL = 1_00_00_000
+/** Capital slider / input top end (funding stays capped at ₹1 crore). */
+const MAX_CAPITAL = 5_00_00_000
 const SLIDER_STEPS = 1000
 
 /**
- * The slider is logarithmic: ₹5K→₹50K, ₹50K→₹5L and ₹5L→₹1Cr each take a similar share of the
- * track (a straight ₹5K–₹1Cr scale would squeeze everything under ₹1 lakh into 1% of it).
+ * The slider is logarithmic: ₹5K→₹50K, ₹50K→₹5L, ₹5L→₹50L and ₹50L→₹5Cr each take the same share
+ * of the track (a straight ₹5K–₹5Cr scale would squeeze everything under ₹5 lakh into 1% of it).
  * Values snap to round amounts.
  */
-const niceStep = (v: number) => (v < 1_00_000 ? 5_000 : v < 10_00_000 ? 10_000 : v < 50_00_000 ? 50_000 : 1_00_000)
+const niceStep = (v: number) =>
+  v < 1_00_000 ? 5_000 : v < 10_00_000 ? 10_000 : v < 50_00_000 ? 50_000 : v < 1_00_00_000 ? 1_00_000 : 5_00_000
 function sliderToCapital(pos: number) {
   const raw = MIN_CAPITAL * Math.pow(MAX_CAPITAL / MIN_CAPITAL, pos / SLIDER_STEPS)
   const step = niceStep(raw)
@@ -251,6 +252,10 @@ export function MTFSection() {
                           { v: MIN_CAPITAL, label: "₹5K" },
                           { v: 50_000, label: "₹50K" },
                           { v: 5_00_000, label: "₹5L" },
+<<<<<<< HEAD
+=======
+                          { v: 50_00_000, label: "₹50L" },
+>>>>>>> 35499a653a575d063d660b5c910b250547eb1d35
                           { v: MAX_CAPITAL, label: "₹5Cr" },
                         ].map((t, i, all) => (
                           <span key={t.label} className="absolute top-0 whitespace-nowrap"

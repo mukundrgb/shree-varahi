@@ -70,7 +70,7 @@ const LEARN_NEWS: MenuItem[] = [
 type MktExchange = "NSE" | "BSE" | "MCX" | "GLOBAL"
 type MarketItem  = { name: string; href: string; exchange?: MktExchange; meta?: string }
 
-const MARKETS_TABS = ["Indices", "Stocks", "F&O", "Mutual Funds", "ETFs", "Gold & Silver", "Tools"] as const
+const MARKETS_TABS = ["Indices", "Stocks", "F&O", "Mutual Funds", "ETFs", "Tools"] as const
 
 const MARKETS_SUBS: Record<string, string[]> = {
   "Indices":       ["Major Indices", "Global Indices"],
@@ -79,7 +79,6 @@ const MARKETS_SUBS: Record<string, string[]> = {
   "F&O":           ["Index Option Chain", "Index F&O", "Stock Option Chain", "Stock Futures", "Stock Options" /* , "Commodity Option Chain", "Commodity Futures" */],
   "Mutual Funds":  ["Equity Funds", "Debt Funds", "Hybrid Funds", "Index Funds", "Mutual Funds AMCs", "Popular Mutual Funds", "Popular Schemes"],
   "ETFs":          ["Index ETFs", "Commodity ETFs", "Popular ETFs", "ETF AMCs"],
-  "Gold & Silver": ["Gold Prices", "Silver Prices"],
   "Tools":         ["Calculators", "Screeners"],
 }
 
@@ -388,28 +387,6 @@ const MARKETS_DATA: Record<string, Record<string, MarketItem[]>> = {
       { name: "ICICI ETFs",   href: "/etf/traded-funds/icici-etf" },
     ],
   },
-  "Gold & Silver": {
-    "Gold Prices": [
-      { name: "Gold Rate in Mumbai",    href: "/gold-rates/gold-rate-today-in-mumbai" },
-      { name: "Gold Rate in Delhi",     href: "/gold-rates/gold-rate-today-in-delhi" },
-      { name: "Gold Rate in Chennai",   href: "/gold-rates/gold-rate-today-in-chennai" },
-      { name: "Gold Rate in Kolkata",   href: "/gold-rates/gold-rate-today-in-kolkata" },
-      { name: "Gold Rate in Bangalore", href: "/gold-rates/gold-rate-today-in-bangalore" },
-      { name: "Gold Rate in Hyderabad", href: "/gold-rates/gold-rate-today-in-hyderabad" },
-      { name: "Gold Rate in Ahmedabad", href: "/gold-rates/gold-rate-today-in-ahmedabad" },
-      { name: "Gold Rate in Pune",      href: "/gold-rates/gold-rate-today-in-pune" },
-    ],
-    "Silver Prices": [
-      { name: "Silver Rate in Mumbai",    href: "/silver-rates/silver-rate-today-in-mumbai" },
-      { name: "Silver Rate in Delhi",     href: "/silver-rates/silver-rate-today-in-delhi" },
-      { name: "Silver Rate in Chennai",   href: "/silver-rates/silver-rate-today-in-chennai" },
-      { name: "Silver Rate in Kolkata",   href: "/silver-rates/silver-rate-today-in-kolkata" },
-      { name: "Silver Rate in Bangalore", href: "/silver-rates/silver-rate-today-in-bangalore" },
-      { name: "Silver Rate in Hyderabad", href: "/silver-rates/silver-rate-today-in-hyderabad" },
-      { name: "Silver Rate in Ahmedabad", href: "/silver-rates/silver-rate-today-in-ahmedabad" },
-      { name: "Silver Rate in Pune",      href: "/silver-rates/silver-rate-today-in-pune" },
-    ],
-  },
   "Tools": {
     "Calculators": [
       // { name: "SIP Calculator",       href: "/mutual-funds" },
@@ -436,7 +413,7 @@ const STOCKS_EXTRA_SUBS = ["Market Movers", "US Stocks"]
 /** "View all …" link in the menu footer, per tab. */
 const TAB_HOME: Record<string, string> = {
   "Indices": "/stocks", "Stocks": "/stocks", "F&O": "/futures-options", "Mutual Funds": "/mutual-funds",
-  "ETFs": "/etf/compare", "Gold & Silver": "/gold-rates/gold-rate-today-in-mumbai", "Tools": "/stocks",
+  "ETFs": "/etf/compare", "Tools": "/stocks",
 }
 
 /**
