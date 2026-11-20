@@ -84,24 +84,19 @@ const ALL_STOCKS: Stock[] = [
 // Category chips come from the API (StockListResult.categories), so a chip only
 // appears when at least one listed company is in that category.
 
-// No "All" here: the "All" category chip already clears the cap filter too.
 const CAP_OPTIONS = [
-  { label: "Large Cap", value: "large" },
-  { label: "Mid Cap",   value: "mid"   },
-  { label: "Small Cap", value: "small" },
+  { label: "Large Cap", short: "Large", value: "large" },
+  { label: "Mid Cap",   short: "Mid",   value: "mid"   },
+  { label: "Small Cap", short: "Small", value: "small" },
 ]
 
-const QUICK_LINKS: { label: string; id: string; sector?: string; cap?: string }[] = [
-  // These need a quote for every stock, and CMOTS has no bulk quote API yet.
-  // { label: "52W High · NSE",  id: "52h",  fn: (s: Stock) => s.change > 2    },
-  // { label: "52W Low · NSE",   id: "52l",  fn: (s: Stock) => s.change < -1   },
-  // { label: "NSE Top Gainers", id: "gain", fn: (s: Stock) => s.change > 0    },
-  // { label: "NSE Top Losers",  id: "lose", fn: (s: Stock) => s.change < 0    },
-  { label: "Large Cap", id: "lc",   cap: "large"     },
-  { label: "Mid Cap",   id: "mc",   cap: "mid"       },
-  { label: "Small Cap", id: "sc",   cap: "small"     },
-  { label: "Banking",   id: "bank", sector: "Banking" },
-  { label: "IT Sector", id: "it",   sector: "IT"      },
+const SORT_OPTIONS: { label: string; value: StockSort }[] = [
+  { label: "LTP: High → Low",    value: "price-desc"  },
+  { label: "LTP: Low → High",    value: "price-asc"   },
+  { label: "Change: High → Low", value: "change-desc" },
+  { label: "Change: Low → High", value: "change-asc"  },
+  { label: "Name: A → Z",        value: "name-asc"    },
+  { label: "Name: Z → A",        value: "name-desc"   },
 ]
 
 const NEWS = [
@@ -243,8 +238,7 @@ export default function StocksPage() {
   const [search, setSearch]       = useState("")
   const [sector, setSector]       = useState("All")
   const [cap, setCap]             = useState("all")
-  const [quickLink, setQuickLink] = useState<string | null>(null)
-  const [sort, setSort]           = useState<StockSort>(DEFAULT_STOCK_SORT)
+  const [sort, setSort]          = useState<StockSort>(DEFAULT_STOCK_SORT)
   /** First-letter filter from the footer A–Z links; "0-9" = starts with a number. */
   const [letter, setLetter]       = useState<string | null>(null)
   const pickLetterFromUrl = (l: string | null) => {
@@ -265,9 +259,8 @@ export default function StocksPage() {
     return () => clearTimeout(timer)
   }, [search])
 
-  const activeQuickLink = QUICK_LINKS.find((q) => q.id === quickLink)
-  const activeSector = activeQuickLink ? activeQuickLink.sector : sector !== "All" ? sector : undefined
-  const activeCap = activeQuickLink ? activeQuickLink.cap : cap !== "all" ? cap : undefined
+  const activeSector = sector !== "All" ? sector : undefined
+  const activeCap = cap !== "all" ? cap : undefined
 
   // An older backend rejects the price sort (400 "Invalid sort"); then the table loads
   // without it instead of failing, so the page works whichever side is deployed first.
@@ -294,7 +287,6 @@ export default function StocksPage() {
     if (stockList?.categories) setCategories(stockList.categories)
   }, [stockList?.categories])
   const sectorFilters = ["All", ...categories]
-  const quickLinks = QUICK_LINKS.filter((ql) => !ql.sector || categories.includes(ql.sector))
 
   const toggleWatchlist = (symbol: string) =>
     setWatchlist((prev) => {
@@ -303,35 +295,32 @@ export default function StocksPage() {
       return n
     })
 
-  const pickSector = (s: string) => { setSector(s); setQuickLink(null); setPage(1) }
-  // Clicking the selected cap again clears it.
-  const pickCap    = (c: string) => { setCap((prev) => (prev === c ? "all" : c)); setQuickLink(null); setPage(1) }
-  // First click sorts A→Z (or change High→Low); the next click reverses it.
-  const toggleNameSort   = () => { setSort((prev) => (prev === "name-asc" ? "name-desc" : "name-asc")); setPage(1) }
-  const toggleChangeSort = () => { setSort((prev) => (prev === "change-desc" ? "change-asc" : "change-desc")); setPage(1) }
-  // LTP: first click = highest first (arrow up), next click = lowest first (arrow down).
-  const togglePriceSort  = () => { setSort((prev) => (prev === "price-desc" ? "price-asc" : "price-desc")); setPage(1) }
+  const pickSector = (s: string) => { setSector(s); setPage(1) }
+  const pickCap    = (c: string) => { setCap(c); setPage(1) }
+  const pickSort   = (s: StockSort) => { setSort(s); setPage(1) }
+  // LTP header: first click = highest first (arrow up), next click = lowest first (arrow down).
+  const togglePriceSort  = () => pickSort(sort === "price-desc" ? "price-asc" : "price-desc")
   const clearLetter = () => { setLetter(null); setPage(1); router.replace("/stocks", { scroll: false }) }
-  const nameSortLabel   = sort === "name-desc" ? "Z → A" : "A → Z"
-  const changeSortLabel = sort === "change-asc" ? "Change: Low → High" : "Change: High → Low"
-  const pickQL     = (id: string) => {
-    setQuickLink((prev) => (prev === id ? null : id))
-    setSector("All"); setCap("all"); setPage(1)
+  /** Hero shortcuts: set the cap filter and jump to the table. */
+  const browseCap = (c: string) => {
+    pickCap(c)
+    document.getElementById("all-stocks")?.scrollIntoView({ behavior: "smooth", block: "start" })
   }
   const clearAll = () => {
-    setSector("All"); setCap("all"); setQuickLink(null); setSearch(""); setSort(DEFAULT_STOCK_SORT); setPage(1)
+    setSector("All"); setCap("all"); setSearch(""); setSort(DEFAULT_STOCK_SORT); setPage(1)
     if (letter) clearLetter()
   }
 
-  const hasFilter = !!(quickLink || sector !== "All" || cap !== "all" || search || sort !== DEFAULT_STOCK_SORT || letter)
+  const hasFilter = !!(sector !== "All" || cap !== "all" || search || sort !== DEFAULT_STOCK_SORT || letter)
+  const capLabel = CAP_OPTIONS.find((c) => c.value === cap)?.label
 
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
       <Suspense fallback={null}><LetterFromUrl onLetter={pickLetterFromUrl} /></Suspense>
 
-      {/* ── HERO ── */}
-      <section className="relative bg-cream border-b border-border/40 pt-28 pb-16 overflow-hidden">
+      {/* ── HERO (compact: pitch on the left, market snapshot + shortcuts on the right) ── */}
+      <section className="relative bg-cream border-b border-border/40 pt-24 pb-8 lg:pb-10 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div
             className="absolute inset-0 opacity-[0.04]"
@@ -340,292 +329,195 @@ export default function StocksPage() {
               backgroundSize: "56px 56px",
             }}
           />
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-cream to-transparent" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gold/5 rounded-full blur-[100px]" />
+          <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[520px] h-[360px] bg-gold/10 rounded-full blur-[110px]" />
         </div>
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10">
-          <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-6">
+          <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-4">
             <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3" />
             <span className="text-foreground font-semibold">Stocks</span>
           </nav>
 
-          <div className="grid lg:grid-cols-[1fr_auto] gap-10 items-center">
-            <div className="space-y-5 max-w-2xl">
-              <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">
-                Equity Investing
-              </p>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground tracking-tight leading-tight">
-                Stocks Investing With<br />
-                <span className="text-burgundy">MTF &amp; Pledge Benefits</span>
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_420px] gap-6 lg:gap-12 items-center">
+            <div className="space-y-4">
+              <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">Equity Investing</p>
+              <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-black text-foreground tracking-tight leading-[1.1]">
+                Stocks Investing With <span className="text-burgundy lg:block">MTF &amp; Pledge Benefits</span>
               </h1>
-              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-lg">
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
                 Trade and invest in 5,000+ NSE &amp; BSE listed stocks with Margin Trading Facility, pledge benefits, and powerful research tools — all on one platform.
               </p>
-              <div className="flex flex-wrap gap-3">
-                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
                   <Link href="/login">Start Trading</Link>
                 </Button>
-                <Button asChild variant="outline" className="border-border px-7 h-11 font-bold rounded-[5px] hover:bg-secondary">
+                <Button asChild variant="outline" className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary">
                   <Link href="/login">Open Account</Link>
                 </Button>
-              </div>
-              <div className="flex flex-wrap gap-4 pt-1">
-                <div>
-                  <div className="text-lg font-black text-foreground">31+</div>
-                  <div className="text-[10px] text-muted-foreground font-semibold">Years of Trust</div>
-                </div>
-                <div>
-                  <div className="text-lg font-black text-foreground flex items-center gap-1">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
-                  <div className="text-[10px] text-muted-foreground font-semibold">App Rating</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Hidden: top gainers need a quote for every stock, and CMOTS has no bulk quote API yet.
-            <div className="hidden lg:block">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="w-[280px] rounded-[12px] bg-white border border-border shadow-xl p-5 space-y-4"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-gold-deep">Top Gainers Today</span>
-                  <span className="text-[9px] font-bold text-muted-foreground">LTP</span>
-                </div>
-                {topGainers.map((s) => (
-                  <div key={s.symbol} className="flex items-center justify-between">
-                    <span className="text-[11px] font-semibold text-foreground truncate pr-2">{s.symbol}</span>
-                    <div className="text-right shrink-0">
-                      <div className="text-[12px] font-black text-foreground">₹{s.price.toLocaleString("en-IN")}</div>
-                      <div className="text-[10px] font-bold text-profit">+{s.change.toFixed(2)}%</div>
-                    </div>
+                <div className="flex items-center gap-4 sm:ml-3 sm:pl-5 sm:border-l border-border">
+                  <div>
+                    <div className="text-base font-black text-foreground leading-none">31+</div>
+                    <div className="text-[10px] text-muted-foreground font-semibold mt-1">Years of Trust</div>
                   </div>
-                ))}
-                <div className="pt-1 border-t border-border/40">
-                  <Button size="sm" className="w-full bg-burgundy hover:bg-burgundy-deep text-white text-[11px] font-bold rounded-[5px] h-8">
-                    Invest Now
-                  </Button>
-                </div>
-              </motion.div>
-            </div>
-            */}
-          </div>
-        </div>
-      </section>
-
-      {/* ── WHAT YOU CAN DO ──
-      <section className="py-12 lg:py-16 bg-background border-t border-border/40">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">What You Can Do</p>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Everything you need to trade and invest in stocks.</h2>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {TOOLS.map((t, i) => {
-              const Icon = t.icon
-              return (
-                <motion.div
-                  key={t.title}
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.05 }}
-                  className="bg-white border border-border rounded-[8px] p-5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:border-gold/30 transition-all duration-300"
-                >
-                  <div
-                    className="w-10 h-10 rounded-[7px] flex items-center justify-center mb-4"
-                    style={{ background: t.color + "14", border: `1px solid ${t.color}22` }}
-                  >
-                    <Icon className="w-5 h-5" style={{ color: t.color }} strokeWidth={1.8} />
+                  <div>
+                    <div className="text-base font-black text-foreground flex items-center gap-1 leading-none">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
+                    <div className="text-[10px] text-muted-foreground font-semibold mt-1">App Rating</div>
                   </div>
-                  <h3 className="font-extrabold text-foreground text-sm mb-2">{t.title}</h3>
-                  <p className="text-[12px] text-muted-foreground leading-relaxed">{t.desc}</p>
-                </motion.div>
-              )
-            })}
-          </div>
-        </div>
-      </section> */}
-
-      {/* ── SECTION 3 — STOCK DISCOVERY (left as-is) ── */}
-
-      {/* ── PAGE HEADER ── (the footer A–Z links scroll here) */}
-      <section id="all-stocks" className="bg-background border-b border-border/40 pt-8 pb-8 scroll-mt-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-            <div>
-              <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep mb-2">
-                Equity Markets
-              </p>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight">
-                All Stocks
-              </h1>
-              <p className="text-sm text-muted-foreground mt-2">
-                Browse, filter, and discover stocks listed on NSE &amp; BSE
-              </p>
+                </div>
+              </div>
             </div>
 
-            {/* Live index chips */}
-            <div className="flex gap-3 shrink-0">
-              {[
-                { name: "NIFTY 50", price: "23,459", change: "+1.22%", up: true },
-                { name: "SENSEX",   price: "77,348", change: "+0.98%", up: true },
-                { name: "NIFTY IT", price: "38,821", change: "+2.05%", up: true },
-              ].map((idx) => (
-                <div
-                  key={idx.name}
-                  className="bg-white border border-border/60 rounded-[6px] px-3 py-2 text-center min-w-[82px]"
-                >
-                  <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-wide">{idx.name}</div>
-                  <div className="text-[13px] font-black text-foreground">{idx.price}</div>
-                  <div className={`text-[10px] font-bold ${idx.up ? "text-profit" : "text-loss"}`}>{idx.change}</div>
+            {/* Market snapshot */}
+            <div className="rounded-[10px] bg-white border border-border shadow-[0_8px_32px_rgba(0,0,0,0.06)] overflow-hidden">
+              <div className="p-4">
+                <p className="text-[10px] font-extrabold uppercase tracking-wider text-gold-deep mb-2.5">Browse by market cap</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {CAP_OPTIONS.map((c) => (
+                    <button
+                      key={c.value}
+                      onClick={() => browseCap(c.value)}
+                      className="group text-left rounded-[6px] border border-border bg-cream/50 px-3 py-3 hover:border-burgundy/30 hover:bg-white transition-all"
+                    >
+                      <div className="text-xs font-extrabold text-foreground flex items-center justify-between">
+                        {c.label}
+                        <ArrowUpRight className="w-3 h-3 text-muted-foreground group-hover:text-burgundy transition-colors" />
+                      </div>
+                    </button>
+                  ))}
                 </div>
-              ))}
+                <Link
+                  href="/mtf"
+                  className="mt-3 flex items-center gap-3 rounded-[6px] bg-burgundy/[0.06] border border-burgundy/15 px-3 py-2.5 hover:bg-burgundy/10 transition-colors"
+                >
+                  <Zap className="w-4 h-4 text-burgundy shrink-0" />
+                  <span className="text-[11px] text-foreground leading-snug">
+                    <span className="font-extrabold">Up to 3× buying power</span>
+                  </span>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-burgundy ml-auto shrink-0" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── QUICK LINKS ── */}
-      <div className="bg-white border-b border-border/40">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3">
-          <div
-            className="flex items-center gap-2 overflow-x-auto pb-0.5"
-            style={{ scrollbarWidth: "none" }}
-          >
-            <span className="text-[9px] font-extrabold text-muted-foreground uppercase tracking-widest whitespace-nowrap mr-1 shrink-0">
-              Quick Links
-            </span>
-            {quickLinks.map((ql) => (
-              <button
-                key={ql.id}
-                onClick={() => pickQL(ql.id)}
-                className={`px-3 py-1.5 rounded-full text-[11px] font-bold whitespace-nowrap border transition-all duration-200 shrink-0 ${
-                  quickLink === ql.id
-                    ? "bg-burgundy text-white border-burgundy shadow-sm"
-                    : "bg-cream text-muted-foreground border-border hover:border-burgundy/30 hover:text-foreground"
-                }`}
-              >
-                {ql.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── FILTERS + TABLE ── */}
-      <section className="bg-background py-6">
+      {/* ── ALL STOCKS: filter sidebar + table (the footer A–Z links scroll here) ── */}
+      <section id="all-stocks" className="bg-background py-6 lg:py-8 scroll-mt-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-[300px_minmax(0,1fr)] gap-5 lg:gap-6 items-start">
 
-          {/* Filter bar */}
-          <div className="flex flex-wrap gap-2.5 mb-4">
-            {/* Search */}
-            <div className="relative w-full sm:w-auto">
+          {/* Filters */}
+          <aside className="lg:sticky lg:top-20 rounded-[8px] border border-border bg-white p-4 space-y-4">
+            <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
               <input
                 type="text"
+                aria-label="Search stocks"
                 placeholder="Search stocks..."
                 value={search}
                 onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-                className="pl-9 pr-3 py-2 text-sm rounded-[5px] border border-border bg-cream/50 placeholder:text-muted-foreground/55 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40 w-full sm:w-80"
+                className="w-full pl-9 pr-8 py-2 text-sm rounded-[5px] border border-border bg-cream/50 placeholder:text-muted-foreground/55 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40"
               />
-            </div>
-
-            {/* Sector chips */}
-            <div className="flex gap-1.5 flex-wrap">
-              {sectorFilters.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => (s === "All" ? (pickSector("All"), setCap("all")) : pickSector(s))}
-                  className={`px-3 py-1.5 rounded-[5px] text-[11px] font-bold whitespace-nowrap border transition-all duration-200 ${
-                    sector === s && !quickLink
-                      ? "bg-burgundy text-white border-burgundy"
-                      : "bg-white text-muted-foreground border-border hover:border-burgundy/25 hover:text-foreground"
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-
-            {/* Cap chips */}
-            <div className="flex gap-1.5">
-              {CAP_OPTIONS.map((c) => (
-                <button
-                  key={c.value}
-                  onClick={() => pickCap(c.value)}
-                  className={`px-3 py-1.5 rounded-[5px] text-[11px] font-bold whitespace-nowrap border transition-all duration-200 ${
-                    cap === c.value && !quickLink
-                      ? "bg-gold/15 text-gold-deep border-gold/35"
-                      : "bg-white text-muted-foreground border-border hover:border-gold/25 hover:text-foreground"
-                  }`}
-                >
-                  {c.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Results row */}
-          <div className="flex flex-wrap items-center gap-y-2 mb-3">
-            <p className="text-xs text-muted-foreground mr-auto">
-              Showing{" "}
-              <span className="font-bold text-foreground">{stockList?.total ?? NO_VALUE}</span> stocks
-              {quickLink && (
-                <span className="ml-1.5 text-burgundy font-semibold">
-                  · {QUICK_LINKS.find((q) => q.id === quickLink)?.label}
-                </span>
-              )}
-              {sector !== "All" && !quickLink && (
-                <span className="ml-1.5 font-semibold text-foreground">· {sector}</span>
-              )}
-              {letter && (
-                <button onClick={clearLetter} aria-label="Remove letter filter"
-                  className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] bg-burgundy/8 border border-burgundy/20 text-[11px] font-bold text-burgundy hover:bg-burgundy/12 align-middle">
-                  {letter === "0-9" ? "Starting with a number" : `Starting with ${letter}`} <X className="w-3 h-3" />
+              {search && (
+                <button onClick={() => { setSearch(""); setPage(1) }} aria-label="Clear search" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <X className="w-3.5 h-3.5" />
                 </button>
               )}
-            </p>
-            <div className="flex items-center gap-1.5 mr-3">
-              <span className="hidden sm:inline text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mr-0.5">Sort</span>
-              <button
-                onClick={toggleNameSort}
-                aria-pressed={sort === "name-asc" || sort === "name-desc"}
-                title="Sort by company name"
-                className={`px-2.5 py-1 rounded-[5px] text-[11px] font-bold whitespace-nowrap border flex items-center gap-1 transition-all duration-200 ${
-                  sort === "name-asc" || sort === "name-desc"
-                    ? "bg-burgundy text-white border-burgundy"
-                    : "bg-white text-muted-foreground border-border hover:border-burgundy/25 hover:text-foreground"
-                }`}
+            </div>
+
+            <div>
+              <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-2">Market Cap</p>
+              <div className="grid grid-cols-4 gap-0.5 p-0.5 rounded-[6px] bg-secondary">
+                {[{ short: "All", value: "all" }, ...CAP_OPTIONS].map((c) => (
+                  <button
+                    key={c.value}
+                    onClick={() => pickCap(c.value)}
+                    aria-pressed={cap === c.value}
+                    className={`py-1.5 rounded-[5px] text-[11px] font-bold transition-all ${
+                      cap === c.value ? "bg-white text-burgundy shadow-sm" : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {c.short}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-2">Sector</p>
+              {/* Phones and tablets: a dropdown */}
+              <select
+                aria-label="Sector"
+                value={sector}
+                onChange={(e) => pickSector(e.target.value)}
+                className="lg:hidden w-full px-3 py-2 text-sm font-semibold rounded-[5px] border border-border bg-cream/50 focus:outline-none focus:ring-2 focus:ring-gold/30"
               >
-                <ArrowUpDown className="w-3 h-3" /> {nameSortLabel}
-              </button>
-              <button
-                onClick={toggleChangeSort}
-                aria-pressed={sort === "change-desc" || sort === "change-asc"}
-                title="Sort by % change"
-                className={`px-2.5 py-1 rounded-[5px] text-[11px] font-bold whitespace-nowrap border flex items-center gap-1 transition-all duration-200 ${
-                  sort === "change-desc" || sort === "change-asc"
-                    ? "bg-burgundy text-white border-burgundy"
-                    : "bg-white text-muted-foreground border-border hover:border-burgundy/25 hover:text-foreground"
-                }`}
-              >
-                <ArrowUpDown className="w-3 h-3" /> {changeSortLabel}
-              </button>
+                {sectorFilters.map((s) => <option key={s} value={s}>{s === "All" ? "All sectors" : s}</option>)}
+              </select>
+              {/* Desktop: a scrollable list */}
+              <div className="hidden lg:block max-h-[340px] overflow-y-auto -mx-1 pr-1 space-y-0.5">
+                {sectorFilters.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => pickSector(s)}
+                    aria-pressed={sector === s}
+                    className={`w-full text-left px-2.5 py-1.5 rounded-[5px] text-[12px] font-semibold transition-colors flex items-center justify-between ${
+                      sector === s ? "bg-burgundy/[0.07] text-burgundy font-bold" : "text-muted-foreground hover:bg-cream hover:text-foreground"
+                    }`}
+                  >
+                    <span className="truncate">{s === "All" ? "All sectors" : s}</span>
+                    {sector === s && <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />}
+                  </button>
+                ))}
+              </div>
             </div>
+
             {hasFilter && (
-              <button
-                onClick={clearAll}
-                className="text-[11px] font-bold text-burgundy hover:text-burgundy-deep flex items-center gap-1 transition-colors"
-              >
-                <X className="w-3 h-3" /> Clear filters
+              <button onClick={clearAll} className="w-full text-[11px] font-bold text-burgundy hover:text-burgundy-deep flex items-center justify-center gap-1 pt-3 border-t border-border/60 transition-colors">
+                <X className="w-3 h-3" /> Clear all filters
               </button>
             )}
+          </aside>
+
+          {/* Results */}
+          <div className="min-w-0">
+          <div className="flex flex-wrap items-end justify-between gap-3 mb-3">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight leading-none">All Stocks</h2>
+              <p className="text-xs text-muted-foreground mt-1.5">
+                <span className="font-bold text-foreground">{stockList?.total?.toLocaleString("en-IN") ?? NO_VALUE}</span> stocks listed on NSE &amp; BSE
+              </p>
+            </div>
+            <label className="flex items-center gap-2">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">Sort</span>
+              <select
+                value={sort}
+                onChange={(e) => pickSort(e.target.value as StockSort)}
+                className="px-3 py-1.5 text-xs font-bold rounded-[5px] border border-border bg-white focus:outline-none focus:ring-2 focus:ring-gold/30"
+              >
+                {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </label>
           </div>
+
+          {/* Active filters */}
+          {(activeSector || capLabel || letter || debouncedSearch) && (
+            <div className="flex flex-wrap items-center gap-1.5 mb-3">
+              {[
+                debouncedSearch ? { key: "search", label: `“${debouncedSearch}”`, clear: () => { setSearch(""); setPage(1) } } : null,
+                activeSector ? { key: "sector", label: activeSector, clear: () => pickSector("All") } : null,
+                capLabel ? { key: "cap", label: capLabel, clear: () => pickCap("all") } : null,
+                letter ? { key: "letter", label: letter === "0-9" ? "Starting with a number" : `Starting with ${letter}`, clear: clearLetter } : null,
+              ].filter((f) => f !== null).map((f) => (
+                <button key={f.key} onClick={f.clear} aria-label={`Remove filter ${f.label}`}
+                  className="inline-flex items-center gap-1 px-2 py-1 rounded-[4px] bg-burgundy/[0.06] border border-burgundy/20 text-[11px] font-bold text-burgundy hover:bg-burgundy/10">
+                  {f.label} <X className="w-3 h-3" />
+                </button>
+              ))}
+              <button onClick={clearAll} className="text-[11px] font-bold text-muted-foreground hover:text-foreground ml-1">Clear all</button>
+            </div>
+          )}
 
           {/* Table */}
           <div className="rounded-[8px] border border-border overflow-hidden bg-white shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
@@ -810,6 +702,8 @@ export default function StocksPage() {
               </div>
             </div>
           )}
+          </div>
+          </div>
         </div>
       </section>
 
