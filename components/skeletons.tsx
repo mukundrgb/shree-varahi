@@ -6,13 +6,13 @@ import { cn } from "@/lib/utils"
 
 /** One grey block. */
 export function Bone({ className, style }: { className?: string; style?: CSSProperties }) {
-  return <div aria-hidden className={cn("rounded-[5px] bg-secondary/70", className)} style={style} />
+  return <div aria-hidden className={cn("rounded-[5px] bg-skeleton", className)} style={style} />
 }
 
 /** Wraps placeholders: pulses, hides them from screen readers, announces "Loading". */
 export function SkeletonGroup({ label = "Loading", className, children }: { label?: string; className?: string; children: ReactNode }) {
   return (
-    <div role="status" aria-label={label} aria-busy="true" className={cn("animate-pulse", className)}>
+    <div role="status" aria-label={label} aria-busy="true" className={cn("skeleton-pulse", className)}>
       {children}
       <span className="sr-only">{label}…</span>
     </div>
@@ -107,9 +107,9 @@ export function ChartSkeleton({ className }: { className?: string }) {
   return (
     <SkeletonGroup label="Loading chart" className={cn("relative h-[260px] px-4 py-4", className)}>
       <div className="absolute inset-x-4 top-4 bottom-8 flex flex-col justify-between">
-        {Array.from({ length: 5 }, (_, i) => <div key={i} className="h-px bg-secondary" />)}
+        {Array.from({ length: 5 }, (_, i) => <div key={i} className="h-px bg-skeleton" />)}
       </div>
-      <Bone className="absolute left-4 right-4 bottom-8 h-1/2 rounded-[8px] bg-secondary/50" />
+      <Bone className="absolute left-4 right-4 bottom-8 h-1/2 rounded-[8px] bg-skeleton/60" />
       <div className="absolute inset-x-4 bottom-2 flex justify-between">
         {Array.from({ length: 6 }, (_, i) => <Bone key={i} className="h-2 w-8" />)}
       </div>

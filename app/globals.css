@@ -71,7 +71,9 @@
   --color-beige: #F5F0EB;
   --color-profit: #059669;
   --color-loss: #DC2626;
-  
+  /* Loading placeholders: dark enough to see on white and cream backgrounds */
+  --color-skeleton: #E2DED8;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -137,6 +139,20 @@ label[for],
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--gold-deep);
+}
+
+/* Loading skeletons: a gentle pulse that never fades the placeholders out (Tailwind's animate-pulse dips to 50%). */
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.skeleton-pulse {
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
 }
 
 /* Gold shimmer animation */

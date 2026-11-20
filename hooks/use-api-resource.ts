@@ -11,6 +11,14 @@ interface Options {
   refreshMs?: number
 }
 
+/** The request in progress for this hook, so a quick unmount + remount can reuse it. */
+interface InFlight<T> {
+  id: string
+  promise: Promise<T>
+  controller: AbortController
+  abortTimer?: ReturnType<typeof setTimeout>
+}
+
 /** Loads data for `key`. Pass a null key to wait, such as until a tab is opened. */
 export function useApiResource<T>(
   key: string | null,
@@ -24,35 +32,67 @@ export function useApiResource<T>(
 
   const loadRef = useRef(load)
   loadRef.current = load
+  const inFlight = useRef<InFlight<T> | null>(null)
 
   useEffect(() => {
     if (key === null) return
 
-    const controller = new AbortController()
+    // React Strict Mode (development) mounts, unmounts and remounts every component once. Cancelling
+    // the request on that unmount and sending it again shows a "(canceled)" call in the network tab
+    // and asks the server twice. Instead the cancel waits a moment, and the remount takes the same request.
+    const id = `${key}\u0000${attempt}`
+    let request = inFlight.current
+    if (request && request.id === id) {
+      clearTimeout(request.abortTimer)
+    } else {
+      request?.controller.abort()
+      const controller = new AbortController()
+      request = { id, controller, promise: loadRef.current(controller.signal) }
+      inFlight.current = request
+      const done = request
+      const forget = () => { if (inFlight.current === done) inFlight.current = null }
+      done.promise.then(forget, forget)
+    }
+    const current = request
+
+    let active = true
     setLoading(true)
     setError(null)
 
-    const run = (background: boolean) =>
-      loadRef.current(controller.signal).then(
+    const settle = (promise: Promise<T>, background: boolean) =>
+      promise.then(
         (result) => {
-          if (controller.signal.aborted) return
+          if (!active) return
           setData(result)
           setError(null)
           setLoading(false)
         },
         (reason: unknown) => {
-          if (controller.signal.aborted || background) return
+          if (!active || background) return
           setError(reason instanceof ApiError ? reason : new ApiError("Unable to load market data", 0))
           setLoading(false)
         },
       )
 
-    void run(false)
-    const timer = refreshMs ? setInterval(() => void run(true), refreshMs) : undefined
+    void settle(current.promise, false)
+
+    // Background refreshes are separate requests, cancelled straight away on unmount.
+    const refreshController = new AbortController()
+    const timer = refreshMs
+      ? setInterval(() => void settle(loadRef.current(refreshController.signal), true), refreshMs)
+      : undefined
 
     return () => {
-      controller.abort()
+      active = false
       if (timer) clearInterval(timer)
+      refreshController.abort()
+      // Cancel the first request only if nothing picks it up again right away.
+      current.abortTimer = setTimeout(() => {
+        if (inFlight.current === current) {
+          current.controller.abort()
+          inFlight.current = null
+        }
+      }, 0)
     }
   }, [key, refreshMs, attempt])
 
