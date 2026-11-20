@@ -25,14 +25,14 @@ export interface NewsCardItem {
 /** Story text for a card: plain text from the API, else the caption. */
 const storyOf = (n: NewsCardItem) => n.text || n.caption || ""
 
-function NewsCard({ item, onOpen, cardWidth }: { item: NewsCardItem; onOpen: () => void; cardWidth: string }) {
+function NewsCard({ item, onOpen, cardWidth, showTag }: { item: NewsCardItem; onOpen: () => void; cardWidth: string; showTag: boolean }) {
   const story = storyOf(item)
   return (
     <article
       className={cn("snap-start shrink-0 flex flex-col rounded-[10px] border border-border bg-white p-4 shadow-[0_1px_6px_rgba(0,0,0,0.04)] hover:border-burgundy/25 hover:shadow-[0_6px_20px_rgba(0,0,0,0.06)] transition-all", cardWidth)}
     >
       <div className="flex items-center justify-between gap-2 mb-2">
-        <span className="text-[9px] font-extrabold px-1.5 py-0.5 bg-burgundy/10 text-burgundy rounded-[3px] uppercase tracking-wide truncate">{item.tag}</span>
+        {showTag && <span className="text-[9px] font-extrabold px-1.5 py-0.5 bg-burgundy/10 text-burgundy rounded-[3px] uppercase tracking-wide truncate">{item.tag}</span>}
         {item.publishedAt && (
           <span className="text-[10px] text-muted-foreground flex items-center gap-1 shrink-0">
             <Calendar className="w-2.5 h-2.5" aria-hidden /> {formatQuoteTime(item.publishedAt)}
@@ -55,11 +55,14 @@ export function NewsCarousel({
   loading = false,
   label = "News",
   cardWidth = "w-[280px] sm:w-[300px]",
+  showTag = true,
   className,
 }: {
   items: NewsCardItem[]
   /** Show at most this many cards */
   max?: number
+  /** Show each story's tag (e.g. "Corporate News") on its card and in the full-story dialog */
+  showTag?: boolean
   loading?: boolean
   label?: string
   cardWidth?: string
@@ -93,7 +96,7 @@ export function NewsCarousel({
             style={{ scrollbarWidth: "thin" }}>
             {shown.map((n) => (
               <div role="listitem" key={n.id} className="flex">
-                <NewsCard item={n} onOpen={() => setOpen(n)} cardWidth={cardWidth} />
+                <NewsCard item={n} onOpen={() => setOpen(n)} cardWidth={cardWidth} showTag={showTag} />
               </div>
             ))}
           </div>
@@ -118,7 +121,7 @@ export function NewsCarousel({
           {open && (
             <>
               <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                <span className="font-extrabold px-1.5 py-0.5 bg-burgundy/10 text-burgundy rounded-[3px] uppercase tracking-wide">{open.tag}</span>
+                {showTag && <span className="font-extrabold px-1.5 py-0.5 bg-burgundy/10 text-burgundy rounded-[3px] uppercase tracking-wide">{open.tag}</span>}
                 {open.publishedAt && <span className="flex items-center gap-1"><Calendar className="w-3 h-3" aria-hidden /> {formatQuoteTime(open.publishedAt)}</span>}
               </div>
               <DialogTitle className="text-lg font-black leading-snug text-foreground">{open.headline}</DialogTitle>

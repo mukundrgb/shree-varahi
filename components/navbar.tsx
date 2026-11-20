@@ -20,6 +20,7 @@ import {
   BarChart2,
   Zap,
   BookOpen,
+  Globe,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SearchPopup } from "./search-popup"
@@ -44,10 +45,11 @@ const TRADE_INVEST: MenuItem[] = [
   // Commodity is hidden for now.
   // { title: "Commodity", desc: "MCX gold, silver & crude oil",        icon: <Box        className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/commodity" },
   { title: "MTF",       desc: "3× margin buying power on stocks",   icon: <Zap        className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/mtf" },
+  { title: "Global Investing", desc: "Invest in US stocks from India", icon: <Globe  className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/global-investing" },
 ]
 
 const MF_SIP: MenuItem[] = [
-  { title: "Mutual Funds",   desc: "5,000+ direct funds, 0% commission", icon: <Landmark  className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/mutual-funds" },
+  { title: "Mutual Funds",   desc: "0% commission", icon: <Landmark  className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/mutual-funds" },
   // SIP Calculator is hidden for now.
   // { title: "SIP Calculator", desc: "Plan your monthly SIP goal",          icon: <RotateCcw className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/mutual-funds" },
   { title: "NFO",            desc: "New fund offers — invest early",      icon: "🆕",                                                              href: "/nfo" },
@@ -74,7 +76,7 @@ const MARKETS_TABS = ["Indices", "Stocks", "F&O", "Mutual Funds", "ETFs", "Tools
 
 const MARKETS_SUBS: Record<string, string[]> = {
   "Indices":       ["Major Indices", "Global Indices"],
-  "Stocks":        ["US Stocks", "Market Movers", "Top Nifty 50 Stocks", "Top Nifty Bank Stocks", "Nifty Stocks", "Sensex Stocks", "Stocks by Sector", "Stocks by Group", "Stocks by MarketCap", "Popular Stocks"],
+  "Stocks":        ["Market Movers", "Top Nifty 50 Stocks", "Top Nifty Bank Stocks", "Nifty Stocks", "Sensex Stocks", "Stocks by Sector", "Stocks by Group", "Stocks by MarketCap", "Popular Stocks"],
   // "Commodity Option Chain" and "Commodity Futures" are hidden for now.
   "F&O":           ["Index Option Chain", "Index F&O", "Stock Option Chain", "Stock Futures", "Stock Options" /* , "Commodity Option Chain", "Commodity Futures" */],
   "Mutual Funds":  ["Equity Funds", "Debt Funds", "Hybrid Funds", "Index Funds", "Mutual Funds AMCs", "Popular Mutual Funds", "Popular Schemes"],
@@ -112,16 +114,6 @@ const MARKETS_DATA: Record<string, Record<string, MarketItem[]>> = {
     ],
   },
   "Stocks": {
-    "US Stocks": [
-      { name: "Apple",       href: "/us-stocks/aapl-apple-inc-share-price" },
-      { name: "Microsoft",   href: "/us-stocks/msft-microsoft-corp-share-price" },
-      { name: "NVIDIA",      href: "/us-stocks/nvda-nvidia-corp-share-price" },
-      { name: "Alphabet",    href: "/us-stocks/googl-alphabet-inc-share-price" },
-      { name: "Amazon",      href: "/us-stocks/amzn-amazon-com-inc-share-price" },
-      { name: "Meta Platforms", href: "/us-stocks/meta-meta-platforms-inc-share-price" },
-      { name: "Tesla",       href: "/us-stocks/tsla-tesla-inc-share-price" },
-      { name: "Netflix",     href: "/us-stocks/nflx-netflix-inc-share-price" },
-    ],
     "Market Movers": [
       { name: "Top Gainers",           href: "/stock-market-live/top-gainers-today",       exchange: "NSE" },
       { name: "Top Losers",            href: "/stock-market-live/top-losers-today",        exchange: "NSE" },
@@ -408,7 +400,7 @@ const MARKETS_DATA: Record<string, Record<string, MarketItem[]>> = {
 }
 
 /** Stocks keeps these hand-written sub-tabs after the live sector list. */
-const STOCKS_EXTRA_SUBS = ["Market Movers", "US Stocks"]
+const STOCKS_EXTRA_SUBS = ["Market Movers"]
 
 /** "View all …" link in the menu footer, per tab. */
 const TAB_HOME: Record<string, string> = {

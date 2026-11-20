@@ -12,7 +12,7 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { CardGridSkeleton, ListSkeleton } from "@/components/skeletons"
+import { CardGridSkeleton } from "@/components/skeletons"
 import { useNfos } from "@/hooks/use-mutual-funds"
 import type { NfoApi } from "@/lib/mutual-funds/api-client"
 
@@ -171,8 +171,8 @@ export default function NFOPage() {
     <main className="min-h-screen bg-background">
       <Navbar />
 
-      {/* ── HERO ── */}
-      <section className="relative bg-cream border-b border-border/40 pt-28 pb-16 overflow-hidden">
+      {/* ── HERO (compact) ── */}
+      <section className="relative bg-cream border-b border-border/40 pt-24 pb-8 lg:pb-10 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div
             className="absolute inset-0 opacity-[0.04]"
@@ -181,132 +181,50 @@ export default function NFOPage() {
               backgroundSize: "56px 56px",
             }}
           />
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-cream to-transparent" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gold/5 rounded-full blur-[100px]" />
+          <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[520px] h-[360px] bg-gold/10 rounded-full blur-[110px]" />
         </div>
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10">
-          <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-6">
+          <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-4">
             <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3" />
             <span className="text-foreground font-semibold">NFO</span>
           </nav>
 
-          <div className="grid lg:grid-cols-[1fr_auto] gap-10 items-center">
-            <div className="space-y-5 max-w-2xl">
-              <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">
-                New Fund Offers
-              </p>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground tracking-tight leading-tight">
-                Discover &amp; Invest In<br />
-                <span className="text-burgundy">New Fund Offers</span>
+          <div>
+            <div className="space-y-4">
+              <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">New Fund Offers</p>
+              <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-black text-foreground tracking-tight leading-[1.1]">
+                Discover &amp; Invest In <span className="text-burgundy lg:block">New Fund Offers</span>
               </h1>
-              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-lg">
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
                 Discover New Opportunities. Invest Early. Build Your Portfolio With Confidence — with live NFO tracking, research, and a unified fund dashboard.
               </p>
-              <div className="flex flex-wrap gap-3">
-                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
                   <a href="#explore-nfos">Explore NFOs</a>
                 </Button>
-                <Button asChild variant="outline" className="border-border px-7 h-11 font-bold rounded-[5px] hover:bg-secondary">
+                <Button asChild variant="outline" className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary">
                   <Link href="/login">Open Account</Link>
                 </Button>
-              </div>
-              <div className="flex flex-wrap gap-4 pt-1">
-                <div>
-                  <div className="text-lg font-black text-foreground">31+</div>
-                  <div className="text-[10px] text-muted-foreground font-semibold">Years of Trust</div>
-                </div>
-                <div>
-                  <div className="text-lg font-black text-foreground flex items-center gap-1">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
-                  <div className="text-[10px] text-muted-foreground font-semibold">App Rating</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Hero visual — active NFOs card */}
-            <div className="hidden lg:block">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="w-[280px] rounded-[12px] bg-white border border-border shadow-xl p-5 space-y-4"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-gold-deep">Live NFOs Today</span>
-                  <span className="text-[9px] font-bold text-muted-foreground">
-                    {nfoData.data ? `${nfoData.data.stats.open} OPEN` : "DATES"}
-                  </span>
-                </div>
-                {nfoLoading ? (
-                  <ListSkeleton rows={3} label="Loading NFOs" />
-                ) : nfoStatus ? (
-                  <p className="text-[11px] text-muted-foreground">{nfoStatus}</p>
-                ) : (
-                  nfos.slice(0, 3).map((f) => (
-                    <div key={f.schemeCode} className="flex items-center justify-between gap-2">
-                      <AmcLogo nfo={f} size="w-6 h-6" />
-                      <span className="flex-1 min-w-0 text-[11px] font-semibold text-foreground truncate pr-2" title={f.name}>{f.name}</span>
-                      <div className="text-right shrink-0">
-                        <div className={`text-[10px] font-bold ${statusClass(f.status)}`}>{f.status}</div>
-                        <div className="text-[9px] text-muted-foreground font-semibold">{keyDate(f)}</div>
-                      </div>
-                    </div>
-                  ))
-                )}
-                <div className="pt-1 border-t border-border/40">
-                  <Button asChild size="sm" className="w-full bg-burgundy hover:bg-burgundy-deep text-white text-[11px] font-bold rounded-[5px] h-8">
-                    <a href="#explore-nfos">View All NFOs</a>
-                  </Button>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── WHAT YOU CAN DO ── */}
-      <section className="py-12 lg:py-16 bg-background border-t border-border/40">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">What You Can Do</p>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Everything You Need For NFO Investing.</h2>
-            <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
-              Discover and explore new fund offers, compare available options, invest with ease, and track your investments from one convenient platform.
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            {TOOLS.map((t, i) => {
-              const Icon = t.icon
-              return (
-                <motion.div
-                  key={t.title}
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.05 }}
-                  className="bg-white border border-border rounded-[8px] p-5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:border-gold/30 transition-all duration-300"
-                >
-                  <div
-                    className="w-10 h-10 rounded-[7px] flex items-center justify-center mb-4"
-                    style={{ background: t.color + "14", border: `1px solid ${t.color}22` }}
-                  >
-                    <Icon className="w-5 h-5" style={{ color: t.color }} strokeWidth={1.8} />
+                <div className="flex items-center gap-4 sm:ml-3 sm:pl-5 sm:border-l border-border">
+                  <div>
+                    <div className="text-base font-black text-foreground leading-none">31+</div>
+                    <div className="text-[10px] text-muted-foreground font-semibold mt-1">Years of Trust</div>
                   </div>
-                  <h3 className="font-extrabold text-foreground text-sm mb-2">{t.title}</h3>
-                  <p className="text-[12px] text-muted-foreground leading-relaxed">{t.desc}</p>
-                </motion.div>
-              )
-            })}
+                  <div>
+                    <div className="text-base font-black text-foreground flex items-center gap-1 leading-none">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
+                    <div className="text-[10px] text-muted-foreground font-semibold mt-1">App Rating</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-
-
         </div>
       </section>
 
       {/* ── EXPLORE NFO OPPORTUNITIES ── */}
-      <section id="explore-nfos" className="py-12 lg:py-16 bg-cream border-t border-border/40 scroll-mt-20">
+      <section id="explore-nfos" className="py-12 lg:py-16 bg-background border-t border-border/40 scroll-mt-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">Explore NFO Opportunities</p>
@@ -404,6 +322,46 @@ export default function NFOPage() {
               </AnimatePresence>
             </>
           )}
+
+        </div>
+      </section>
+
+      {/* ── WHAT YOU CAN DO ── */}
+      <section className="py-12 lg:py-16 bg-cream border-t border-border/40">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">What You Can Do</p>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Everything You Need For NFO Investing.</h2>
+            <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
+              Discover and explore new fund offers, compare available options, invest with ease, and track your investments from one convenient platform.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {TOOLS.map((t, i) => {
+              const Icon = t.icon
+              return (
+                <motion.div
+                  key={t.title}
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.05 }}
+                  className="bg-white border border-border rounded-[8px] p-5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:border-gold/30 transition-all duration-300"
+                >
+                  <div
+                    className="w-10 h-10 rounded-[7px] flex items-center justify-center mb-4"
+                    style={{ background: t.color + "14", border: `1px solid ${t.color}22` }}
+                  >
+                    <Icon className="w-5 h-5" style={{ color: t.color }} strokeWidth={1.8} />
+                  </div>
+                  <h3 className="font-extrabold text-foreground text-sm mb-2">{t.title}</h3>
+                  <p className="text-[12px] text-muted-foreground leading-relaxed">{t.desc}</p>
+                </motion.div>
+              )
+            })}
+          </div>
+
 
         </div>
       </section>

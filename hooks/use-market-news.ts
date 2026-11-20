@@ -3,6 +3,7 @@
 import { newsApi } from "@/lib/news/api-client"
 import { useApiResource } from "@/hooks/use-api-resource"
 
-export function useMarketBeat(limit = 5) {
+/** `limit` = most stories wanted; CMOTS gives at most 50 (the backend currently sends 30). */
+export function useMarketBeat(limit = 50) {
   return useApiResource(`market-beat-${limit}`, (signal) => newsApi.marketBeat(limit, signal))
 }
