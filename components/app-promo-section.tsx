@@ -50,7 +50,7 @@ export function AppPromoSection() {
             <span className="text-gold-deep">◆</span>
             <span>4.3★ App Store</span>
             <span className="text-gold-deep">◆</span>
-            <span>1 Lakh+ Active Investors</span>
+            <span>1 Lakh+ Investors</span>
             <span className="text-gold-deep">◆</span>
             <span>31+ Years of Trust</span>
           </div>

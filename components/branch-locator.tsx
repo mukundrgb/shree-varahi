@@ -10,7 +10,7 @@ const branches = [
   { city: "Delhi", address: "Narain Manzil, Flat No.710, 7th Floor, Barakhamba Road, Connaught Place, New Delhi - 110001", phone: "(+91) 9354718758" },
   { city: "Kolkata", address: "Rabindra Sarani, Poddar Court Gate No.2 6th Floor Room No.37A Kolkata", phone: "+91 33 4080 8080" }, 
   { city: "Kolkata", address: "9, Weston Street, Siddha Weston, 4th floor, Room no.419, Kolkata - 700013", phone: "(+91) 9830768524" }, 
-  { city: "Varanasi", address: "Shree House C -29/61-5, Teliyabag, Varanasi - 221002", phone: "(0542) 6600000" },
+  { city: "Varanasi", address: "Shree House C -29/61-5, Teliyabag, Varanasi - 221002", phone: "(+91) 9005750500" },
   { city: "Ahmedabad", address: "B-409 shilp corporate park, Rajpath rangoli road, Bodakdev, Ahmedabad, Gujrat -380054", phone: "(+91) 7969691110" },
   { city: "Surat", address: "403, Cabin A, Luxuria Business Hub, Near VR Mall, Surat – 395007", phone: "(+91) 9313187844" }, 
   { city: "Kanpur", address: "Cabin No. 687 Padam Tower-I, 14/113, 4th Floor, Civil Lines, Kanpur - 208001", phone: "(+91) 9389481008" },
