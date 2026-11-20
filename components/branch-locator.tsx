@@ -251,7 +251,7 @@ export function BranchLocator() {
           className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-12"
         >
           {[
-            { value: "50+", label: "Cities" },
+            { value: "10+", label: "Cities" },
             { value: "200+", label: "Team Members" },
             { value: "31", label: "Years" },
             { value: "Pan India", label: "Service" },
