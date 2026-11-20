@@ -6,7 +6,7 @@ import {
   ChevronLeft, ChevronRight, TrendingDown, Plus, X, Layers, Repeat, Eye, LayoutDashboard, FileSearch, Zap,
   Activity, PieChart, Coins, Landmark, Globe,
   LineChart, Percent, ListChecks, TrendingUp, BarChart3,
-  Star, ArrowUp, ArrowDown, ArrowUpDown,
+  Star, ArrowUp, ArrowDown, ArrowUpDown, ArrowUpRight, Search,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -135,14 +135,17 @@ const CANDLES = Array.from({ length: 26 }, (_, i) => {
 
 export default function ETFPage() {
   const router = useRouter()
-  const [activeCat, setActiveCat]     = useState<Category>("Equity")
+  /** "All" = every category together. */
+  const [activeCat, setActiveCat]     = useState<Category | "All">("All")
+  const [etfSearch, setEtfSearch]     = useState("")
   const [mobile, setMobile]           = useState("")
   const [activeParam, setActiveParam] = useState(0)
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null)
-  const activeCatMeta = CATEGORIES.find((c) => c.id === activeCat)!
+  const activeCatMeta = CATEGORIES.find((c) => c.id === activeCat) ?? null
 
   const etfList = useEtfList()
   const ETFS = useMemo(() => toCards(etfList.data?.items ?? []), [etfList.data])
+  const allEtfs = useMemo(() => CARD_CATEGORIES.flatMap((c) => ETFS[c]), [ETFS])
   const lead = ETFS.Equity[0] ?? PLACEHOLDER_CARD
 
   // Category table: 10 rows per page; switching category goes back to page 1.
@@ -151,13 +154,16 @@ export default function ETFPage() {
   // Rows with no value always go last, whichever way the column is sorted.
   const catRows = useMemo(() => {
     const dir = etfSort.order === "desc" ? -1 : 1
-    return [...ETFS[activeCat]].sort((a, b) => {
+    const q = etfSearch.trim().toLowerCase()
+    const source = activeCat === "All" ? allEtfs : ETFS[activeCat]
+    const matches = q ? source.filter((e) => e.name.toLowerCase().includes(q) || e.symbol.toLowerCase().includes(q)) : source
+    return [...matches].sort((a, b) => {
       const x = a[etfSort.key], y = b[etfSort.key]
       if (x === null) return y === null ? 0 : 1
       if (y === null) return -1
       return dir * (x - y)
     })
-  }, [ETFS, activeCat, etfSort])
+  }, [ETFS, allEtfs, activeCat, etfSort, etfSearch])
   // First click on a column: highest first (arrow up); next click: lowest first (arrow down).
   const sortEtfs = (key: EtfSortCol) => {
     setEtfSort((s) => (s.key === key ? { key, order: s.order === "desc" ? "asc" : "desc" } : { key, order: "desc" }))
@@ -165,14 +171,19 @@ export default function ETFPage() {
   }
   const etfTotalPages = Math.max(1, Math.ceil(catRows.length / ETFS_PER_PAGE))
   const etfPageRows = catRows.slice((etfPage - 1) * ETFS_PER_PAGE, etfPage * ETFS_PER_PAGE)
-  const pickCategory = (c: Category) => { setActiveCat(c); setEtfPage(1) }
+  const pickCategory = (c: Category | "All") => { setActiveCat(c); setEtfPage(1) }
+  /** Hero shortcuts: pick the category, then jump to the table. */
+  const browseCategory = (c: Category) => {
+    pickCategory(c)
+    document.getElementById("etf-table")?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
 
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
 
-      {/* ── HERO ── */}
-      <section className="relative bg-cream border-b border-border/40 pt-28 pb-16 overflow-hidden">
+      {/* ── HERO (compact: pitch on the left, browse-by-category on the right) ── */}
+      <section className="relative bg-cream border-b border-border/40 pt-24 pb-8 lg:pb-10 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div
             className="absolute inset-0 opacity-[0.04]"
@@ -181,155 +192,162 @@ export default function ETFPage() {
               backgroundSize: "56px 56px",
             }}
           />
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-cream to-transparent" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gold/5 rounded-full blur-[100px]" />
+          <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[520px] h-[360px] bg-gold/10 rounded-full blur-[110px]" />
         </div>
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10">
-          <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-6">
+          <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-4">
             <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3" />
             <span className="text-foreground font-semibold">ETF</span>
           </nav>
 
-          <div className="grid lg:grid-cols-[1fr_auto] gap-10 items-center">
-            <div className="space-y-5 max-w-2xl">
-              <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">
-                Exchange Traded Funds
-              </p>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground tracking-tight leading-tight">
-                Invest In ETFs With<br />
-                <span className="text-burgundy">Simplicity &amp; Flexibility</span>
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_420px] gap-6 lg:gap-12 items-center">
+            <div className="space-y-4">
+              <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">Exchange Traded Funds</p>
+              <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-black text-foreground tracking-tight leading-[1.1]">
+                Invest In ETFs With <span className="text-burgundy lg:block">Simplicity &amp; Flexibility</span>
               </h1>
-              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-lg">
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
                 Access a wide range of ETFs through Shree Varahi and diversify your investments more easily and flexibly.
               </p>
-              <div className="flex flex-wrap gap-3">
-                <Button className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <Button className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
                   Start Trading
                 </Button>
-                <Button variant="outline" className="border-border px-7 h-11 font-bold rounded-[5px] hover:bg-secondary">
+                <Button variant="outline" className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary">
                   Open Account
                 </Button>
-              </div>
-              <div className="flex flex-wrap gap-4 pt-1">
-                <div>
-                  <div className="text-lg font-black text-foreground">31+</div>
-                  <div className="text-[10px] text-muted-foreground font-semibold">Years of Trust</div>
-                </div>
-                <div>
-                  <div className="text-lg font-black text-foreground flex items-center gap-1">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
-                  <div className="text-[10px] text-muted-foreground font-semibold">App Rating</div>
+                <div className="flex items-center gap-4 sm:ml-3 sm:pl-5 sm:border-l border-border">
+                  <div>
+                    <div className="text-base font-black text-foreground leading-none">31+</div>
+                    <div className="text-[10px] text-muted-foreground font-semibold mt-1">Years of Trust</div>
+                  </div>
+                  <div>
+                    <div className="text-base font-black text-foreground flex items-center gap-1 leading-none">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
+                    <div className="text-[10px] text-muted-foreground font-semibold mt-1">App Rating</div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Hero visual — ETF performance card */}
-            <div className="hidden lg:block">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="w-[280px] rounded-[12px] bg-white border border-border shadow-xl p-5 space-y-4"
+            {/* Browse by category: each opens the table below on that category */}
+            <div className="rounded-[10px] bg-white border border-border shadow-[0_8px_32px_rgba(0,0,0,0.06)] p-4">
+              <p className="text-[10px] font-extrabold uppercase tracking-wider text-gold-deep mb-2.5">Browse by category</p>
+              <div className="grid grid-cols-2 gap-2">
+                {CATEGORIES.map((c) => {
+                  const Icon = c.icon
+                  return (
+                    <button
+                      key={c.id}
+                      onClick={() => browseCategory(c.id)}
+                      className="group text-left rounded-[6px] border border-border bg-cream/50 px-3 py-2.5 hover:border-burgundy/30 hover:bg-white transition-all flex items-center gap-2.5"
+                    >
+                      <Icon className="w-4 h-4 shrink-0 text-burgundy" />
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-xs font-extrabold text-foreground truncate">{c.label}</span>
+                        <span className="block text-[10px] font-semibold text-muted-foreground tabular-nums">
+                          {etfList.data ? `${ETFS[c.id].length} ETFs` : "—"}
+                        </span>
+                      </span>
+                      <ArrowUpRight className="w-3 h-3 shrink-0 text-muted-foreground group-hover:text-burgundy transition-colors" />
+                    </button>
+                  )
+                })}
+              </div>
+              <Link
+                href="/etf/compare"
+                className="mt-3 flex items-center gap-3 rounded-[6px] bg-burgundy/[0.06] border border-burgundy/15 px-3 py-2.5 hover:bg-burgundy/10 transition-colors"
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-gold-deep">Top ETFs Today</span>
-                  <span className="text-[9px] font-bold text-muted-foreground">LTP</span>
-                </div>
-                {ETFS.Equity.slice(0, 3).map((etf) => (
-                  <div key={etf.name} className="flex items-center justify-between">
-                    <span className="text-[11px] font-semibold text-foreground truncate pr-2">{etf.name}</span>
-                    <div className="text-right shrink-0">
-                      <div className="text-[12px] font-black text-foreground">₹{etf.price}</div>
-                      <div className={`text-[10px] font-bold ${changeClass(etf.change)}`}>{changeText(etf.change)}</div>
-                    </div>
-                  </div>
-                ))}
-                <div className="pt-1 border-t border-border/40">
-                  <Button size="sm" className="w-full bg-burgundy hover:bg-burgundy-deep text-white text-[11px] font-bold rounded-[5px] h-8">
-                    Invest Now
-                  </Button>
-                </div>
-              </motion.div>
+                <BarChart3 className="w-4 h-4 text-burgundy shrink-0" />
+                <span className="text-[11px] text-foreground font-extrabold">Compare ETFs by cost, AUM &amp; returns</span>
+                <ArrowUpRight className="w-3.5 h-3.5 text-burgundy ml-auto shrink-0" />
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── WHAT YOU CAN DO ── */}
-      <section className="py-12 lg:py-16 bg-background border-t border-border/40">
+      {/* ── EXPLORE ETF CATEGORIES: filter sidebar + table ── (navbar "ETF Screener" links here) */}
+      <section id="etf-table" className="py-6 lg:py-8 bg-background scroll-mt-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">What You Can Do</p>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Every tool you need to invest in ETFs.</h2>
-            <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
-              Browse, analyse, and invest in ETFs across indices, sectors, and asset classes — all from one platform.
-            </p>
-          </div>
+          <div className="grid lg:grid-cols-[300px_minmax(0,1fr)] gap-5 lg:gap-6 items-start">
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {TOOLS.map((t, i) => {
-              const Icon = t.icon
-              return (
-                <motion.div
-                  key={t.title}
-                  initial={{ opacity: 0, y: 12 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.05 }}
-                  className="bg-white border border-border rounded-[8px] p-5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:border-gold/30 transition-all duration-300"
-                >
-                  <div
-                    className="w-10 h-10 rounded-[7px] flex items-center justify-center mb-4"
-                    style={{ background: t.color + "14", border: `1px solid ${t.color}22` }}
-                  >
-                    <Icon className="w-5 h-5" style={{ color: t.color }} strokeWidth={1.8} />
-                  </div>
-                  <h3 className="font-extrabold text-foreground text-sm mb-2">{t.title}</h3>
-                  <p className="text-[12px] text-muted-foreground leading-relaxed">{t.desc}</p>
-                </motion.div>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ── EXPLORE ETF CATEGORIES ── (navbar "ETF Screener" links here) */}
-      <section id="etf-table" className="py-12 lg:py-16 bg-cream border-t border-border/40 scroll-mt-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">EXPLORE ETF CATEGORIES</p>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground">Invest Across Multiple ETF Categories</h2>
-          </div>
-
-          {/* Category tabs */}
-          <div className="flex flex-wrap justify-center gap-2 mb-8">
-            {CATEGORIES.map((c) => {
-              const Icon = c.icon
-              const active = activeCat === c.id
-              return (
-                <button
-                  key={c.id}
-                  onClick={() => pickCategory(c.id)}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-[6px] text-[12px] font-bold border transition-all duration-200 ${
-                    active
-                      ? "bg-burgundy text-white border-burgundy shadow-sm"
-                      : "bg-white text-muted-foreground border-border hover:border-burgundy/25 hover:text-foreground"
-                  }`}
-                >
-                  <Icon className="w-3.5 h-3.5" style={{ color: active ? "#fff" : c.color }} />
-                  {c.label}
+          {/* Filters */}
+          <aside className="lg:sticky lg:top-20 rounded-[8px] border border-border bg-white p-4 space-y-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+              <input
+                type="text"
+                aria-label="Search ETFs"
+                placeholder="Search ETFs..."
+                value={etfSearch}
+                onChange={(e) => { setEtfSearch(e.target.value); setEtfPage(1) }}
+                className="w-full pl-9 pr-8 py-2 text-sm rounded-[5px] border border-border bg-cream/50 placeholder:text-muted-foreground/55 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40"
+              />
+              {etfSearch && (
+                <button onClick={() => { setEtfSearch(""); setEtfPage(1) }} aria-label="Clear search" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <X className="w-3.5 h-3.5" />
                 </button>
-              )
-            })}
-          </div>
+              )}
+            </div>
 
-          <p className="text-center text-sm text-muted-foreground max-w-xl mx-auto mb-8 -mt-2">
-            {activeCatMeta.desc}
-          </p>
+            <div>
+              <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-2">Category</p>
+              <div className="grid grid-cols-2 lg:grid-cols-1 gap-1">
+                {[{ id: "All" as const, label: "All ETFs", icon: Layers }, ...CATEGORIES].map((c) => {
+                  const Icon = c.icon
+                  const active = activeCat === c.id
+                  const count = c.id === "All" ? allEtfs.length : ETFS[c.id].length
+                  return (
+                    <button
+                      key={c.id}
+                      onClick={() => pickCategory(c.id)}
+                      aria-pressed={active}
+                      className={`w-full text-left px-2.5 py-2 rounded-[5px] text-[12px] font-semibold transition-colors flex items-center gap-2 ${
+                        active ? "bg-burgundy/[0.07] text-burgundy font-bold" : "text-muted-foreground hover:bg-cream hover:text-foreground"
+                      }`}
+                    >
+                      <Icon className="w-3.5 h-3.5 shrink-0" />
+                      <span className="flex-1 truncate">{c.label}</span>
+                      {etfList.data && <span className={`text-[10px] tabular-nums ${active ? "text-burgundy/70" : "text-muted-foreground/70"}`}>{count}</span>}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {activeCatMeta && (
+              <p className="hidden lg:block text-[11px] text-muted-foreground leading-relaxed pt-3 border-t border-border/60">
+                {activeCatMeta.desc}
+              </p>
+            )}
+          </aside>
+
+          {/* Results */}
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-end justify-between gap-3 mb-3">
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight leading-none">
+                  {activeCatMeta ? activeCatMeta.label : "All ETFs"}
+                </h2>
+                <p className="text-xs text-muted-foreground mt-1.5">
+                  <span className="font-bold text-foreground">{etfList.data ? catRows.length : "—"}</span> ETFs
+                  {etfSearch.trim() && <> matching <span className="font-semibold text-foreground">“{etfSearch.trim()}”</span></>}
+                </p>
+              </div>
+              {(activeCat !== "All" || etfSearch) && (
+                <button
+                  onClick={() => { pickCategory("All"); setEtfSearch("") }}
+                  className="text-[11px] font-bold text-burgundy hover:text-burgundy-deep flex items-center gap-1 transition-colors"
+                >
+                  <X className="w-3 h-3" /> Clear filters
+                </button>
+              )}
+            </div>
 
           {/* ETF table — same style as the All Stocks table, 10 rows per page */}
-          <div className="max-w-5xl mx-auto mb-8">
+          <div>
             <div className="rounded-[8px] border border-border overflow-hidden bg-white shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
               {/* Header */}
               <div className="grid grid-cols-[minmax(0,1fr)_84px_64px_72px] sm:grid-cols-[minmax(0,1fr)_120px_110px_100px] gap-x-2 px-4 py-2.5 border-b border-border bg-cream/70">
@@ -377,7 +395,7 @@ export default function ETFPage() {
                         <div className="flex items-center gap-3 min-w-0">
                           <div
                             className="hidden sm:flex w-8 h-8 shrink-0 rounded-[6px] items-center justify-center text-[10px] font-black"
-                            style={{ background: activeCatMeta.color + "14", color: activeCatMeta.color, border: `1px solid ${activeCatMeta.color}22` }}
+                            style={{ background: "#8B0D1914", color: "#8B0D19", border: "1px solid #8B0D1922" }}
                           >
                             {etf.name.split(" ").slice(0, 2).map((w) => w[0]).join("")}
                           </div>
@@ -450,6 +468,8 @@ export default function ETFPage() {
           </div>
 
 
+          </div>
+          </div>
         </div>
       </section>
 
@@ -588,6 +608,44 @@ export default function ETFPage() {
                 </div>
               </motion.div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── WHAT YOU CAN DO ── */}
+      <section className="py-12 lg:py-16 bg-background border-t border-border/40">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">What You Can Do</p>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Every tool you need to invest in ETFs.</h2>
+            <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
+              Browse, analyse, and invest in ETFs across indices, sectors, and asset classes — all from one platform.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {TOOLS.map((t, i) => {
+              const Icon = t.icon
+              return (
+                <motion.div
+                  key={t.title}
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: i * 0.05 }}
+                  className="bg-white border border-border rounded-[8px] p-5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:border-gold/30 transition-all duration-300"
+                >
+                  <div
+                    className="w-10 h-10 rounded-[7px] flex items-center justify-center mb-4"
+                    style={{ background: t.color + "14", border: `1px solid ${t.color}22` }}
+                  >
+                    <Icon className="w-5 h-5" style={{ color: t.color }} strokeWidth={1.8} />
+                  </div>
+                  <h3 className="font-extrabold text-foreground text-sm mb-2">{t.title}</h3>
+                  <p className="text-[12px] text-muted-foreground leading-relaxed">{t.desc}</p>
+                </motion.div>
+              )
+            })}
           </div>
         </div>
       </section>

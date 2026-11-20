@@ -156,9 +156,9 @@ export const fnoApi = {
     apiGet<FnoCategoryDetail>(`/fno/${category}${seg(symbol)}`, { query: { expiry }, signal }),
   cards: (
     category: FnoCategory,
-    { page = 1, limit = 20, exchange = "NSE" }: { page?: number; limit?: number; exchange?: string } = {},
+    { page = 1, limit = 20, exchange = "NSE", search }: { page?: number; limit?: number; exchange?: string; search?: string } = {},
     signal?: AbortSignal,
-  ) => apiGet<FnoCardList>(`/fno/${category}`, { query: { page, limit, exchange }, signal }),
+  ) => apiGet<FnoCardList>(`/fno/${category}`, { query: { page, limit, exchange, search }, signal }),
   futures: (underlying: "index" | "stock", symbol: string, signal?: AbortSignal) =>
     apiGet<FnoFuturesDetail>(`/fno/${underlying}-futures${seg(symbol)}`, { signal }),
   options: (underlying: "index" | "stock", symbol: string, expiry?: string, signal?: AbortSignal) =>

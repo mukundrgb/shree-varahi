@@ -7,8 +7,11 @@ import { useApiResource } from "@/hooks/use-api-resource"
 const FNO_REFRESH_MS = 60_000
 
 /** One page of underlyings for an F&O tab. */
-export function useFnoCards(category: FnoCategory, { page = 1, limit = 8 }: { page?: number; limit?: number } = {}) {
-  return useApiResource(`${category}:${page}:${limit}`, (signal) => fnoApi.cards(category, { page, limit }, signal), {
+export function useFnoCards(
+  category: FnoCategory,
+  { page = 1, limit = 8, search }: { page?: number; limit?: number; search?: string } = {},
+) {
+  return useApiResource(`${category}:${page}:${limit}:${search ?? ""}`, (signal) => fnoApi.cards(category, { page, limit, search }, signal), {
     refreshMs: FNO_REFRESH_MS,
   })
 }
