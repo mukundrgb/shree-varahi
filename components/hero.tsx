@@ -20,6 +20,7 @@ import {
   CheckCircle2,
 } from "lucide-react"
 import { AppPromoSection } from "@/components/app-promo-section"
+import { GlobalInvestingSection } from "@/components/global-investing-section"
 import Link from "next/link"
 
 /* ── Custom globe SVG ── */
@@ -732,7 +733,6 @@ export function Hero() {
                 {[
                   { Icon: Shield, text: "SEBI Registered" },
                   { Icon: Users, text: "Active Traders" },
-                  { Icon: CheckCircle2, text: "ISO/IEC 27001:2022" },
                 ].map(({ Icon, text }) => (
                   <div key={text} className="flex items-center gap-2 text-[13px] font-semibold text-muted-foreground">
                     <Icon className="w-4 h-4 text-gold-deep" />
@@ -834,6 +834,9 @@ export function Hero() {
           </motion.div>
         </div>
       </section>
+
+      {/* Global Investing — right after the burgundy bar */}
+      <GlobalInvestingSection />
 
       {/* App Promo */}
       <AppPromoSection />

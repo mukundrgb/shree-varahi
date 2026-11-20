@@ -200,12 +200,7 @@ export function MTFSection() {
                   Select a stock to see the exact margin trading facility available — different stocks have different MTF limits.
                 </p>
               </div>
-              <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold text-muted-foreground">
-                <span className="bg-white border border-border px-2.5 py-1 rounded-[4px]">Interest: <strong className="text-foreground">0.049%/day</strong></span>
-                <span className="bg-white border border-border px-2.5 py-1 rounded-[4px]">Brokerage: <strong className="text-foreground">17%</strong></span>
-                <span className="bg-white border border-border px-2.5 py-1 rounded-[4px]">Pledge: <strong className="text-foreground">₹15</strong></span>
-                <span className="bg-white border border-border px-2.5 py-1 rounded-[4px]">Holding: <strong className="text-foreground">Up to 90 Days</strong></span>
-              </div>
+
             </div>
 
             {/* Two-column layout — scrolls horizontally on mobile */}

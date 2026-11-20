@@ -28,7 +28,6 @@ export default function Home() {
       {/* <AppPromoSection /> */}
       <BrokerageSection />
       <AdvisoryBasketsSection />
-      <GlobalInvestingSection />
       <TraderInvestorSection />
       {/* <OptionStrategyBuilder /> */}
       <MTFSection />
