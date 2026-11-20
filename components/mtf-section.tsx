@@ -79,8 +79,8 @@ function RatioBadge({ stock }: { stock: Stock }) {
   // Multipliers run 1.92x–3.00x (33.3% minimum margin): full 3x, mid, low.
   const styles =
     m >= 2.99 ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-    m >= 2.4  ? "bg-blue-50 text-blue-700 border-blue-200" :
-                "bg-amber-50 text-amber-700 border-amber-200"
+      m >= 2.4 ? "bg-blue-50 text-blue-700 border-blue-200" :
+        "bg-amber-50 text-amber-700 border-amber-200"
   return (
     <span className={`text-[11px] font-bold px-2 py-0.5 rounded-[4px] border ${styles} whitespace-nowrap`}>
       {times(m)} MTF
@@ -131,7 +131,7 @@ export function MTFSection() {
   const capArc = (C * ratio) / effective
   const fundArc = (C * ratio * (effective - 1)) / effective
   const g = capital > 0 ? 1.5 : 0
-  const capDash  = `${Math.max(0, capArc  - g)} ${C}`
+  const capDash = `${Math.max(0, capArc - g)} ${C}`
   const fundDash = `${Math.max(0, fundArc - g)} ${C}`
 
   /* Click-outside to close dropdown */
@@ -193,317 +193,319 @@ export function MTFSection() {
           <div className="bg-white border border-border rounded-[8px] shadow-sm">
 
             {/* Card header */}
-            <div className="bg-cream/40 px-4 sm:px-6 py-3 sm:py-4 border-b border-border/60 rounded-t-[8px]">
-              <h3 className="font-bold text-xl text-foreground">MTF Calculator</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Select a stock to see the exact margin trading facility available — different stocks have different MTF limits.
-              </p>
+            <div className="bg-cream/40 px-4 sm:px-6 py-3 sm:py-4 border-b border-border/60 rounded-t-[8px] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <h3 className="font-bold text-xl text-foreground">MTF Calculator</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Select a stock to see the exact margin trading facility available — different stocks have different MTF limits.
+                </p>
+              </div>
+
             </div>
 
             {/* Two-column layout — scrolls horizontally on mobile */}
             <div className="overflow-x-auto" style={{ scrollbarWidth: "none" }}>
-            <div className="grid grid-cols-2 divide-x divide-border" style={{ minWidth: "640px" }}>
+              <div className="grid grid-cols-2 divide-x divide-border" style={{ minWidth: "640px" }}>
 
-              {/* ── LEFT: Capital + Stock Selector ── */}
-              <div className="p-6 space-y-6">
+                {/* ── LEFT: Capital + Stock Selector ── */}
+                <div className="p-6 space-y-6">
 
-                {/* Capital input */}
-                <div>
-                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold mb-2 block">
-                    Your Capital
-                  </span>
-                  <div className="relative border border-border/80 focus-within:border-burgundy focus-within:ring-1 focus-within:ring-burgundy/20 transition-all rounded-[6px] flex items-center h-[72px] bg-white">
-                    <div className="w-12 h-full flex items-center justify-center border-r border-border/50 text-foreground/50 text-lg font-bold bg-secondary/10 rounded-l-[6px]">
-                      ₹
-                    </div>
-                    <input
-                      type="text"
-                      value={capital === 0 ? "" : capital.toLocaleString("en-IN")}
-                      onChange={(e) => handleCapitalChange(e.target.value)}
-                      className="flex-1 text-2xl font-bold text-foreground text-center focus:outline-none bg-transparent px-3"
-                      placeholder="0"
-                    />
-                  </div>
-
-                  {/* Slider */}
-                  <div className="mt-4">
-                    <div className="px-2.5">
-                      <Slider
-                        value={[capitalToSlider(capital)]}
-                        onValueChange={(v) => setCapital(sliderToCapital(v[0]))}
-                        min={0}
-                        max={SLIDER_STEPS}
-                        step={1}
-                        aria-label="Your capital"
-                        aria-valuetext={fmt(capital)}
-                        className="[&_[role=slider]]:bg-burgundy [&_[role=slider]]:border-burgundy [&_[role=slider]]:h-5 [&_[role=slider]]:w-5"
+                  {/* Capital input */}
+                  <div>
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold mb-2 block">
+                      Your Capital
+                    </span>
+                    <div className="relative border border-border/80 focus-within:border-burgundy focus-within:ring-1 focus-within:ring-burgundy/20 transition-all rounded-[6px] flex items-center h-[72px] bg-white">
+                      <div className="w-12 h-full flex items-center justify-center border-r border-border/50 text-foreground/50 text-lg font-bold bg-secondary/10 rounded-l-[6px]">
+                        ₹
+                      </div>
+                      <input
+                        type="text"
+                        value={capital === 0 ? "" : capital.toLocaleString("en-IN")}
+                        onChange={(e) => handleCapitalChange(e.target.value)}
+                        className="flex-1 text-2xl font-bold text-foreground text-center focus:outline-none bg-transparent px-3"
+                        placeholder="0"
                       />
-                      {/* Tick labels sit where those amounts fall on the (logarithmic) track */}
-                      <div className="relative h-4 text-xs text-muted-foreground font-medium mt-2">
-                        {[
-                          { v: MIN_CAPITAL, label: "₹5K" },
-                          { v: 50_000, label: "₹50K" },
-                          { v: 5_00_000, label: "₹5L" },
-                          { v: 50_00_000, label: "₹50L" },
-                          { v: MAX_CAPITAL, label: "₹5Cr" },
-                        ].map((t, i, all) => (
-                          <span key={t.label} className="absolute top-0 whitespace-nowrap"
-                            style={{
-                              left: `${(capitalToSlider(t.v) / SLIDER_STEPS) * 100}%`,
-                              transform: i === 0 ? "none" : i === all.length - 1 ? "translateX(-100%)" : "translateX(-50%)",
-                            }}>
-                            {t.label}
-                          </span>
-                        ))}
+                    </div>
+
+                    {/* Slider */}
+                    <div className="mt-4">
+                      <div className="px-2.5">
+                        <Slider
+                          value={[capitalToSlider(capital)]}
+                          onValueChange={(v) => setCapital(sliderToCapital(v[0]))}
+                          min={0}
+                          max={SLIDER_STEPS}
+                          step={1}
+                          aria-label="Your capital"
+                          aria-valuetext={fmt(capital)}
+                          className="[&_[role=slider]]:bg-burgundy [&_[role=slider]]:border-burgundy [&_[role=slider]]:h-5 [&_[role=slider]]:w-5"
+                        />
+                        {/* Tick labels sit where those amounts fall on the (logarithmic) track */}
+                        <div className="relative h-4 text-xs text-muted-foreground font-medium mt-2">
+                          {[
+                            { v: MIN_CAPITAL, label: "₹5K" },
+                            { v: 50_000, label: "₹50K" },
+                            { v: 5_00_000, label: "₹5L" },
+                            { v: 50_00_000, label: "₹50L" },
+                            { v: MAX_CAPITAL, label: "₹5Cr" },
+                          ].map((t, i, all) => (
+                            <span key={t.label} className="absolute top-0 whitespace-nowrap"
+                              style={{
+                                left: `${(capitalToSlider(t.v) / SLIDER_STEPS) * 100}%`,
+                                transform: i === 0 ? "none" : i === all.length - 1 ? "translateX(-100%)" : "translateX(-50%)",
+                              }}>
+                              {t.label}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Stock Selector */}
-                <div>
-                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold mb-2 block">
-                    Select Stock to Check MTF
-                  </span>
+                  {/* Stock Selector */}
+                  <div>
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold mb-2 block">
+                      Select Stock to Check MTF
+                    </span>
 
-                  {/* Search box + dropdown */}
-                  <div className="relative mb-3" ref={searchRef}>
-                    <div className={`flex items-center gap-2 border rounded-[6px] px-3 h-10 bg-white transition-all ${open || query ? "border-burgundy ring-1 ring-burgundy/20" : "border-border/80"}`}>
-                      <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                      <input
-                        type="text"
-                        value={query}
-                        onChange={(e) => { setQuery(e.target.value); setOpen(true) }}
-                        onFocus={() => setOpen(true)}
-                        placeholder="Search stock e.g. INFY, HDFCBANK..."
-                        className="flex-1 text-[13px] focus:outline-none bg-transparent text-foreground placeholder:text-muted-foreground/50"
-                      />
-                      {searching && <Loader2 className="w-3.5 h-3.5 text-muted-foreground animate-spin" />}
-                      {query && (
-                        <button onClick={() => { setQuery(""); setSearch(""); setOpen(false) }} className="text-muted-foreground hover:text-foreground" aria-label="Clear search">
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Search dropdown */}
-                    <AnimatePresence>
-                      {showDropdown && (results.length > 0 || !searching) && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -4 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -4 }}
-                          transition={{ duration: 0.15 }}
-                          className="absolute z-50 top-[calc(100%+4px)] left-0 right-0 bg-white border border-border rounded-[6px] shadow-lg overflow-hidden"
-                        >
-                          {results.length === 0 ? (
-                            <p className="px-3 py-3 text-[12px] text-muted-foreground">
-                              {searchResult.error ? "Unable to search right now." : "No MTF eligible stock matches your search."}
-                            </p>
-                          ) : results.map((stock) => (
-                            <button
-                              key={stock.symbol}
-                              onMouseDown={() => handleSelect(stock)}
-                              className={`w-full flex items-center gap-3 px-3 py-2.5 hover:bg-secondary/40 transition-colors text-left ${selected?.symbol === stock.symbol ? "bg-burgundy/5" : ""}`}
-                            >
-                              <StockAvatar stock={stock} size={28} />
-                              <div className="flex-1 min-w-0">
-                                <p className="text-[13px] font-bold text-foreground leading-none">{stock.symbol}</p>
-                                {stock.name && <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{stock.name}</p>}
-                              </div>
-                              <div className="flex items-center gap-2 flex-shrink-0">
-                                {stock.price != null && <span className="text-[12px] font-semibold text-foreground">{fmt(stock.price)}</span>}
-                                <RatioBadge stock={stock} />
-                              </div>
-                            </button>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  {/* Popular chips */}
-                  <div className="flex flex-wrap gap-1.5">
-                    {popularStocks.map((stock) => (
-                      <button
-                        key={stock.symbol}
-                        onClick={() => handleSelect(stock)}
-                        className={`flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-[4px] border transition-all ${
-                          selected?.symbol === stock.symbol
-                            ? "bg-burgundy text-white border-burgundy shadow-sm"
-                            : "bg-secondary/30 text-foreground/70 border-border hover:border-burgundy/40 hover:bg-secondary/60"
-                        }`}
-                      >
-                        <span
-                          className="inline-block w-2 h-2 rounded-full flex-shrink-0"
-                          style={{ background: selected?.symbol === stock.symbol ? "rgba(255,255,255,0.7)" : colorFor(stock.symbol) }}
+                    {/* Search box + dropdown */}
+                    <div className="relative mb-3" ref={searchRef}>
+                      <div className={`flex items-center gap-2 border rounded-[6px] px-3 h-10 bg-white transition-all ${open || query ? "border-burgundy ring-1 ring-burgundy/20" : "border-border/80"}`}>
+                        <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                        <input
+                          type="text"
+                          value={query}
+                          onChange={(e) => { setQuery(e.target.value); setOpen(true) }}
+                          onFocus={() => setOpen(true)}
+                          placeholder="Search stock e.g. INFY, HDFCBANK..."
+                          className="flex-1 text-[13px] focus:outline-none bg-transparent text-foreground placeholder:text-muted-foreground/50"
                         />
-                        {stock.symbol}
-                      </button>
-                    ))}
-                    {!info && !summary.error && <ChipsSkeleton count={8} />}
-                    {summary.error && !info && (
-                      <p className="text-[11px] text-muted-foreground">
-                        Unable to load MTF stocks.{" "}
-                        <button onClick={summary.retry} className="text-burgundy font-bold hover:underline">Retry</button>
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
+                        {searching && <Loader2 className="w-3.5 h-3.5 text-muted-foreground animate-spin" />}
+                        {query && (
+                          <button onClick={() => { setQuery(""); setSearch(""); setOpen(false) }} className="text-muted-foreground hover:text-foreground" aria-label="Clear search">
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                      </div>
 
-              {/* ── RIGHT: Selected Stock + Result ── */}
-              <div className="p-6 flex flex-col gap-5">
+                      {/* Search dropdown */}
+                      <AnimatePresence>
+                        {showDropdown && (results.length > 0 || !searching) && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -4 }}
+                            transition={{ duration: 0.15 }}
+                            className="absolute z-50 top-[calc(100%+4px)] left-0 right-0 bg-white border border-border rounded-[6px] shadow-lg overflow-hidden"
+                          >
+                            {results.length === 0 ? (
+                              <p className="px-3 py-3 text-[12px] text-muted-foreground">
+                                {searchResult.error ? "Unable to search right now." : "No MTF eligible stock matches your search."}
+                              </p>
+                            ) : results.map((stock) => (
+                              <button
+                                key={stock.symbol}
+                                onMouseDown={() => handleSelect(stock)}
+                                className={`w-full flex items-center gap-3 px-3 py-2.5 hover:bg-secondary/40 transition-colors text-left ${selected?.symbol === stock.symbol ? "bg-burgundy/5" : ""}`}
+                              >
+                                <StockAvatar stock={stock} size={28} />
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-[13px] font-bold text-foreground leading-none">{stock.symbol}</p>
+                                  {stock.name && <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{stock.name}</p>}
+                                </div>
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                  {stock.price != null && <span className="text-[12px] font-semibold text-foreground">{fmt(stock.price)}</span>}
+                                  <RatioBadge stock={stock} />
+                                </div>
+                              </button>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
 
-                {/* Selected stock card */}
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={selected?.symbol ?? "loading"}
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="rounded-[6px] border border-border bg-secondary/10 p-3 flex items-center gap-3 min-h-[62px]"
-                  >
-                    {selected ? (
-                      <>
-                        <StockAvatar stock={selected} size={36} />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <p className="font-black text-[14px] text-foreground leading-none">{selected.symbol}</p>
-                            <RatioBadge stock={selected} />
-                          </div>
-                          {selected.name && <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{selected.name}</p>}
-                          {selected.price != null && <p className="text-[11px] font-semibold text-foreground mt-0.5">{fmt(selected.price)} / share</p>}
-                          <p className="text-[11px] text-muted-foreground mt-0.5">
-                            Margin required: <span className="font-semibold text-foreground">{selected.marginPct.toFixed(2)}%</span>
-                            {selected.listedMarginPct < selected.marginPct && (
-                              <span className="ml-1 text-muted-foreground/80" title={`Listed margin ${selected.listedMarginPct.toFixed(2)}%; a minimum of ${selected.marginPct.toFixed(1)}% applies`}>
-                                (min. applied · listed {selected.listedMarginPct.toFixed(2)}%)
-                              </span>
-                            )}
-                          </p>
-                        </div>
-                        <div className="flex-shrink-0 text-right">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                          <p className="text-[9px] text-emerald-600 font-bold mt-0.5 uppercase tracking-wide">MTF Eligible</p>
-                        </div>
-                      </>
-                    ) : summary.error ? (
-                      <p className="text-[12px] text-muted-foreground">MTF stocks are unavailable right now.</p>
-                    ) : (
-                      <SkeletonGroup label="Loading stock" className="flex items-center gap-3 w-full">
-                        <Bone className="w-9 h-9 rounded-full shrink-0" />
-                        <div className="flex-1 space-y-1.5"><Bone className="h-3.5 w-32" /><Bone className="h-2.5 w-44" /></div>
-                      </SkeletonGroup>
-                    )}
-                  </motion.div>
-                </AnimatePresence>
-
-                {/* Donut + Legend — always side-by-side */}
-                <div className="flex items-center gap-5">
-                  <div className="relative w-28 h-28 flex-shrink-0">
-                    <svg width="100%" height="100%" viewBox="0 0 100 100" className="transform -rotate-90">
-                      <circle cx="50" cy="50" r="35" fill="transparent" stroke="#E5E5E5" strokeWidth="16" />
-                      {multiplier !== null && (
-                        <>
-                          <circle
-                            cx="50" cy="50" r="35" fill="transparent"
-                            stroke="var(--color-burgundy)" strokeWidth="16"
-                            strokeDasharray={fundDash}
-                            strokeDashoffset={-capArc}
-                            className="transition-all duration-500 ease-out"
+                    {/* Popular chips */}
+                    <div className="flex flex-wrap gap-1.5">
+                      {popularStocks.map((stock) => (
+                        <button
+                          key={stock.symbol}
+                          onClick={() => handleSelect(stock)}
+                          className={`flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-[4px] border transition-all ${selected?.symbol === stock.symbol
+                              ? "bg-burgundy text-white border-burgundy shadow-sm"
+                              : "bg-secondary/30 text-foreground/70 border-border hover:border-burgundy/40 hover:bg-secondary/60"
+                            }`}
+                        >
+                          <span
+                            className="inline-block w-2 h-2 rounded-full flex-shrink-0"
+                            style={{ background: selected?.symbol === stock.symbol ? "rgba(255,255,255,0.7)" : colorFor(stock.symbol) }}
                           />
-                          <circle
-                            cx="50" cy="50" r="35" fill="transparent"
-                            stroke="var(--color-gold)" strokeWidth="16"
-                            strokeDasharray={capDash}
-                            strokeDashoffset="0"
-                            className="transition-all duration-500 ease-out"
-                          />
-                        </>
+                          {stock.symbol}
+                        </button>
+                      ))}
+                      {!info && !summary.error && <ChipsSkeleton count={8} />}
+                      {summary.error && !info && (
+                        <p className="text-[11px] text-muted-foreground">
+                          Unable to load MTF stocks.{" "}
+                          <button onClick={summary.retry} className="text-burgundy font-bold hover:underline">Retry</button>
+                        </p>
                       )}
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-xl font-black text-foreground leading-none">{multiplier !== null ? times(effective) : "—"}</span>
-                      <span className="text-[9px] text-muted-foreground font-semibold mt-0.5">buying power</span>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-4 flex-1">
-                    <div className="border-l-[3px] border-gold pl-3">
-                      <span className="text-[10px] text-muted-foreground block font-medium leading-snug">
-                        Your Capital
-                        {selected && <span className="text-muted-foreground/60 ml-1">({capitalShare.toFixed(2)}%)</span>}
-                      </span>
-                      <AnimatePresence mode="wait">
-                        <motion.span
-                          key={capital}
-                          initial={{ opacity: 0.5 }}
-                          animate={{ opacity: 1 }}
-                          className="text-lg font-black text-foreground block mt-0.5"
-                        >
-                          {fmt(capital)}
-                        </motion.span>
-                      </AnimatePresence>
-                    </div>
-                    <div className="border-l-[3px] border-burgundy pl-3">
-                      <span className="text-[10px] text-muted-foreground block font-medium leading-snug">
-                        Varahi Funding
-                        {selected && <span className="text-muted-foreground/60 ml-1">({(100 - capitalShare).toFixed(2)}%)</span>}
-                      </span>
-                      <AnimatePresence mode="wait">
-                        <motion.span
-                          key={`${capital}-${multiplier}`}
-                          initial={{ opacity: 0.5 }}
-                          animate={{ opacity: 1 }}
-                          className="text-lg font-black text-burgundy block mt-0.5"
-                        >
-                          {multiplier !== null ? fmt(funding) : "—"}
-                        </motion.span>
-                      </AnimatePresence>
                     </div>
                   </div>
                 </div>
 
-                {/* Total buying power highlight */}
-                <div className="rounded-[6px] p-4 flex items-center justify-between gap-2" style={{ background: "linear-gradient(135deg, rgba(255,0,0,0.06) 0%, rgba(217,178,124,0.08) 100%)", border: "1px solid rgba(255,0,0,0.12)" }}>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Total Buying Power</p>
-                    <AnimatePresence mode="wait">
-                      <motion.p
-                        key={`${capital}-${multiplier}-bp`}
-                        initial={{ opacity: 0.4, scale: 0.97 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.25 }}
-                        className="text-2xl sm:text-3xl font-black text-burgundy mt-0.5"
-                      >
-                        {multiplier !== null ? fmt(buyingPower) : "—"}
-                      </motion.p>
-                    </AnimatePresence>
-                    {selected && (
-                      <p className="text-[10px] text-muted-foreground mt-1">
-                        on {fmt(capital)} in <span className="font-semibold text-foreground">{selected.symbol}</span>
+                {/* ── RIGHT: Selected Stock + Result ── */}
+                <div className="p-6 flex flex-col gap-5">
+
+                  {/* Selected stock card */}
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={selected?.symbol ?? "loading"}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="rounded-[6px] border border-border bg-secondary/10 p-3 flex items-center gap-3 min-h-[62px]"
+                    >
+                      {selected ? (
+                        <>
+                          <StockAvatar stock={selected} size={36} />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <p className="font-black text-[14px] text-foreground leading-none">{selected.symbol}</p>
+                              <RatioBadge stock={selected} />
+                            </div>
+                            {selected.name && <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{selected.name}</p>}
+                            {selected.price != null && <p className="text-[11px] font-semibold text-foreground mt-0.5">{fmt(selected.price)} / share</p>}
+                            <p className="text-[11px] text-muted-foreground mt-0.5">
+                              Margin required: <span className="font-semibold text-foreground">{selected.marginPct.toFixed(2)}%</span>
+                              {selected.listedMarginPct < selected.marginPct && (
+                                <span className="ml-1 text-muted-foreground/80" title={`Listed margin ${selected.listedMarginPct.toFixed(2)}%; a minimum of ${selected.marginPct.toFixed(1)}% applies`}>
+                                  (min. applied · listed {selected.listedMarginPct.toFixed(2)}%)
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                          <div className="flex-shrink-0 text-right">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                            <p className="text-[9px] text-emerald-600 font-bold mt-0.5 uppercase tracking-wide">MTF Eligible</p>
+                          </div>
+                        </>
+                      ) : summary.error ? (
+                        <p className="text-[12px] text-muted-foreground">MTF stocks are unavailable right now.</p>
+                      ) : (
+                        <SkeletonGroup label="Loading stock" className="flex items-center gap-3 w-full">
+                          <Bone className="w-9 h-9 rounded-full shrink-0" />
+                          <div className="flex-1 space-y-1.5"><Bone className="h-3.5 w-32" /><Bone className="h-2.5 w-44" /></div>
+                        </SkeletonGroup>
+                      )}
+                    </motion.div>
+                  </AnimatePresence>
+
+                  {/* Donut + Legend — always side-by-side */}
+                  <div className="flex items-center gap-5">
+                    <div className="relative w-28 h-28 flex-shrink-0">
+                      <svg width="100%" height="100%" viewBox="0 0 100 100" className="transform -rotate-90">
+                        <circle cx="50" cy="50" r="35" fill="transparent" stroke="#E5E5E5" strokeWidth="16" />
+                        {multiplier !== null && (
+                          <>
+                            <circle
+                              cx="50" cy="50" r="35" fill="transparent"
+                              stroke="var(--color-burgundy)" strokeWidth="16"
+                              strokeDasharray={fundDash}
+                              strokeDashoffset={-capArc}
+                              className="transition-all duration-500 ease-out"
+                            />
+                            <circle
+                              cx="50" cy="50" r="35" fill="transparent"
+                              stroke="var(--color-gold)" strokeWidth="16"
+                              strokeDasharray={capDash}
+                              strokeDashoffset="0"
+                              className="transition-all duration-500 ease-out"
+                            />
+                          </>
+                        )}
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className="text-xl font-black text-foreground leading-none">{multiplier !== null ? times(effective) : "—"}</span>
+                        <span className="text-[9px] text-muted-foreground font-semibold mt-0.5">buying power</span>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-4 flex-1">
+                      <div className="border-l-[3px] border-gold pl-3">
+                        <span className="text-[10px] text-muted-foreground block font-medium leading-snug">
+                          Your Capital
+                          {selected && <span className="text-muted-foreground/60 ml-1">({capitalShare.toFixed(2)}%)</span>}
+                        </span>
+                        <AnimatePresence mode="wait">
+                          <motion.span
+                            key={capital}
+                            initial={{ opacity: 0.5 }}
+                            animate={{ opacity: 1 }}
+                            className="text-lg font-black text-foreground block mt-0.5"
+                          >
+                            {fmt(capital)}
+                          </motion.span>
+                        </AnimatePresence>
+                      </div>
+                      <div className="border-l-[3px] border-burgundy pl-3">
+                        <span className="text-[10px] text-muted-foreground block font-medium leading-snug">
+                          Varahi Funding
+                          {selected && <span className="text-muted-foreground/60 ml-1">({(100 - capitalShare).toFixed(2)}%)</span>}
+                        </span>
+                        <AnimatePresence mode="wait">
+                          <motion.span
+                            key={`${capital}-${multiplier}`}
+                            initial={{ opacity: 0.5 }}
+                            animate={{ opacity: 1 }}
+                            className="text-lg font-black text-burgundy block mt-0.5"
+                          >
+                            {multiplier !== null ? fmt(funding) : "—"}
+                          </motion.span>
+                        </AnimatePresence>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Total buying power highlight */}
+                  <div className="rounded-[6px] p-4 flex items-center justify-between gap-2" style={{ background: "linear-gradient(135deg, rgba(255,0,0,0.06) 0%, rgba(217,178,124,0.08) 100%)", border: "1px solid rgba(255,0,0,0.12)" }}>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Total Buying Power</p>
+                      <AnimatePresence mode="wait">
+                        <motion.p
+                          key={`${capital}-${multiplier}-bp`}
+                          initial={{ opacity: 0.4, scale: 0.97 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.25 }}
+                          className="text-2xl sm:text-3xl font-black text-burgundy mt-0.5"
+                        >
+                          {multiplier !== null ? fmt(buyingPower) : "—"}
+                        </motion.p>
+                      </AnimatePresence>
+                      {selected && (
+                        <p className="text-[10px] text-muted-foreground mt-1">
+                          on {fmt(capital)} in <span className="font-semibold text-foreground">{selected.symbol}</span>
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex-shrink-0 text-right">
+                      <div className="text-3xl sm:text-4xl font-black" style={{ color: "#FF0000", opacity: 0.15 }}>{multiplier !== null ? times(effective) : ""}</div>
+                    </div>
+                  </div>
+
+                  {/* Funding cap: shown once ₹1 crore is reached */}
+                  {selected && fundingCapped && (
+                    <div role="status" className="rounded-[6px] border border-amber-200 bg-amber-50 px-3 py-2.5 flex items-start gap-2">
+                      <Info className="w-4 h-4 text-amber-600 shrink-0 mt-px" aria-hidden />
+                      <p className="text-[11px] leading-snug text-amber-800">
+                        <span className="font-bold">Maximum funding provided by Varahi is ₹1 crore.</span>{" "}
+                        At {times(multiplier ?? 1)} your funding would be {fmt(fullFunding)}, so buying power is capped at {fmt(capital)} + ₹1,00,00,000.
                       </p>
-                    )}
-                  </div>
-                  <div className="flex-shrink-0 text-right">
-                    <div className="text-3xl sm:text-4xl font-black" style={{ color: "#FF0000", opacity: 0.15 }}>{multiplier !== null ? times(effective) : ""}</div>
-                  </div>
+                    </div>
+                  )}
                 </div>
-
-                {/* Funding cap: shown once ₹1 crore is reached */}
-                {selected && fundingCapped && (
-                  <div role="status" className="rounded-[6px] border border-amber-200 bg-amber-50 px-3 py-2.5 flex items-start gap-2">
-                    <Info className="w-4 h-4 text-amber-600 shrink-0 mt-px" aria-hidden />
-                    <p className="text-[11px] leading-snug text-amber-800">
-                      <span className="font-bold">Maximum funding provided by Varahi is ₹1 crore.</span>{" "}
-                      At {times(multiplier ?? 1)} your funding would be {fmt(fullFunding)}, so buying power is capped at {fmt(capital)} + ₹1,00,00,000.
-                    </p>
-                  </div>
-                )}
               </div>
-            </div>
             </div>{/* end overflow-x-auto */}
 
             {/* Bottom CTA */}

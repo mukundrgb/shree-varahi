@@ -20,6 +20,7 @@ import {
   CheckCircle2,
 } from "lucide-react"
 import { AppPromoSection } from "@/components/app-promo-section"
+import { GlobalInvestingSection } from "@/components/global-investing-section"
 import Link from "next/link"
 
 /* ── Custom globe SVG ── */
@@ -163,8 +164,8 @@ const products: Product[] = [
     title: "Mutual Funds",
     description: "Zero commission. Keep every rupee of your return.",
     detail: "5,000+ funds, SIP, STP, SWP, goal-based investing in one click.",
-    badge: "Direct Plans",
-    badgeColor: "bg-gold/20 text-gold-deep",
+    badge: "",
+    badgeColor: "",
     accentColor: "#8B0D19",
     bgHover: "rgba(217,178,124,0.06)",
     href: "/mutual-funds",
@@ -584,7 +585,7 @@ function ProductStackSection() {
             </p>
             <div className="flex flex-col gap-6 border-t border-border pt-8">
               {[
-                { val: "1 Lakh+",  label: "Active Investors" },
+                { val: "1 Lakh+",  label: " Investors" },
                 { val: "₹17",      label: "Delivery Brokerage" },
                 { val: "₹17 Flat", label: "Intraday & F&O" },
               ].map(({ val, label }) => (
@@ -732,7 +733,6 @@ export function Hero() {
                 {[
                   { Icon: Shield, text: "SEBI Registered" },
                   { Icon: Users, text: "Active Traders" },
-                  { Icon: CheckCircle2, text: "ISO/IEC 27001:2022" },
                 ].map(({ Icon, text }) => (
                   <div key={text} className="flex items-center gap-2 text-[13px] font-semibold text-muted-foreground">
                     <Icon className="w-4 h-4 text-gold-deep" />
@@ -834,6 +834,9 @@ export function Hero() {
           </motion.div>
         </div>
       </section>
+
+      {/* Global Investing — right after the burgundy bar */}
+      <GlobalInvestingSection />
 
       {/* App Promo */}
       <AppPromoSection />
