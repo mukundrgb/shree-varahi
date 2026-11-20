@@ -13,6 +13,18 @@ export function useFnoCards(category: FnoCategory, { page = 1, limit = 8 }: { pa
   })
 }
 
+/**
+ * Contracts of one underlying for the "All Indices" table on /futures-options/:category/:slug.
+ * Options return one expiry at a time; leave `expiry` empty for the nearest one.
+ */
+export function useFnoDetail(category: FnoCategory, slug: string, expiry?: string) {
+  return useApiResource(
+    slug ? `fno-detail:${category}:${slug}:${expiry ?? ""}` : null,
+    (signal) => fnoApi.detail(category, slug, expiry, signal),
+    { refreshMs: FNO_REFRESH_MS },
+  )
+}
+
 /* F&O detail pages are switched off for now (see app/futures/[slug] and app/options/[slug]).
 export function useFuturesDetail(underlying: "index" | "stock", symbol: string) {
   return useApiResource(symbol ? `${underlying}:${symbol}` : null, (signal) => fnoApi.futures(underlying, symbol, signal), {

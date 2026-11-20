@@ -2,18 +2,18 @@
 
 // Detail page of one underlying from the F&O Markets tabs (Index Future, Stocks Future, Index Option, Stock Option):
 // header with name, price, change and % change, then the "All Indices" table of its contracts.
-// The header comes from the tab's card list; the table's API isn't connected yet, so it's ready but empty.
-// To plug the data in: return FnoDetailRow[] from useFnoContracts below.
+// The header comes from the tab's card list; the table comes from GET /fno/:category/:slug.
+// Options return one expiry at a time, so the table has an expiry picker for them.
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import Link from "next/link"
 import { ChevronRight, Search, X, TrendingUp, TrendingDown } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { StockAvatar } from "@/components/stock-avatar"
 import { Bone, TableRowsSkeleton } from "@/components/skeletons"
-import { useFnoCard } from "@/hooks/use-fno"
-import { isOptionsCategory, type FnoCategory, type FnoDetailRow } from "@/lib/fno/api-client"
+import { useFnoCard, useFnoDetail } from "@/hooks/use-fno"
+import { isOptionsCategory, type FnoCategory, type FnoDetailContract, type FnoDetailRow } from "@/lib/fno/api-client"
 import { NO_VALUE, formatDate, formatQuoteTime } from "@/lib/stocks/format"
 
 const CATEGORY_LABEL: Record<FnoCategory, string> = {
@@ -55,14 +55,40 @@ const UPDATED: Column = { label: "Updation Time", width: "150px", render: (r) =>
 const FUTURES_COLUMNS = [NAME, EXPIRY, PREV_LTP, LTP, FAO_DIFF, FAO_CHANGE, OI, PREV_OI, UPDATED]
 const OPTIONS_COLUMNS = [NAME, EXPIRY, PREV_LTP, LTP, FAO_DIFF, FAO_CHANGE, STRIKE, OPTION_TYPE, OI, PREV_OI, UPDATED]
 
-/** Contracts of the underlying for the table. Not connected yet. */
-function useFnoContracts(_category: FnoCategory, _slug: string) {
+const toRow = (c: FnoDetailContract): FnoDetailRow => ({
+  name: c.label,
+  expiry: c.expiry,
+  prevLtp: c.previousLtp,
+  ltp: c.ltp,
+  faoDiff: c.faoDiff,
+  faoChange: c.faoChangePct,
+  strike: c.strike,
+  optionType: c.optionType,
+  openInterest: c.openInterest,
+  prevOpenInterest: c.previousOpenInterest,
+  updatedAt: c.updatedAt,
+})
+
+/** Futures by expiry; options by expiry, then strike, then CE before PE. */
+const byContract = (a: FnoDetailContract, b: FnoDetailContract) =>
+  (a.expiry ?? "").localeCompare(b.expiry ?? "") ||
+  (a.strike ?? 0) - (b.strike ?? 0) ||
+  (a.optionType ?? "").localeCompare(b.optionType ?? "")
+
+/** Contracts of the underlying for the table, from GET /fno/:category/:slug (?expiry= for options). */
+function useFnoContracts(category: FnoCategory, slug: string, expiry?: string) {
+  const { data, error, loading, retry } = useFnoDetail(category, slug, expiry)
+  // While another expiry loads, the previous expiry's data is still held; don't show it.
+  const current = data && (!expiry || data.selectedExpiry === expiry) ? data : null
+  const rows = useMemo(() => (current ? [...current.contracts].sort(byContract).map(toRow) : []), [current])
   return {
-    rows: [] as FnoDetailRow[],
-    loading: false,
-    error: false,
-    retry: () => {},
-    emptyText: "Contract data for this underlying will be available soon.",
+    rows,
+    expiries: data?.expiries ?? [],
+    selectedExpiry: expiry ?? data?.selectedExpiry ?? "",
+    loading: loading || (!current && !error),
+    error: Boolean(error) && error?.status !== 404,
+    retry,
+    emptyText: error?.status === 404 ? "No contracts found for this underlying." : "No contracts are trading right now.",
   }
 }
 
@@ -74,7 +100,8 @@ export function FnoDetailPage({ category, slug }: { category: FnoCategory; slug:
 
   const header = useFnoCard(category, slug)
   const card = header.data?.card ?? null
-  const contracts = useFnoContracts(category, slug)
+  const [expiry, setExpiry] = useState<string | undefined>(undefined)
+  const contracts = useFnoContracts(category, slug, expiry)
   const [search, setSearch] = useState("")
 
   const query = search.trim().toLowerCase()
@@ -159,6 +186,19 @@ export function FnoDetailPage({ category, slug }: { category: FnoCategory; slug:
                   : `Every ${options ? "option" : "futures"} contract for this underlying.`}
               </p>
             </div>
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            {options && contracts.expiries.length > 0 && (
+              <select
+                aria-label="Expiry date"
+                value={contracts.selectedExpiry}
+                onChange={(e) => setExpiry(e.target.value)}
+                className="w-full sm:w-44 px-3 py-2 text-sm font-bold rounded-[5px] border border-border bg-cream/50 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40"
+              >
+                {contracts.expiries.map((d) => (
+                  <option key={d} value={d}>Expiry: {formatDate(d)}</option>
+                ))}
+              </select>
+            )}
             <div className="relative w-full sm:w-72">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
               <input
@@ -174,6 +214,7 @@ export function FnoDetailPage({ category, slug }: { category: FnoCategory; slug:
                   <X className="w-3.5 h-3.5" />
                 </button>
               )}
+            </div>
             </div>
           </div>
 
