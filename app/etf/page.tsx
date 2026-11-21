@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { LOGIN_URL } from "@/lib/external-links"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ChevronLeft, ChevronRight, TrendingDown, Plus, X, Layers, Repeat, Eye, LayoutDashboard, FileSearch, Zap,
@@ -10,6 +11,7 @@ import {
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { SmartSearch } from "@/components/smart-controls"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -172,18 +174,13 @@ export default function ETFPage() {
   const etfTotalPages = Math.max(1, Math.ceil(catRows.length / ETFS_PER_PAGE))
   const etfPageRows = catRows.slice((etfPage - 1) * ETFS_PER_PAGE, etfPage * ETFS_PER_PAGE)
   const pickCategory = (c: Category | "All") => { setActiveCat(c); setEtfPage(1) }
-  /** Hero shortcuts: pick the category, then jump to the table. */
-  const browseCategory = (c: Category) => {
-    pickCategory(c)
-    document.getElementById("etf-table")?.scrollIntoView({ behavior: "smooth", block: "start" })
-  }
 
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
 
-      {/* ── HERO (compact: pitch on the left, browse-by-category on the right) ── */}
-      <section className="relative bg-cream border-b border-border/40 pt-24 pb-8 lg:pb-10 overflow-hidden">
+      {/* ── HERO (compact: pitch on the left, actions + trust stats on the right) ── */}
+      <section className="relative bg-cream border-b border-border/40 pt-24 pb-6 lg:pb-8 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div
             className="absolute inset-0 opacity-[0.04]"
@@ -202,8 +199,8 @@ export default function ETFPage() {
             <span className="text-foreground font-semibold">ETF</span>
           </nav>
 
-          <div className="grid lg:grid-cols-[minmax(0,1fr)_420px] gap-6 lg:gap-12 items-center">
-            <div className="space-y-4">
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_auto] gap-5 lg:gap-12 items-center">
+            <div className="space-y-3">
               <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">Exchange Traded Funds</p>
               <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-black text-foreground tracking-tight leading-[1.1]">
                 Invest In ETFs With <span className="text-burgundy lg:block">Simplicity &amp; Flexibility</span>
@@ -211,58 +208,25 @@ export default function ETFPage() {
               <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
                 Access a wide range of ETFs through Shree Varahi and diversify your investments more easily and flexibly.
               </p>
-              <div className="flex flex-wrap items-center gap-3 pt-1">
-                <Button className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
-                  Start Trading
-                </Button>
-                <Button variant="outline" className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary">
-                  Open Account
-                </Button>
-                <div className="flex items-center gap-4 sm:ml-3 sm:pl-5 sm:border-l border-border">
-                  <div>
-                    <div className="text-base font-black text-foreground leading-none">31+</div>
-                    <div className="text-[10px] text-muted-foreground font-semibold mt-1">Years of Trust</div>
-                  </div>
-                  <div>
-                    <div className="text-base font-black text-foreground flex items-center gap-1 leading-none">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
-                    <div className="text-[10px] text-muted-foreground font-semibold mt-1">App Rating</div>
-                  </div>
+            </div>
+            {/* Actions + trust stats on the right (the old browse card is gone, so the hero is shorter) */}
+            <div className="flex flex-wrap items-center lg:justify-end gap-3">
+              <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
+                <Link href={LOGIN_URL}>Start Trading</Link>
+              </Button>
+              <Button asChild variant="outline" className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary">
+                <Link href={LOGIN_URL}>Open Account</Link>
+              </Button>
+              <div className="flex items-center gap-4 sm:ml-3 sm:pl-5 sm:border-l border-border">
+                <div>
+                  <div className="text-base font-black text-foreground leading-none">31+</div>
+                  <div className="text-[10px] text-muted-foreground font-semibold mt-1">Years of Trust</div>
+                </div>
+                <div>
+                  <div className="text-base font-black text-foreground flex items-center gap-1 leading-none">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
+                  <div className="text-[10px] text-muted-foreground font-semibold mt-1">App Rating</div>
                 </div>
               </div>
-            </div>
-
-            {/* Browse by category: each opens the table below on that category */}
-            <div className="rounded-[10px] bg-white border border-border shadow-[0_8px_32px_rgba(0,0,0,0.06)] p-4">
-              <p className="text-[10px] font-extrabold uppercase tracking-wider text-gold-deep mb-2.5">Browse by category</p>
-              <div className="grid grid-cols-2 gap-2">
-                {CATEGORIES.map((c) => {
-                  const Icon = c.icon
-                  return (
-                    <button
-                      key={c.id}
-                      onClick={() => browseCategory(c.id)}
-                      className="group text-left rounded-[6px] border border-border bg-cream/50 px-3 py-2.5 hover:border-burgundy/30 hover:bg-white transition-all flex items-center gap-2.5"
-                    >
-                      <Icon className="w-4 h-4 shrink-0 text-burgundy" />
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-xs font-extrabold text-foreground truncate">{c.label}</span>
-                        <span className="block text-[10px] font-semibold text-muted-foreground tabular-nums">
-                          {etfList.data ? `${ETFS[c.id].length} ETFs` : "—"}
-                        </span>
-                      </span>
-                      <ArrowUpRight className="w-3 h-3 shrink-0 text-muted-foreground group-hover:text-burgundy transition-colors" />
-                    </button>
-                  )
-                })}
-              </div>
-              <Link
-                href="/etf/compare"
-                className="mt-3 flex items-center gap-3 rounded-[6px] bg-burgundy/[0.06] border border-burgundy/15 px-3 py-2.5 hover:bg-burgundy/10 transition-colors"
-              >
-                <BarChart3 className="w-4 h-4 text-burgundy shrink-0" />
-                <span className="text-[11px] text-foreground font-extrabold">Compare ETFs by cost, AUM &amp; returns</span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-burgundy ml-auto shrink-0" />
-              </Link>
             </div>
           </div>
         </div>
@@ -274,23 +238,9 @@ export default function ETFPage() {
           <div className="grid lg:grid-cols-[300px_minmax(0,1fr)] gap-5 lg:gap-6 items-start">
 
           {/* Filters */}
-          <aside className="lg:sticky lg:top-20 rounded-[8px] border border-border bg-white p-4 space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
-              <input
-                type="text"
-                aria-label="Search ETFs"
-                placeholder="Search ETFs..."
-                value={etfSearch}
-                onChange={(e) => { setEtfSearch(e.target.value); setEtfPage(1) }}
-                className="w-full pl-9 pr-8 py-2 text-sm rounded-[5px] border border-border bg-cream/50 placeholder:text-muted-foreground/55 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40"
-              />
-              {etfSearch && (
-                <button onClick={() => { setEtfSearch(""); setEtfPage(1) }} aria-label="Clear search" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
+          {/* Desktop sidebar; phones get search + a swipeable category row above the table */}
+          <aside className="hidden lg:block lg:sticky lg:top-20 rounded-[8px] border border-border bg-white p-4 space-y-4">
+            <SmartSearch value={etfSearch} onChange={(v) => { setEtfSearch(v); setEtfPage(1) }} placeholder="Search ETFs…" ariaLabel="Search ETFs" shortcut />
 
             <div>
               <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-2">Category</p>
@@ -326,6 +276,23 @@ export default function ETFPage() {
 
           {/* Results */}
           <div className="min-w-0">
+            <div className="lg:hidden space-y-3 mb-4">
+              <SmartSearch value={etfSearch} onChange={(v) => { setEtfSearch(v); setEtfPage(1) }} placeholder="Search ETFs…" ariaLabel="Search ETFs" />
+              <div className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-1" style={{ scrollbarWidth: "none" }} role="tablist" aria-label="ETF category">
+                {[{ id: "All" as const, label: "All ETFs", icon: Layers }, ...CATEGORIES].map((c) => {
+                  const count = c.id === "All" ? allEtfs.length : ETFS[c.id].length
+                  return (
+                    <button key={c.id} role="tab" aria-selected={activeCat === c.id} onClick={() => pickCategory(c.id)}
+                  className={`shrink-0 inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full border text-xs font-bold whitespace-nowrap transition-colors ${
+                    activeCat === c.id ? "bg-burgundy text-white border-burgundy" : "bg-white text-foreground border-border"
+                  }`}>
+                      {c.label}
+                      {etfList.data && <span className="text-[10px] opacity-70 tabular-nums">{count}</span>}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
             <div className="flex flex-wrap items-end justify-between gap-3 mb-3">
               <div>
                 <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight leading-none">

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { CALCULATOR_LINKS } from "@/lib/external-links"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
@@ -111,8 +112,8 @@ const marketTabs: MarketTab[] = [
       { name: "Debt Funds", href: "#" }, { name: "Hybrid Funds", href: "#" },
       { name: "Index Funds", href: "#" }, { name: "Sectoral Funds", href: "#" },
       { name: "NFO Today", href: "/nfo" }, { name: "Fund Performance", href: "#" },
-      /* { name: "SIP Calculator", href: "#" }, */ { name: "Goal-based SIP", href: "#" },
-      { name: "Lumpsum Calculator", href: "#" }, { name: "XIRR Calculator", href: "#" },
+      /* { name: "SIP Calculator", href: "#" }, */ { name: "Goal-based SIP", href: CALCULATOR_LINKS.goalSip },
+      { name: "Lumpsum Calculator", href: CALCULATOR_LINKS.lumpsum }, { name: "XIRR Calculator", href: "#" },
       { name: "STP & SWP", href: "#" }, { name: "International Funds", href: "#" },
       { name: "Overnight Funds", href: "#" }, { name: "Liquid Funds", href: "#" },
       { name: "Credit Risk Funds", href: "#" }, { name: "Gilt Funds", href: "#" },
@@ -178,8 +179,8 @@ const marketTabs: MarketTab[] = [
     id: "tools",
     label: "Calculators",
     links: [
-      /* { name: "SIP Calculator", href: "#" }, */ { name: "Lumpsum Calculator", href: "#" },
-      { name: "Brokerage Calculator", href: "#" }, { name: "XIRR Calculator", href: "#" },
+      /* { name: "SIP Calculator", href: "#" }, */ { name: "Lumpsum Calculator", href: CALCULATOR_LINKS.lumpsum },
+      { name: "Brokerage Calculator", href: CALCULATOR_LINKS.brokerage }, { name: "XIRR Calculator", href: "#" },
       { name: "FD vs SIP", href: "#" }, { name: "Inflation Calculator", href: "#" },
       { name: "Goal Planner", href: "#" }, { name: "Retirement Calculator", href: "#" },
       { name: "Stock Screener", href: "#" }, { name: "Option Chain", href: "/futures-options" },
@@ -187,7 +188,7 @@ const marketTabs: MarketTab[] = [
       { name: "Research Reports", href: "#" }, { name: "Webinars", href: "#" },
       { name: "Market News", href: "#" }, { name: "IPO GMP Tracker", href: "#" },
       { name: "Portfolio Tracker", href: "#" }, { name: "P&L Statement", href: "#" },
-      { name: "Tax P&L Report", href: "#" }, { name: "CAGR Calculator", href: "#" },
+      { name: "Tax P&L Report", href: "#" }, { name: "CAGR Calculator", href: CALCULATOR_LINKS.cagr },
       { name: "HRA Calculator", href: "#" }, { name: "EMI Calculator", href: "#" },
       { name: "Stock Compare", href: "#" }, { name: "Sector Heatmap", href: "#" },
     ],
@@ -203,7 +204,7 @@ const marketTabs: MarketTab[] = [
       { name: "Bonus History", href: "#" }, { name: "Stock Splits", href: "#" },
       { name: "AGM Calendar", href: "#" }, { name: "Results Calendar", href: "#" },
       { name: "Market Holidays", href: "#" }, { name: "Trading Hours", href: "#" },
-      { name: "Margin Calculator", href: "#" }, { name: "Open Interest", href: "#" },
+      { name: "Margin Calculator", href: CALCULATOR_LINKS.margin }, { name: "Open Interest", href: "#" },
       { name: "Put Call Ratio", href: "#" }, { name: "VIX Live", href: "#" },
       { name: "Global Markets", href: "#" }, { name: "Crypto Heatmap", href: "#" },
       { name: "Currency Rates", href: "#" }, { name: "Bond Yields", href: "#" },
@@ -339,13 +340,13 @@ const exploreCategories: ExploreCategory[] = [
     { name: "Motilal Oswal Nasdaq 100 ETF", href: "/etf" },
   ]},
   { label: "Calculators", links: [
-    { name: "Brokerage Calculator", href: "#" }, { name: "Margin Calculator", href: "#" }, { name: "MTF Calculator", href: "#" },
-    /* { name: "SIP Calculator", href: "#" }, { name: "SIP Calculator with Inflation", href: "#" }, */ { name: "Lumpsum Calculator", href: "#" },
-    { name: "ETF Return Calculator", href: "#" }, { name: "CAGR Calculator", href: "#" }, { name: "PPF Calculator", href: "#" },
+    { name: "Brokerage Calculator", href: CALCULATOR_LINKS.brokerage }, { name: "Margin Calculator", href: CALCULATOR_LINKS.margin }, { name: "MTF Calculator", href: "#" },
+    /* { name: "SIP Calculator", href: "#" }, { name: "SIP Calculator with Inflation", href: "#" }, */ { name: "Lumpsum Calculator", href: CALCULATOR_LINKS.lumpsum },
+    { name: "ETF Return Calculator", href: "#" }, { name: "CAGR Calculator", href: CALCULATOR_LINKS.cagr }, { name: "PPF Calculator", href: "#" },
     { name: "FD Calculator", href: "#" }, { name: "RD Calculator", href: "#" }, { name: "Compound Interest Calculator", href: "#" },
     { name: "EPF Calculator", href: "#" }, { name: "NPS Calculator", href: "#" }, { name: "NSC Calculator", href: "#" },
-    { name: "Gratuity Calculator", href: "#" }, { name: "MF Returns Calculator", href: "#" }, { name: "EMI Calculator", href: "#" },
-    { name: "All Calculators", href: "#" },
+    { name: "Gratuity Calculator", href: "#" }, { name: "MF Returns Calculator", href: CALCULATOR_LINKS.mfReturns }, { name: "EMI Calculator", href: "#" },
+    { name: "All Calculators", href: CALCULATOR_LINKS.all },
   ]},
   { label: "Stock Market Live", links: [
     { name: "Top Gainers", href: "/stocks" }, { name: "Top Losers", href: "/stocks" }, { name: "52 Week High Stocks", href: "/stocks" },

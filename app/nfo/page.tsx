@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { LOGIN_URL } from "@/lib/external-links"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ChevronRight, Plus, X, Layers, Eye, FileSearch, GitCompare, MonitorSmartphone,
@@ -172,7 +173,7 @@ export default function NFOPage() {
       <Navbar />
 
       {/* ── HERO (compact) ── */}
-      <section className="relative bg-cream border-b border-border/40 pt-24 pb-8 lg:pb-10 overflow-hidden">
+      <section className="relative bg-cream border-b border-border/40 pt-24 pb-6 lg:pb-8 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div
             className="absolute inset-0 opacity-[0.04]"
@@ -191,8 +192,8 @@ export default function NFOPage() {
             <span className="text-foreground font-semibold">NFO</span>
           </nav>
 
-          <div>
-            <div className="space-y-4">
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_auto] gap-5 lg:gap-12 items-center">
+            <div className="space-y-3">
               <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">New Fund Offers</p>
               <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-black text-foreground tracking-tight leading-[1.1]">
                 Discover &amp; Invest In <span className="text-burgundy lg:block">New Fund Offers</span>
@@ -200,22 +201,23 @@ export default function NFOPage() {
               <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
                 Discover New Opportunities. Invest Early. Build Your Portfolio With Confidence — with live NFO tracking, research, and a unified fund dashboard.
               </p>
-              <div className="flex flex-wrap items-center gap-3 pt-1">
-                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
-                  <a href="#explore-nfos">Explore NFOs</a>
-                </Button>
-                <Button asChild variant="outline" className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary">
-                  <Link href="/login">Open Account</Link>
-                </Button>
-                <div className="flex items-center gap-4 sm:ml-3 sm:pl-5 sm:border-l border-border">
-                  <div>
-                    <div className="text-base font-black text-foreground leading-none">31+</div>
-                    <div className="text-[10px] text-muted-foreground font-semibold mt-1">Years of Trust</div>
-                  </div>
-                  <div>
-                    <div className="text-base font-black text-foreground flex items-center gap-1 leading-none">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
-                    <div className="text-[10px] text-muted-foreground font-semibold mt-1">App Rating</div>
-                  </div>
+            </div>
+            {/* Actions + trust stats on the right, so the hero stays short */}
+            <div className="flex flex-wrap items-center lg:justify-end gap-3">
+              <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
+                <a href="#explore-nfos">Explore NFOs</a>
+              </Button>
+              <Button asChild variant="outline" className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary">
+                <Link href={LOGIN_URL}>Open Account</Link>
+              </Button>
+              <div className="flex items-center gap-4 sm:ml-3 sm:pl-5 sm:border-l border-border">
+                <div>
+                  <div className="text-base font-black text-foreground leading-none">31+</div>
+                  <div className="text-[10px] text-muted-foreground font-semibold mt-1">Years of Trust</div>
+                </div>
+                <div>
+                  <div className="text-base font-black text-foreground flex items-center gap-1 leading-none">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
+                  <div className="text-[10px] text-muted-foreground font-semibold mt-1">App Rating</div>
                 </div>
               </div>
             </div>
@@ -309,7 +311,7 @@ export default function NFOPage() {
                       </div>
                       {/* Invest Now */}
                       <Link
-                        href="/login"
+                        href={LOGIN_URL}
                         aria-label={`Invest now in ${f.name}`}
                         className="mt-3 py-2 flex items-center justify-center gap-1.5 rounded-[6px] bg-burgundy text-white text-xs font-black transition-all duration-200 hover:bg-burgundy-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50"
                       >

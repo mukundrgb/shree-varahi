@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { SmartSearch } from "@/components/smart-controls"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import { Search, MapPin, Phone, ExternalLink } from "lucide-react"
@@ -187,16 +188,7 @@ export function BranchLocator() {
             className="space-y-6"
           >
             {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <input
-                type="text"
-                placeholder="Search city or state..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 rounded-[5px] bg-secondary border border-border focus:outline-none focus:ring-2 focus:ring-gold/50"
-              />
-            </div>
+            <SmartSearch value={searchQuery} onChange={setSearchQuery} placeholder="Search city or state…" ariaLabel="Search branches by city or state" className="[&_input]:h-12 [&_input]:bg-secondary" />
 
             {/* Branch List */}
             <div className="space-y-3 max-h-[380px] overflow-auto pr-2">

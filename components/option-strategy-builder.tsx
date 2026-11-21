@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo } from "react"
 import { motion, animate, useMotionValue } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, ChevronDown, TrendingUp, TrendingDown, Minus, Zap } from "lucide-react"
+import { SmartSelect } from "@/components/smart-controls"
 
 const UNDERLYINGS = ["Nifty 50", "Bank Nifty", "Fin Nifty", "Midcap Nifty", "Sensex"]
 const EXPIRIES = ["29 May 2025", "05 Jun 2025", "26 Jun 2025", "25 Sep 2025"]
@@ -171,16 +172,7 @@ function SelectBox({ label, value, options, onChange }: { label: string; value: 
   return (
     <div className="space-y-1.5">
       <label className="text-xs text-muted-foreground font-medium uppercase tracking-wider">{label}</label>
-      <div className="relative">
-        <select
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full appearance-none bg-secondary border border-border rounded-[5px] px-3 py-2.5 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 cursor-pointer"
-        >
-          {options.map((o) => <option key={o} value={o}>{o}</option>)}
-        </select>
-        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-      </div>
+      <SmartSelect value={value} onChange={onChange} options={options.map((o) => ({ value: o, label: o }))} title={label} className="bg-secondary" />
     </div>
   )
 }
@@ -275,14 +267,8 @@ export function OptionStrategyBuilder() {
               <div className="space-y-1.5">
                 <label className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Expiry</label>
                 <div className="relative">
-                  <select
-                    value={expiry}
-                    onChange={(e) => setExpiry(e.target.value)}
-                    className="w-full appearance-none bg-secondary border border-border rounded-[5px] px-3 py-2.5 text-sm font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-gold/40 cursor-pointer"
-                  >
-                    {EXPIRIES.map((e) => <option key={e} value={e}>{e}</option>)}
-                  </select>
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none">
+                  <SmartSelect value={expiry} onChange={setExpiry} options={EXPIRIES.map((e) => ({ value: e, label: e }))} title="Expiry" searchable={false} className="bg-secondary pr-9" />
+                  <div className="absolute right-9 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none">
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-profit opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-profit"></span>

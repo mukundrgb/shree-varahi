@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { SmartSearch } from "@/components/smart-controls"
 import { motion, AnimatePresence } from "framer-motion"
 import { Search, Plus, X, MessageCircle } from "lucide-react"
 
@@ -106,16 +107,7 @@ export function FAQSection() {
           viewport={{ once: true }}
           className="max-w-xl mx-auto mb-10"
         >
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search questions..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 rounded-[5px] bg-secondary border border-border focus:outline-none focus:ring-2 focus:ring-gold/50"
-            />
-          </div>
+          <SmartSearch value={searchQuery} onChange={setSearchQuery} placeholder="Search questions…" ariaLabel="Search FAQs" className="[&_input]:h-12 [&_input]:bg-secondary" />
         </motion.div>
 
         {/* Two Column FAQ */}

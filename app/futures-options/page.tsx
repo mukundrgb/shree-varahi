@@ -1,12 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { LOGIN_URL } from "@/lib/external-links"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
 import { TableRowsSkeleton } from "@/components/skeletons"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { SmartSearch } from "@/components/smart-controls"
 import { Button } from "@/components/ui/button"
 import { useFnoCards } from "@/hooks/use-fno"
 import { fnoDetailHref, type FnoCategory } from "@/lib/fno/api-client"
@@ -147,11 +149,6 @@ export default function FuturesOptionsPage() {
   // Keep the page count from the same tab so the pagination doesn't flicker while a page loads.
   const marketsTotalPages = markets.data?.category === marketCategory ? markets.data.totalPages : 1
   const pickMarketsTab = (tab: MarketsTabKey) => { setMarketsTab(tab); setMarketsPage(1) }
-  /** Hero shortcuts: pick the segment, then jump to the table. */
-  const browseSegment = (tab: MarketsTabKey) => {
-    pickMarketsTab(tab)
-    document.getElementById("fno-markets")?.scrollIntoView({ behavior: "smooth", block: "start" })
-  }
 
   // ── 9. SMS CTA STATE ──
   const [smsNum, setSmsNum] = useState("")
@@ -175,8 +172,8 @@ export default function FuturesOptionsPage() {
     <main className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <Navbar />
 
-      {/* ── SECTION 1: HERO (compact: pitch on the left, browse-by-segment on the right) ── */}
-      <section className="relative bg-cream border-b border-border/40 pt-24 pb-8 lg:pb-10 overflow-hidden">
+      {/* ── SECTION 1: HERO (compact: pitch on the left, actions + trust stats on the right) ── */}
+      <section className="relative bg-cream border-b border-border/40 pt-24 pb-6 lg:pb-8 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div
             className="absolute inset-0 opacity-[0.04]"
@@ -195,8 +192,8 @@ export default function FuturesOptionsPage() {
             <span className="text-foreground font-semibold">Futures &amp; Options</span>
           </nav>
 
-          <div className="grid lg:grid-cols-[minmax(0,1fr)_420px] gap-6 lg:gap-12 items-center">
-            <div className="space-y-4">
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_auto] gap-5 lg:gap-12 items-center">
+            <div className="space-y-3">
               <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">Derivatives Trading</p>
               <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-black text-foreground tracking-tight leading-[1.1]">
                 Trade Futures &amp; Options <span className="text-burgundy lg:block">With Advanced F&amp;O Tools</span>
@@ -204,50 +201,24 @@ export default function FuturesOptionsPage() {
               <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
                 Trade Futures &amp; Options confidently with Shree Varahi’s advanced platform, featuring strategy tools, real-time monitoring, market analysis, and effective risk management capabilities.
               </p>
-              <div className="flex flex-wrap items-center gap-3 pt-1">
-                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
-                  <Link href="/login">Start Trading <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
-                </Button>
-                <Button asChild variant="outline" className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary">
-                  <Link href="/login">Open Account</Link>
-                </Button>
-                <div className="flex items-center gap-4 sm:ml-3 sm:pl-5 sm:border-l border-border">
-                  <div>
-                    <div className="text-base font-black text-foreground leading-none">31+</div>
-                    <div className="text-[10px] text-muted-foreground font-semibold mt-1">Years of Trust</div>
-                  </div>
-                  <div>
-                    <div className="text-base font-black text-foreground flex items-center gap-1 leading-none">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
-                    <div className="text-[10px] text-muted-foreground font-semibold mt-1">App Rating</div>
-                  </div>
-                </div>
-              </div>
             </div>
-
-            {/* Browse by segment: each opens the markets table below on that segment */}
-            <div className="rounded-[10px] bg-white border border-border shadow-[0_8px_32px_rgba(0,0,0,0.06)] p-4">
-              <p className="text-[10px] font-extrabold uppercase tracking-wider text-gold-deep mb-2.5">Browse by segment</p>
-              <div className="grid grid-cols-2 gap-2">
-                {MARKET_SEGMENTS.map((seg) => {
-                  const Icon = seg.icon
-                  const count = segmentCounts[seg.tab]
-                  return (
-                    <button
-                      key={seg.tab}
-                      onClick={() => browseSegment(seg.tab)}
-                      className="group text-left rounded-[6px] border border-border bg-cream/50 px-3 py-2.5 hover:border-burgundy/30 hover:bg-white transition-all flex items-center gap-2.5"
-                    >
-                      <Icon className="w-4 h-4 shrink-0 text-burgundy" />
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-xs font-extrabold text-foreground truncate">{seg.label}</span>
-                        <span className="block text-[10px] font-semibold text-muted-foreground tabular-nums">
-                          {count === null ? "—" : `${count} ${seg.unit}`}
-                        </span>
-                      </span>
-                      <ArrowUpRight className="w-3 h-3 shrink-0 text-muted-foreground group-hover:text-burgundy transition-colors" />
-                    </button>
-                  )
-                })}
+            {/* Actions + trust stats on the right (the old browse card is gone, so the hero is shorter) */}
+            <div className="flex flex-wrap items-center lg:justify-end gap-3">
+              <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
+                <Link href={LOGIN_URL}>Start Trading <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
+              </Button>
+              <Button asChild variant="outline" className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary">
+                <Link href={LOGIN_URL}>Open Account</Link>
+              </Button>
+              <div className="flex items-center gap-4 sm:ml-3 sm:pl-5 sm:border-l border-border">
+                <div>
+                  <div className="text-base font-black text-foreground leading-none">31+</div>
+                  <div className="text-[10px] text-muted-foreground font-semibold mt-1">Years of Trust</div>
+                </div>
+                <div>
+                  <div className="text-base font-black text-foreground flex items-center gap-1 leading-none">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
+                  <div className="text-[10px] text-muted-foreground font-semibold mt-1">App Rating</div>
+                </div>
               </div>
             </div>
           </div>
@@ -260,23 +231,9 @@ export default function FuturesOptionsPage() {
           <div className="grid lg:grid-cols-[300px_minmax(0,1fr)] gap-5 lg:gap-6 items-start">
 
           {/* Filters */}
-          <aside className="lg:sticky lg:top-20 rounded-[8px] border border-border bg-white p-4 space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
-              <input
-                type="text"
-                aria-label="Search contracts"
-                placeholder="Search NIFTY, RELIANCE..."
-                value={marketsSearch}
-                onChange={(e) => setMarketsSearch(e.target.value)}
-                className="w-full pl-9 pr-8 py-2 text-sm rounded-[5px] border border-border bg-cream/50 placeholder:text-muted-foreground/55 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40"
-              />
-              {marketsSearch && (
-                <button onClick={() => setMarketsSearch("")} aria-label="Clear search" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
+          {/* Desktop sidebar; phones get search + a swipeable segment row above the table */}
+          <aside className="hidden lg:block lg:sticky lg:top-20 rounded-[8px] border border-border bg-white p-4 space-y-4">
+            <SmartSearch value={marketsSearch} onChange={setMarketsSearch} placeholder="Search NIFTY, RELIANCE…" ariaLabel="Search contracts" shortcut />
 
             <div>
               <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-2">Segment</p>
@@ -306,6 +263,23 @@ export default function FuturesOptionsPage() {
 
           {/* Results */}
           <div className="min-w-0">
+          <div className="lg:hidden space-y-3 mb-4">
+            <SmartSearch value={marketsSearch} onChange={setMarketsSearch} placeholder="Search NIFTY, RELIANCE…" ariaLabel="Search contracts" />
+            <div className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-1" style={{ scrollbarWidth: "none" }} role="tablist" aria-label="Segment">
+              {MARKET_SEGMENTS.map((seg) => {
+                const count = segmentCounts[seg.tab]
+                return (
+                  <button key={seg.tab} role="tab" aria-selected={marketsTab === seg.tab} onClick={() => pickMarketsTab(seg.tab)}
+                  className={`shrink-0 inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full border text-xs font-bold whitespace-nowrap transition-colors ${
+                    marketsTab === seg.tab ? "bg-burgundy text-white border-burgundy" : "bg-white text-foreground border-border"
+                  }`}>
+                    {seg.label}
+                    {count !== null && <span className="text-[10px] opacity-70 tabular-nums">{count}</span>}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
           <div className="flex flex-wrap items-end justify-between gap-3 mb-3">
             <div>
               <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight leading-none">

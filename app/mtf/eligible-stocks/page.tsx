@@ -7,6 +7,7 @@ import Link from "next/link"
 import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight, Search, X } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { SmartSearch } from "@/components/smart-controls"
 import { useMtfStocks } from "@/hooks/use-mtf"
 import type { MtfSort } from "@/lib/mtf/api-client"
 import { TableRowsSkeleton } from "@/components/skeletons"
@@ -101,23 +102,7 @@ export default function MtfEligibleStocksPage() {
       <section className="py-8 lg:py-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center gap-3 mb-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
-              <input
-                type="text"
-                placeholder="Search stock e.g. RELIANCE"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                aria-label="Search MTF stocks"
-                className="pl-9 pr-8 py-2 text-sm rounded-[5px] border border-border bg-white placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40 w-64 max-w-full"
-              />
-              {search && (
-                <button onClick={() => setSearch("")} aria-label="Clear search"
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
+            <SmartSearch value={search} onChange={setSearch} placeholder="Search stock e.g. RELIANCE" ariaLabel="Search MTF stocks" loading={result.loading && !!search.trim()} shortcut className="w-72 max-w-full" inputClassName="bg-white" />
             <p className="text-xs text-muted-foreground">
               Showing <span className="font-bold text-foreground">{data ? data.total.toLocaleString("en-IN") : "—"}</span> stocks
               {result.loading && data && <span className="ml-2 text-muted-foreground/60">Updating…</span>}

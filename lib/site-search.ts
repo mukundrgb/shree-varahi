@@ -46,6 +46,8 @@ export const SITE_PAGES: SitePage[] = [
   { title: "Shree Varahi Desktop App", desc: "Desktop trading terminal",             href: "/shree-varahi-desktop-app", keywords: "desktop terminal software" },
   // Learn
   { title: "Knowledge Center",        desc: "Guides & articles",                     href: "/knowledge-center",         keywords: "learn knowledge panel education guides articles" },
+  { title: "Blog",                    desc: "Market insights & analysis",            href: "/blog",                     keywords: "blog posts insights articles" },
+  { title: "News",                    desc: "Live share market news",                href: "/news",                     keywords: "news market updates live latest" },
 ]
 
 export interface SiteHit { title: string; desc: string; href: string; group: "Pages" | "Learn" }

@@ -16,6 +16,7 @@ import { useFundSearch, useMutualFundsPage } from "@/hooks/use-mutual-funds"
 import { fundHref, type FundSort, type MutualFundApi } from "@/lib/mutual-funds/api-client"
 import { FundCategoryFilter, SelectedCategoryChips, NO_CATEGORY, categoryQuery, hasCategory, type CategoryPick } from "@/components/fund-category-filter"
 import { FundHouseFilter } from "@/components/fund-house-filter"
+import { FilterSheet, SmartSearch, SmartSelect } from "@/components/smart-controls"
 import { CardGridSkeleton, TableRowsSkeleton } from "@/components/skeletons"
 
 // ─── Constants ──────────────────────────────────────────────────────────────
@@ -263,6 +264,17 @@ export default function MutualFundsPage() {
                         { label: "3Y", value: (f: MutualFundApi) => f.returns.threeYear }
   const hasFilter = !!(search || risk || rating !== null || amcIds.length > 0 || sortChanged || hasCategory(category))
 
+  // Options for the Risk / Rating dropdowns ("" = no filter).
+  const riskOptions = [{ value: "", label: "All Risk Levels" }, ...(info?.risks ?? []).map((r) => ({ value: r.name, label: `${r.name} Risk`, hint: r.count.toLocaleString("en-IN") }))]
+  const ratingOptions = RATING_FILTERS.map((f) => ({
+    value: f.value === null ? "" : String(f.value),
+    label: f.value === null ? "All Ratings" : f.value === 0 ? "Not Rated" : `${f.label} ★`,
+  }))
+  const ratingValue = rating === null ? "" : String(rating)
+  const pickRatingValue = (v: string) => pickRating(v === "" ? null : Number(v))
+  /** Filters inside the phone sheet (search and sort stay outside it). */
+  const mobileFilterCount = (risk ? 1 : 0) + (rating !== null ? 1 : 0) + (amcIds.length ? 1 : 0) + (hasCategory(category) ? 1 : 0)
+
   const totalFunds = formatCount(info?.stats.totalFunds)
   const totalAmcs  = formatCount(info?.stats.totalAmcs)
   const amcs       = info?.amcs ?? []
@@ -378,54 +390,48 @@ export default function MutualFundsPage() {
           {/* Filters: one card — search + dropdowns in a row, categories below */}
           <div className="rounded-[8px] border border-border bg-white p-3 sm:p-4 mb-3 space-y-3">
             <div className="flex flex-col md:flex-row gap-2">
-              <div className="relative flex-1 min-w-0">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
-                <input
-                  type="text"
-                  placeholder="Search funds, AMCs, fund managers..."
-                  aria-label="Search by fund name, fund house or fund manager"
+              <div className="flex gap-2 flex-1 min-w-0">
+                <SmartSearch
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full h-[34px] pl-9 pr-8 text-sm rounded-[5px] border border-border bg-cream/50 placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40"
+                  onChange={setSearch}
+                  placeholder="Search funds, AMCs, fund managers…"
+                  ariaLabel="Search by fund name, fund house or fund manager"
+                  loading={fundsResult.loading && !!search.trim()}
+                  shortcut
+                  size="sm"
+                  className="flex-1 min-w-0"
                 />
-                {search && (
-                  <button onClick={() => setSearch("")} aria-label="Clear search" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
+                {/* Phones: every filter in one bottom sheet */}
+                <div className="md:hidden">
+                  <FilterSheet activeCount={mobileFilterCount} resultCount={funds?.total ?? null} onClearAll={clearAll}>
+                    <div>
+                      <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-2">Risk</p>
+                      <SmartSelect value={risk} onChange={pickRisk} options={riskOptions} active={!!risk} title="Risk level" searchable={false} />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-2">Fund House</p>
+                      <FundHouseFilter amcs={info?.amcs ?? []} value={amcIds} onChange={pickAmcs} />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-2">Rating</p>
+                      <SmartSelect value={ratingValue} onChange={pickRatingValue} options={ratingOptions} active={rating !== null} title="Rating" searchable={false} />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-2">Category</p>
+                      <FundCategoryFilter mains={info?.assetClasses ?? []} value={category} onChange={pickCategory} />
+                    </div>
+                  </FilterSheet>
+                </div>
               </div>
-              <div className="flex flex-wrap gap-2">
-                <select
-                  aria-label="Risk"
-                  value={risk}
-                  onChange={(e) => pickRisk(e.target.value)}
-                  className={`h-[34px] px-2.5 rounded-[5px] text-[11px] font-bold border focus:outline-none focus:ring-2 focus:ring-gold/30 ${
-                    risk ? "bg-burgundy/5 text-burgundy border-burgundy/35" : "bg-white text-muted-foreground border-border"
-                  }`}
-                >
-                  <option value="">All Risk Levels</option>
-                  {(info?.risks ?? []).map((r) => <option key={r.name} value={r.name}>{r.name} Risk</option>)}
-                </select>
+              <div className="hidden md:flex flex-wrap gap-2">
+                <SmartSelect value={risk} onChange={pickRisk} options={riskOptions} active={!!risk} size="sm" ariaLabel="Risk" title="Risk level" searchable={false} className="min-w-[150px]" />
                 <FundHouseFilter amcs={info?.amcs ?? []} value={amcIds} onChange={pickAmcs} />
-                <select
-                  aria-label="Rating"
-                  value={rating === null ? "" : String(rating)}
-                  onChange={(e) => pickRating(e.target.value === "" ? null : Number(e.target.value))}
-                  className={`h-[34px] px-2.5 rounded-[5px] text-[11px] font-bold border focus:outline-none focus:ring-2 focus:ring-gold/30 ${
-                    rating !== null ? "bg-burgundy/5 text-burgundy border-burgundy/35" : "bg-white text-muted-foreground border-border"
-                  }`}
-                >
-                  {RATING_FILTERS.map((f) => (
-                    <option key={f.label} value={f.value === null ? "" : String(f.value)}>
-                      {f.value === null ? "All Ratings" : f.value === 0 ? "Not Rated" : `${f.label} ★`}
-                    </option>
-                  ))}
-                </select>
+                <SmartSelect value={ratingValue} onChange={pickRatingValue} options={ratingOptions} active={rating !== null} size="sm" ariaLabel="Rating" title="Rating" searchable={false} className="min-w-[130px]" />
               </div>
             </div>
 
-            {/* Categories: main categories, then the picked ones' sub-categories (auto-scrolling row) */}
-            <div className="pt-3 border-t border-border/60">
+            {/* Categories: main categories, then the picked ones' sub-categories (auto-scrolling row). In the sheet on phones. */}
+            <div className="hidden md:block pt-3 border-t border-border/60">
               <FundCategoryFilter mains={info?.assetClasses ?? []} value={category} onChange={pickCategory} />
             </div>
           </div>

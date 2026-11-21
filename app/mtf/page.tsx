@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { LOGIN_URL } from "@/lib/external-links"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ChevronRight, X, Zap, TrendingUp, Wallet, Percent, ShieldCheck,
@@ -70,7 +71,7 @@ export default function MTFPage() {
       <Navbar />
 
       {/* ── HERO ── */}
-      <section className="relative bg-cream border-b border-border/40 pt-28 pb-16 overflow-hidden">
+      <section className="relative bg-cream border-b border-border/40 pt-24 pb-8 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div
             className="absolute inset-0 opacity-[0.04]"
@@ -84,18 +85,18 @@ export default function MTFPage() {
         </div>
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10">
-          <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-6">
+          <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-4">
             <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3" />
             <span className="text-foreground font-semibold">MTF</span>
           </nav>
 
-          <div className="grid lg:grid-cols-[1fr_auto] gap-10 items-center">
-            <div className="space-y-5 max-w-2xl">
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_auto] gap-6 lg:gap-12 items-center">
+            <div className="space-y-3 max-w-2xl">
               <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">
                 Margin Trading Facility
               </p>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground tracking-tight leading-tight">
+              <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-black text-foreground tracking-tight leading-[1.1]">
                 Buy Up To<br />
                 <span className="text-burgundy">3× More Shares</span>
               </h1>
@@ -107,53 +108,30 @@ export default function MTFPage() {
                 <Info className="w-4 h-4 text-gold-deep shrink-0 mt-px" aria-hidden />
                 <span>Maximum funding provided by Shree Varahi is up to <span className="font-black text-burgundy">₹1 crore</span>.</span>
               </p>
-              <div className="flex flex-wrap gap-3">
-                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
-                  <Link href="/login">Trade Now</Link>
-                </Button>
-                <Button asChild variant="outline" className="border-border px-7 h-11 font-bold rounded-[5px] hover:bg-secondary">
-                  <Link href="/login">Open Account</Link>
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-4 pt-1">
-                <div>
-                  <div className="text-lg font-black text-foreground">0.049%</div>
-                  <div className="text-[10px] text-muted-foreground font-semibold">Interest / Day</div>
-                </div>
-                <div>
-                  <div className="text-lg font-black text-foreground">Up to 90 Days</div>
-                  <div className="text-[10px] text-muted-foreground font-semibold">Holding Period</div>
-                </div>
-                <div>
-                  <div className="text-lg font-black text-foreground flex items-center gap-1">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
-                  <div className="text-[10px] text-muted-foreground font-semibold">App Rating</div>
-                </div>
-              </div>
             </div>
 
-            {/* Hero visual — MTF eligible stocks card */}
-            <div className="hidden lg:block">
-              <div className="w-[280px] rounded-[12px] bg-white border border-border shadow-xl p-5 space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-gold-deep">Top MTF Stocks</span>
-                  <span className="text-[9px] font-bold text-muted-foreground">MULTIPLIER</span>
+            {/* Right: actions + key numbers (the Top MTF Stocks card is gone, so the hero is shorter) */}
+            <div className="space-y-4">
+              <div className="flex flex-wrap lg:justify-end gap-3">
+                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
+                  <Link href={LOGIN_URL}>Trade Now</Link>
+                </Button>
+                <Button asChild variant="outline" className="border-border bg-white px-7 h-11 font-bold rounded-[5px] hover:bg-secondary">
+                  <Link href={LOGIN_URL}>Open Account</Link>
+                </Button>
+              </div>
+              <div className="flex flex-wrap lg:justify-end gap-6">
+                <div className="lg:text-right">
+                  <div className="text-lg font-black text-foreground leading-none">0.049%</div>
+                  <div className="text-[10px] text-muted-foreground font-semibold mt-1">Interest / Day</div>
                 </div>
-                {topMtfStocks.length === 0 && <ListSkeleton rows={3} label="Loading MTF stocks" />}
-                {topMtfStocks.map((s) => (
-                  <div key={s.symbol} className="flex items-center justify-between">
-                    <span className="min-w-0 pr-2">
-                      <span className="block text-[11px] font-semibold text-foreground truncate">{s.symbol}</span>
-                      <span className="block text-[9px] text-muted-foreground">Margin {s.marginPct.toFixed(2)}%</span>
-                    </span>
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-[4px] bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">{formatMultiplier(s.multiplier)}</span>
-                  </div>
-                ))}
-                <div className="pt-1 border-t border-border/40">
-                  <a href="#calculator">
-                    <Button size="sm" className="w-full bg-burgundy hover:bg-burgundy-deep text-white text-[11px] font-bold rounded-[5px] h-8">
-                      View Calculator
-                    </Button>
-                  </a>
+                <div className="lg:text-right">
+                  <div className="text-lg font-black text-foreground leading-none">Up to 90 Days</div>
+                  <div className="text-[10px] text-muted-foreground font-semibold mt-1">Holding Period</div>
+                </div>
+                <div className="lg:text-right">
+                  <div className="text-lg font-black text-foreground flex items-center lg:justify-end gap-1 leading-none">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
+                  <div className="text-[10px] text-muted-foreground font-semibold mt-1">App Rating</div>
                 </div>
               </div>
             </div>
@@ -161,16 +139,16 @@ export default function MTFPage() {
         </div>
 
         {/* Promo strip — closes out the hero */}
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10 mt-10">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10 mt-6">
           <div className="rounded-[10px] bg-burgundy text-white px-5 sm:px-7 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-[0_8px_30px_rgba(139,13,25,0.18)]">
             <div className="flex items-center gap-3 text-center sm:text-left">
               <Zap className="w-5 h-5 text-gold-champagne shrink-0 hidden sm:block" />
               <p className="text-sm font-bold">
-                Avail MTF @ 0% Interest Rate <span className="font-semibold text-white/80">— for the first 30 days, on borrowing up to ₹1,00,000.</span>
+                Avail MTF @ 0.049% Interest Rate <span className="font-semibold text-white/80">— for the first 30 days, on borrowing up to ₹1,00,000.</span>
               </p>
             </div>
             <Button asChild size="sm" className="bg-white hover:bg-gold-champagne text-burgundy font-black text-[12px] h-9 px-5 rounded-[5px] shrink-0">
-              <Link href="/login">Open Account</Link>
+              <Link href={LOGIN_URL}>Open Account</Link>
             </Button>
           </div>
         </div>
@@ -369,7 +347,7 @@ export default function MTFPage() {
             {/* Left — copy + form */}
             <div className="flex-1 text-center lg:text-left space-y-5">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
-                Avail MTF<br className="hidden sm:inline" /> @ 0% Interest Rate
+                Avail MTF<br className="hidden sm:inline" /> @ 0.049% Interest Rate
               </h2>
               <p className="text-sm font-semibold text-white/85">
                 Trade Now. Pay Later. Unlock up to 3× buying power on {eligibleStocks} through Shree Varahi.
@@ -379,7 +357,7 @@ export default function MTFPage() {
               </div>
 
               <form
-                onSubmit={(e) => { e.preventDefault(); router.push("/login") }}
+                onSubmit={(e) => { e.preventDefault(); window.location.assign(LOGIN_URL) }}
                 className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto lg:mx-0"
               >
                 <input

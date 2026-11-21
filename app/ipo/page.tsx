@@ -812,8 +812,6 @@ export default function IpoPage() {
         </div>
       </section>
 
-
-
       <Footer />
     </main>
   )

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { LOGIN_URL } from "@/lib/external-links"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import {
@@ -11,6 +12,7 @@ import {
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { SmartSelect } from "@/components/smart-controls"
 import { Button } from "@/components/ui/button"
 
 // ─── Content ────────────────────────────────────────────────────────────────
@@ -233,10 +235,7 @@ function LeadForm() {
             </div>
             <div>
               <label htmlFor="gi-goal" className="block text-[11px] font-bold text-foreground mb-1">Primary Investment Goal</label>
-              <select id="gi-goal" name="goal" required defaultValue="" className={inputClass}>
-                <option value="" disabled>Select an option</option>
-                {INVESTMENT_GOALS.map((g) => <option key={g}>{g}</option>)}
-              </select>
+              <SmartSelect id="gi-goal" name="goal" required placeholder="Select an option" title="Primary Investment Goal" options={INVESTMENT_GOALS.map((g) => ({ value: g, label: g }))} searchable={false} />
             </div>
             <Button type="submit" className="w-full bg-burgundy hover:bg-burgundy-deep text-white h-11 font-bold rounded-[5px] mt-2">
               Talk to Advisor
@@ -306,7 +305,7 @@ export default function GlobalInvestingPage() {
                 </Button>
                 {/* Existing customers go straight to login */}
                 <Button asChild variant="outline" className="border-burgundy/30 text-burgundy hover:bg-burgundy/5 hover:text-burgundy px-7 h-11 font-bold rounded-[5px]">
-                  <Link href="/login">Login</Link>
+                  <Link href={LOGIN_URL}>Login</Link>
                 </Button>
               </div>
             </div>

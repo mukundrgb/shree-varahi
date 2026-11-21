@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { LOGIN_URL } from "@/lib/external-links"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -301,7 +302,7 @@ export function TraderInvestorSection() {
               />
 
               <Button asChild className="self-start rounded-[6px] bg-burgundy hover:bg-burgundy-deep text-white">
-                <Link href="/login">Start Trading Now</Link>
+                <Link href={LOGIN_URL}>Start Trading Now</Link>
               </Button>
             </div>
           </motion.div>
@@ -352,7 +353,7 @@ export function TraderInvestorSection() {
                 className="self-start rounded-[6px]"
                 style={{ border: "1px solid rgba(184,146,74,0.45)", color: "#8C6A2F", background: "rgba(184,146,74,0.07)" }}
               >
-                <Link href="/login">Start Investing Now</Link>
+                <Link href={LOGIN_URL}>Start Investing Now</Link>
               </Button>
             </div>
           </motion.div>

@@ -6,7 +6,7 @@ import { useParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import {
-  Star, Bell, Share2, ChevronRight,
+  ChevronRight,
   ArrowUpRight, ArrowDownRight, Building2,
   Calendar, Zap, BarChart3, Newspaper,
   Award, Users, MapPin, Phone, Mail, Globe,
@@ -475,9 +475,6 @@ function StockDetail({ slug, stock }: { slug: string; stock: StockSummary }) {
   const [tab, setTab] = useState<Tab>("Financials")
   const [financialsPeriod, setFinancialsPeriod] = useState<"Quarterly" | "Yearly">("Quarterly")
   const [financialsType, setFinancialsType] = useState<"Standalone" | "Consolidated">("Standalone")
-  const [starred, setStarred] = useState(false)
-  const [tradeMode, setTradeMode] = useState<"buy" | "sell">("buy")
-  const [qty, setQty] = useState("1")
 
   const financials = useStockFinancials(
     slug,
@@ -501,7 +498,6 @@ function StockDetail({ slug, stock }: { slug: string; stock: StockSummary }) {
     ? Math.min(100, Math.max(0, ((quote.price! - quote.low52!) / (quote.high52! - quote.low52!)) * 100))
     : null
 
-  const estTotal = quote?.price != null ? quote.price * +qty : null
   const maxRevenue = Math.max(0, ...(financials.data?.revenue ?? []).map(v => v ?? 0))
 
   return (
@@ -509,11 +505,11 @@ function StockDetail({ slug, stock }: { slug: string; stock: StockSummary }) {
       <Navbar />
 
       {/* ── HERO ── */}
-      <section className="bg-cream border-b border-border/40 pt-24 pb-5 overflow-hidden">
+      <section className="bg-cream border-b border-border/40 pt-22 lg:pt-24 pb-5 overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-4">
+          <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-3">
             <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3" />
             <Link href="/stocks" className="hover:text-foreground transition-colors">All Stocks</Link>
@@ -521,95 +517,70 @@ function StockDetail({ slug, stock }: { slug: string; stock: StockSummary }) {
             <span className="text-foreground font-semibold">{stock.symbol}</span>
           </nav>
 
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-            {/* Left: identity + price */}
+          {/* Same pattern as the fund detail page: identity on the left, price as plain text on the right */}
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 lg:gap-10">
+            {/* Left: logo, name, badges, today's numbers */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-start gap-3 mb-3">
-                {/* Avatar */}
-                <StockAvatar symbol={stock.symbol} name={stock.name} logoUrl={stock.logoUrl} className="w-11 h-11 rounded-[10px] text-sm" />
+              <div className="flex items-start gap-3">
+                <StockAvatar symbol={stock.symbol} name={stock.name} logoUrl={stock.logoUrl} className="w-12 h-12 rounded-[10px] text-sm" />
                 <div className="min-w-0">
-                  <h1 className="text-xl sm:text-2xl font-black text-foreground leading-tight truncate">{stock.name}</h1>
-                  <div className="flex flex-wrap items-center gap-2 mt-1">
+                  <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-foreground leading-tight">{stock.name}</h1>
+                  <div className="flex flex-wrap items-center gap-2 mt-2">
                     <span className="text-[10px] font-black px-2 py-0.5 bg-burgundy/10 text-burgundy rounded-[4px]">{stock.exchange}</span>
                     <span className="text-[10px] font-black px-2 py-0.5 bg-secondary text-muted-foreground rounded-[4px]">{stock.sector}</span>
                     {stock.capLabel && (
                       <span className="text-[10px] font-black px-2 py-0.5 bg-gold/15 text-gold-deep rounded-[4px]">{stock.capLabel}</span>
                     )}
-                    {quote?.updatedAt && (
-                      <span className="text-[10px] text-muted-foreground font-bold">As of {formatQuoteTime(quote.updatedAt)}</span>
-                    )}
                   </div>
-                </div>
-              </div>
-
-              {/* Price */}
-              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-3">
-                <span className="text-2xl sm:text-4xl lg:text-5xl font-black text-foreground tabular-nums tracking-tight">
-                  {formatRupees(quote?.price)}
-                </span>
-                {change !== null && (
-                  <div className={`flex items-center gap-1 px-2.5 py-1 rounded-[5px] font-black text-sm ${isUp ? "bg-profit/10 text-profit" : "bg-loss/10 text-loss"}`}>
-                    {isUp ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
-                    <span>{isUp ? "+" : "-"}{formatPrice(Math.abs(quote?.changeAmt ?? 0))}</span>
-                    <span>({formatPercent(change)})</span>
+                  <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-[11px] text-muted-foreground mt-3">
+                    <span>Open <span className="font-bold text-foreground tabular-nums ml-0.5">{formatRupees(quote?.open)}</span></span>
+                    <span>Prev Close <span className="font-bold text-foreground tabular-nums ml-0.5">{formatRupees(quote?.prevClose)}</span></span>
+                    <span>Volume <span className="font-bold text-foreground tabular-nums ml-0.5">{formatVolume(quote?.volume)}</span></span>
                   </div>
-                )}
-              </div>
-
-              {/* Day stats row */}
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-[11px] text-muted-foreground mb-4">
-                <span>Open: <span className="font-bold text-foreground tabular-nums">{formatRupees(quote?.open)}</span></span>
-                <span>Prev Close: <span className="font-bold text-foreground tabular-nums">{formatRupees(quote?.prevClose)}</span></span>
-                <span>Volume: <span className="font-bold text-foreground">{formatVolume(quote?.volume)}</span></span>
-              </div>
-
-              {/* 52W range bar */}
-              <div className="max-w-xs">
-                <div className="flex justify-between text-[10px] font-semibold text-muted-foreground mb-1">
-                  <span>52W Low: {formatRupees(quote?.low52)}</span>
-                  <span>52W High: {formatRupees(quote?.high52)}</span>
-                </div>
-                <div className="h-1.5 bg-secondary rounded-full overflow-hidden relative">
-                  <div className="h-full bg-gradient-to-r from-loss via-gold to-profit rounded-full" style={{ width: "100%" }} />
-                  {weekRange52Pct !== null && (
-                    <div className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-burgundy border-2 border-white shadow-sm"
-                      style={{ left: `calc(${weekRange52Pct}% - 6px)` }} />
-                  )}
                 </div>
               </div>
             </div>
 
-            {/* Right: action buttons (desktop hero) */}
-            <div className="flex flex-wrap items-center gap-2 mt-3 lg:mt-2">
-              <button
-                onClick={() => setStarred(s => !s)}
-                className={`w-9 h-9 rounded-[7px] border flex items-center justify-center transition-all ${starred ? "bg-gold/10 border-gold/30 text-gold-deep" : "bg-white border-border text-muted-foreground hover:border-gold/30 hover:text-gold-deep"}`}
-              >
-                <Star className={`w-4 h-4 ${starred ? "fill-gold-deep" : ""}`} />
-              </button>
-              <button className="w-9 h-9 rounded-[7px] border border-border bg-white flex items-center justify-center text-muted-foreground hover:border-burgundy/30 hover:text-burgundy transition-all">
-                <Bell className="w-4 h-4" />
-              </button>
-              <button className="w-9 h-9 rounded-[7px] border border-border bg-white flex items-center justify-center text-muted-foreground hover:border-burgundy/30 hover:text-burgundy transition-all">
-                <Share2 className="w-4 h-4" />
-              </button>
-              <Link href="/signup/register"
-                className="px-5 py-2 rounded-[7px] bg-profit text-white font-bold text-sm hover:opacity-90 transition-opacity">
-                Buy
-              </Link>
-              <Link href="/signup/register"
-                className="px-5 py-2 rounded-[7px] bg-loss text-white font-bold text-sm hover:opacity-90 transition-opacity">
-                Sell
-              </Link>
+            {/* Right: last traded price, change, time and 52-week range */}
+            <div className="lg:text-right shrink-0 lg:w-[340px]">
+              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-1">Last Traded Price</div>
+              <div className="flex flex-wrap items-baseline lg:justify-end gap-x-3 gap-y-1">
+                <span className="text-3xl sm:text-4xl font-black text-foreground tabular-nums tracking-tight">{formatRupees(quote?.price)}</span>
+                {change !== null && (
+                  <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-[5px] font-black text-sm ${isUp ? "bg-profit/10 text-profit" : "bg-loss/10 text-loss"}`}>
+                    {isUp ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
+                    <span>{isUp ? "+" : "-"}{formatPrice(Math.abs(quote?.changeAmt ?? 0))}</span>
+                    <span>({formatPercent(change)})</span>
+                  </span>
+                )}
+              </div>
+              {quote?.updatedAt && (
+                <div className="text-[11px] text-muted-foreground font-semibold mt-1.5">As of {formatQuoteTime(quote.updatedAt)}</div>
+              )}
+
+              {/* 52-week range */}
+              <div className="mt-3 max-w-[340px] lg:ml-auto">
+                <div className="flex justify-between text-[10px] font-semibold text-muted-foreground mb-1">
+                  <span>52W L <span className="text-foreground font-bold tabular-nums">{formatRupees(quote?.low52)}</span></span>
+                  <span>52W H <span className="text-foreground font-bold tabular-nums">{formatRupees(quote?.high52)}</span></span>
+                </div>
+                <div className="h-1.5 rounded-full relative bg-gradient-to-r from-loss via-gold to-profit">
+                  {weekRange52Pct !== null && (
+                    <div className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-burgundy border-2 border-white shadow-sm"
+                      style={{ left: `calc(${weekRange52Pct}% - 6px)` }} title="Today's price within the 52-week range" />
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ── MAIN GRID ── */}
-      <section className="py-6 lg:py-8 bg-background overflow-hidden">
+      {/* overflow-x-clip (not overflow-hidden) so the sidebar can stay sticky */}
+      <section className="py-6 lg:py-8 bg-background overflow-x-clip">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] gap-6 lg:gap-8 items-start pb-20 lg:pb-0">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] gap-6 lg:gap-8 items-start">
 
             {/* ── LEFT COLUMN ── */}
             <div className="space-y-5 min-w-0">
@@ -955,51 +926,8 @@ function StockDetail({ slug, stock }: { slug: string; stock: StockSummary }) {
             </div>
 
             {/* ── SIDEBAR ── */}
-            <div className="space-y-4 lg:sticky lg:top-24">
-
-              {/* Trade widget */}
-              <div className="border border-border rounded-[10px] bg-white overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-                {/* Buy / Sell toggle */}
-                <div className="flex border-b border-border/60">
-                  {(["buy", "sell"] as const).map(m => (
-                    <button key={m} onClick={() => setTradeMode(m)}
-                      className={`flex-1 py-3.5 text-sm font-black capitalize tracking-wide transition-all duration-150 ${
-                        tradeMode === m
-                          ? m === "buy" ? "bg-profit text-white" : "bg-loss text-white"
-                          : "text-muted-foreground hover:bg-cream/60"
-                      }`}
-                    >{m}</button>
-                  ))}
-                </div>
-                <div className="p-4 space-y-3">
-                  {/* Price display */}
-                  <div className="bg-cream/60 rounded-[7px] px-3 py-2.5 flex items-center justify-between">
-                    <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider">Market Price</span>
-                    <span className="text-sm font-black text-foreground tabular-nums">{formatRupees(quote?.price)}</span>
-                  </div>
-                  {/* Qty */}
-                  <div>
-                    <label className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-wider block mb-1.5">Quantity</label>
-                    <div className="flex items-center border border-border rounded-[7px] overflow-hidden bg-cream/30">
-                      <button onClick={() => setQty(q => String(Math.max(1, +q - 1)))}
-                        className="px-3 py-2.5 text-muted-foreground hover:text-foreground hover:bg-white/80 transition-colors font-bold text-lg leading-none">−</button>
-                      <input value={qty} onChange={e => setQty(e.target.value.replace(/\D/g, "") || "1")}
-                        className="flex-1 text-center text-sm font-black text-foreground bg-transparent outline-none tabular-nums py-2.5" />
-                      <button onClick={() => setQty(q => String(+q + 1))}
-                        className="px-3 py-2.5 text-muted-foreground hover:text-foreground hover:bg-white/80 transition-colors font-bold text-lg leading-none">+</button>
-                    </div>
-                  </div>
-                  {/* Total */}
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground font-semibold">Est. Total</span>
-                    <span className="font-black text-foreground tabular-nums">{formatRupees(estTotal)}</span>
-                  </div>
-                  <Link href="/signup/register"
-                    className={`w-full py-3 rounded-[7px] font-black text-sm text-white text-center block transition-opacity hover:opacity-90 ${tradeMode === "buy" ? "bg-profit" : "bg-loss"}`}>
-                    {tradeMode === "buy" ? "Buy" : "Sell"} {stock.symbol} →
-                  </Link>
-                </div>
-              </div>
+            {/* Sticks under the 64px navbar; scrolls on its own if taller than the screen */}
+            <div className="space-y-4 lg:sticky lg:top-[76px] lg:max-h-[calc(100vh-92px)] lg:overflow-y-auto" style={{ scrollbarWidth: "none" }}>
 
               {/* Open Demat Account CTA */}
               <div className="rounded-[10px] overflow-hidden relative"
@@ -1099,16 +1027,6 @@ function StockDetail({ slug, stock }: { slug: string; stock: StockSummary }) {
           </div>
         </div>
       </section>
-
-      {/* Mobile sticky buy/sell bar */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-border/60 px-4 py-3 flex gap-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
-        <Link href="/signup/register" className="flex-1 py-2.5 rounded-[7px] bg-profit text-white font-black text-sm text-center">
-          Buy {stock.symbol}
-        </Link>
-        <Link href="/signup/register" className="flex-1 py-2.5 rounded-[7px] bg-loss text-white font-black text-sm text-center">
-          Sell
-        </Link>
-      </div>
 
       <Footer />
     </main>

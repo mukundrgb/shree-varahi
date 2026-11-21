@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { LOGIN_URL } from "@/lib/external-links"
 import { motion, useInView } from "framer-motion"
 import Link from "next/link"
 
@@ -72,7 +73,7 @@ export function BrokerageSection() {
               size="lg"
               className="bg-burgundy hover:bg-burgundy-deep text-white px-8 h-12 text-sm font-bold rounded-[5px]"
             >
-              <Link href="/login">Open Free Account</Link>
+              <Link href={LOGIN_URL}>Open Free Account</Link>
             </Button>
           </div>
         </motion.div>

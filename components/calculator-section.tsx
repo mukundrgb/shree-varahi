@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
+import { CALCULATOR_LINKS } from "@/lib/external-links"
 import Link from "next/link"
 import {
   TrendingUp, Calculator, Layers, BarChart2,
@@ -12,11 +13,11 @@ import {
 const calcs = [
   // SIP Calculator is hidden for now.
   // { name: "SIP Calculator",        icon: TrendingUp,  href: "#", hint: "Monthly SIP returns & corpus" },
-  { name: "Brokerage Calculator",  icon: Calculator,  href: "#", hint: "Know your exact cost per trade" },
-  { name: "Margin Calculator",     icon: Layers,      href: "#", hint: "Available intraday margin" },
-  { name: "Lumpsum Calculator",    icon: BarChart2,   href: "#", hint: "One-time investment returns" },
-  { name: "Goal-based SIP",        icon: Target,      href: "#", hint: "How much SIP to reach a goal" },
-  { name: "CAGR Calculator",       icon: Percent,     href: "#", hint: "Compound annual growth rate" },
+  { name: "Brokerage Calculator",  icon: Calculator,  href: CALCULATOR_LINKS.brokerage, hint: "Know your exact cost per trade" },
+  { name: "Margin Calculator",     icon: Layers,      href: CALCULATOR_LINKS.margin, hint: "Available intraday margin" },
+  { name: "Lumpsum Calculator",    icon: BarChart2,   href: CALCULATOR_LINKS.lumpsum, hint: "One-time investment returns" },
+  { name: "Goal-based SIP",        icon: Target,      href: CALCULATOR_LINKS.goalSip, hint: "How much SIP to reach a goal" },
+  { name: "CAGR Calculator",       icon: Percent,     href: CALCULATOR_LINKS.cagr, hint: "Compound annual growth rate" },
 ]
 
 /* ─── Custom calculator illustration ─── */
@@ -212,7 +213,7 @@ export function CalculatorSection() {
 
               {/* Explore link */}
               <Link
-                href="http://l5b7booc1v6okc4700748zn9.187.127.157.145.sslip.io/"
+                href={CALCULATOR_LINKS.all}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-[12px] font-extrabold tracking-[0.15em] uppercase text-burgundy hover:text-burgundy-deep transition-colors group"
