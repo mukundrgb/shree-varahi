@@ -1,44 +1,7 @@
 // Market movers (Top Gainers / Losers / Most Active / 52-week high & low).
-// MarketMoverApi is the row shape the CMOTS movers API returns, field names as sent.
-// The page only reads MarketMover, so plugging the API in means: fetch rows, map with toMarketMover.
+// The page only reads MarketMover; toMarketMover maps a backend GainerItem (lib/market-movers/api.ts) into it.
 
-export interface MarketMoverApi {
-  stk_exchng: string
-  sc_code: string
-  co_code: number
-  symbol: string
-  co_name: string
-  sc_group: string | null
-  /** e.g. "2026-11-20T14:09:59" (IST, no offset) */
-  upd_time: string | null
-  open_price: number | null
-  high_price: number | null
-  low_price: number | null
-  /** Last traded price */
-  close_price: number | null
-  bbuy_qty: number | null
-  bbuy_price: number | null
-  bsell_qty: number | null
-  bsell_price: number | null
-  prevclose: number | null
-  vol_traded: number | null
-  /** Volume change vs the previous day, % */
-  pervol: number | null
-  /** Price change, % */
-  perchg: number | null
-  /** Price change, ₹ */
-  netchg: number | null
-  /** Traded value, ₹ crore */
-  val_traded: number | null
-  "52weekhigh": number | null
-  "52weeklow": number | null
-  prev_vol_traded: number | null
-  prev_value_traded: number | null
-  offerprice: number | null
-  offerqty: number | null
-  /** Full legal name */
-  lname: string | null
-}
+import type { GainerItem } from "./api"
 
 /** One table row. */
 export interface MarketMover {
@@ -69,30 +32,38 @@ export interface MarketMover {
   href: string
 }
 
-export const toMarketMover = (r: MarketMoverApi): MarketMover => ({
-  symbol: r.symbol,
-  name: r.co_name || r.lname || r.symbol,
-  exchange: r.stk_exchng.toUpperCase(),
-  group: r.sc_group,
-  ltp: r.close_price,
-  change: r.netchg,
-  changePct: r.perchg,
-  open: r.open_price,
-  high: r.high_price,
-  low: r.low_price,
-  prevClose: r.prevclose,
-  volume: r.vol_traded,
-  volumeChangePct: r.pervol,
-  prevVolume: r.prev_vol_traded,
-  valueCr: r.val_traded,
-  prevValueCr: r.prev_value_traded,
-  valueChangePct:
-    r.val_traded === null || !r.prev_value_traded ? null : ((r.val_traded - r.prev_value_traded) / r.prev_value_traded) * 100,
-  high52: r["52weekhigh"],
-  low52: r["52weeklow"],
-  updatedAt: r.upd_time,
-  href: `/stocks/${encodeURIComponent(r.symbol.toLowerCase())}`,
-})
+export const stockHref = (symbol: string) => `/stocks/${encodeURIComponent(symbol.toLowerCase())}`
+
+export function toMarketMover(r: GainerItem): MarketMover {
+  const symbol = r.symbol ?? (r.bseCode ? String(r.bseCode) : "")
+  const ltp = r.ltp ?? r.close
+  return {
+    symbol,
+    name: r.name || symbol,
+    exchange: r.exchange ?? "NSE",
+    group: r.group,
+    ltp,
+    change: ltp !== null && r.previousClose !== null ? ltp - r.previousClose : r.netChange,
+    changePct: r.changePct,
+    open: r.open,
+    high: r.high,
+    low: r.low,
+    prevClose: r.previousClose,
+    volume: r.volume,
+    volumeChangePct: r.volumeChangePct,
+    prevVolume: r.previousVolume,
+    valueCr: r.valueTraded,
+    prevValueCr: r.previousValueTraded,
+    valueChangePct:
+      r.valueTraded === null || !r.previousValueTraded
+        ? null
+        : ((r.valueTraded - r.previousValueTraded) / r.previousValueTraded) * 100,
+    high52: r.high52,
+    low52: r.low52,
+    updatedAt: r.quoteUpdatedAt ?? r.updatedAt,
+    href: stockHref(symbol),
+  }
+}
 
 /** The movers lists, keyed by their /stock-market-live/<slug> URL. */
 export const MOVER_LISTS = [

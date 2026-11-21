@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   Search, ChevronLeft, ChevronRight,
   Calculator, Star, Check,
-  Zap, BarChart2, Users, Award, X, ArrowUpDown, ArrowUp, ArrowDown, ArrowUpRight,
+  Zap, BarChart2, Users, Award, X, ArrowUpDown, ArrowUp, ArrowDown,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -250,10 +250,8 @@ export default function MutualFundsPage() {
   const pickRisk  = (v: string)  => { setRisk(v); setPage(1) }
   const pickRating = (v: number | null) => { setRating(v); setPage(1) }
   const pickAmcs = (v: number[]) => { setAmcIds(v); setPage(1) }
-  // Hero shortcuts: set the filter, then jump to the table.
+  // Hero "Explore Funds": jump to the table.
   const scrollToExplorer = () => document.getElementById("find-your-fund")?.scrollIntoView({ behavior: "smooth", block: "start" })
-  const browseCategory = (main: string) => { pickCategory({ [main]: [] }); scrollToExplorer() }
-  const browseIndexFunds = () => { switchTab("index"); scrollToExplorer() }
   // Like the stocks page: resets search, categories, risk and sort (the tab stays).
   const clearAll = () => {
     setCategory(NO_CATEGORY); setRisk(""); setRating(null); setAmcIds([]); setSearch(""); setQuery(""); setSort(tabSort(tab)); setPage(1)
@@ -288,7 +286,7 @@ export default function MutualFundsPage() {
       {/* useSearchParams needs a Suspense boundary in the App Router */}
       <Suspense fallback={null}><CategoryFromUrl onPick={pickFromUrl} /></Suspense>
 
-      {/* ── HERO (compact: pitch on the left, browse-by-category on the right) ── */}
+      {/* ── HERO (compact: pitch on the left, key numbers on the right) ── */}
       <section className="relative bg-cream border-b border-border/40 pt-24 pb-8 lg:pb-10 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div
@@ -308,7 +306,7 @@ export default function MutualFundsPage() {
             <span className="text-foreground font-semibold">Mutual Funds</span>
           </nav>
 
-          <div className="grid lg:grid-cols-[minmax(0,1fr)_420px] gap-6 lg:gap-12 items-center">
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_400px] gap-6 lg:gap-12 items-center">
             <div className="space-y-4">
               <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">Wealth Creation</p>
               <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-black text-foreground tracking-tight leading-[1.1]">
@@ -324,60 +322,26 @@ export default function MutualFundsPage() {
                 <Button
                   variant="outline"
                   className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary"
-                  onClick={() => document.getElementById("find-your-fund")?.scrollIntoView({ behavior: "smooth" })}
+                  onClick={scrollToExplorer}
                 >
                   Explore Funds
                 </Button>
               </div>
-              <div className="flex flex-wrap gap-x-6 gap-y-3 pt-1">
-                {[
-                  { v: "₹0",       l: "Commission"      },
-                  { v: totalFunds, l: "Funds Available" },
-                  { v: formatCount(info?.stats.totalCategories), l: "Categories" },
-                  { v: totalAmcs,  l: "AMC Partners"    },
-                ].map((stat) => (
-                  <div key={stat.l}>
-                    <div className="text-base font-black text-foreground leading-none">{stat.v}</div>
-                    <div className="text-[10px] text-muted-foreground font-semibold mt-1">{stat.l}</div>
-                  </div>
-                ))}
-              </div>
             </div>
 
-            {/* Browse by category: the main categories from the API, each opens the table filtered */}
-            <div className="rounded-[10px] bg-white border border-border shadow-[0_8px_32px_rgba(0,0,0,0.06)] p-4">
-              <p className="text-[10px] font-extrabold uppercase tracking-wider text-gold-deep mb-2.5">Browse by category</p>
-              {info ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {info.assetClasses.slice(0, 6).map((m) => (
-                    <button
-                      key={m.name}
-                      onClick={() => browseCategory(m.name)}
-                      className="group text-left rounded-[6px] border border-border bg-cream/50 px-3 py-2.5 hover:border-burgundy/30 hover:bg-white transition-all"
-                    >
-                      <div className="text-xs font-extrabold text-foreground flex items-center justify-between gap-1">
-                        <span className="truncate">{m.label}</span>
-                        <ArrowUpRight className="w-3 h-3 shrink-0 text-muted-foreground group-hover:text-burgundy transition-colors" />
-                      </div>
-                      <div className="text-[10px] font-semibold text-muted-foreground tabular-nums mt-0.5">{m.count.toLocaleString("en-IN")} funds</div>
-                    </button>
-                  ))}
+            {/* Key numbers, moved up from under the heading to use the right side */}
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { v: "₹0",       l: "Commission"      },
+                { v: totalFunds, l: "Funds Available" },
+                { v: formatCount(info?.stats.totalCategories), l: "Categories" },
+                { v: totalAmcs,  l: "AMC Partners"    },
+              ].map((stat) => (
+                <div key={stat.l} className="rounded-[10px] bg-white border border-border shadow-[0_8px_32px_rgba(0,0,0,0.06)] px-5 py-4">
+                  <div className="text-2xl lg:text-3xl font-black text-burgundy leading-none tabular-nums">{stat.v}</div>
+                  <div className="text-[11px] text-muted-foreground font-semibold mt-1.5">{stat.l}</div>
                 </div>
-              ) : pageData.error ? (
-                <p className="text-[11px] text-muted-foreground py-4 text-center">{sectionStatus}</p>
-              ) : (
-                <div className="grid grid-cols-3 gap-2" aria-busy="true" aria-label="Loading categories">
-                  {Array.from({ length: 6 }, (_, i) => <div key={i} className="h-[52px] rounded-[6px] bg-skeleton skeleton-pulse" />)}
-                </div>
-              )}
-              <button
-                onClick={browseIndexFunds}
-                className="mt-3 w-full flex items-center gap-3 rounded-[6px] bg-burgundy/[0.06] border border-burgundy/15 px-3 py-2.5 hover:bg-burgundy/10 transition-colors text-left"
-              >
-                <Zap className="w-4 h-4 text-burgundy shrink-0" />
-                <span className="text-[11px] text-foreground font-extrabold">Explore Index Funds</span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-burgundy ml-auto shrink-0" />
-              </button>
+              ))}
             </div>
           </div>
         </div>

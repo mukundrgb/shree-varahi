@@ -2,15 +2,16 @@
 
 // Market movers pages: /stock-market-live/<slug> (Top Gainers, Top Losers, Most Active, 52W High/Low).
 //   MarketMoversPage  breadcrumb, title and description around a table
-//   MoversTable       gainers / losers / most active: columns follow the CMOTS movers response (lib/market-movers/types.ts)
-//   Week52Table       52-week high / low: columns follow the CMOTS 52-week response (lib/market-movers/week52.ts)
-// No data source yet: to connect an API, map its rows (toMarketMover / toWeek52Row) and pass them as `rows`.
+//   MoversTable       gainers / losers: rows mapped with toMarketMover (lib/market-movers/types.ts)
+//   Week52Table       52-week high / low: rows mapped with toWeek52Row (lib/market-movers/week52.ts)
+//   MoversPagination  page bar under a table
+// Top Gainers and 52W High / Low load from the backend; losers and most active have no API yet.
 
 import Link from "next/link"
-import { ChevronRight, TrendingUp, TrendingDown } from "lucide-react"
+import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
-import { formatDate, formatPercent, formatPrice, formatVolume } from "@/lib/stocks/format"
+import { formatDate, formatPercent, formatPrice } from "@/lib/stocks/format"
 import { MOVER_LISTS, type MarketMover, type MoverSlug } from "@/lib/market-movers/types"
 import type { Week52Row } from "@/lib/market-movers/week52"
 
@@ -33,17 +34,18 @@ const TR = "group border-b border-border/50 last:border-0 hover:bg-cream/40 tran
 
 // ── Shared cells ─────────────────────────────────────────────────────────────
 
-function CompanyCell({ href, name, title, symbol, badges }: { href: string; name: string; title?: string | null; symbol: string; badges: (string | null)[] }) {
+/** Name, symbol and badges. Not a link for now: there are no detail pages for these lists yet (`href` is kept for when there are). */
+function CompanyCell({ name, title, symbol, badges }: { href: string; name: string; title?: string | null; symbol: string; badges: (string | null)[] }) {
   return (
-    <Link href={href} className="block min-w-0">
-      <span className="block text-sm font-extrabold text-foreground group-hover:text-burgundy transition-colors truncate max-w-[220px]" title={title ?? name}>{name}</span>
+    <div className="min-w-0">
+      <span className="block text-sm font-extrabold text-foreground truncate max-w-[220px]" title={title ?? name}>{name}</span>
       <span className="flex items-center gap-1.5 mt-0.5 text-[11px] text-muted-foreground">
         {symbol}
         {badges.filter(Boolean).map((b) => (
           <span key={b} className="text-[9px] font-bold px-1 py-px rounded-[3px] bg-secondary">{b}</span>
         ))}
       </span>
-    </Link>
+    </div>
   )
 }
 
@@ -66,9 +68,13 @@ function PriceOnDate({ price, date }: { price: number | null; date: string | nul
   )
 }
 
-function EmptyRow({ cols }: { cols: number }) {
-  return <tr><td colSpan={cols} className="py-16 text-center text-sm text-muted-foreground">No stocks in this list right now.</td></tr>
+/** Shown instead of rows: `status` (loading / error) when set, otherwise the empty message. */
+function EmptyRow({ cols, status }: { cols: number; status?: React.ReactNode }) {
+  return <tr><td colSpan={cols} className="py-16 text-center text-sm text-muted-foreground">{status ?? "No stocks in this list right now."}</td></tr>
 }
+
+/** `offset` numbers rows on later pages; `status` replaces the rows while loading or on error. */
+interface TableProps { offset?: number; status?: React.ReactNode }
 
 
 function TableFrame({ minWidth, children }: { minWidth: number; children: React.ReactNode }) {
@@ -83,7 +89,7 @@ function TableFrame({ minWidth, children }: { minWidth: number; children: React.
 
 // ── Gainers / losers / most active ───────────────────────────────────────────
 
-export function MoversTable({ rows }: { rows: MarketMover[] }) {
+export function MoversTable({ rows, offset = 0, status }: { rows: MarketMover[] } & TableProps) {
   return (
     <TableFrame minWidth={1180}>
       <thead>
@@ -103,11 +109,11 @@ export function MoversTable({ rows }: { rows: MarketMover[] }) {
         </tr>
       </thead>
       <tbody>
-        {rows.length === 0 ? <EmptyRow cols={12} /> : rows.map((r, i) => (
-          <tr key={`${r.exchange}-${r.symbol}`} className={TR}>
-            <td className={`${TD} text-muted-foreground`}>{i + 1}</td>
+        {status || rows.length === 0 ? <EmptyRow cols={12} status={status} /> : rows.map((r, i) => (
+          <tr key={`${r.exchange}-${r.symbol}-${i}`} className={TR}>
+            <td className={`${TD} text-muted-foreground`}>{offset + i + 1}</td>
             <td className={TD_COMPANY}>
-              <CompanyCell href={r.href} name={r.name} symbol={r.symbol} badges={[r.exchange, r.group && `Grp ${r.group}`]} />
+              <CompanyCell href={r.href} name={r.name} symbol={r.symbol} badges={[r.exchange]} />
             </td>
             <td className={`${TD} text-right font-black text-foreground`}>{formatPrice(r.ltp)}</td>
             <td className={`${TD} text-right`}><ChangeCell value={r.changePct} /></td>
@@ -115,14 +121,7 @@ export function MoversTable({ rows }: { rows: MarketMover[] }) {
             <td className={`${TD} text-right text-foreground/80`}>{formatPrice(r.high)}</td>
             <td className={`${TD} text-right text-foreground/80`}>{formatPrice(r.low)}</td>
             <td className={`${TD} text-right text-foreground/80`}>{formatPrice(r.prevClose)}</td>
-            <td className={`${TD} text-right`}>
-              <span className="block font-semibold text-foreground">{formatVolume(r.volume)}</span>
-              {r.volumeChangePct !== null && (
-                <span className={`block text-[10px] font-bold ${tone(r.volumeChangePct)}`} title="Volume change vs previous day">
-                  {formatPercent(r.volumeChangePct)} vs prev
-                </span>
-              )}
-            </td>
+            <td className={`${TD} text-right font-semibold text-foreground`}>{rawVolume(r.volume)}</td>
             <td className={`${TD} text-right font-semibold text-foreground`}>{formatPrice(r.valueCr)}</td>
             <td className={`${TD} text-right text-foreground/80`}>{formatPrice(r.low52)}</td>
             <td className={`${TD} text-right text-foreground/80`}>{formatPrice(r.high52)}</td>
@@ -135,31 +134,22 @@ export function MoversTable({ rows }: { rows: MarketMover[] }) {
 
 // ── Most active by value / volume ────────────────────────────────────────────
 
-/** Today's figure with its change vs the previous day underneath. */
-function TodayVsPrev({ text, changePct }: { text: string; changePct: number | null }) {
-  return (
-    <>
-      <span className="block font-bold text-foreground">{text}</span>
-      {changePct !== null && (
-        <span className={`block text-[10px] font-bold ${tone(changePct)}`}>{formatPercent(changePct)} vs prev</span>
-      )}
-    </>
-  )
-}
+/** Shares traded exactly as the API sends them (Indian digit grouping, no Cr / L). */
+const rawVolume = (v: number | null) => (v === null ? "—" : v.toLocaleString("en-IN"))
 
 /**
  * by "value": ranked by traded value; value columns only.
  * by "volume": ranked by shares traded; volume columns only.
  */
-export function MostActiveTable({ rows, by }: { rows: MarketMover[]; by: "value" | "volume" }) {
+export function MostActiveTable({ rows, by, offset = 0, status }: { rows: MarketMover[]; by: "value" | "volume" } & TableProps) {
   const cols = 11
   const value = (r: MarketMover) => [
-    <td key="v" className={`${TD} text-right ${by === "value" ? "bg-cream/30" : ""}`}><TodayVsPrev text={formatPrice(r.valueCr)} changePct={r.valueChangePct} /></td>,
+    <td key="v" className={`${TD} text-right font-bold text-foreground ${by === "value" ? "bg-cream/30" : ""}`}>{formatPrice(r.valueCr)}</td>,
     <td key="pv" className={`${TD} text-right text-foreground/70`}>{formatPrice(r.prevValueCr)}</td>,
   ]
   const volume = (r: MarketMover) => [
-    <td key="q" className={`${TD} text-right ${by === "volume" ? "bg-cream/30" : ""}`}><TodayVsPrev text={formatVolume(r.volume)} changePct={r.volumeChangePct} /></td>,
-    <td key="pq" className={`${TD} text-right text-foreground/70`}>{formatVolume(r.prevVolume)}</td>,
+    <td key="q" className={`${TD} text-right font-bold text-foreground ${by === "volume" ? "bg-cream/30" : ""}`}>{rawVolume(r.volume)}</td>,
+    <td key="pq" className={`${TD} text-right text-foreground/70`}>{rawVolume(r.prevVolume)}</td>,
   ]
   const valueHeads = [
     <th key="v" className={`${TH} text-right ${by === "value" ? "text-burgundy" : ""}`}>Value (₹ Cr)</th>,
@@ -187,11 +177,11 @@ export function MostActiveTable({ rows, by }: { rows: MarketMover[]; by: "value"
         </tr>
       </thead>
       <tbody>
-        {rows.length === 0 ? <EmptyRow cols={cols} /> : rows.map((r, i) => (
-          <tr key={`${r.exchange}-${r.symbol}`} className={TR}>
-            <td className={`${TD} text-muted-foreground`}>{i + 1}</td>
+        {status || rows.length === 0 ? <EmptyRow cols={cols} status={status} /> : rows.map((r, i) => (
+          <tr key={`${r.exchange}-${r.symbol}-${i}`} className={TR}>
+            <td className={`${TD} text-muted-foreground`}>{offset + i + 1}</td>
             <td className={TD_COMPANY}>
-              <CompanyCell href={r.href} name={r.name} symbol={r.symbol} badges={[r.exchange, r.group && `Grp ${r.group}`]} />
+              <CompanyCell href={r.href} name={r.name} symbol={r.symbol} badges={[r.exchange]} />
             </td>
             <td className={`${TD} text-right font-black text-foreground`}>{formatPrice(r.ltp)}</td>
             <td className={`${TD} text-right`}><ChangeCell value={r.changePct} /></td>
@@ -210,9 +200,9 @@ export function MostActiveTable({ rows, by }: { rows: MarketMover[]; by: "value"
 
 // ── 52-week high / low ───────────────────────────────────────────────────────
 
-/** kind "high" shows the all-time high in the last column, "low" the all-time low. */
-export function Week52Table({ rows, kind }: { rows: Week52Row[]; kind: "high" | "low" }) {
-  const high = kind === "high"
+/** Both kinds show the same columns, ending with the all-time high and all-time low. */
+export function Week52Table({ rows, offset = 0, status }: { rows: Week52Row[]; kind: "high" | "low" } & TableProps) {
+  const cols = 10
   return (
     <TableFrame minWidth={1180}>
       <thead>
@@ -221,41 +211,64 @@ export function Week52Table({ rows, kind }: { rows: Week52Row[]; kind: "high" | 
           <th className={TH_COMPANY}>Company</th>
           <th className={`${TH} text-right`}>LTP (₹)</th>
           <th className={`${TH} text-right`}>Change %</th>
-          <th className={`${TH} text-right`}>Day High</th>
-          <th className={`${TH} text-right`}>Day Low</th>
           <th className={`${TH} text-right`}>52W High</th>
           <th className={`${TH} text-right`}>52W Low</th>
           <th className={`${TH} text-right`}>Market Cap (₹ Cr)</th>
           <th className={`${TH} text-right`}>Volume</th>
-          <th className={`${TH} text-right`}>{high ? "All-Time High" : "All-Time Low"}</th>
+          <th className={`${TH} text-right`}>All-Time High</th>
+          <th className={`${TH} text-right`}>All-Time Low</th>
         </tr>
       </thead>
       <tbody>
-        {rows.length === 0 ? <EmptyRow cols={11} /> : rows.map((r, i) => {
+        {status || rows.length === 0 ? <EmptyRow cols={cols} status={status} /> : rows.map((r, i) => {
           return (
-            <tr key={`${r.exchange}-${r.symbol}`} className={TR}>
-              <td className={`${TD} text-muted-foreground`}>{i + 1}</td>
+            <tr key={`${r.exchange}-${r.symbol}-${i}`} className={TR}>
+              <td className={`${TD} text-muted-foreground`}>{offset + i + 1}</td>
               <td className={TD_COMPANY}>
                 <CompanyCell href={r.href} name={r.name} title={r.fullName} symbol={r.symbol} badges={[r.exchange]} />
               </td>
               <td className={`${TD} text-right font-black text-foreground`}>{formatPrice(r.ltp)}</td>
               <td className={`${TD} text-right`}><ChangeCell value={r.changePct} /></td>
-              <td className={`${TD} text-right text-foreground/80`}>{formatPrice(r.dayHigh)}</td>
-              <td className={`${TD} text-right text-foreground/80`}>{formatPrice(r.dayLow)}</td>
               <td className={`${TD} text-right`}><PriceOnDate price={r.high52} date={r.high52Date} /></td>
               <td className={`${TD} text-right`}><PriceOnDate price={r.low52} date={r.low52Date} /></td>
               <td className={`${TD} text-right font-semibold text-foreground`}>{formatPrice(r.marketCapCr)}</td>
-              <td className={`${TD} text-right font-semibold text-foreground`}>{formatVolume(r.volume)}</td>
-              <td className={`${TD} text-right`}>
-                {high
-                  ? <PriceOnDate price={r.allTimeHigh} date={r.allTimeHighDate} />
-                  : <PriceOnDate price={r.allTimeLow} date={r.allTimeLowDate} />}
-              </td>
+              <td className={`${TD} text-right font-semibold text-foreground`}>{rawVolume(r.volume)}</td>
+              <td className={`${TD} text-right`}><PriceOnDate price={r.allTimeHigh} date={r.allTimeHighDate} /></td>
+              <td className={`${TD} text-right`}><PriceOnDate price={r.allTimeLow} date={r.allTimeLowDate} /></td>
             </tr>
           )
         })}
       </tbody>
     </TableFrame>
+  )
+}
+
+// ── Pagination ───────────────────────────────────────────────────────────────
+
+export function MoversPagination({ page, totalPages, onChange }: { page: number; totalPages: number; onChange: (page: number) => void }) {
+  if (totalPages <= 1) return null
+  const first = Math.max(1, Math.min(totalPages - 4, page - 2))
+  const arrow = "w-8 h-8 rounded-[5px] border border-border flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+  return (
+    <div className="flex items-center justify-between gap-3 mt-4">
+      <p className="text-xs text-muted-foreground">Page {page} of {totalPages.toLocaleString("en-IN")}</p>
+      <div className="flex gap-1.5">
+        <button onClick={() => onChange(page - 1)} disabled={page <= 1} aria-label="Previous page" className={arrow}>
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => first + i).map((pg) => (
+          <button key={pg} onClick={() => onChange(pg)} aria-current={pg === page ? "page" : undefined}
+            className={`min-w-8 h-8 px-1.5 rounded-[5px] border text-xs font-bold transition-all ${
+              pg === page ? "bg-burgundy text-white border-burgundy" : "border-border text-muted-foreground hover:text-foreground"
+            }`}>
+            {pg}
+          </button>
+        ))}
+        <button onClick={() => onChange(page + 1)} disabled={page >= totalPages} aria-label="Next page" className={arrow}>
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
   )
 }
 
