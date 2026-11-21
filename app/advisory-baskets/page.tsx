@@ -311,66 +311,41 @@ export default function AdvisoryBasketsPage() {
                 </Button>
               </form>
 
-              {/* QR + store badges */}
-              <div className="flex items-center justify-center lg:justify-start gap-4 pt-1">
-                <div className="hidden sm:flex w-16 h-16 rounded-[8px] bg-white p-1.5 shrink-0">
-                  <div
-                    className="w-full h-full"
-                    style={{
-                      backgroundImage: "repeating-linear-gradient(45deg, #1A1A1A 0, #1A1A1A 2px, transparent 2px, transparent 4px), repeating-linear-gradient(-45deg, #1A1A1A 0, #1A1A1A 2px, transparent 2px, transparent 4px)",
-                      backgroundSize: "8px 8px",
-                    }}
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <p className="text-[11px] text-white/60">Scan to download</p>
-                  <div className="flex gap-2.5">
-                    <a
-                      href="https://apps.apple.com/in/app/shree-varahi/id1475075572"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-white/10 border border-white/20 hover:bg-white/20 rounded-[6px] px-3 py-1.5 flex items-center gap-2 transition-all"
-                    >
-                      <svg className="w-3.5 h-3.5 fill-white" viewBox="0 0 24 24">
-                        <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.21.67-2.93 1.49-.62.69-1.16 1.84-1.01 2.96 1.12.09 2.27-.57 2.95-1.39z" />
-                      </svg>
-                      <span className="text-[10px] font-bold text-white">App Store</span>
-                    </a>
-                    <a
-                      href="https://play.google.com/store/search?q=shree%20varahi&c=apps&hl=en"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-white/10 border border-white/20 hover:bg-white/20 rounded-[6px] px-3 py-1.5 flex items-center gap-2 transition-all"
-                    >
-                      <svg className="w-3.5 h-3.5 fill-white" viewBox="0 0 24 24">
-                        <path d="M5 3.5c-.2 0-.4.1-.5.3l9.8 9.8 3.2-3.2L5.4 3.8c-.1-.2-.3-.3-.4-.3zM3.8 4.7c-.2.2-.3.5-.3.8v13c0 .3.1.6.3.8l7.2-7.2L3.8 4.7zm15 4.4L15.6 11l3.2 3.2 3.1-1.8c.4-.2.6-.6.6-1s-.2-.8-.6-1l-3.1-1.8zM4.3 19.9c.1.2.3.3.5.3.2 0 .3-.1.4-.2l12.1-7-3.2-3.2-9.8 9.8z" />
-                      </svg>
-                      <span className="text-[10px] font-bold text-white">Google Play</span>
-                    </a>
-                  </div>
-                </div>
+              {/* Store badges */}
+              <div className="flex items-center justify-center lg:justify-start gap-2.5 pt-1">
+                <a
+                  href="https://apps.apple.com/in/app/shree-varahi/id1475075572"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white/35 border border-white/50 hover:bg-white/45 backdrop-blur-sm rounded-[8px] px-3.5 py-2 flex items-center gap-2 transition-all shadow-sm"
+                >
+                  <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.21.67-2.93 1.49-.62.69-1.16 1.84-1.01 2.96 1.12.09 2.27-.57 2.95-1.39z" />
+                  </svg>
+                  <span className="text-xs font-bold text-white">App Store</span>
+                </a>
+                <a
+                  href="https://play.google.com/store/search?q=shree%20varahi&c=apps&hl=en"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white/35 border border-white/50 hover:bg-white/45 backdrop-blur-sm rounded-[8px] px-3.5 py-2 flex items-center gap-2 transition-all shadow-sm"
+                >
+                  <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
+                    <path d="M5 3.5c-.2 0-.4.1-.5.3l9.8 9.8 3.2-3.2L5.4 3.8c-.1-.2-.3-.3-.4-.3zM3.8 4.7c-.2.2-.3.5-.3.8v13c0 .3.1.6.3.8l7.2-7.2L3.8 4.7zm15 4.4L15.6 11l3.2 3.2 3.1-1.8c.4-.2.6-.6.6-1s-.2-.8-.6-1l-3.1-1.8zM4.3 19.9c.1.2.3.3.5.3.2 0 .3-.1.4-.2l12.1-7-3.2-3.2-9.8 9.8z" />
+                  </svg>
+                  <span className="text-xs font-bold text-white">Google Play</span>
+                </a>
               </div>
             </div>
 
-            {/* Right — phone mockup w/ basket dashboard */}
-            <div className="hidden lg:flex flex-shrink-0 w-[220px] rounded-[20px] border-[6px] border-foreground/90 bg-white shadow-2xl overflow-hidden">
-              <div className="w-full p-3.5 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-extrabold text-foreground">My Baskets</span>
-                  <TrendingUp className="w-3.5 h-3.5 text-[#8B0D19]" />
-                </div>
-                <div className="bg-cream rounded-[8px] p-3 space-y-1">
-                  <p className="text-[8px] font-semibold text-muted-foreground uppercase">Invested Value</p>
-                  <p className="text-base font-black text-foreground">₹1,48,500</p>
-                  <p className="text-[10px] font-bold text-profit">+₹9,820 (7.1%)</p>
-                </div>
-                {SAMPLE_BASKET.slice(0, 3).map((s) => (
-                  <div key={s.name} className="flex items-center justify-between">
-                    <span className="text-[9px] font-semibold text-foreground truncate pr-2">{s.name}</span>
-                    <span className="text-[9px] font-bold text-muted-foreground shrink-0">{s.weight}%</span>
-                  </div>
-                ))}
-              </div>
+            {/* Right — phone mockup */}
+            <div className="hidden lg:flex flex-shrink-0 w-[220px] select-none items-center justify-center">
+              <img
+                src="/mobile-trading-app.png"
+                alt="Shree Varahi Mobile App"
+                className="w-full h-auto max-h-[380px] object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.35)]"
+                draggable={false}
+              />
             </div>
           </div>
         </motion.div>
