@@ -46,7 +46,7 @@ export function AppPromoSection() {
 
           {/* Highlights */}
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-3 gap-y-2 text-xs sm:text-sm font-semibold text-muted-foreground">
-            <span>4.4★ Play Store</span>
+            <span>4.5★ Play Store</span>
             <span className="text-gold-deep">◆</span>
             <span>4.3★ App Store</span>
             <span className="text-gold-deep">◆</span>
