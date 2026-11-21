@@ -8,7 +8,7 @@ export interface MarketNews {
 }
 
 export const newsApi = {
-  /** Latest Market Beat stories, newest first (max 10). */
+  /** Latest Market Beat stories, newest first. */
   marketBeat: (limit: number, signal?: AbortSignal) =>
     apiGet<MarketNews>("/news/market-beat", { query: { limit }, signal }),
 }

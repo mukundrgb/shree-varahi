@@ -932,24 +932,6 @@ function StockDetail({ slug, stock }: { slug: string; stock: StockSummary }) {
                 </AnimatePresence>
               </div>
 
-              {/* ── F&O Section ── */}
-              <div className="grid sm:grid-cols-2 gap-4">
-                {[
-                  { title: `${stock.symbol} Futures`, icon: "📈", desc: "Trade futures contracts on this stock", color: "bg-burgundy/5 border-burgundy/20" },
-                  { title: `${stock.symbol} Options`, icon: "🔗", desc: "View the complete option chain", color: "bg-gold/5 border-gold/30" },
-                ].map(c => (
-                  <Link key={c.title} href="/futures-options"
-                    className={`flex items-center gap-3 p-4 rounded-[10px] border ${c.color} hover:shadow-sm transition-all group`}>
-                    <span className="text-2xl">{c.icon}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-black text-foreground group-hover:text-burgundy transition-colors">{c.title}</div>
-                      <div className="text-[11px] text-muted-foreground">{c.desc}</div>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground/40 group-hover:text-burgundy transition-colors shrink-0" />
-                  </Link>
-                ))}
-              </div>
-
               {/* ── LATEST NEWS ── */}
               <div className="border border-border rounded-[10px] bg-white overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
                 <div className="px-5 py-4 border-b border-border/60 flex items-center justify-between">
@@ -963,7 +945,7 @@ function StockDetail({ slug, stock }: { slug: string; stock: StockSummary }) {
                 ) : news.data && news.data.items.length === 0 ? (
                   <Notice title="No recent news" />
                 ) : (
-                  // All stories the API sends (up to 10) as scrollable cards with their text.
+                  // Every story the API sends (no limit here) as scrollable cards with their text.
                   <div className="p-4 sm:p-5 bg-cream/30">
                     <NewsCarousel items={news.data?.items ?? []} loading={news.loading && !news.data} label="Latest news" />
                   </div>

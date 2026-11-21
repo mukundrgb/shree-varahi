@@ -49,8 +49,8 @@ export const STOCK_SORTS: readonly StockSort[] = ["name-asc", "name-desc", "chan
 export interface StockListParams {
   page?: number
   search?: string
-  /** A category from StockListResult.categories. */
-  sector?: string
+  /** Categories from StockListResult.categories; several = stocks in any of them (?sector=A&sector=B). */
+  sector?: string | string[]
   cap?: string
   /** "A"–"Z" = company names starting with that letter; "0-9" = names starting with a number */
   letter?: string

@@ -7,7 +7,7 @@ import {
   Search, TrendingUp, TrendingDown, Star,
   ChevronLeft, ChevronRight, Newspaper, Clock,
   ArrowUpRight, X, Plus, FileSearch, LineChart, Zap,
-  ShieldCheck, PieChart, Eye, RotateCcw, Bell, CheckCircle2, ArrowUpDown, ArrowUp, ArrowDown,
+  ShieldCheck, PieChart, Eye, RotateCcw, Bell, CheckCircle2, Check, ArrowUpDown, ArrowUp, ArrowDown,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -236,7 +236,8 @@ function LetterFromUrl({ onLetter }: { onLetter: (letter: string | null) => void
 export default function StocksPage() {
   const router = useRouter()
   const [search, setSearch]       = useState("")
-  const [sector, setSector]       = useState("All")
+  /** Picked sectors (categories); empty = all sectors. */
+  const [sectors, setSectors]     = useState<string[]>([])
   const [cap, setCap]             = useState("all")
   const [sort, setSort]          = useState<StockSort>(DEFAULT_STOCK_SORT)
   /** First-letter filter from the footer A–Z links; "0-9" = starts with a number. */
@@ -250,7 +251,7 @@ export default function StocksPage() {
   const [watchlist, setWatchlist] = useState<Set<string>>(new Set())
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null)
   const [mobile, setMobile]       = useState("")
-  const marketNews = useMarketBeat(5)
+  const marketNews = useMarketBeat()
 
   // Wait for a pause in typing so each keystroke doesn't call the API.
   const [debouncedSearch, setDebouncedSearch] = useState("")
@@ -259,7 +260,6 @@ export default function StocksPage() {
     return () => clearTimeout(timer)
   }, [search])
 
-  const activeSector = sector !== "All" ? sector : undefined
   const activeCap = cap !== "all" ? cap : undefined
 
   // An older backend rejects the price sort (400 "Invalid sort"); then the table loads
@@ -269,7 +269,8 @@ export default function StocksPage() {
   const { data: stockList, error: stockListError, loading: stockListLoading, retry: retryStockList } = useStockList({
     page,
     search: debouncedSearch || undefined,
-    sector: activeSector,
+    // Sent as ?sector=A&sector=B; sorted so the same picks reuse the same request.
+    sector: sectors.length ? [...sectors].sort() : undefined,
     cap: activeCap,
     letter: letter ?? undefined,
     sort: sentSort,
@@ -286,7 +287,6 @@ export default function StocksPage() {
   useEffect(() => {
     if (stockList?.categories) setCategories(stockList.categories)
   }, [stockList?.categories])
-  const sectorFilters = ["All", ...categories]
 
   const toggleWatchlist = (symbol: string) =>
     setWatchlist((prev) => {
@@ -295,7 +295,12 @@ export default function StocksPage() {
       return n
     })
 
-  const pickSector = (s: string) => { setSector(s); setPage(1) }
+  /** Ticks or unticks one sector. */
+  const toggleSector = (s: string) => {
+    setSectors((prev) => (prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]))
+    setPage(1)
+  }
+  const clearSectors = () => { setSectors([]); setPage(1) }
   const pickCap    = (c: string) => { setCap(c); setPage(1) }
   const pickSort   = (s: StockSort) => { setSort(s); setPage(1) }
   // LTP header: first click = highest first (arrow up), next click = lowest first (arrow down).
@@ -307,11 +312,11 @@ export default function StocksPage() {
     document.getElementById("all-stocks")?.scrollIntoView({ behavior: "smooth", block: "start" })
   }
   const clearAll = () => {
-    setSector("All"); setCap("all"); setSearch(""); setSort(DEFAULT_STOCK_SORT); setPage(1)
+    setSectors([]); setCap("all"); setSearch(""); setSort(DEFAULT_STOCK_SORT); setPage(1)
     if (letter) clearLetter()
   }
 
-  const hasFilter = !!(sector !== "All" || cap !== "all" || search || sort !== DEFAULT_STOCK_SORT || letter)
+  const hasFilter = !!(sectors.length || cap !== "all" || search || sort !== DEFAULT_STOCK_SORT || letter)
   const capLabel = CAP_OPTIONS.find((c) => c.value === cap)?.label
 
   return (
@@ -445,31 +450,47 @@ export default function StocksPage() {
             </div>
 
             <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-2">Sector</p>
-              {/* Phones and tablets: a dropdown */}
-              <select
-                aria-label="Sector"
-                value={sector}
-                onChange={(e) => pickSector(e.target.value)}
-                className="lg:hidden w-full px-3 py-2 text-sm font-semibold rounded-[5px] border border-border bg-cream/50 focus:outline-none focus:ring-2 focus:ring-gold/30"
-              >
-                {sectorFilters.map((s) => <option key={s} value={s}>{s === "All" ? "All sectors" : s}</option>)}
-              </select>
-              {/* Desktop: a scrollable list */}
-              <div className="hidden lg:block max-h-[340px] overflow-y-auto -mx-1 pr-1 space-y-0.5">
-                {sectorFilters.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => pickSector(s)}
-                    aria-pressed={sector === s}
-                    className={`w-full text-left px-2.5 py-1.5 rounded-[5px] text-[12px] font-semibold transition-colors flex items-center justify-between ${
-                      sector === s ? "bg-burgundy/[0.07] text-burgundy font-bold" : "text-muted-foreground hover:bg-cream hover:text-foreground"
-                    }`}
-                  >
-                    <span className="truncate">{s === "All" ? "All sectors" : s}</span>
-                    {sector === s && <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />}
-                  </button>
-                ))}
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">
+                  Sector{sectors.length > 0 && <span className="text-burgundy"> · {sectors.length} selected</span>}
+                </p>
+                {sectors.length > 0 && (
+                  <button onClick={clearSectors} className="text-[10px] font-bold text-burgundy hover:text-burgundy-deep">Clear</button>
+                )}
+              </div>
+              {/* Tick several sectors: stocks in any of them are shown. 2 columns on phones, a list on desktop. */}
+              <div className="grid grid-cols-2 lg:grid-cols-1 gap-x-2 gap-y-0.5 max-h-[220px] lg:max-h-[340px] overflow-y-auto -mx-1 pr-1" role="group" aria-label="Sectors">
+                <button
+                  onClick={clearSectors}
+                  aria-pressed={sectors.length === 0}
+                  className={`w-full text-left px-2.5 py-1.5 rounded-[5px] text-[12px] font-semibold transition-colors flex items-center gap-2 ${
+                    sectors.length === 0 ? "bg-burgundy/[0.07] text-burgundy font-bold" : "text-muted-foreground hover:bg-cream hover:text-foreground"
+                  }`}
+                >
+                  <span className={`w-3.5 h-3.5 shrink-0 rounded-[3px] border flex items-center justify-center ${sectors.length === 0 ? "bg-burgundy border-burgundy" : "border-border bg-white"}`}>
+                    {sectors.length === 0 && <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />}
+                  </span>
+                  <span className="truncate">All sectors</span>
+                </button>
+                {categories.map((s) => {
+                  const on = sectors.includes(s)
+                  return (
+                    <button
+                      key={s}
+                      onClick={() => toggleSector(s)}
+                      role="checkbox"
+                      aria-checked={on}
+                      className={`w-full text-left px-2.5 py-1.5 rounded-[5px] text-[12px] font-semibold transition-colors flex items-center gap-2 ${
+                        on ? "bg-burgundy/[0.07] text-burgundy font-bold" : "text-muted-foreground hover:bg-cream hover:text-foreground"
+                      }`}
+                    >
+                      <span className={`w-3.5 h-3.5 shrink-0 rounded-[3px] border flex items-center justify-center ${on ? "bg-burgundy border-burgundy" : "border-border bg-white"}`}>
+                        {on && <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />}
+                      </span>
+                      <span className="truncate">{s}</span>
+                    </button>
+                  )
+                })}
               </div>
             </div>
 
@@ -502,11 +523,11 @@ export default function StocksPage() {
           </div>
 
           {/* Active filters */}
-          {(activeSector || capLabel || letter || debouncedSearch) && (
+          {(sectors.length > 0 || capLabel || letter || debouncedSearch) && (
             <div className="flex flex-wrap items-center gap-1.5 mb-3">
               {[
                 debouncedSearch ? { key: "search", label: `“${debouncedSearch}”`, clear: () => { setSearch(""); setPage(1) } } : null,
-                activeSector ? { key: "sector", label: activeSector, clear: () => pickSector("All") } : null,
+                ...sectors.map((s) => ({ key: `sector:${s}`, label: s, clear: () => toggleSector(s) })),
                 capLabel ? { key: "cap", label: capLabel, clear: () => pickCap("all") } : null,
                 letter ? { key: "letter", label: letter === "0-9" ? "Starting with a number" : `Starting with ${letter}`, clear: clearLetter } : null,
               ].filter((f) => f !== null).map((f) => (
@@ -942,10 +963,9 @@ export default function StocksPage() {
                 Latest Market News
               </h2>
             </div>
-            <span className="hidden sm:inline text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Market Beat</span>
           </div>
 
-          {/* Live CMOTS Market Beat stories: at most 5 cards, scrolling sideways. */}
+          {/* Live CMOTS Market Beat stories: every story the API sends, scrolling sideways. */}
           {marketNews.error && !marketNews.data ? (
             <div className="rounded-[8px] border border-border bg-white py-12 text-center text-sm">
               <p className="font-black text-foreground">Unable to load market news</p>
@@ -954,7 +974,7 @@ export default function StocksPage() {
           ) : marketNews.data && marketNews.data.items.length === 0 ? (
             <div className="rounded-[8px] border border-border bg-white py-12 text-center text-sm text-muted-foreground">No market news right now.</div>
           ) : (
-            <NewsCarousel items={marketNews.data?.items ?? []} max={5} loading={!marketNews.data}
+            <NewsCarousel items={marketNews.data?.items ?? []} loading={!marketNews.data} showTag={false}
               label="Latest market news" cardWidth="w-[285px] sm:w-[330px]" />
           )}
         </div>
