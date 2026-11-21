@@ -32,10 +32,21 @@ import {
   Activity,
   Smartphone,
   Sparkles,
-  Star
+  Star,
+  ArrowUpRight
 } from "lucide-react"
 
 const MotionLink = motion.create(Link)
+
+type MarketsTabKey = "Index Future" | "Stocks Future" | "Index Option" | "Stock Option"
+
+/** The four F&O segments: hero shortcuts, sidebar list and table title. */
+const MARKET_SEGMENTS: { tab: MarketsTabKey; label: string; unit: string; icon: React.ElementType }[] = [
+  { tab: "Index Future",  label: "Index Futures",  unit: "indices", icon: Activity   },
+  { tab: "Stocks Future", label: "Stock Futures",  unit: "stocks",  icon: TrendingUp },
+  { tab: "Index Option",  label: "Index Options",  unit: "indices", icon: Layers     },
+  { tab: "Stock Option",  label: "Stock Options",  unit: "stocks",  icon: LineChart  },
+]
 
 // ── CUSTOM BG GLOW GRAPHICS ──
 function ElegantBgGrid() {
@@ -54,45 +65,6 @@ function ElegantBgGrid() {
 }
 
 export default function FuturesOptionsPage() {
-  // ── 1. TICKER LOGIC (FOR DYNAMIC FEEDS) ──
-  // NIFTY and BANK NIFTY use the near-month index futures from the backend (/api/v1/fno).
-  const indexFutures = useFnoCards("index-futures")
-  const niftyCard = indexFutures.data?.items.find((c) => c.symbol === "NIFTY")
-  const bankNiftyCard = indexFutures.data?.items.find((c) => c.symbol === "BANKNIFTY")
-  const niftyPrice = niftyCard?.ltp ?? 0
-  const niftyChange = Math.round((niftyCard?.changePct ?? 0) * 100) / 100
-  const bankNiftyPrice = bankNiftyCard?.ltp ?? 0
-  // MCX commodity F&O is not available from CMOTS, so gold/crude stay illustrative.
-  const [goldPrice, setGoldPrice] = useState(72400)
-  const [crudePrice, setCrudePrice] = useState(6450)
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const goldTick = (Math.random() - 0.5) * 15
-      setGoldPrice(prev => Math.round(prev + goldTick))
-
-      const crudeTick = (Math.random() - 0.5) * 4
-      setCrudePrice(prev => Math.round(prev + crudeTick))
-    }, 2500)
-    return () => clearInterval(timer)
-  }, [])
-
-  // ── 2. HERO SIMULATED ORDER STATE ──
-  const [heroOrderState, setHeroOrderState] = useState<"idle" | "submitting" | "success">("idle")
-  const [heroOrderType, setHeroOrderType] = useState<"BUY" | "SELL">("BUY")
-  const [heroActiveTab, setHeroActiveTab] = useState<"NIFTY" | "BANKNIFTY" | "MCX">("NIFTY")
-  const [heroStrike, setHeroStrike] = useState("23500 CE")
-  const [heroQty, setHeroQty] = useState(50)
-
-  const triggerHeroOrder = () => {
-    if (heroOrderState !== "idle") return
-    setHeroOrderState("submitting")
-    setTimeout(() => {
-      setHeroOrderState("success")
-      setTimeout(() => setHeroOrderState("idle"), 3000)
-    }, 1200)
-  }
-
   // ── 3. BENTO INTERACTIVE PAYOFF STRATEGY ──
   const [bentoPayoffStrategy, setBentoPayoffStrategy] = useState<"call" | "spread">("call")
 
@@ -142,7 +114,6 @@ export default function FuturesOptionsPage() {
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null)
 
   // ── 10. MARKETS TAB STATE ──
-  type MarketsTabKey = "Index Future" | "Stocks Future" | "Index Option" | "Stock Option"
   const [marketsTab, setMarketsTab] = useState<MarketsTabKey>("Index Future")
   const [marketsPage, setMarketsPage] = useState(1)
   const MARKETS_PER_PAGE = 10
@@ -154,7 +125,21 @@ export default function FuturesOptionsPage() {
     "Stock Option": "stock-options",
   }
   const marketCategory = MARKET_CATEGORY[marketsTab]
-  const markets = useFnoCards(marketCategory, { page: marketsPage, limit: MARKETS_PER_PAGE })
+  // Sidebar search: sent to the backend (?search=) once typing pauses.
+  const [marketsSearch, setMarketsSearch] = useState("")
+  const [marketsQuery, setMarketsQuery] = useState("")
+  useEffect(() => {
+    const timer = setTimeout(() => { setMarketsQuery(marketsSearch.trim()); setMarketsPage(1) }, 300)
+    return () => clearTimeout(timer)
+  }, [marketsSearch])
+  const markets = useFnoCards(marketCategory, { page: marketsPage, limit: MARKETS_PER_PAGE, search: marketsQuery || undefined })
+  // Contract count per segment for the hero tiles and the sidebar (one 1-row request each).
+  const segmentCounts: Record<MarketsTabKey, number | null> = {
+    "Index Future":  useFnoCards("index-futures", { limit: 1 }).data?.total ?? null,
+    "Stocks Future": useFnoCards("stock-futures", { limit: 1 }).data?.total ?? null,
+    "Index Option":  useFnoCards("index-options", { limit: 1 }).data?.total ?? null,
+    "Stock Option":  useFnoCards("stock-options", { limit: 1 }).data?.total ?? null,
+  }
   // Ignore a response left over from the previous tab or page while the new one loads.
   const marketsData =
     markets.data?.category === marketCategory && markets.data.page === marketsPage ? markets.data : null
@@ -162,6 +147,11 @@ export default function FuturesOptionsPage() {
   // Keep the page count from the same tab so the pagination doesn't flicker while a page loads.
   const marketsTotalPages = markets.data?.category === marketCategory ? markets.data.totalPages : 1
   const pickMarketsTab = (tab: MarketsTabKey) => { setMarketsTab(tab); setMarketsPage(1) }
+  /** Hero shortcuts: pick the segment, then jump to the table. */
+  const browseSegment = (tab: MarketsTabKey) => {
+    pickMarketsTab(tab)
+    document.getElementById("fno-markets")?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
 
   // ── 9. SMS CTA STATE ──
   const [smsNum, setSmsNum] = useState("")
@@ -180,348 +170,281 @@ export default function FuturesOptionsPage() {
     }, 1000)
   }
 
-  const basePrice = heroActiveTab === "BANKNIFTY" ? bankNiftyPrice : heroActiveTab === "MCX" ? goldPrice : niftyPrice
 
   return (
     <main className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <Navbar />
 
-      {/* ── SECTION 1: HERO (THE INDUSTRIAL DERIVATIVES PORTAL) ── */}
-      <section className="relative bg-cream pt-24 pb-20 lg:pt-32 lg:pb-28 border-b border-border/50 overflow-hidden">
-        {/* Full Screen Matrix Overlay */}
-        <div className="absolute inset-0 pointer-events-none z-0 opacity-[0.06]">
-          <div 
-            className="absolute inset-0"
-            style={{ 
-              backgroundImage: 'linear-gradient(to right, #B8924A 1px, transparent 1px), linear-gradient(to bottom, #B8924A 1px, transparent 1px)', 
-              backgroundSize: '50px 50px' 
-            }} 
+      {/* ── SECTION 1: HERO (compact: pitch on the left, browse-by-segment on the right) ── */}
+      <section className="relative bg-cream border-b border-border/40 pt-24 pb-8 lg:pb-10 overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div
+            className="absolute inset-0 opacity-[0.04]"
+            style={{
+              backgroundImage: `linear-gradient(to right, #1A1A1A 1px, transparent 1px), linear-gradient(to bottom, #1A1A1A 1px, transparent 1px)`,
+              backgroundSize: "56px 56px",
+            }}
           />
-          {/* Axis Labels representing financial tick marks */}
-          <div className="absolute left-4 top-10 font-mono text-[9px] text-gold-deep uppercase">INDEX TICK MATRIX</div>
-          <div className="absolute left-4 top-32 font-mono text-[9px] text-gold-deep font-bold">23,400</div>
-          <div className="absolute left-4 top-64 font-mono text-[9px] text-gold-deep font-bold">23,450</div>
-          <div className="absolute left-4 top-96 font-mono text-[9px] text-gold-deep font-bold">23,500</div>
-          <div className="absolute right-4 top-20 font-mono text-[9px] text-gold-deep">IV: 12.8%</div>
+          <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[520px] h-[360px] bg-gold/10 rounded-full blur-[110px]" />
         </div>
 
-        {/* Glowing atmospheric halos */}
-        <div className="absolute top-[10%] left-[30%] -translate-x-1/2 w-[700px] h-[700px] bg-gold/10 rounded-full blur-[140px] pointer-events-none z-0" />
-        <div className="absolute bottom-[20%] right-[15%] w-[500px] h-[500px] bg-burgundy/5 rounded-full blur-[120px] pointer-events-none z-0" />
-
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-            
-            {/* Hero Left Column: Deep Typographic Editorial */}
-            <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
-              {/* Bold Headline Pairing */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-foreground tracking-tight leading-[1.02]">
-                Trade Futures &amp; Options <br />
-                <span className="text-burgundy">With Advanced F&amp;O Tools</span>
-              </h1>
+          <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-4">
+            <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+            <ChevronRight className="w-3 h-3" />
+            <span className="text-foreground font-semibold">Futures &amp; Options</span>
+          </nav>
 
-              {/* Subheading */}
-              <p className="text-sm sm:text-base text-muted-foreground/90 leading-relaxed font-medium max-w-2xl mx-auto lg:mx-0">
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_420px] gap-6 lg:gap-12 items-center">
+            <div className="space-y-4">
+              <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">Derivatives Trading</p>
+              <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-black text-foreground tracking-tight leading-[1.1]">
+                Trade Futures &amp; Options <span className="text-burgundy lg:block">With Advanced F&amp;O Tools</span>
+              </h1>
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
                 Trade Futures &amp; Options confidently with Shree Varahi’s advanced platform, featuring strategy tools, real-time monitoring, market analysis, and effective risk management capabilities.
               </p>
-
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                <Button
-                  asChild
-                  size="lg"
-                  className="w-full sm:w-auto bg-burgundy hover:bg-burgundy-deep text-white px-8 h-14 text-base font-bold rounded-[5px] shadow-lg shadow-burgundy/20 transition-transform hover:scale-[1.01]"
-                >
-                  <Link href="/login">
-                    Start Trading
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
+                  <Link href="/login">Start Trading <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
                 </Button>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="outline"
-                  className="w-full sm:w-auto border-border text-foreground hover:bg-white px-8 h-14 text-base font-bold rounded-[5px] bg-transparent"
-                >
+                <Button asChild variant="outline" className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary">
                   <Link href="/login">Open Account</Link>
                 </Button>
-              </div>
-
-              {/* Highlights Placement (Below CTA) */}
-              <div className="flex items-center justify-center lg:justify-start gap-6 pt-2 text-xs font-mono font-bold text-slate-500 uppercase tracking-widest">
-                <span className="flex items-center gap-1.5">31+ · Years of Trust</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-slate-350" />
-                <span className="flex items-center gap-1.5">4.5★ · App Rating</span>
+                <div className="flex items-center gap-4 sm:ml-3 sm:pl-5 sm:border-l border-border">
+                  <div>
+                    <div className="text-base font-black text-foreground leading-none">31+</div>
+                    <div className="text-[10px] text-muted-foreground font-semibold mt-1">Years of Trust</div>
+                  </div>
+                  <div>
+                    <div className="text-base font-black text-foreground flex items-center gap-1 leading-none">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
+                    <div className="text-[10px] text-muted-foreground font-semibold mt-1">App Rating</div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Hero Right Column: Bloomberg/TradingView Styled Terminal Mockup */}
-            <div className="lg:col-span-5 flex justify-center w-full relative">
-              
-              {/* Back decoration halo */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] h-[340px] rounded-full pointer-events-none opacity-[0.08] z-0 bg-radial-gradient" 
-                style={{
-                  background: "radial-gradient(circle, rgba(139,13,25,0.4) 0%, transparent 70%)",
-                  filter: "blur(40px)"
-                }}
-              />
-
-              <div className="w-full max-w-[460px] bg-slate-900 border border-slate-800 rounded-[20px] shadow-2xl overflow-hidden text-slate-200 relative flex flex-col font-mono text-xs select-none z-10">
-                {/* Glowing border flare */}
-                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
-                
-                {/* Terminal Header */}
-                <div className="flex justify-between items-center bg-slate-950 px-4 py-2.5 border-b border-slate-850">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 pulse-dot" />
-                    <span className="font-sans font-bold text-[9px] uppercase text-slate-400 tracking-wider">VARAHI-PRO ENGINE v1.2</span>
-                  </div>
-                  <span className="text-[8px] text-slate-500 font-bold bg-slate-900 px-2 py-0.5 rounded border border-slate-800 uppercase tracking-widest">
-                    GATEWAY: L-42ms
-                  </span>
-                </div>
-
-                {/* Ticker Selector Bar */}
-                <div className="grid grid-cols-3 bg-slate-900 border-b border-slate-850 text-center font-sans">
-                  <button 
-                    onClick={() => {
-                      setHeroActiveTab("NIFTY")
-                      setHeroStrike("23500 CE")
-                    }}
-                    className={`py-2.5 font-bold border-r border-slate-850 transition-all ${heroActiveTab === "NIFTY" ? "text-gold bg-slate-850/40 shadow-inner" : "text-slate-400 hover:text-slate-200"}`}
-                  >
-                    NIFTY OPT
-                  </button>
-                  <button 
-                    onClick={() => {
-                      setHeroActiveTab("BANKNIFTY")
-                      setHeroStrike("50100 CE")
-                    }}
-                    className={`py-2.5 font-bold border-r border-slate-850 transition-all ${heroActiveTab === "BANKNIFTY" ? "text-gold bg-slate-850/40 shadow-inner" : "text-slate-400 hover:text-slate-200"}`}
-                  >
-                    BANKNIFTY
-                  </button>
-                  <button 
-                    onClick={() => {
-                      setHeroActiveTab("MCX")
-                      setHeroStrike("GOLD 72000 CE")
-                    }}
-                    className={`py-2.5 font-bold transition-all ${heroActiveTab === "MCX" ? "text-gold bg-slate-850/40 shadow-inner" : "text-slate-400 hover:text-slate-200"}`}
-                  >
-                    MCX COMM
-                  </button>
-                </div>
-
-                {/* Two-Column Panel Layout inside Terminal */}
-                <div className="grid grid-cols-1 md:grid-cols-12 border-b border-slate-850 bg-slate-950/40">
-                  
-                  {/* Left Side: Candlestick Chart Preview (col-span-7) */}
-                  <div className="col-span-7 p-3 border-r border-slate-850 space-y-2">
-                    <div className="flex justify-between items-center text-[8px] text-slate-500 font-sans uppercase">
-                      <span>Live Quote Chart</span>
-                      <span>1-Min Ticks</span>
-                    </div>
-
-                    <div className="flex justify-between items-baseline">
-                      <span className="text-base font-bold text-white tracking-tight">
-                        ₹{basePrice.toLocaleString("en-IN", { minimumFractionDigits: heroActiveTab === "MCX" ? 0 : 2 })}
-                      </span>
-                      {heroActiveTab === "NIFTY" && (
-                        <span className={`text-[9px] font-bold ${niftyChange >= 0 ? "text-emerald-400" : "text-rose-500"}`}>
-                          {niftyChange >= 0 ? "+" : ""}{niftyChange}%
+            {/* Browse by segment: each opens the markets table below on that segment */}
+            <div className="rounded-[10px] bg-white border border-border shadow-[0_8px_32px_rgba(0,0,0,0.06)] p-4">
+              <p className="text-[10px] font-extrabold uppercase tracking-wider text-gold-deep mb-2.5">Browse by segment</p>
+              <div className="grid grid-cols-2 gap-2">
+                {MARKET_SEGMENTS.map((seg) => {
+                  const Icon = seg.icon
+                  const count = segmentCounts[seg.tab]
+                  return (
+                    <button
+                      key={seg.tab}
+                      onClick={() => browseSegment(seg.tab)}
+                      className="group text-left rounded-[6px] border border-border bg-cream/50 px-3 py-2.5 hover:border-burgundy/30 hover:bg-white transition-all flex items-center gap-2.5"
+                    >
+                      <Icon className="w-4 h-4 shrink-0 text-burgundy" />
+                      <span className="min-w-0 flex-1">
+                        <span className="block text-xs font-extrabold text-foreground truncate">{seg.label}</span>
+                        <span className="block text-[10px] font-semibold text-muted-foreground tabular-nums">
+                          {count === null ? "—" : `${count} ${seg.unit}`}
                         </span>
-                      )}
-                    </div>
-
-                    {/* Chart Canvas Area */}
-                    <div className="h-28 w-full bg-slate-950/60 rounded-[5px] border border-slate-850/70 relative flex items-end overflow-hidden">
-                      <svg className="w-full h-full p-1 stroke-[1.2]" viewBox="0 0 160 80">
-                        <line x1="0" y1="40" x2="160" y2="40" stroke="#1e293b" strokeWidth="0.5" strokeDasharray="2" />
-                        <line x1="0" y1="60" x2="160" y2="60" stroke="#1e293b" strokeWidth="0.5" strokeDasharray="2" />
-                        
-                        {[
-                          { x: 15, o: 55, c: 50, h: 48, l: 58, bull: true },
-                          { x: 35, o: 50, c: 53, h: 47, l: 56, bull: false },
-                          { x: 55, o: 53, c: 45, h: 42, l: 55, bull: true },
-                          { x: 75, o: 45, c: 48, h: 40, l: 50, bull: false },
-                          { x: 95, o: 48, c: 38, h: 35, l: 50, bull: true },
-                          { x: 115, o: 38, c: 32, h: 30, l: 40, bull: true },
-                          { x: 135, o: 32, c: 28, h: 25, l: 35, bull: true },
-                          { x: 155, o: 28, c: 30, h: 26, l: 33, bull: false }
-                        ].map((candle, cIdx) => {
-                          const clr = candle.bull ? "#D9B27C" : "#8B0D19"
-                          return (
-                            <g key={cIdx}>
-                              <line x1={candle.x} y1={candle.h} x2={candle.x} y2={candle.l} stroke={clr} />
-                              <rect 
-                                x={candle.x - 3} 
-                                y={Math.min(candle.o, candle.c)} 
-                                width="6" 
-                                height={Math.max(2, Math.abs(candle.c - candle.o))} 
-                                fill={clr} 
-                                stroke={clr}
-                                fillOpacity="0.4"
-                              />
-                            </g>
-                          )
-                        })}
-                        <line x1="0" y1="30" x2="160" y2="30" stroke="#D9B27C" strokeWidth="0.6" strokeDasharray="2" />
-                      </svg>
-                      <span className="absolute top-1 right-1 font-mono text-[7px] text-slate-500">Vol: 1.2M</span>
-                    </div>
-                  </div>
-
-                  {/* Right Side: Order Book Bid/Ask Ladder (col-span-5) */}
-                  <div className="col-span-5 p-3 space-y-1.5 font-sans">
-                    <span className="text-[8px] font-bold text-slate-500 uppercase tracking-wider block">Match Order Book</span>
-                    
-                    <div className="space-y-1 font-mono text-[9px]">
-                      {[
-                        { price: basePrice + 1.50, qty: 820, size: 45 },
-                        { price: basePrice + 0.80, qty: 1100, size: 60 }
-                      ].map((row, rIdx) => (
-                        <div key={rIdx} className="flex justify-between items-center relative py-0.5 px-1 overflow-hidden">
-                          <div className="absolute right-0 top-0 bottom-0 bg-rose-500/10 z-0 transition-all" style={{ width: `${row.size}%` }} />
-                          <span className="text-rose-400 font-bold z-10">{row.price.toFixed(heroActiveTab === "MCX" ? 0 : 2)}</span>
-                          <span className="text-slate-400 font-bold z-10">{row.qty}</span>
-                        </div>
-                      ))}
-
-                      <div className="flex justify-between text-[7px] text-slate-500 border-y border-slate-850 py-0.5 font-bold uppercase tracking-wider">
-                        <span>SPREAD:</span>
-                        <span>0.30</span>
-                      </div>
-
-                      {[
-                        { price: basePrice - 0.50, qty: 950, size: 50 },
-                        { price: basePrice - 1.20, qty: 1540, size: 80 }
-                      ].map((row, rIdx) => (
-                        <div key={rIdx} className="flex justify-between items-center relative py-0.5 px-1 overflow-hidden">
-                          <div className="absolute right-0 top-0 bottom-0 bg-emerald-500/10 z-0 transition-all" style={{ width: `${row.size}%` }} />
-                          <span className="text-emerald-400 font-bold z-10">{row.price.toFixed(heroActiveTab === "MCX" ? 0 : 2)}</span>
-                          <span className="text-slate-400 font-bold z-10">{row.qty}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                </div>
-
-                {/* Simulated Order Form Widget */}
-                <div className="p-4 bg-slate-900 border-t border-slate-850 space-y-3 font-sans">
-                  
-                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">TRANSACTION PANEL</span>
-                    <div className="flex bg-slate-950 p-0.5 rounded-[5px] border border-slate-850">
-                      <button 
-                        onClick={() => setHeroOrderType("BUY")}
-                        className={`px-3 py-1 text-[9px] font-black rounded-[4px] transition-colors ${heroOrderType === "BUY" ? "bg-emerald-500 text-white" : "text-slate-400 hover:text-slate-200"}`}
-                      >
-                        BUY
-                      </button>
-                      <button 
-                        onClick={() => setHeroOrderType("SELL")}
-                        className={`px-3 py-1 text-[9px] font-black rounded-[4px] transition-colors ${heroOrderType === "SELL" ? "bg-rose-500 text-white" : "text-slate-400 hover:text-slate-200"}`}
-                      >
-                        SELL
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Dropdowns */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1">
-                      <label className="text-[9px] text-slate-500 font-bold block uppercase tracking-wide">Strike Select</label>
-                      <select 
-                        value={heroStrike}
-                        onChange={(e) => setHeroStrike(e.target.value)}
-                        className="w-full bg-slate-950 border border-slate-850 rounded-[5px] px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-gold font-mono"
-                      >
-                        {heroActiveTab === "NIFTY" && (
-                          <>
-                            <option value="23400 CE">23400 CE (ATM)</option>
-                            <option value="23500 CE">23500 CE (OTM)</option>
-                            <option value="23300 PE">23300 PE (ITM)</option>
-                          </>
-                        )}
-                        {heroActiveTab === "BANKNIFTY" && (
-                          <>
-                            <option value="50000 CE">50000 CE (ITM)</option>
-                            <option value="50100 CE">50100 CE (ATM)</option>
-                            <option value="50200 PE">50200 PE (OTM)</option>
-                          </>
-                        )}
-                        {heroActiveTab === "MCX" && (
-                          <>
-                            <option value="GOLD 72000 CE">GOLD 72000 CE</option>
-                            <option value="GOLD 72500 PE">GOLD 72500 PE</option>
-                            <option value="CRUDE 6500 CE">CRUDE 6500 CE</option>
-                          </>
-                        )}
-                      </select>
-                    </div>
-
-                    <div className="space-y-1">
-                      <label className="text-[9px] text-slate-500 font-bold block uppercase tracking-wide">Lots Quantity</label>
-                      <div className="flex items-center bg-slate-950 border border-slate-850 rounded-[5px] overflow-hidden">
-                        <button 
-                          type="button"
-                          onClick={() => setHeroQty(prev => Math.max(50, prev - 50))}
-                          className="px-2.5 py-1.5 text-slate-400 hover:text-white border-r border-slate-850 font-bold"
-                        >
-                          -
-                        </button>
-                        <span className="flex-1 text-center font-mono text-xs text-white font-bold">{heroQty}</span>
-                        <button 
-                          type="button"
-                          onClick={() => setHeroQty(prev => Math.min(500, prev + 50))}
-                          className="px-2.5 py-1.5 text-slate-400 hover:text-white border-l border-slate-850 font-bold"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button 
-                    onClick={triggerHeroOrder}
-                    disabled={heroOrderState !== "idle"}
-                    className={`w-full py-2.5 text-xs font-black rounded-[5px] transition-all tracking-widest ${
-                      heroOrderState === "submitting" 
-                        ? "bg-slate-800 text-slate-400 cursor-not-allowed" 
-                        : heroOrderState === "success" 
-                        ? "bg-emerald-500 text-white"
-                        : "bg-gold hover:bg-gold-deep text-slate-950 hover:scale-[1.01]"
-                    }`}
-                  >
-                    {heroOrderState === "submitting" && "TRANSMITTING VECTORS..."}
-                    {heroOrderState === "success" && "✓ MATCH ORDER FILLED"}
-                    {heroOrderState === "idle" && `EXECUTE ${heroOrderType} ${heroQty} CONTRACTS`}
-                  </button>
-                </div>
-
-                {/* Match Engine Console Logs */}
-                <div className="bg-slate-950 border-t border-slate-850 p-3.5 space-y-1 font-mono text-[9px] text-slate-500 h-24 overflow-y-auto">
-                  <div className="text-slate-450 font-bold uppercase tracking-wider mb-1 font-sans text-[8px]">Console Monitor</div>
-                  <div>[12:44:00] MATCH ENGINE INITIALIZED.</div>
-                  <div>[12:44:01] EXCHANGE DIRECT ACCESS LINK STABLE (L: 42ms).</div>
-                  {heroOrderState === "submitting" && (
-                    <div className="text-gold animate-pulse">[12:44:12] OUTGOING VECTOR: SENDING {heroQty} STRIKE {heroStrike}...</div>
-                  )}
-                  {heroOrderState === "success" && (
-                    <>
-                      <div className="text-emerald-400 font-bold">[12:44:13] EXCHANGE MATCH: FILLED {heroQty} QTY AT LATEST LTP.</div>
-                      <div className="text-slate-400">[12:44:13] TRANSACTION COMPLETED. ID: #SV-{Math.floor(1000 + Math.random()*9000)}</div>
-                    </>
-                  )}
-                </div>
-
+                      </span>
+                      <ArrowUpRight className="w-3 h-3 shrink-0 text-muted-foreground group-hover:text-burgundy transition-colors" />
+                    </button>
+                  )
+                })}
               </div>
             </div>
-
           </div>
         </div>
       </section>
+
+      {/* ── SECTION 3: MARKETS — filter sidebar + table ── (navbar "F&O Screener" links here) */}
+      <section id="fno-markets" className="bg-background py-6 lg:py-8 border-b border-border/50 scroll-mt-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-[300px_minmax(0,1fr)] gap-5 lg:gap-6 items-start">
+
+          {/* Filters */}
+          <aside className="lg:sticky lg:top-20 rounded-[8px] border border-border bg-white p-4 space-y-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+              <input
+                type="text"
+                aria-label="Search contracts"
+                placeholder="Search NIFTY, RELIANCE..."
+                value={marketsSearch}
+                onChange={(e) => setMarketsSearch(e.target.value)}
+                className="w-full pl-9 pr-8 py-2 text-sm rounded-[5px] border border-border bg-cream/50 placeholder:text-muted-foreground/55 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40"
+              />
+              {marketsSearch && (
+                <button onClick={() => setMarketsSearch("")} aria-label="Clear search" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            <div>
+              <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-2">Segment</p>
+              <div className="grid grid-cols-2 lg:grid-cols-1 gap-1">
+                {MARKET_SEGMENTS.map((seg) => {
+                  const Icon = seg.icon
+                  const active = marketsTab === seg.tab
+                  const count = segmentCounts[seg.tab]
+                  return (
+                    <button
+                      key={seg.tab}
+                      onClick={() => pickMarketsTab(seg.tab)}
+                      aria-pressed={active}
+                      className={`w-full text-left px-2.5 py-2 rounded-[5px] text-[12px] font-semibold transition-colors flex items-center gap-2 ${
+                        active ? "bg-burgundy/[0.07] text-burgundy font-bold" : "text-muted-foreground hover:bg-cream hover:text-foreground"
+                      }`}
+                    >
+                      <Icon className="w-3.5 h-3.5 shrink-0" />
+                      <span className="flex-1 truncate">{seg.label}</span>
+                      {count !== null && <span className={`text-[10px] tabular-nums ${active ? "text-burgundy/70" : "text-muted-foreground/70"}`}>{count}</span>}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          </aside>
+
+          {/* Results */}
+          <div className="min-w-0">
+          <div className="flex flex-wrap items-end justify-between gap-3 mb-3">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight leading-none">
+                {MARKET_SEGMENTS.find((s) => s.tab === marketsTab)?.label}
+              </h2>
+              <p className="text-xs text-muted-foreground mt-1.5">
+                <span className="font-bold text-foreground">{marketsData ? marketsData.total : "—"}</span> underlyings
+                {marketsQuery && <> matching <span className="font-semibold text-foreground">“{marketsQuery}”</span></>}
+              </p>
+            </div>
+            {marketsSearch && (
+              <button
+                onClick={() => setMarketsSearch("")}
+                className="text-[11px] font-bold text-burgundy hover:text-burgundy-deep flex items-center gap-1 transition-colors"
+              >
+                <X className="w-3 h-3" /> Clear search
+              </button>
+            )}
+          </div>
+
+          {/* Markets table — same style as the All Stocks table; each row opens its detail page. */}
+          <div className="rounded-[8px] border border-border overflow-hidden bg-white shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
+            {/* Header */}
+            <div
+              className="grid grid-cols-[minmax(0,1fr)_84px_64px_72px] sm:grid-cols-[minmax(0,1fr)_120px_110px_100px] gap-x-2 px-4 py-2.5 border-b border-border bg-cream/70"
+            >
+              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">Name</div>
+              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">Price (₹)</div>
+              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">Change</div>
+              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">% Change</div>
+            </div>
+
+            {/* Rows */}
+            {markets.error && !marketsData ? (
+              <div className="py-16 text-center text-sm">
+                <p className="font-black text-foreground">Unable to load prices</p>
+                <p className="text-xs text-muted-foreground mt-1.5">{markets.error.message}</p>
+                <button onClick={markets.retry} className="mt-3 text-xs font-bold text-burgundy hover:underline">Try again</button>
+              </div>
+            ) : !marketsData ? (
+              <TableRowsSkeleton rows={MARKETS_PER_PAGE} columns="minmax(0,1fr) 84px 64px 72px" label="Loading prices" />
+            ) : marketRows.length === 0 ? (
+              <div className="py-16 text-center text-muted-foreground text-sm">No contracts available.</div>
+            ) : (
+              marketRows.map((row, idx) => {
+                const hasChange = row.change !== null && row.changePct !== null
+                const up = (row.change ?? 0) >= 0
+                const tone = !hasChange ? "text-muted-foreground" : up ? "text-profit" : "text-loss"
+                const sign = hasChange && up ? "+" : ""
+                return (
+                  <MotionLink
+                    href={fnoDetailHref(marketCategory, row.slug)}
+                    key={`${marketCategory}-${row.symbol}`}
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.14, delay: idx * 0.018 }}
+                    className="grid grid-cols-[minmax(0,1fr)_84px_64px_72px] sm:grid-cols-[minmax(0,1fr)_120px_110px_100px] gap-x-2 px-4 py-3 border-b border-border/40 last:border-0 hover:bg-cream/30 transition-colors duration-150"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      {row.logoUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={row.logoUrl} alt="" className="hidden sm:block w-8 h-8 shrink-0 rounded-[6px] object-contain bg-white" loading="lazy" />
+                      ) : (
+                        <div className="hidden sm:flex w-8 h-8 shrink-0 rounded-[6px] bg-burgundy/10 text-burgundy items-center justify-center text-[10px] font-black">
+                          {row.symbol.slice(0, 2)}
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <div className="font-extrabold text-sm text-foreground truncate">{row.name}</div>
+                        {row.symbol !== row.name && (
+                          <div className="text-[11px] text-muted-foreground truncate">{row.symbol}</div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-end text-sm font-extrabold text-foreground tabular-nums">
+                      {row.ltp === null ? "—" : row.ltp.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </div>
+                    <div className={`flex items-center justify-end text-xs font-black tabular-nums ${tone}`}>
+                      {row.change === null ? "—" : `${sign}${row.change.toFixed(2)}`}
+                    </div>
+                    <div className={`flex items-center justify-end gap-0.5 text-xs font-black tabular-nums ${tone}`}>
+                      {hasChange && (up ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />)}
+                      {row.changePct === null ? "—" : `${sign}${row.changePct.toFixed(2)}%`}
+                    </div>
+                  </MotionLink>
+                )
+              })
+            )}
+          </div>
+
+          {/* Pagination */}
+          {marketsTotalPages > 1 && (
+            <div className="flex items-center justify-between mt-4">
+              <p className="text-xs text-muted-foreground">
+                Page {marketsPage} of {marketsTotalPages}
+              </p>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setMarketsPage((p) => Math.max(1, p - 1))}
+                  disabled={marketsPage === 1}
+                  aria-label="Previous page"
+                  className="w-8 h-8 rounded-[5px] border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/25 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                {Array.from({ length: Math.min(5, marketsTotalPages) }, (_, i) => {
+                  const pg = Math.max(1, Math.min(marketsTotalPages - 4, marketsPage - 2)) + i
+                  return (
+                    <button
+                      key={pg}
+                      onClick={() => setMarketsPage(pg)}
+                      className={`w-8 h-8 rounded-[5px] border text-xs font-bold transition-all ${
+                        pg === marketsPage
+                          ? "bg-burgundy text-white border-burgundy"
+                          : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/20"
+                      }`}
+                    >
+                      {pg}
+                    </button>
+                  )
+                })}
+                <button
+                  onClick={() => setMarketsPage((p) => Math.min(marketsTotalPages, p + 1))}
+                  disabled={marketsPage === marketsTotalPages}
+                  aria-label="Next page"
+                  className="w-8 h-8 rounded-[5px] border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/25 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          </div>
+          </div>
+        </div>
+      </section>
+
+
 
       {/* ── SECTION 2: BENTO GRID FEATURE SHOWCASE ── */}
       <section className="bg-white py-20 lg:py-28 overflow-hidden border-b border-border/50">
@@ -697,160 +620,6 @@ export default function FuturesOptionsPage() {
 
         </div>
       </section>
-
-      {/* ── SECTION 3: WHAT YOU CAN TRADE (MARKETS) ── (navbar "F&O Screener" links here) */}
-      <section id="fno-markets" className="bg-cream py-20 lg:py-28 overflow-hidden border-b border-border/50 scroll-mt-16">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-
-          {/* Centered Header */}
-          <div className="text-center mb-10 space-y-3">
-            <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">
-              Markets
-            </p>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground leading-tight text-balance">
-              The Complete{" "}
-              <span className="text-burgundy">F&amp;O Trading Experience</span>
-            </h2>
-            <p className="text-sm text-muted-foreground max-w-xl mx-auto">
-              Trade indices and stocks as Futures or Options — all from a single account.
-            </p>
-          </div>
-
-          {/* Tab Switcher */}
-          <div className="flex justify-center mb-10">
-            <div className="inline-flex bg-background border border-border rounded-[8px] p-1 gap-1 flex-wrap">
-              {(["Index Future", "Stocks Future", "Index Option", "Stock Option"] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => pickMarketsTab(tab)}
-                  className={`px-5 py-2 rounded-[6px] text-sm font-bold transition-all duration-200 cursor-pointer ${
-                    marketsTab === tab
-                      ? "bg-burgundy text-white shadow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
-                  }`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Markets table — same style as the All Stocks table; each row opens its detail page. */}
-          <div className="rounded-[8px] border border-border overflow-hidden bg-white shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
-            {/* Header */}
-            <div
-              className="grid grid-cols-[minmax(0,1fr)_84px_64px_72px] sm:grid-cols-[minmax(0,1fr)_120px_110px_100px] gap-x-2 px-4 py-2.5 border-b border-border bg-cream/70"
-            >
-              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">Name</div>
-              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">Price (₹)</div>
-              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">Change</div>
-              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">% Change</div>
-            </div>
-
-            {/* Rows */}
-            {markets.error && !marketsData ? (
-              <div className="py-16 text-center text-sm">
-                <p className="font-black text-foreground">Unable to load prices</p>
-                <p className="text-xs text-muted-foreground mt-1.5">{markets.error.message}</p>
-                <button onClick={markets.retry} className="mt-3 text-xs font-bold text-burgundy hover:underline">Try again</button>
-              </div>
-            ) : !marketsData ? (
-              <TableRowsSkeleton rows={MARKETS_PER_PAGE} columns="minmax(0,1fr) 84px 64px 72px" label="Loading prices" />
-            ) : marketRows.length === 0 ? (
-              <div className="py-16 text-center text-muted-foreground text-sm">No contracts available.</div>
-            ) : (
-              marketRows.map((row, idx) => {
-                const hasChange = row.change !== null && row.changePct !== null
-                const up = (row.change ?? 0) >= 0
-                const tone = !hasChange ? "text-muted-foreground" : up ? "text-profit" : "text-loss"
-                const sign = hasChange && up ? "+" : ""
-                return (
-                  <MotionLink
-                    href={fnoDetailHref(marketCategory, row.slug)}
-                    key={`${marketCategory}-${row.symbol}`}
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.14, delay: idx * 0.018 }}
-                    className="grid grid-cols-[minmax(0,1fr)_84px_64px_72px] sm:grid-cols-[minmax(0,1fr)_120px_110px_100px] gap-x-2 px-4 py-3 border-b border-border/40 last:border-0 hover:bg-cream/30 transition-colors duration-150"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      {row.logoUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={row.logoUrl} alt="" className="hidden sm:block w-8 h-8 shrink-0 rounded-[6px] object-contain bg-white" loading="lazy" />
-                      ) : (
-                        <div className="hidden sm:flex w-8 h-8 shrink-0 rounded-[6px] bg-burgundy/10 text-burgundy items-center justify-center text-[10px] font-black">
-                          {row.symbol.slice(0, 2)}
-                        </div>
-                      )}
-                      <div className="min-w-0">
-                        <div className="font-extrabold text-sm text-foreground truncate">{row.name}</div>
-                        {row.symbol !== row.name && (
-                          <div className="text-[11px] text-muted-foreground truncate">{row.symbol}</div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-end text-sm font-extrabold text-foreground tabular-nums">
-                      {row.ltp === null ? "—" : row.ltp.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </div>
-                    <div className={`flex items-center justify-end text-xs font-black tabular-nums ${tone}`}>
-                      {row.change === null ? "—" : `${sign}${row.change.toFixed(2)}`}
-                    </div>
-                    <div className={`flex items-center justify-end gap-0.5 text-xs font-black tabular-nums ${tone}`}>
-                      {hasChange && (up ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />)}
-                      {row.changePct === null ? "—" : `${sign}${row.changePct.toFixed(2)}%`}
-                    </div>
-                  </MotionLink>
-                )
-              })
-            )}
-          </div>
-
-          {/* Pagination */}
-          {marketsTotalPages > 1 && (
-            <div className="flex items-center justify-between mt-4">
-              <p className="text-xs text-muted-foreground">
-                Page {marketsPage} of {marketsTotalPages}
-              </p>
-              <div className="flex items-center gap-1.5">
-                <button
-                  onClick={() => setMarketsPage((p) => Math.max(1, p - 1))}
-                  disabled={marketsPage === 1}
-                  aria-label="Previous page"
-                  className="w-8 h-8 rounded-[5px] border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/25 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                {Array.from({ length: Math.min(5, marketsTotalPages) }, (_, i) => {
-                  const pg = Math.max(1, Math.min(marketsTotalPages - 4, marketsPage - 2)) + i
-                  return (
-                    <button
-                      key={pg}
-                      onClick={() => setMarketsPage(pg)}
-                      className={`w-8 h-8 rounded-[5px] border text-xs font-bold transition-all ${
-                        pg === marketsPage
-                          ? "bg-burgundy text-white border-burgundy"
-                          : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/20"
-                      }`}
-                    >
-                      {pg}
-                    </button>
-                  )
-                })}
-                <button
-                  onClick={() => setMarketsPage((p) => Math.min(marketsTotalPages, p + 1))}
-                  disabled={marketsPage === marketsTotalPages}
-                  aria-label="Next page"
-                  className="w-8 h-8 rounded-[5px] border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/25 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          )}
-
-        </div>
-      </section>
-
 
       {/* ── SECTIONS 4 & 5: DYNAMIC OPTIONS vs FUTURES ADVANCED WORKSPACES ── */}
       <section className="bg-white py-20 lg:py-28 overflow-hidden border-b border-border/50">

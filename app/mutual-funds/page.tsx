@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   Search, ChevronLeft, ChevronRight,
   Calculator, Star, Check,
-  Zap, BarChart2, Users, Award, X, ArrowUpDown, ArrowUp, ArrowDown,
+  Zap, BarChart2, Users, Award, X, ArrowUpDown, ArrowUp, ArrowDown, ArrowUpRight,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -16,7 +16,7 @@ import { useFundSearch, useMutualFundsPage } from "@/hooks/use-mutual-funds"
 import { fundHref, type FundSort, type MutualFundApi } from "@/lib/mutual-funds/api-client"
 import { FundCategoryFilter, SelectedCategoryChips, NO_CATEGORY, categoryQuery, hasCategory, type CategoryPick } from "@/components/fund-category-filter"
 import { FundHouseFilter } from "@/components/fund-house-filter"
-import { CardGridSkeleton, ListSkeleton, TableRowsSkeleton } from "@/components/skeletons"
+import { CardGridSkeleton, TableRowsSkeleton } from "@/components/skeletons"
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 // All fund data comes from the backend (/api/v1/mutual-funds, sourced from Reedos).
@@ -250,6 +250,10 @@ export default function MutualFundsPage() {
   const pickRisk  = (v: string)  => { setRisk(v); setPage(1) }
   const pickRating = (v: number | null) => { setRating(v); setPage(1) }
   const pickAmcs = (v: number[]) => { setAmcIds(v); setPage(1) }
+  // Hero shortcuts: set the filter, then jump to the table.
+  const scrollToExplorer = () => document.getElementById("find-your-fund")?.scrollIntoView({ behavior: "smooth", block: "start" })
+  const browseCategory = (main: string) => { pickCategory({ [main]: [] }); scrollToExplorer() }
+  const browseIndexFunds = () => { switchTab("index"); scrollToExplorer() }
   // Like the stocks page: resets search, categories, risk and sort (the tab stays).
   const clearAll = () => {
     setCategory(NO_CATEGORY); setRisk(""); setRating(null); setAmcIds([]); setSearch(""); setQuery(""); setSort(tabSort(tab)); setPage(1)
@@ -284,8 +288,8 @@ export default function MutualFundsPage() {
       {/* useSearchParams needs a Suspense boundary in the App Router */}
       <Suspense fallback={null}><CategoryFromUrl onPick={pickFromUrl} /></Suspense>
 
-      {/* ── HERO ── */}
-      <section className="relative bg-cream border-b border-border/40 pt-28 pb-14 overflow-hidden">
+      {/* ── HERO (compact: pitch on the left, browse-by-category on the right) ── */}
+      <section className="relative bg-cream border-b border-border/40 pt-24 pb-8 lg:pb-10 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div
             className="absolute inset-0 opacity-[0.04]"
@@ -294,42 +298,38 @@ export default function MutualFundsPage() {
               backgroundSize: "56px 56px",
             }}
           />
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-cream to-transparent" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gold/5 rounded-full blur-[100px]" />
+          <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[520px] h-[360px] bg-gold/10 rounded-full blur-[110px]" />
         </div>
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10">
-          <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-6">
+          <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-4">
             <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3" />
             <span className="text-foreground font-semibold">Mutual Funds</span>
           </nav>
 
-          <div className="grid lg:grid-cols-[1fr_auto] gap-10 items-center">
-            <div className="space-y-5 max-w-2xl">
-              <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">
-                Wealth Creation
-              </p>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground tracking-tight leading-tight">
-                Invest in<br />
-                <span className="text-burgundy">Mutual Funds</span>
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_420px] gap-6 lg:gap-12 items-center">
+            <div className="space-y-4">
+              <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">Wealth Creation</p>
+              <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-black text-foreground tracking-tight leading-[1.1]">
+                Invest in <span className="text-burgundy">Mutual Funds</span>
               </h1>
-              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-lg">
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
                 {info ? `${totalFunds} funds` : "Funds"} across equity, debt, and hybrid from {info ? `${totalAmcs} AMCs` : "leading AMCs"}. Invest with zero commission and research-backed recommendations.
               </p>
-              <div className="flex flex-wrap gap-3">
-                <Button className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <Button className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
                   Start SIP Now
                 </Button>
                 <Button
                   variant="outline"
-                  className="border-border px-7 h-11 font-bold rounded-[5px] hover:bg-secondary"
+                  className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary"
                   onClick={() => document.getElementById("find-your-fund")?.scrollIntoView({ behavior: "smooth" })}
                 >
                   Explore Funds
                 </Button>
               </div>
-              <div className="flex flex-wrap gap-4 pt-1">
+              <div className="flex flex-wrap gap-x-6 gap-y-3 pt-1">
                 {[
                   { v: "₹0",       l: "Commission"      },
                   { v: totalFunds, l: "Funds Available" },
@@ -337,69 +337,72 @@ export default function MutualFundsPage() {
                   { v: totalAmcs,  l: "AMC Partners"    },
                 ].map((stat) => (
                   <div key={stat.l}>
-                    <div className="text-lg font-black text-foreground">{stat.v}</div>
-                    <div className="text-[10px] text-muted-foreground font-semibold">{stat.l}</div>
+                    <div className="text-base font-black text-foreground leading-none">{stat.v}</div>
+                    <div className="text-[10px] text-muted-foreground font-semibold mt-1">{stat.l}</div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Hero visual — top performers by 3Y return */}
-            <div className="hidden lg:block">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="w-[300px] rounded-[12px] bg-white border border-border shadow-xl p-5 space-y-4"
+            {/* Browse by category: the main categories from the API, each opens the table filtered */}
+            <div className="rounded-[10px] bg-white border border-border shadow-[0_8px_32px_rgba(0,0,0,0.06)] p-4">
+              <p className="text-[10px] font-extrabold uppercase tracking-wider text-gold-deep mb-2.5">Browse by category</p>
+              {info ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {info.assetClasses.slice(0, 6).map((m) => (
+                    <button
+                      key={m.name}
+                      onClick={() => browseCategory(m.name)}
+                      className="group text-left rounded-[6px] border border-border bg-cream/50 px-3 py-2.5 hover:border-burgundy/30 hover:bg-white transition-all"
+                    >
+                      <div className="text-xs font-extrabold text-foreground flex items-center justify-between gap-1">
+                        <span className="truncate">{m.label}</span>
+                        <ArrowUpRight className="w-3 h-3 shrink-0 text-muted-foreground group-hover:text-burgundy transition-colors" />
+                      </div>
+                      <div className="text-[10px] font-semibold text-muted-foreground tabular-nums mt-0.5">{m.count.toLocaleString("en-IN")} funds</div>
+                    </button>
+                  ))}
+                </div>
+              ) : pageData.error ? (
+                <p className="text-[11px] text-muted-foreground py-4 text-center">{sectionStatus}</p>
+              ) : (
+                <div className="grid grid-cols-3 gap-2" aria-busy="true" aria-label="Loading categories">
+                  {Array.from({ length: 6 }, (_, i) => <div key={i} className="h-[52px] rounded-[6px] bg-secondary animate-pulse" />)}
+                </div>
+              )}
+              <button
+                onClick={browseIndexFunds}
+                className="mt-3 w-full flex items-center gap-3 rounded-[6px] bg-burgundy/[0.06] border border-burgundy/15 px-3 py-2.5 hover:bg-burgundy/10 transition-colors text-left"
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-gold-deep">Top Performers</span>
-                  <span className="text-[9px] font-bold text-muted-foreground">3Y Returns</span>
-                </div>
-
-                {(info?.topPerformers ?? []).map((f) => (
-                  <Link key={f.schemeCode} href={fundHref(f)} className="flex items-center justify-between gap-3 group">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <AmcLogo name={f.amcName ?? f.name} logoUrl={f.amcLogoUrl} colorId={f.amcId} size="sm" />
-                      <span className="text-[11px] font-semibold text-foreground group-hover:text-burgundy transition-colors truncate">{f.name.replace(/\s+Regular Growth$/i, "")}</span>
-                    </div>
-                    <span className="text-[12px] font-black text-profit shrink-0">
-                      {f.returns.threeYear !== null ? `+${f.returns.threeYear.toFixed(1)}%` : "—"}
-                    </span>
-                  </Link>
-                ))}
-                {!info && (pageData.error ? <p className="text-[11px] text-muted-foreground py-4 text-center">{sectionStatus}</p> : <ListSkeleton rows={3} label="Loading top performers" />)}
-
-                <div className="pt-1 border-t border-border/40">
-                  <Button size="sm" className="w-full bg-burgundy hover:bg-burgundy-deep text-white text-[11px] font-bold rounded-[5px] h-8">
-                    Invest Now
-                  </Button>
-                </div>
-              </motion.div>
+                <Zap className="w-4 h-4 text-burgundy shrink-0" />
+                <span className="text-[11px] text-foreground font-extrabold">Explore Index Funds</span>
+                <ArrowUpRight className="w-3.5 h-3.5 text-burgundy ml-auto shrink-0" />
+              </button>
             </div>
           </div>
         </div>
       </section>
 
       {/* ── FUND EXPLORER ── */}
-      <section id="find-your-fund" className="bg-background py-8 lg:py-12 scroll-mt-20">
+      <section id="find-your-fund" className="bg-background py-6 lg:py-8 scroll-mt-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-6">
-            <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-1">Explore</p>
-            <h2 className="text-2xl sm:text-3xl font-black text-foreground">Find Your Fund</h2>
-          </div>
-
-          {/* Tabs */}
-          <div className="overflow-x-auto mb-5" style={{ scrollbarWidth: "none" }}>
-            <div className="flex gap-0 border border-border rounded-[6px] overflow-hidden bg-cream/50 w-fit">
+          {/* Title + count on the left, tabs on the right */}
+          <div className="flex flex-wrap items-end justify-between gap-3 mb-3">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight leading-none">Find Your Fund</h2>
+              <p className="text-xs text-muted-foreground mt-1.5">
+                <span className="font-bold text-foreground">{funds ? funds.total.toLocaleString("en-IN") : "—"}</span> funds
+                {fundsResult.loading && funds && <span className="ml-2 text-muted-foreground/60">Updating…</span>}
+              </p>
+            </div>
+            <div className="flex gap-0.5 p-0.5 rounded-[6px] bg-secondary overflow-x-auto" style={{ scrollbarWidth: "none" }}>
               {EXPLORER_TABS.map((t) => (
                 <button
                   key={t.id}
                   onClick={() => switchTab(t.id)}
-                  className={`px-4 py-2.5 text-[12px] font-bold transition-all duration-200 whitespace-nowrap ${
-                    activeTab === t.id
-                      ? "bg-burgundy text-white"
-                      : "text-muted-foreground hover:text-foreground hover:bg-white/60"
+                  aria-pressed={activeTab === t.id}
+                  className={`px-3.5 py-1.5 rounded-[5px] text-[12px] font-bold whitespace-nowrap transition-all ${
+                    activeTab === t.id ? "bg-white text-burgundy shadow-sm" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {t.label}
@@ -408,73 +411,63 @@ export default function MutualFundsPage() {
             </div>
           </div>
 
-          {/* Filters */}
-          <div className="space-y-3 mb-5">
-          <div className="flex flex-wrap gap-2">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
-              <input
-                type="text"
-                placeholder="Search funds, AMCs, fund managers..."
-                aria-label="Search by fund name, fund house or fund manager"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-9 pr-3 py-2 text-sm rounded-[5px] border border-border bg-white placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40 w-64 max-w-full"
-              />
-            </div>
-
-            {/* Risk filter */}
-            <div className="flex flex-wrap gap-1.5">
-              {[{ name: "" }, ...(info?.risks ?? [])].map((f) => (
-                <button
-                  key={f.name || "all"}
-                  onClick={() => pickRisk(f.name)}
-                  className={`px-3 py-1.5 rounded-[5px] text-[11px] font-bold border transition-all duration-200 ${
-                    risk === f.name
-                      ? "bg-gold/15 text-gold-deep border-gold/35"
-                      : "bg-white text-muted-foreground border-border hover:border-gold/25 hover:text-foreground"
+          {/* Filters: one card — search + dropdowns in a row, categories below */}
+          <div className="rounded-[8px] border border-border bg-white p-3 sm:p-4 mb-3 space-y-3">
+            <div className="flex flex-col md:flex-row gap-2">
+              <div className="relative flex-1 min-w-0">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+                <input
+                  type="text"
+                  placeholder="Search funds, AMCs, fund managers..."
+                  aria-label="Search by fund name, fund house or fund manager"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full h-[34px] pl-9 pr-8 text-sm rounded-[5px] border border-border bg-cream/50 placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40"
+                />
+                {search && (
+                  <button onClick={() => setSearch("")} aria-label="Clear search" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <select
+                  aria-label="Risk"
+                  value={risk}
+                  onChange={(e) => pickRisk(e.target.value)}
+                  className={`h-[34px] px-2.5 rounded-[5px] text-[11px] font-bold border focus:outline-none focus:ring-2 focus:ring-gold/30 ${
+                    risk ? "bg-burgundy/5 text-burgundy border-burgundy/35" : "bg-white text-muted-foreground border-border"
                   }`}
                 >
-                  {f.name || "All Risk"}
-                </button>
-              ))}
-            </div>
-
-            {/* Fund house filter */}
-            <FundHouseFilter amcs={info?.amcs ?? []} value={amcIds} onChange={pickAmcs} />
-
-            {/* Rating filter */}
-            <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label="Rating">
-              {RATING_FILTERS.map((f) => (
-                <button
-                  key={f.label}
-                  role="radio"
-                  aria-checked={rating === f.value}
-                  onClick={() => pickRating(f.value)}
-                  className={`px-3 py-1.5 rounded-[5px] text-[11px] font-bold border inline-flex items-center gap-1 transition-all duration-200 ${
-                    rating === f.value
-                      ? "bg-gold/15 text-gold-deep border-gold/35"
-                      : "bg-white text-muted-foreground border-border hover:border-gold/25 hover:text-foreground"
+                  <option value="">All Risk Levels</option>
+                  {(info?.risks ?? []).map((r) => <option key={r.name} value={r.name}>{r.name} Risk</option>)}
+                </select>
+                <FundHouseFilter amcs={info?.amcs ?? []} value={amcIds} onChange={pickAmcs} />
+                <select
+                  aria-label="Rating"
+                  value={rating === null ? "" : String(rating)}
+                  onChange={(e) => pickRating(e.target.value === "" ? null : Number(e.target.value))}
+                  className={`h-[34px] px-2.5 rounded-[5px] text-[11px] font-bold border focus:outline-none focus:ring-2 focus:ring-gold/30 ${
+                    rating !== null ? "bg-burgundy/5 text-burgundy border-burgundy/35" : "bg-white text-muted-foreground border-border"
                   }`}
                 >
-                  {f.label}
-                  {f.value !== null && f.value > 0 && <Star className="w-3 h-3 fill-gold-deep text-gold-deep" aria-hidden />}
-                </button>
-              ))}
+                  {RATING_FILTERS.map((f) => (
+                    <option key={f.label} value={f.value === null ? "" : String(f.value)}>
+                      {f.value === null ? "All Ratings" : f.value === 0 ? "Not Rated" : `${f.label} ★`}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Categories: main categories, then the picked ones' sub-categories (auto-scrolling row) */}
+            <div className="pt-3 border-t border-border/60">
+              <FundCategoryFilter mains={info?.assetClasses ?? []} value={category} onChange={pickCategory} />
             </div>
           </div>
 
-          {/* Categories: main categories, then the picked ones' sub-categories (auto-scrolling row) */}
-          <FundCategoryFilter mains={info?.assetClasses ?? []} value={category} onChange={pickCategory} />
-          </div>
-
-          {/* Result count + active category */}
+          {/* Sort + active filters */}
           <div className="flex flex-wrap items-center gap-2 mb-3">
-            <p className="text-xs text-muted-foreground">
-              Showing <span className="font-bold text-foreground">{funds ? funds.total.toLocaleString("en-IN") : "—"}</span> funds
-              {fundsResult.loading && funds && <span className="ml-2 text-muted-foreground/60">Updating…</span>}
-            </p>
             <div className="flex items-center gap-1.5">
               <span className="hidden sm:inline text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mr-0.5">Sort</span>
               <button

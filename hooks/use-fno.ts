@@ -7,10 +7,25 @@ import { useApiResource } from "@/hooks/use-api-resource"
 const FNO_REFRESH_MS = 60_000
 
 /** One page of underlyings for an F&O tab. */
-export function useFnoCards(category: FnoCategory, { page = 1, limit = 8 }: { page?: number; limit?: number } = {}) {
-  return useApiResource(`${category}:${page}:${limit}`, (signal) => fnoApi.cards(category, { page, limit }, signal), {
+export function useFnoCards(
+  category: FnoCategory,
+  { page = 1, limit = 8, search }: { page?: number; limit?: number; search?: string } = {},
+) {
+  return useApiResource(`${category}:${page}:${limit}:${search ?? ""}`, (signal) => fnoApi.cards(category, { page, limit, search }, signal), {
     refreshMs: FNO_REFRESH_MS,
   })
+}
+
+/**
+ * Contracts of one underlying for the "All Indices" table on /futures-options/:category/:slug.
+ * Options return one expiry at a time; leave `expiry` empty for the nearest one.
+ */
+export function useFnoDetail(category: FnoCategory, slug: string, expiry?: string) {
+  return useApiResource(
+    slug ? `fno-detail:${category}:${slug}:${expiry ?? ""}` : null,
+    (signal) => fnoApi.detail(category, slug, expiry, signal),
+    { refreshMs: FNO_REFRESH_MS },
+  )
 }
 
 /* F&O detail pages are switched off for now (see app/futures/[slug] and app/options/[slug]).

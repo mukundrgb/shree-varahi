@@ -104,12 +104,61 @@ export interface FnoOptionsDetail extends FnoUnderlyingBase {
   contracts: FnoContract[]
 }
 
+/** One contract as GET /fno/:category/:symbol returns it. */
+export interface FnoDetailContract {
+  instrument: string | null
+  symbol: string
+  /** YYYY-MM-DD */
+  expiry: string | null
+  strike: number | null
+  optionType: "CE" | "PE" | null
+  label: string
+  previousLtp: number | null
+  ltp: number | null
+  /** LTP − previous LTP */
+  faoDiff: number | null
+  faoChangePct: number | null
+  quantity: number | null
+  volume: number | null
+  openInterest: number | null
+  previousOpenInterest: number | null
+  openInterestDiff: number | null
+  openInterestChangePct: number | null
+  updatedAt: string | null
+}
+
+/**
+ * GET /fno/:category/:symbol. Futures: every expiry, plus `nearMonth`.
+ * Options: the contracts of one expiry (`selectedExpiry`, chosen with ?expiry=), plus `expiries` and `future`.
+ */
+export interface FnoCategoryDetail {
+  category: FnoCategory
+  label: string
+  instrument: string
+  symbol: string
+  slug: string
+  name: string
+  coCode: number | null
+  logoUrl: string | null
+  sector: string | null
+  exchanges: string[]
+  contracts: FnoDetailContract[]
+  nearMonth?: FnoDetailContract | null
+  future?: FnoDetailContract | null
+  expiries?: string[]
+  selectedExpiry?: string | null
+  mostActive?: FnoDetailContract | null
+}
+
 export const fnoApi = {
+  /** Contracts of one underlying for its detail page, e.g. ("stock-futures", "bajaj-auto"). */
+  detail: (category: FnoCategory, symbol: string, expiry?: string, signal?: AbortSignal) =>
+    apiGet<FnoCategoryDetail>(`/fno/${category}${seg(symbol)}`, { query: { expiry }, signal }),
   cards: (
     category: FnoCategory,
-    { page = 1, limit = 20, exchange = "NSE" }: { page?: number; limit?: number; exchange?: string } = {},
+    { page = 1, limit = 20, exchange = "NSE", search }: { page?: number; limit?: number; exchange?: string; search?: string } = {},
     signal?: AbortSignal,
-  ) => apiGet<FnoCardList>(`/fno/${category}`, { query: { page, limit, exchange }, signal }),
+  ) => apiGet<FnoCardList>(`/fno/${category}`, { query: { page, limit, exchange, search }, signal }),
   futures: (underlying: "index" | "stock", symbol: string, signal?: AbortSignal) =>
     apiGet<FnoFuturesDetail>(`/fno/${underlying}-futures${seg(symbol)}`, { signal }),
   options: (underlying: "index" | "stock", symbol: string, expiry?: string, signal?: AbortSignal) =>
