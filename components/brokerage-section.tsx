@@ -64,7 +64,7 @@ export function BrokerageSection() {
             Flat / Executed Order. <span className="text-burgundy">Every Segment.</span>
           </h2>
           <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
-            At Shree Varahi, we keep it simple — ₹17 flat per executed order, across every segment. No slabs, no fine print. Just one fixed price.
+            At Shree Varahi, we keep it simple, ₹17 flat per executed order, across every segment. No slabs, no fine print. Just one fixed price.
           </p>
           <div className="mt-8">
             <Button

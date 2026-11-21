@@ -30,7 +30,6 @@ const cityCoordinates: Record<string, { x: number; y: number }> = {
   "Kolkata":     { x: 276, y: 218 },
   "Ahmedabad":   { x: 63, y: 210 },
   "Surat":       { x: 67, y: 237 },
-  "Jaipur":      { x: 107, y: 151 },
   "Kanpur":      { x: 170, y: 158 },
   "Varanasi":    { x: 206, y: 175 },
   "Ujjain":      { x: 107, y: 207 },

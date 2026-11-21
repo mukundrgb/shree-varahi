@@ -24,7 +24,7 @@ const faqData = {
     },
     {
       q: "What are the IPO application charges?",
-      a: "IPO applications are completely free on Shree Varahi. We don&apos;t charge anything for applying to IPOs through our platform.",
+      a: "IPO applications are completely free on Shree Varahi. We don't charge anything for applying to IPOs through our platform.",
     },
     {
       q: "What advanced order types do you support?",
@@ -34,11 +34,11 @@ const faqData = {
   "Account & Products": [
     {
       q: "How do I open a Shree Varahi demat account?",
-      a: "You can open a demat account in under 10 minutes with our digital e-KYC process. You&apos;ll need your Aadhaar, PAN, and a selfie. It&apos;s completely free to open.",
+      a: "You can open a demat account in under 10 minutes with our digital e-KYC process. You'll need your Aadhaar, PAN, and a selfie. It's completely free to open.",
     },
     {
       q: "How do I set up a SIP in stocks or mutual funds?",
-      a: "Go to Invest &gt; SIP in the app or web platform. Choose your stocks or mutual funds, set the amount (minimum ₹100), and select the frequency. It&apos;s automated after that.",
+      a: "Go to Invest > SIP in the app or web platform. Choose your stocks or mutual funds, set the amount (minimum ₹100), and select the frequency. It's automated after that.",
     },
     {
       q: "Is Lakshmishree SEBI registered?",
@@ -50,7 +50,7 @@ const faqData = {
     },
     {
       q: "How do I contact customer support?",
-      a: "You can reach us via the in-app chat, call our helpline at 022-4080-8080, or email support@shreevarahi.com. We also have 50+ branches across India.",
+      a: "You can reach us via the in-app chat, call our helpline at 022-4080-8080, or email support@shreevarahi.com. We have 14 physical branches across India.",
     },
     {
       q: "Can I transfer my holdings from another broker?",
