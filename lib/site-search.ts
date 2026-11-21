@@ -1,0 +1,77 @@
+// Global (navbar) search over the site's own pages and Knowledge Center content.
+// Stocks and mutual funds are searched through the backend APIs in components/search-popup.tsx;
+// everything here is a static index of pages that exist in the app router.
+
+import { searchKnowledge } from "@/lib/knowledge-center/data"
+
+export interface SitePage {
+  title: string
+  desc: string
+  href: string
+  /** Extra words people may type to find this page */
+  keywords?: string
+}
+
+export const SITE_PAGES: SitePage[] = [
+  // Account
+  { title: "Open Free Demat Account", desc: "Start investing in minutes",            href: "/signup/register", keywords: "open account signup register demat trading kyc" },
+  { title: "Login",                   desc: "Sign in to your account",               href: "/login",           keywords: "sign in" },
+  // Trade & invest
+  { title: "Stocks",                  desc: "All NSE & BSE stocks",                  href: "/stocks",          keywords: "equity shares" },
+  { title: "F&O",                     desc: "Futures & options",                     href: "/futures-options", keywords: "futures options derivatives fno option chain" },
+  { title: "ETF",                     desc: "Exchange traded funds",                 href: "/etf",             keywords: "etfs exchange traded funds gold etf" },
+  { title: "IPO",                     desc: "Upcoming, open & closed IPOs",          href: "/ipo",             keywords: "ipo apply allotment upcoming public offering" },
+  { title: "MTF",                     desc: "Margin Trading Facility",               href: "/mtf",             keywords: "margin trading leverage calculator" },
+  { title: "MTF Eligible Stocks",     desc: "Stocks available on MTF",               href: "/mtf/eligible-stocks", keywords: "mtf stocks list margin" },
+  { title: "Global Investing",        desc: "Invest in US stocks from India",        href: "/global-investing", keywords: "us stocks international" },
+  // Mutual funds
+  { title: "Mutual Funds",            desc: "Explore & invest with 0% commission",   href: "/mutual-funds",    keywords: "sip lumpsum funds" },
+  { title: "NFO",                     desc: "New fund offers",                       href: "/nfo",             keywords: "new fund offer" },
+  // Market movers
+  { title: "Top Gainers Today",       desc: "Market movers",                         href: "/stock-market-live/top-gainers-today",     keywords: "gainers movers" },
+  { title: "Top Losers Today",        desc: "Market movers",                         href: "/stock-market-live/top-losers-today",      keywords: "losers movers" },
+  { title: "Most Active Stocks by Value",  desc: "Market movers",                    href: "/stock-market-live/most-active-by-value",  keywords: "most active traded value" },
+  { title: "Most Active Stocks by Volume", desc: "Market movers",                    href: "/stock-market-live/most-active-by-volume", keywords: "most active traded volume" },
+  { title: "52-Week High Stocks",     desc: "Market movers",                         href: "/stock-market-live/52-week-high-stocks",   keywords: "52 week high" },
+  { title: "52-Week Low Stocks",      desc: "Market movers",                         href: "/stock-market-live/52-week-low-stocks",    keywords: "52 week low" },
+  // Indices
+  { title: "Nifty 50",                desc: "Index",                                 href: "/markets/indices/nifty-50",   keywords: "nifty index" },
+  { title: "Sensex",                  desc: "Index",                                 href: "/markets/indices/sensex",     keywords: "bse sensex index" },
+  { title: "Nifty Bank",              desc: "Index",                                 href: "/markets/indices/nifty-bank", keywords: "bank nifty index" },
+  { title: "Nifty 50 Stocks",         desc: "Stocks in the Nifty 50",                href: "/nifty-stocks-list/nifty-50",   keywords: "nifty constituents list" },
+  { title: "Bank Nifty Stocks",       desc: "Stocks in the Nifty Bank",              href: "/nifty-stocks-list/nifty-bank", keywords: "bank nifty constituents list" },
+  // Products
+  { title: "Shree Varahi Web",        desc: "Trade from any browser",                href: "/shree-varahi-web",         keywords: "web platform trading terminal" },
+  { title: "Shree Varahi Mobile App", desc: "Trading app",                           href: "/shree-varahi-mobile-app",  keywords: "app android ios mobile" },
+  { title: "Shree Varahi Desktop App", desc: "Desktop trading terminal",             href: "/shree-varahi-desktop-app", keywords: "desktop terminal software" },
+  // Learn
+  { title: "Knowledge Center",        desc: "Guides & articles",                     href: "/knowledge-center",         keywords: "learn knowledge panel education guides articles" },
+]
+
+export interface SiteHit { title: string; desc: string; href: string; group: "Pages" | "Learn" }
+
+/** Pages first (best match first), then Knowledge Center topics and articles. */
+export function searchSite(query: string): SiteHit[] {
+  const q = query.trim().toLowerCase()
+  if (!q) return []
+  const words = q.split(/\s+/)
+  const pages = SITE_PAGES
+    .map((p) => {
+      const title = p.title.toLowerCase()
+      const text = `${title} ${p.desc.toLowerCase()} ${p.keywords ?? ""}`
+      if (!words.every((w) => text.includes(w))) return null
+      return { page: p, rank: title === q ? 0 : title.startsWith(q) ? 1 : title.includes(q) ? 2 : 3 }
+    })
+    .filter((x): x is { page: SitePage; rank: number } => x !== null)
+    .sort((a, b) => a.rank - b.rank)
+    .slice(0, 6)
+    .map(({ page }) => ({ title: page.title, desc: page.desc, href: page.href, group: "Pages" as const }))
+
+  const learn = searchKnowledge(q, 5).map((h) => ({
+    title: h.title,
+    desc: h.kind === "topic" ? "Knowledge Center topic" : `Knowledge Center · ${h.subtitle}`,
+    href: h.href,
+    group: "Learn" as const,
+  }))
+  return [...pages, ...learn]
+}

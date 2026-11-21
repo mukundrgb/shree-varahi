@@ -62,7 +62,7 @@ const PRODUCTS: MenuItem[] = [
 ]
 
 const LEARN_NEWS: MenuItem[] = [
-  { title: "Knowledge Panel", desc: "Courses, guides & tutorials",  icon: <BookOpen className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "#" },
+  { title: "Knowledge Panel", desc: "Courses, guides & tutorials",  icon: <BookOpen className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/knowledge-center" },
   { title: "Blog",            desc: "Market insights & analysis",   icon: "📝",                                                             href: "#" },
   { title: "News",            desc: "Live market news & updates",   icon: "📰",                                                             href: "#" },
 ]
