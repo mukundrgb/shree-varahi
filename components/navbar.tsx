@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { CALCULATOR_LINKS, LOGIN_URL } from "@/lib/external-links"
 import { useLiveMarkets, type LiveTab } from "@/components/markets-live"
 import { ListSkeleton } from "@/components/skeletons"
 import { motion, AnimatePresence } from "framer-motion"
@@ -63,8 +64,8 @@ const PRODUCTS: MenuItem[] = [
 
 const LEARN_NEWS: MenuItem[] = [
   { title: "Knowledge Panel", desc: "Courses, guides & tutorials",  icon: <BookOpen className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/knowledge-center" },
-  { title: "Blog",            desc: "Market insights & analysis",   icon: "📝",                                                             href: "#" },
-  { title: "News",            desc: "Live market news & updates",   icon: "📰",                                                             href: "#" },
+  { title: "Blog",            desc: "Market insights & analysis",   icon: "📝",                                                             href: "/blog" },
+  { title: "News",            desc: "Live market news & updates",   icon: "📰",                                                             href: "/news" },
 ]
 
 // ── Markets mega-menu ─────────────────────────────────────────────────────
@@ -382,11 +383,13 @@ const MARKETS_DATA: Record<string, Record<string, MarketItem[]>> = {
   "Tools": {
     "Calculators": [
       // { name: "SIP Calculator",       href: "/mutual-funds" },
-      { name: "Brokerage Calculator", href: "#" },
+      { name: "Brokerage Calculator", href: CALCULATOR_LINKS.brokerage },
+      { name: "Margin Calculator",    href: CALCULATOR_LINKS.margin },
       { name: "MTF Calculator",       href: "/mtf" },
-      { name: "CAGR Calculator",      href: "#" },
-      { name: "Lumpsum Calculator",   href: "#" },
-      { name: "Goal-based SIP",       href: "#" },
+      { name: "MF Returns Calculator", href: CALCULATOR_LINKS.mfReturns },
+      { name: "CAGR Calculator",      href: CALCULATOR_LINKS.cagr },
+      { name: "Lumpsum Calculator",   href: CALCULATOR_LINKS.lumpsum },
+      { name: "Goal-based SIP",       href: CALCULATOR_LINKS.goalSip },
     ],
     // Each screener opens its page at the table section.
     "Screeners": [
@@ -699,8 +702,8 @@ export function Navbar() {
                         <span className="text-[11px] text-muted-foreground font-medium">
                           {deskLive ? "Live categories from NSE, BSE & fund data" : "Live market data powered by NSE & BSE feeds"}
                         </span>
-                        <Link href={TAB_HOME[marketsTab] ?? "/stocks"} onClick={closeMarkets} className="text-[11px] font-bold text-burgundy hover:underline flex items-center gap-1">
-                          View all {marketsTab === "Indices" || marketsTab === "Tools" ? "markets" : marketsTab} <ChevronRight className="w-3 h-3" />
+                        <Link href={marketsTab === "Tools" ? CALCULATOR_LINKS.all : TAB_HOME[marketsTab] ?? "/stocks"} onClick={closeMarkets} className="text-[11px] font-bold text-burgundy hover:underline flex items-center gap-1">
+                          View all {marketsTab === "Tools" ? "calculators" : marketsTab === "Indices" ? "markets" : marketsTab} <ChevronRight className="w-3 h-3" />
                         </Link>
                       </div>
                     </motion.div>
@@ -773,7 +776,7 @@ export function Navbar() {
                 )}
               </button>
               <Button variant="ghost" className="text-foreground hover:text-burgundy rounded-[5px]" asChild>
-                <Link href="/login">Login</Link>
+                <Link href={LOGIN_URL}>Login</Link>
               </Button>
               <Button className="bg-burgundy hover:bg-burgundy-deep text-primary-foreground rounded-[5px]" asChild>
                 <Link href="/signup/register">Open Free Account</Link>
@@ -1086,7 +1089,7 @@ export function Navbar() {
                     className="border-border text-foreground rounded-[5px] h-10 font-semibold"
                     asChild
                   >
-                    <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                    <Link href={LOGIN_URL} onClick={() => setMobileMenuOpen(false)}>
                       Login
                     </Link>
                   </Button>

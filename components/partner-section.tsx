@@ -4,6 +4,7 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Building2, Users, BookOpen, Percent, Headphones, Smartphone } from "lucide-react"
+import { SmartSelect } from "@/components/smart-controls"
 
 const benefits = [
   { icon: Smartphone, text: "Shree Varahi Technology Platform — Full trading platform for your clients. No tech costs." },
@@ -152,18 +153,17 @@ export function PartnerSection() {
               </div>
               <div>
                 <label className="text-sm text-muted-foreground mb-1.5 block">Current Profession</label>
-                <select
-                  value={formData.profession}
-                  onChange={(e) => setFormData({ ...formData, profession: e.target.value })}
-                  className="w-full px-4 py-3 rounded-[5px] bg-secondary border border-border focus:outline-none focus:ring-2 focus:ring-gold/50"
+                <SmartSelect
+                  name="profession"
                   required
-                >
-                  {professions.map((profession) => (
-                    <option key={profession} value={profession === "Select Profession" ? "" : profession}>
-                      {profession}
-                    </option>
-                  ))}
-                </select>
+                  value={formData.profession}
+                  onChange={(v) => setFormData({ ...formData, profession: v })}
+                  placeholder="Select Profession"
+                  title="Current Profession"
+                  options={professions.filter((p) => p !== "Select Profession").map((p) => ({ value: p, label: p }))}
+                  searchable={false}
+                  className="h-12 bg-secondary font-medium"
+                />
               </div>
 
               <Button

@@ -10,6 +10,7 @@ import { useSearchParams } from "next/navigation"
 import { ChevronRight, ChevronDown, ArrowUpRight, Search, X } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { SmartSearch, SmartSelect } from "@/components/smart-controls"
 import { StockAvatar } from "@/components/stock-avatar"
 import { TableRowsSkeleton } from "@/components/skeletons"
 import { useEtfList } from "@/hooks/etf/use-etf"
@@ -124,45 +125,22 @@ export function EtfAllocationPage({
               <label htmlFor="etf-picker" className="block text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-1.5">
                 Select {category ? `${category} ` : ""}ETF
               </label>
-              <div className="relative">
-                <select
-                  id="etf-picker"
-                  value={slug}
-                  onChange={(e) => pickEtf(e.target.value)}
-                  className="w-full appearance-none pl-3 pr-9 py-2 text-sm font-semibold rounded-[5px] border border-border bg-white text-foreground focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40"
-                >
-                  {groups
-                    ? groups.map((g) => (
-                        <optgroup key={g.category} label={g.category}>
-                          {g.items.map((e) => <option key={e.slug} value={e.slug}>{e.name}</option>)}
-                        </optgroup>
-                      ))
-                    : etfs.map((e) => <option key={e.slug} value={e.slug}>{e.name}</option>)}
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-              </div>
+              <SmartSelect
+                id="etf-picker"
+                value={slug}
+                onChange={pickEtf}
+                options={groups
+                  ? groups.flatMap((g) => g.items.map((e) => ({ value: e.slug, label: e.name, group: g.category })))
+                  : etfs.map((e) => ({ value: e.slug, label: e.name }))}
+                title={`Select ${category ? `${category} ` : ""}ETF`}
+              />
             </div>
 
             <div className="w-full sm:w-80">
               <label htmlFor="allocation-search" className="block text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-1.5">
                 Search {rowLabel}
               </label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
-                <input
-                  id="allocation-search"
-                  type="text"
-                  placeholder={searchPlaceholder}
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-9 pr-8 py-2 text-sm rounded-[5px] border border-border bg-cream/50 placeholder:text-muted-foreground/55 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40"
-                />
-                {search && (
-                  <button onClick={() => setSearch("")} aria-label="Clear search" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
+              <SmartSearch value={search} onChange={setSearch} placeholder={searchPlaceholder} ariaLabel={`Search ${rowLabel}`} />
             </div>
 
             {etf && (

@@ -379,11 +379,6 @@ export function MTFSection() {
                             {selected.price != null && <p className="text-[11px] font-semibold text-foreground mt-0.5">{fmt(selected.price)} / share</p>}
                             <p className="text-[11px] text-muted-foreground mt-0.5">
                               Margin required: <span className="font-semibold text-foreground">{selected.marginPct.toFixed(2)}%</span>
-                              {selected.listedMarginPct < selected.marginPct && (
-                                <span className="ml-1 text-muted-foreground/80" title={`Listed margin ${selected.listedMarginPct.toFixed(2)}%; a minimum of ${selected.marginPct.toFixed(1)}% applies`}>
-                                  (min. applied · listed {selected.listedMarginPct.toFixed(2)}%)
-                                </span>
-                              )}
                             </p>
                           </div>
                           <div className="flex-shrink-0 text-right">

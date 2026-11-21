@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { LOGIN_URL } from "@/lib/external-links"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
@@ -782,7 +783,7 @@ export default function RegisterPage() {
             <p className="text-center text-[13px] text-muted-foreground mt-5">
               Already have an account?{" "}
               <Link
-                href="/login"
+                href={LOGIN_URL}
                 className="text-burgundy font-bold hover:underline underline-offset-2"
               >
                 Login

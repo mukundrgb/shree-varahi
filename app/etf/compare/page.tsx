@@ -7,6 +7,7 @@ import { ChevronRight, ChevronLeft, ArrowUp, ArrowDown, ArrowUpDown, Search, X }
 import { TableRowsSkeleton } from "@/components/skeletons"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { SmartSearch } from "@/components/smart-controls"
 import { StockAvatar } from "@/components/stock-avatar"
 import { useEtfList } from "@/hooks/etf/use-etf"
 import type { EtfCategory, EtfListRow } from "@/lib/etf/types"
@@ -124,16 +125,7 @@ function EtfCompare() {
       <section className="bg-background py-6 pb-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap gap-2.5 mb-4">
-            <div className="relative w-full sm:w-auto">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
-              <input
-                type="text"
-                placeholder="Search ETFs..."
-                value={search}
-                onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-                className="pl-9 pr-3 py-2 text-sm rounded-[5px] border border-border bg-cream/50 placeholder:text-muted-foreground/55 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40 w-full sm:w-80"
-              />
-            </div>
+            <SmartSearch value={search} onChange={(v) => { setSearch(v); setPage(1) }} placeholder="Search ETFs…" ariaLabel="Search ETFs" shortcut className="w-full sm:w-80" />
             <div className="flex gap-1.5 flex-wrap">
               {CATEGORIES.map((c) => (
                 <button

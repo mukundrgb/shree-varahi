@@ -17,6 +17,7 @@ import { FinalCTA } from "@/components/final-cta"
 import { Footer } from "@/components/footer"
 import { MobileStickyBar } from "@/components/mobile-sticky-bar"
 import { AppPromoSection } from "@/components/app-promo-section"
+import { AdvisorChat } from "@/components/advisor-chat"
 
 export default function Home() {
   return (
@@ -40,6 +41,7 @@ export default function Home() {
       <FinalCTA />
       <Footer />
       <MobileStickyBar />
+      <AdvisorChat />
     </main>
   )
 }

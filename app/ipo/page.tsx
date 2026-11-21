@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { LOGIN_URL } from "@/lib/external-links"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ChevronRight, TrendingUp, Bell,
@@ -899,7 +900,7 @@ export default function IpoPage() {
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button asChild size="lg" className="bg-white hover:bg-gold-champagne text-burgundy font-black px-8 h-11 text-sm rounded-[5px] shadow-xl">
-              <Link href="/login">Open Free Account →</Link>
+              <Link href={LOGIN_URL}>Open Free Account →</Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white px-8 h-11 text-sm rounded-[5px]">
               <a href="#ipo-list">View Open IPOs</a>

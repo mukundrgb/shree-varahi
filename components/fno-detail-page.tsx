@@ -15,6 +15,7 @@ import { Bone, TableRowsSkeleton } from "@/components/skeletons"
 import { useFnoCard, useFnoDetail } from "@/hooks/use-fno"
 import { isOptionsCategory, type FnoCategory, type FnoDetailContract, type FnoDetailRow } from "@/lib/fno/api-client"
 import { NO_VALUE, formatDate, formatQuoteTime } from "@/lib/stocks/format"
+import { SmartSearch, SmartSelect } from "@/components/smart-controls"
 
 const CATEGORY_LABEL: Record<FnoCategory, string> = {
   "index-futures": "Index Future",
@@ -188,33 +189,18 @@ export function FnoDetailPage({ category, slug }: { category: FnoCategory; slug:
             </div>
             <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             {options && contracts.expiries.length > 0 && (
-              <select
-                aria-label="Expiry date"
+              <SmartSelect
+                ariaLabel="Expiry date"
+                title="Expiry date"
+                prefix="Expiry"
                 value={contracts.selectedExpiry}
-                onChange={(e) => setExpiry(e.target.value)}
-                className="w-full sm:w-44 px-3 py-2 text-sm font-bold rounded-[5px] border border-border bg-cream/50 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40"
-              >
-                {contracts.expiries.map((d) => (
-                  <option key={d} value={d}>Expiry: {formatDate(d)}</option>
-                ))}
-              </select>
-            )}
-            <div className="relative w-full sm:w-72">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
-              <input
-                type="text"
-                aria-label="Search contracts"
-                placeholder="Search contracts..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-8 py-2 text-sm rounded-[5px] border border-border bg-cream/50 placeholder:text-muted-foreground/55 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40"
+                onChange={setExpiry}
+                options={contracts.expiries.map((d) => ({ value: d, label: formatDate(d) }))}
+                searchable={false}
+                className="sm:w-52 bg-cream/50"
               />
-              {search && (
-                <button onClick={() => setSearch("")} aria-label="Clear search" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
+            )}
+            <SmartSearch value={search} onChange={setSearch} placeholder="Search contracts…" ariaLabel="Search contracts" shortcut className="w-full sm:w-72" />
             </div>
           </div>
 

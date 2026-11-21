@@ -1,6 +1,7 @@
 "use client"
 
 import { Suspense, useEffect, useRef, useState } from "react"
+import { LOGIN_URL } from "@/lib/external-links"
 import { useRouter, useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import {
@@ -16,6 +17,7 @@ import { StockAvatar } from "@/components/stock-avatar"
 import { TradingViewCredit, TradingViewMiniChart } from "@/components/tradingview-chart"
 import { TableRowsSkeleton } from "@/components/skeletons"
 import { NewsCarousel } from "@/components/news-cards"
+import { FilterSheet, SmartSearch, SmartSelect } from "@/components/smart-controls"
 import { useMarketBeat } from "@/hooks/use-market-news"
 import { useStockList } from "@/hooks/stocks/use-stock-list"
 import { NO_VALUE, formatPercent, formatPrice } from "@/lib/stocks/format"
@@ -306,11 +308,6 @@ export default function StocksPage() {
   // LTP header: first click = highest first (arrow up), next click = lowest first (arrow down).
   const togglePriceSort  = () => pickSort(sort === "price-desc" ? "price-asc" : "price-desc")
   const clearLetter = () => { setLetter(null); setPage(1); router.replace("/stocks", { scroll: false }) }
-  /** Hero shortcuts: set the cap filter and jump to the table. */
-  const browseCap = (c: string) => {
-    pickCap(c)
-    document.getElementById("all-stocks")?.scrollIntoView({ behavior: "smooth", block: "start" })
-  }
   const clearAll = () => {
     setSectors([]); setCap("all"); setSearch(""); setSort(DEFAULT_STOCK_SORT); setPage(1)
     if (letter) clearLetter()
@@ -319,13 +316,92 @@ export default function StocksPage() {
   const hasFilter = !!(sectors.length || cap !== "all" || search || sort !== DEFAULT_STOCK_SORT || letter)
   const capLabel = CAP_OPTIONS.find((c) => c.value === cap)?.label
 
+  // Sector list filter (inside the filter panel) and the active-filter count for the phone "Filters" button.
+  const [sectorQuery, setSectorQuery] = useState("")
+  const shownSectors = sectorQuery.trim()
+    ? categories.filter((c) => c.toLowerCase().includes(sectorQuery.trim().toLowerCase()))
+    : categories
+  const filterCount = sectors.length + (cap !== "all" ? 1 : 0) + (letter ? 1 : 0)
+
+  /** Market cap + sectors: shown in the sidebar on desktop and in the bottom sheet on phones. */
+  const filterBody = (
+    <>
+      <div>
+        <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-2">Market Cap</p>
+        <div className="grid grid-cols-4 gap-0.5 p-0.5 rounded-[6px] bg-secondary">
+          {[{ short: "All", value: "all" }, ...CAP_OPTIONS].map((c) => (
+            <button
+              key={c.value}
+              onClick={() => pickCap(c.value)}
+              aria-pressed={cap === c.value}
+              className={`py-2 lg:py-1.5 rounded-[5px] text-xs lg:text-[11px] font-bold transition-all ${
+                cap === c.value ? "bg-white text-burgundy shadow-sm" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {c.short}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">
+            Sector{sectors.length > 0 && <span className="text-burgundy"> · {sectors.length} selected</span>}
+          </p>
+          {sectors.length > 0 && (
+            <button onClick={clearSectors} className="text-[10px] font-bold text-burgundy hover:text-burgundy-deep">Clear</button>
+          )}
+        </div>
+        {categories.length > 10 && (
+          <SmartSearch value={sectorQuery} onChange={setSectorQuery} placeholder="Find a sector…" size="sm" className="mb-2" />
+        )}
+        {/* Tick several sectors: stocks in any of them are shown. 2 columns on phones, a list on desktop. */}
+        <div className="grid grid-cols-2 lg:grid-cols-1 gap-x-2 gap-y-0.5 lg:max-h-[340px] lg:overflow-y-auto -mx-1 pr-1" role="group" aria-label="Sectors">
+          <button
+            onClick={clearSectors}
+            aria-pressed={sectors.length === 0}
+            className={`w-full text-left px-2.5 py-2.5 lg:py-1.5 rounded-[5px] text-[13px] lg:text-[12px] font-semibold transition-colors flex items-center gap-2 ${
+              sectors.length === 0 ? "bg-burgundy/[0.07] text-burgundy font-bold" : "text-muted-foreground hover:bg-cream hover:text-foreground"
+            }`}
+          >
+            <span className={`w-3.5 h-3.5 shrink-0 rounded-[3px] border flex items-center justify-center ${sectors.length === 0 ? "bg-burgundy border-burgundy" : "border-border bg-white"}`}>
+              {sectors.length === 0 && <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />}
+            </span>
+            <span className="truncate">All sectors</span>
+          </button>
+          {sectorQuery.trim() && shownSectors.length === 0 && <p className="col-span-2 px-2.5 py-2 text-[11px] text-muted-foreground">No sector matches.</p>}
+          {shownSectors.map((s) => {
+            const on = sectors.includes(s)
+            return (
+              <button
+                key={s}
+                onClick={() => toggleSector(s)}
+                role="checkbox"
+                aria-checked={on}
+                className={`w-full text-left px-2.5 py-2.5 lg:py-1.5 rounded-[5px] text-[13px] lg:text-[12px] font-semibold transition-colors flex items-center gap-2 ${
+                  on ? "bg-burgundy/[0.07] text-burgundy font-bold" : "text-muted-foreground hover:bg-cream hover:text-foreground"
+                }`}
+              >
+                <span className={`w-3.5 h-3.5 shrink-0 rounded-[3px] border flex items-center justify-center ${on ? "bg-burgundy border-burgundy" : "border-border bg-white"}`}>
+                  {on && <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />}
+                </span>
+                <span className="truncate">{s}</span>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    </>
+  )
+
   return (
     <main className="min-h-screen bg-background">
       <Navbar />
       <Suspense fallback={null}><LetterFromUrl onLetter={pickLetterFromUrl} /></Suspense>
 
-      {/* ── HERO (compact: pitch on the left, market snapshot + shortcuts on the right) ── */}
-      <section className="relative bg-cream border-b border-border/40 pt-24 pb-8 lg:pb-10 overflow-hidden">
+      {/* ── HERO (compact: pitch on the left, actions + trust stats on the right) ── */}
+      <section className="relative bg-cream border-b border-border/40 pt-24 pb-6 lg:pb-8 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div
             className="absolute inset-0 opacity-[0.04]"
@@ -344,8 +420,8 @@ export default function StocksPage() {
             <span className="text-foreground font-semibold">Stocks</span>
           </nav>
 
-          <div className="grid lg:grid-cols-[minmax(0,1fr)_420px] gap-6 lg:gap-12 items-center">
-            <div className="space-y-4">
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_auto] gap-5 lg:gap-12 items-center">
+            <div className="space-y-3">
               <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">Equity Investing</p>
               <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-black text-foreground tracking-tight leading-[1.1]">
                 Stocks Investing With <span className="text-burgundy lg:block">MTF &amp; Pledge Benefits</span>
@@ -353,54 +429,24 @@ export default function StocksPage() {
               <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
                 Trade and invest in 5,000+ NSE &amp; BSE listed stocks with Margin Trading Facility, pledge benefits, and powerful research tools — all on one platform.
               </p>
-              <div className="flex flex-wrap items-center gap-3 pt-1">
-                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
-                  <Link href="/login">Start Trading</Link>
-                </Button>
-                <Button asChild variant="outline" className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary">
-                  <Link href="/login">Open Account</Link>
-                </Button>
-                <div className="flex items-center gap-4 sm:ml-3 sm:pl-5 sm:border-l border-border">
-                  <div>
-                    <div className="text-base font-black text-foreground leading-none">31+</div>
-                    <div className="text-[10px] text-muted-foreground font-semibold mt-1">Years of Trust</div>
-                  </div>
-                  <div>
-                    <div className="text-base font-black text-foreground flex items-center gap-1 leading-none">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
-                    <div className="text-[10px] text-muted-foreground font-semibold mt-1">App Rating</div>
-                  </div>
-                </div>
-              </div>
             </div>
-
-            {/* Market snapshot */}
-            <div className="rounded-[10px] bg-white border border-border shadow-[0_8px_32px_rgba(0,0,0,0.06)] overflow-hidden">
-              <div className="p-4">
-                <p className="text-[10px] font-extrabold uppercase tracking-wider text-gold-deep mb-2.5">Browse by market cap</p>
-                <div className="grid grid-cols-3 gap-2">
-                  {CAP_OPTIONS.map((c) => (
-                    <button
-                      key={c.value}
-                      onClick={() => browseCap(c.value)}
-                      className="group text-left rounded-[6px] border border-border bg-cream/50 px-3 py-3 hover:border-burgundy/30 hover:bg-white transition-all"
-                    >
-                      <div className="text-xs font-extrabold text-foreground flex items-center justify-between">
-                        {c.label}
-                        <ArrowUpRight className="w-3 h-3 text-muted-foreground group-hover:text-burgundy transition-colors" />
-                      </div>
-                    </button>
-                  ))}
+            {/* Actions + trust stats on the right (the old browse card is gone, so the hero is shorter) */}
+            <div className="flex flex-wrap items-center lg:justify-end gap-3">
+              <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
+                <Link href={LOGIN_URL}>Start Trading</Link>
+              </Button>
+              <Button asChild variant="outline" className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary">
+                <Link href={LOGIN_URL}>Open Account</Link>
+              </Button>
+              <div className="flex items-center gap-4 sm:ml-3 sm:pl-5 sm:border-l border-border">
+                <div>
+                  <div className="text-base font-black text-foreground leading-none">31+</div>
+                  <div className="text-[10px] text-muted-foreground font-semibold mt-1">Years of Trust</div>
                 </div>
-                <Link
-                  href="/mtf"
-                  className="mt-3 flex items-center gap-3 rounded-[6px] bg-burgundy/[0.06] border border-burgundy/15 px-3 py-2.5 hover:bg-burgundy/10 transition-colors"
-                >
-                  <Zap className="w-4 h-4 text-burgundy shrink-0" />
-                  <span className="text-[11px] text-foreground leading-snug">
-                    <span className="font-extrabold">Up to 3× buying power</span>
-                  </span>
-                  <ArrowUpRight className="w-3.5 h-3.5 text-burgundy ml-auto shrink-0" />
-                </Link>
+                <div>
+                  <div className="text-base font-black text-foreground flex items-center gap-1 leading-none">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
+                  <div className="text-[10px] text-muted-foreground font-semibold mt-1">App Rating</div>
+                </div>
               </div>
             </div>
           </div>
@@ -413,86 +459,11 @@ export default function StocksPage() {
           <div className="grid lg:grid-cols-[300px_minmax(0,1fr)] gap-5 lg:gap-6 items-start">
 
           {/* Filters */}
-          <aside className="lg:sticky lg:top-20 rounded-[8px] border border-border bg-white p-4 space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
-              <input
-                type="text"
-                aria-label="Search stocks"
-                placeholder="Search stocks..."
-                value={search}
-                onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-                className="w-full pl-9 pr-8 py-2 text-sm rounded-[5px] border border-border bg-cream/50 placeholder:text-muted-foreground/55 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40"
-              />
-              {search && (
-                <button onClick={() => { setSearch(""); setPage(1) }} aria-label="Clear search" className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
+          {/* Desktop sidebar; phones get the search + "Filters" sheet above the table */}
+          <aside className="hidden lg:block lg:sticky lg:top-20 rounded-[8px] border border-border bg-white p-4 space-y-4">
+            <SmartSearch value={search} onChange={(v) => { setSearch(v); setPage(1) }} placeholder="Search stocks…" ariaLabel="Search stocks" loading={stockListLoading && !!debouncedSearch} shortcut />
 
-            <div>
-              <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-2">Market Cap</p>
-              <div className="grid grid-cols-4 gap-0.5 p-0.5 rounded-[6px] bg-secondary">
-                {[{ short: "All", value: "all" }, ...CAP_OPTIONS].map((c) => (
-                  <button
-                    key={c.value}
-                    onClick={() => pickCap(c.value)}
-                    aria-pressed={cap === c.value}
-                    className={`py-1.5 rounded-[5px] text-[11px] font-bold transition-all ${
-                      cap === c.value ? "bg-white text-burgundy shadow-sm" : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {c.short}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">
-                  Sector{sectors.length > 0 && <span className="text-burgundy"> · {sectors.length} selected</span>}
-                </p>
-                {sectors.length > 0 && (
-                  <button onClick={clearSectors} className="text-[10px] font-bold text-burgundy hover:text-burgundy-deep">Clear</button>
-                )}
-              </div>
-              {/* Tick several sectors: stocks in any of them are shown. 2 columns on phones, a list on desktop. */}
-              <div className="grid grid-cols-2 lg:grid-cols-1 gap-x-2 gap-y-0.5 max-h-[220px] lg:max-h-[340px] overflow-y-auto -mx-1 pr-1" role="group" aria-label="Sectors">
-                <button
-                  onClick={clearSectors}
-                  aria-pressed={sectors.length === 0}
-                  className={`w-full text-left px-2.5 py-1.5 rounded-[5px] text-[12px] font-semibold transition-colors flex items-center gap-2 ${
-                    sectors.length === 0 ? "bg-burgundy/[0.07] text-burgundy font-bold" : "text-muted-foreground hover:bg-cream hover:text-foreground"
-                  }`}
-                >
-                  <span className={`w-3.5 h-3.5 shrink-0 rounded-[3px] border flex items-center justify-center ${sectors.length === 0 ? "bg-burgundy border-burgundy" : "border-border bg-white"}`}>
-                    {sectors.length === 0 && <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />}
-                  </span>
-                  <span className="truncate">All sectors</span>
-                </button>
-                {categories.map((s) => {
-                  const on = sectors.includes(s)
-                  return (
-                    <button
-                      key={s}
-                      onClick={() => toggleSector(s)}
-                      role="checkbox"
-                      aria-checked={on}
-                      className={`w-full text-left px-2.5 py-1.5 rounded-[5px] text-[12px] font-semibold transition-colors flex items-center gap-2 ${
-                        on ? "bg-burgundy/[0.07] text-burgundy font-bold" : "text-muted-foreground hover:bg-cream hover:text-foreground"
-                      }`}
-                    >
-                      <span className={`w-3.5 h-3.5 shrink-0 rounded-[3px] border flex items-center justify-center ${on ? "bg-burgundy border-burgundy" : "border-border bg-white"}`}>
-                        {on && <Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />}
-                      </span>
-                      <span className="truncate">{s}</span>
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
+            {filterBody}
 
             {hasFilter && (
               <button onClick={clearAll} className="w-full text-[11px] font-bold text-burgundy hover:text-burgundy-deep flex items-center justify-center gap-1 pt-3 border-t border-border/60 transition-colors">
@@ -503,6 +474,12 @@ export default function StocksPage() {
 
           {/* Results */}
           <div className="min-w-0">
+          <div className="lg:hidden flex gap-2 mb-4">
+            <SmartSearch value={search} onChange={(v) => { setSearch(v); setPage(1) }} placeholder="Search stocks…" ariaLabel="Search stocks" loading={stockListLoading && !!debouncedSearch} className="flex-1 min-w-0" />
+            <FilterSheet activeCount={filterCount} resultCount={stockList?.total ?? null} onClearAll={clearAll}>
+              {filterBody}
+            </FilterSheet>
+          </div>
           <div className="flex flex-wrap items-end justify-between gap-3 mb-3">
             <div>
               <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight leading-none">All Stocks</h2>
@@ -510,16 +487,17 @@ export default function StocksPage() {
                 <span className="font-bold text-foreground">{stockList?.total?.toLocaleString("en-IN") ?? NO_VALUE}</span> stocks listed on NSE &amp; BSE
               </p>
             </div>
-            <label className="flex items-center gap-2">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">Sort</span>
-              <select
-                value={sort}
-                onChange={(e) => pickSort(e.target.value as StockSort)}
-                className="px-3 py-1.5 text-xs font-bold rounded-[5px] border border-border bg-white focus:outline-none focus:ring-2 focus:ring-gold/30"
-              >
-                {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
-            </label>
+            <SmartSelect
+              value={sort}
+              onChange={(v) => pickSort(v as StockSort)}
+              options={SORT_OPTIONS}
+              prefix="Sort"
+              title="Sort stocks"
+              size="sm"
+              active={sort !== DEFAULT_STOCK_SORT}
+              searchable={false}
+              className="min-w-[190px]"
+            />
           </div>
 
           {/* Active filters */}
