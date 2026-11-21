@@ -59,8 +59,9 @@ export function AppPromoSection() {
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
             {/* Apple App Store */}
             <a 
-              href="#" 
-              onClick={(e) => e.preventDefault()} 
+              href="https://apps.apple.com/in/app/shree-varahi/id1475075572" 
+              target="_blank"
+              rel="noopener noreferrer"
               className="bg-neutral-900 border border-neutral-850 text-white hover:bg-neutral-800 rounded-[10px] px-5 py-2.5 flex items-center gap-3 transition-all cursor-pointer shadow-xs"
             >
               {/* Apple SVG Icon */}
@@ -75,8 +76,9 @@ export function AppPromoSection() {
 
             {/* Google Play Store */}
             <a 
-              href="#" 
-              onClick={(e) => e.preventDefault()} 
+              href="https://play.google.com/store/search?q=shree%20varahi&c=apps&hl=en" 
+              target="_blank"
+              rel="noopener noreferrer"
               className="bg-neutral-900 border border-neutral-855 text-white hover:bg-neutral-800 rounded-[10px] px-5 py-2.5 flex items-center gap-3 transition-all cursor-pointer shadow-xs"
             >
               {/* Google Play SVG Icon */}

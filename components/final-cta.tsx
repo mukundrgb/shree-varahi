@@ -57,7 +57,9 @@ export function FinalCTA() {
             {/* App download buttons */}
             <div className="flex flex-wrap gap-3 pt-2">
               <a
-                href="#"
+                href="https://apps.apple.com/in/app/shree-varahi/id1475075572"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-3 bg-foreground text-background px-4 py-2.5 rounded-[5px] hover:bg-foreground/80 transition-colors"
               >
                 <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current flex-shrink-0" aria-hidden="true">
@@ -69,7 +71,9 @@ export function FinalCTA() {
                 </div>
               </a>
               <a
-                href="#"
+                href="https://play.google.com/store/search?q=shree%20varahi&c=apps&hl=en"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-3 bg-foreground text-background px-4 py-2.5 rounded-[5px] hover:bg-foreground/80 transition-colors"
               >
                 <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current flex-shrink-0" aria-hidden="true">
