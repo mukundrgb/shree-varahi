@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   ChevronRight, TrendingUp, Bell,
   Check, Clock, Calendar, Users, Shield, Zap, Award,
-  ArrowUpRight, AlertCircle, FileText,
+  ArrowUpRight, FileText,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -413,67 +413,6 @@ function ClosedIpoRow({ ipo, index }: { ipo: ClosedIpo; index: number }) {
   )
 }
 
-// ─── Allotment Checker ───────────────────────────────────────────────────────
-
-function AllotmentChecker() {
-  const [pan, setPan] = useState("")
-  const [checked, setChecked] = useState(false)
-
-  return (
-    <div className="bg-white border border-border rounded-[10px] p-6 shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
-      <div className="flex items-center gap-3 mb-5">
-        <div className="w-10 h-10 rounded-[8px] bg-gold/12 border border-gold/20 flex items-center justify-center">
-          <FileText className="w-5 h-5 text-gold-deep" strokeWidth={1.8} />
-        </div>
-        <div>
-          <h3 className="font-extrabold text-foreground text-base">Check Allotment Status</h3>
-          <p className="text-[11px] text-muted-foreground">Know if you received IPO shares.</p>
-        </div>
-      </div>
-
-      {!checked ? (
-        <div className="space-y-3">
-          <div>
-            <label className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-1.5 block">
-              PAN Number / Application No.
-            </label>
-            <input
-              type="text"
-              placeholder="e.g. ABCDE1234F"
-              value={pan}
-              onChange={(e) => setPan(e.target.value.toUpperCase())}
-              maxLength={10}
-              className="w-full px-3 py-2.5 text-sm rounded-[5px] border border-border bg-cream/50 placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/40 font-mono tracking-wider"
-            />
-          </div>
-          <Button
-            onClick={() => pan.length >= 6 && setChecked(true)}
-            className="w-full bg-burgundy hover:bg-burgundy-deep text-white font-bold rounded-[5px] h-10 text-sm"
-          >
-            Check Status
-          </Button>
-        </div>
-      ) : (
-        <div className="text-center space-y-3 py-2">
-          <div className="w-12 h-12 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto">
-            <AlertCircle className="w-5 h-5 text-amber-500" />
-          </div>
-          <div>
-            <p className="font-extrabold text-sm text-foreground mb-1">Allotment Pending</p>
-            <p className="text-[11px] text-muted-foreground">Allotment results are usually published a few days after an IPO closes.</p>
-          </div>
-          <button
-            onClick={() => { setPan(""); setChecked(false) }}
-            className="text-[11px] font-bold text-burgundy hover:underline"
-          >
-            Check another
-          </button>
-        </div>
-      )}
-    </div>
-  )
-}
-
 // ─── Page ───────────────────────────────────────────────────────────────────
 
 type Tab = "open" | "upcoming" | "closed"
@@ -538,14 +477,6 @@ export default function IpoPage() {
               <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
                 Apply for the latest IPOs with zero commission. Real-time subscription data, GMP tracking, and instant allotment status.
               </p>
-              <div className="flex gap-3">
-                <Button className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px] text-sm">
-                  Apply for IPO
-                </Button>
-                <Button variant="outline" className="border-border px-6 h-10 font-bold rounded-[5px] text-sm hover:bg-secondary">
-                  Check Allotment
-                </Button>
-              </div>
             </div>
 
             {/* Stats row */}
@@ -723,9 +654,6 @@ export default function IpoPage() {
 
             {/* RIGHT: Sidebar */}
             <div className="space-y-5">
-              {/* Allotment checker */}
-              <AllotmentChecker />
-
               {/* Important dates */}
               <div className="bg-white border border-border rounded-[10px] p-5">
                 <h3 className="font-extrabold text-sm text-foreground mb-4 flex items-center gap-2">
@@ -886,29 +814,7 @@ export default function IpoPage() {
         </div>
       </section>
 
-      {/* ── CTA ── */}
-      <section className="relative py-12 lg:py-16 overflow-hidden bg-burgundy text-white">
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse at center top, rgba(217,178,124,0.13) 0%, transparent 65%)" }}
-        />
-        <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center space-y-5 z-10">
-          <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
-            Never miss an IPO again.
-          </h2>
-          <p className="text-sm text-white/75 max-w-xl mx-auto leading-relaxed">
-            Open a free Demat account with Shree Varahi and apply to IPOs with zero commission, ASBA protection, and real-time allotment updates.
-          </p>
-          <div className="flex flex-wrap justify-center gap-3">
-            <Button asChild size="lg" className="bg-white hover:bg-gold-champagne text-burgundy font-black px-8 h-11 text-sm rounded-[5px] shadow-xl">
-              <Link href="/login">Open Free Account →</Link>
-            </Button>
-            <Button asChild size="lg" variant="outline" className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white px-8 h-11 text-sm rounded-[5px]">
-              <a href="#ipo-list">View Open IPOs</a>
-            </Button>
-          </div>
-        </div>
-      </section>
+
 
       <Footer />
     </main>
