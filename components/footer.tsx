@@ -847,6 +847,12 @@ export function Footer() {
               for traders, savers & dreamers — Made in India
             </p>
           </div>
+          <p className="text-[12px] text-[#3a1414]/65 text-center sm:text-right mt-2">
+            Website Powered by{" "}
+            <a href="https://kvtmedia.com" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#3a1414]/85 hover:text-[#3a1414] underline-offset-2 hover:underline transition-colors">
+              KV TechMedia Pvt. Ltd
+            </a>
+          </p>
         </div>
 
         <style>{`

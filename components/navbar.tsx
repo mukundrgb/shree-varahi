@@ -56,9 +56,9 @@ const MF_SIP: MenuItem[] = [
 ]
 
 const PRODUCTS: MenuItem[] = [
-  { title: "Shree Varahi Web",         desc: "Trade from any browser",         icon: "💻",                                                                href: "/web-trading-platform" },
-  { title: "Shree Varahi Mobile App",  desc: "iOS & Android trading app",      icon: "📱",                                                                href: "#" },
-  { title: "Shree Varahi Desktop App", desc: "Professional desktop platform",  icon: <BarChart2 className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />,   href: "#" },
+  { title: "Shree Varahi Web",         desc: "Trade from any browser",         icon: "💻",                                                                href: "/shree-varahi-web" },
+  { title: "Shree Varahi Mobile App",  desc: "iOS & Android trading app",      icon: "📱",                                                                href: "/shree-varahi-mobile-app" },
+  { title: "Shree Varahi Desktop App", desc: "Professional desktop platform",  icon: <BarChart2 className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />,   href: "/shree-varahi-desktop-app" },
 ]
 
 const LEARN_NEWS: MenuItem[] = [

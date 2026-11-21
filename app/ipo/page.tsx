@@ -488,7 +488,6 @@ export default function IpoPage() {
     () => (ipoData.data?.closed ?? []).slice(0, RECENTLY_CLOSED).map(toClosedIpo),
     [ipoData.data],
   )
-  const totalOpenSize = OPEN_IPOS.reduce((s, i) => s + (i.issueSizeCr ?? 0), 0)
 
   /** Loading / error message for a tab, or null once data is in. */
   const ipoLoading = ipoData.loading && !ipoData.data
@@ -508,7 +507,7 @@ export default function IpoPage() {
       <Navbar />
 
       {/* ── HERO ── */}
-      <section className="relative bg-cream border-b border-border/40 pt-28 pb-10 overflow-hidden">
+      <section className="relative bg-cream border-b border-border/40 pt-24 pb-6 lg:pb-8 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div
             className="absolute inset-0 opacity-[0.04]"
@@ -521,18 +520,18 @@ export default function IpoPage() {
         </div>
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10">
-          <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-5">
+          <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-4">
             <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3" />
             <span className="text-foreground font-semibold">IPO</span>
           </nav>
 
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_auto] gap-6 lg:gap-12 items-center">
             <div className="space-y-3 max-w-2xl">
               <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">
                 Initial Public Offerings
               </p>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground tracking-tight leading-tight">
+              <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-black text-foreground tracking-tight leading-[1.1]">
                 Upcoming IPO <span className="text-burgundy">2026</span>
               </h1>
               <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
@@ -548,19 +547,18 @@ export default function IpoPage() {
               </div>
             </div>
 
-            {/* Stats row */}
-            <div className="flex flex-wrap gap-3 shrink-0">
+            {/* Stats, on the right beside the heading */}
+            <div className="grid grid-cols-2 gap-3 lg:w-[300px]">
               {[
                 { v: OPEN_IPOS.length.toString(),    l: "Open Now",      dot: true  },
                 { v: UPCOMING_IPOS.length.toString(),l: "Upcoming",      dot: false },
-                { v: totalOpenSize ? crore(Math.round(totalOpenSize)) : "—", l: "Open Issue Size", dot: false },
               ].map((s) => (
-                <div key={s.l} className="bg-white border border-border/60 rounded-[6px] px-4 py-3 min-w-[110px]">
-                  <div className="flex items-center gap-1.5 mb-0.5">
+                <div key={s.l} className="bg-white border border-border shadow-[0_8px_32px_rgba(0,0,0,0.06)] rounded-[10px] px-4 py-4">
+                  <div className="flex items-center gap-1.5 mb-1">
                     {s.dot && <span className="w-1.5 h-1.5 rounded-full bg-profit animate-pulse" />}
-                    <span className="text-xl font-black text-foreground">{s.v}</span>
+                    <span className="text-xl lg:text-2xl font-black text-burgundy tabular-nums truncate">{s.v}</span>
                   </div>
-                  <div className="text-[10px] font-semibold text-muted-foreground">{s.l}</div>
+                  <div className="text-[11px] font-semibold text-muted-foreground">{s.l}</div>
                 </div>
               ))}
             </div>

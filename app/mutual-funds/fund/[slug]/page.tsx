@@ -224,7 +224,8 @@ function FundDetail({ fund }: { fund: FundDetailApi }) {
       </section>
 
       {/* ── MAIN GRID ── */}
-      <section className="py-6 lg:py-8 bg-background overflow-hidden">
+      {/* overflow-x-clip (not overflow-hidden) so the sidebar can stay sticky */}
+      <section className="py-6 lg:py-8 bg-background overflow-x-clip">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-[1fr_340px] gap-6 lg:gap-8 items-start">
 
@@ -302,7 +303,8 @@ function FundDetail({ fund }: { fund: FundDetailApi }) {
             </div>
 
             {/* ── SIDEBAR ── */}
-            <div className="space-y-4 lg:sticky lg:top-24">
+            {/* Sticks just under the 64px fixed navbar while the left column scrolls */}
+            <div className="space-y-4 lg:sticky lg:top-[76px] lg:self-start">
               <div className={card}>
                 <div className="px-4 py-3 border-b border-border/60">
                   <p className="text-xs font-black text-foreground">Key Statistics</p>
