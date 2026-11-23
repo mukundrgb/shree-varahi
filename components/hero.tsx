@@ -21,6 +21,7 @@ import {
 } from "lucide-react"
 import { AppPromoSection } from "@/components/app-promo-section"
 import { GlobalInvestingSection } from "@/components/global-investing-section"
+import { HeroMarketTicker } from "@/components/hero-market-ticker"
 import Link from "next/link"
 
 /* ── Custom globe SVG ── */
@@ -657,7 +658,7 @@ export function Hero() {
 
         {/* ── 2-Column Hero Layout ── */}
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-[60fr_40fr] gap-8 xl:gap-16 items-center min-h-[calc(100vh-68px)] py-16 sm:py-20 lg:py-0">
+          <div className="grid lg:grid-cols-[60fr_40fr] gap-8 xl:gap-16 items-center min-h-[calc(100vh-110px)] py-16 sm:py-20 lg:py-0">
 
             {/* ── Left: Text Content (60%) ── */}
             <div className="flex flex-col justify-center lg:py-28">
@@ -753,6 +754,9 @@ export function Hero() {
 
           </div>
         </div>
+
+        {/* Market ticker, scrolling right to left just above the red product bar */}
+        <HeroMarketTicker />
 
         <div className="relative z-10 w-full bg-burgundy py-5">
           {/* Desktop: stationary row */}
