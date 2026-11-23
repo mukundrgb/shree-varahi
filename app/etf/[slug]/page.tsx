@@ -1,14 +1,16 @@
 "use client"
 
 import { useState, type ReactNode } from "react"
-import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
+import { OpenAccountCard } from "@/components/open-account-card"
 import Link from "next/link"
 import { useParams } from "next/navigation"
-import { ChevronRight, ArrowUpRight, ArrowDownRight, Info, Zap } from "lucide-react"
+import { ChevronRight, ArrowUpRight, ArrowDownRight, Info } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { StockAvatar } from "@/components/stock-avatar"
 import { EtfPriceChart } from "@/components/etf-price-chart"
+import { TradingViewPriceChart } from "@/components/tradingview-chart"
+import { etfTradingViewSymbol } from "@/lib/etf/tradingview"
 import { EtfHoldingsTable } from "@/components/etf-holdings-table"
 import { DetailPageSkeleton } from "@/components/skeletons"
 import { Bar, BarChart, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
@@ -284,8 +286,10 @@ export default function EtfDetailPage() {
 }
 
 function EtfDetailView({ etf }: { etf: EtfDetail }) {
+  const tvSymbol = etfTradingViewSymbol(etf)
   const [chartRange, setChartRange] = useState<ChartRange>("1D")
-  const chart = useEtfChart(etf.slug, chartRange)
+  // Our own chart data is only needed when TradingView can't draw this ETF.
+  const chart = useEtfChart(tvSymbol ? "" : etf.slug, chartRange)
   const chartPoints = chart.data?.range === chartRange ? chart.data.points : []
   const p = etf.performance
   const f = etf.fundamentals
@@ -351,9 +355,30 @@ function EtfDetailView({ etf }: { etf: EtfDetail }) {
             {/* ── LEFT COLUMN ── */}
             <div className="space-y-5 min-w-0">
 
-              {/* Price chart */}
-              <section className="border border-border rounded-[10px] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)] p-5">
-                <EtfPriceChart points={chartPoints} range={chartRange} onRangeChange={setChartRange} />
+              {/* Price chart: TradingView (same as the stock page); our own chart only for ETFs TradingView can't embed */}
+              <section className="border border-border rounded-[10px] bg-white overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+                {tvSymbol ? (
+                  <TradingViewPriceChart symbol={tvSymbol} name={etf.name} />
+                ) : (
+                  <div className="p-5">
+                    <EtfPriceChart points={chartPoints} range={chartRange} onRangeChange={setChartRange} />
+                  </div>
+                )}
+
+                {/* OHLC footer */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 border-t border-border/60 divide-x divide-border/60 [&>*:nth-child(n+3)]:border-t [&>*:nth-child(n+3)]:border-border/60 sm:[&>*:nth-child(n+3)]:border-t-0">
+                  {[
+                    { label: "Open",       value: formatRupees(p.open) },
+                    { label: "High",       value: formatRupees(p.high) },
+                    { label: "Low",        value: formatRupees(p.low) },
+                    { label: "Prev Close", value: formatRupees(p.prevClose) },
+                  ].map((s) => (
+                    <div key={s.label} className="px-4 py-3 text-center">
+                      <div className="text-[9px] font-extrabold uppercase tracking-wider text-muted-foreground">{s.label}</div>
+                      <div className="text-xs font-extrabold text-foreground tabular-nums mt-0.5">{s.value}</div>
+                    </div>
+                  ))}
+                </div>
               </section>
 
               {/* Performance */}
@@ -471,36 +496,7 @@ function EtfDetailView({ etf }: { etf: EtfDetail }) {
 
             {/* ── SIDEBAR: Open Demat Account ── */}
             <div className="lg:sticky lg:top-24">
-              <div className="rounded-[10px] overflow-hidden relative" style={{ background: "linear-gradient(135deg, #8B0D19 0%, #6B0A13 60%, #4A0709 100%)" }}>
-                <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10" style={{ background: "radial-gradient(circle, #D9B27C 0%, transparent 70%)", filter: "blur(20px)" }} />
-                <div className="relative z-10 p-5">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-8 h-8 rounded-[7px] bg-white/10 flex items-center justify-center">
-                      <Zap className="w-4 h-4 text-gold" />
-                    </div>
-                    <div>
-                      <div className="text-[9px] font-extrabold text-gold/80 uppercase tracking-wider">Start Investing</div>
-                      <div className="text-sm font-black text-white leading-tight">Open Demat Account</div>
-                    </div>
-                  </div>
-                  <p className="text-[11px] text-white/70 leading-relaxed mb-4">
-                    Start trading {etf.symbol} and 5,000+ stocks with ₹0 account opening &amp; ₹0 AMC.
-                  </p>
-                  <div className="space-y-2 mb-4">
-                    {["₹0 Account Opening Fee", "₹17 Flat Brokerage", "3-in-1 Account (Demat + Trading + Bank)", "Instant Account Opening"].map((item) => (
-                      <div key={item} className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded-full bg-white/15 flex items-center justify-center shrink-0">
-                          <span className="text-[8px] text-white font-black">✓</span>
-                        </div>
-                        <span className="text-[11px] text-white/80 font-medium">{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <Link href={OPEN_ACCOUNT_URL} className="w-full py-3 rounded-[7px] bg-gold text-[#4A0709] font-black text-sm text-center block hover:bg-gold/90 transition-colors">
-                    Open Free Account →
-                  </Link>
-                </div>
-              </div>
+              <OpenAccountCard />
             </div>
           </div>
         </div>
