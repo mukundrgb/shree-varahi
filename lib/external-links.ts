@@ -1,7 +1,17 @@
 // External destinations used across the site, kept in one place so they are easy to change.
 
-/** Login / account opening (eKYC portal). Every "Login" / "Open Account" button that used /login goes here. */
-export const LOGIN_URL = "https://ekyc.lakshmishree.com:9080"
+/** Account opening (eKYC portal). Every "Open Account" / "Invest" / "Start Trading" button goes here. */
+export const OPEN_ACCOUNT_URL = "https://ekyc.lakshmishree.com:9080/"
+
+/** Trading login. Every "Login" button goes here. */
+export const LOGIN_URL = "https://trades.shreevarahi.com/"
+
+/** Global investing (GIFT City / IFSC) has its own partner portal. */
+export const GLOBAL_INVESTING_LINKS = {
+  register:   "https://trade.clientbridge.in/register?lakshmishree",
+  login:      "https://trade.clientbridge.in/login?lakshmishree",
+  userGuide:  "https://www.indiainxga.com/static/marketoperations/userguide.aspx",
+} as const
 
 /** Calculators app. */
 export const CALCULATORS_URL = "http://l5b7booc1v6okc4700748zn9.187.127.157.145.sslip.io"

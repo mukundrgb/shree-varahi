@@ -12,6 +12,7 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 
@@ -218,8 +219,8 @@ export default function CommodityPage() {
                 Trade Precious Metals, Energy &amp; More With Confidence, backed by option chain analytics, Greeks, pledge margin benefits, and TradingView charts.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Button className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
-                  Open Account
+                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
+                  <a href={OPEN_ACCOUNT_URL}>Open Account</a>
                 </Button>
                 <Button variant="outline" className="border-border px-7 h-11 font-bold rounded-[5px] hover:bg-secondary">
                   Explore Markets
@@ -259,8 +260,8 @@ export default function CommodityPage() {
                   </div>
                 ))}
                 <div className="pt-1 border-t border-border/40">
-                  <Button size="sm" className="w-full bg-burgundy hover:bg-burgundy-deep text-white text-[11px] font-bold rounded-[5px] h-8">
-                    Trade Now
+                  <Button asChild size="sm" className="w-full bg-burgundy hover:bg-burgundy-deep text-white text-[11px] font-bold rounded-[5px] h-8">
+                    <a href={OPEN_ACCOUNT_URL}>Trade Now</a>
                   </Button>
                 </div>
               </motion.div>

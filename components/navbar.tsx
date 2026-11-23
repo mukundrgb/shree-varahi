@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { CALCULATOR_LINKS, LOGIN_URL } from "@/lib/external-links"
+import { CALCULATOR_LINKS, LOGIN_URL, OPEN_ACCOUNT_URL } from "@/lib/external-links"
 import { useLiveMarkets, type LiveTab } from "@/components/markets-live"
 import { ListSkeleton } from "@/components/skeletons"
 import { motion, AnimatePresence } from "framer-motion"
@@ -579,7 +579,7 @@ export function Navbar() {
         <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2 shrink-0">
               <Image
                 src="/favicon.jpg"
                 alt="Shree Varahi"
@@ -589,15 +589,15 @@ export function Navbar() {
                 priority
               />
               <div className="flex flex-col">
-                <span className="text-lg font-bold text-foreground leading-tight">
+                <span className="text-lg font-bold text-foreground leading-tight whitespace-nowrap">
                   Shree Varahi
                 </span>
-                <span className="text-[10px] text-gold-deep font-medium">by Lakshmishree</span>
+                <span className="text-[10px] text-gold-deep font-medium whitespace-nowrap">by Lakshmishree</span>
               </div>
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-1">
+            <div className="hidden xl:flex items-center gap-0.5 min-w-0">
 
               {/* Trade & Invest · Mutual Funds & SIP */}
               {NAV_SECTIONS.slice(0, 2).map((section) => (
@@ -748,12 +748,15 @@ export function Navbar() {
             </div>
 
             {/* Right Side */}
-            <div className="hidden lg:flex items-center gap-3">
+            <div className="hidden xl:flex items-center gap-2 2xl:gap-3 shrink-0">
               <button 
                 onClick={() => setSearchOpen(true)}
-                className="flex items-center justify-between w-[280px] xl:w-[340px] h-10 px-4 rounded-[6px] bg-cream border border-border hover:border-gold/40 hover:bg-beige/35 hover:shadow-[0_2px_8px_rgba(217,178,124,0.06)] transition-all text-xs text-slate-500 font-medium"
+                aria-label="Search"
+                className="flex items-center justify-center 2xl:justify-between w-10 2xl:w-[300px] h-10 px-0 2xl:px-4 rounded-[6px] bg-cream border border-border hover:border-gold/40 hover:bg-beige/35 hover:shadow-[0_2px_8px_rgba(217,178,124,0.06)] transition-all text-xs text-slate-500 font-medium"
               >
-                <div className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
+                {/* Icon only until there is room for the full search box */}
+                <Search className="h-4 w-4 2xl:hidden" />
+                <div className="hidden 2xl:flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
                   <Search className="h-3.5 w-3.5 shrink-0" />
                   <span className="overflow-hidden text-ellipsis whitespace-nowrap shrink-0">Search</span>
                   <AnimatePresence mode="wait">
@@ -770,21 +773,21 @@ export function Navbar() {
                   </AnimatePresence>
                 </div>
                 {isMac !== null && (
-                  <kbd className="px-1.5 py-0.5 rounded-[3px] bg-background border border-border text-[9px] font-sans font-normal shrink-0">
+                  <kbd className="hidden 2xl:inline px-1.5 py-0.5 rounded-[3px] bg-background border border-border text-[9px] font-sans font-normal shrink-0">
                     {isMac ? "⌘K" : "Ctrl K"}
                   </kbd>
                 )}
               </button>
-              <Button variant="ghost" className="text-foreground hover:text-burgundy rounded-[5px]" asChild>
+              <Button variant="ghost" className="text-foreground hover:text-burgundy rounded-[5px] whitespace-nowrap px-3" asChild>
                 <Link href={LOGIN_URL}>Login</Link>
               </Button>
-              <Button className="bg-burgundy hover:bg-burgundy-deep text-primary-foreground rounded-[5px]" asChild>
-                <Link href="/signup/register">Open Free Account</Link>
+              <Button className="bg-burgundy hover:bg-burgundy-deep text-primary-foreground rounded-[5px] whitespace-nowrap" asChild>
+                <Link href={OPEN_ACCOUNT_URL}>Open Free Account</Link>
               </Button>
             </div>
 
             {/* Mobile Menu Button */}
-            <div className="flex lg:hidden items-center gap-2">
+            <div className="flex xl:hidden items-center gap-2">
               <button
                 onClick={() => setSearchOpen(true)}
                 className="p-2 rounded-[5px] hover:bg-secondary"
@@ -815,7 +818,7 @@ export function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-foreground/40 backdrop-blur-sm z-[60] lg:hidden"
+              className="fixed inset-0 bg-foreground/40 backdrop-blur-sm z-[60] xl:hidden"
               onClick={() => setMobileMenuOpen(false)}
             />
 
@@ -825,7 +828,7 @@ export function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 260 }}
-              className="fixed top-0 right-0 bottom-0 w-full sm:max-w-[400px] bg-background z-[70] lg:hidden flex flex-col shadow-2xl"
+              className="fixed top-0 right-0 bottom-0 w-full sm:max-w-[400px] bg-background z-[70] xl:hidden flex flex-col shadow-2xl"
             >
               {/* ── Header ── */}
               <div className="flex items-center justify-between px-5 h-16 border-b border-border shrink-0">
@@ -1097,7 +1100,7 @@ export function Navbar() {
                     className="bg-burgundy hover:bg-burgundy-deep text-white rounded-[5px] h-10 font-bold"
                     asChild
                   >
-                    <Link href="/signup/register" onClick={() => setMobileMenuOpen(false)}>
+                    <Link href={OPEN_ACCOUNT_URL} onClick={() => setMobileMenuOpen(false)}>
                       Open Account
                     </Link>
                   </Button>

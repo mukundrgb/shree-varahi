@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { KcHeader } from "@/components/knowledge-center"
 import { CategoryLinkRow, CategorySidebar, PostCover } from "@/components/content-ui"
 import { BLOG_CATEGORIES, BLOG_CATEGORY_COUNTS, formatBlogDate, getPost, getPostBody, getRelatedPosts } from "@/lib/blog/data"
+import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 const blogCategoryHref = (c: string) => `/blog?category=${encodeURIComponent(c)}`
 
@@ -86,7 +87,7 @@ export default function BlogPostPage() {
               <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-white/10" />
               <p className="text-lg font-black mb-1 relative z-10">Open Free Demat Account</p>
               <p className="text-xs text-white/85 mb-4 relative z-10">Zero account opening charges · Zero AMC</p>
-              <Link href="/signup/register" className="relative z-10 block">
+              <Link href={OPEN_ACCOUNT_URL} className="relative z-10 block">
                 <Button className="w-full bg-white text-burgundy hover:bg-white/90 rounded-[5px] h-10 text-sm font-black">Open Free Account</Button>
               </Link>
             </div>

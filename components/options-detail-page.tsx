@@ -6,6 +6,7 @@ import { ChevronRight, ArrowUpRight, ArrowDownRight } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
+import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 export type StrikeRow = {
   strike: number
@@ -125,7 +126,7 @@ export function OptionsDetailPage({ data }: { data: OptionsPageData }) {
                 <div className="text-sm font-bold text-foreground tabular-nums mt-0.5">{d.maxPain.toLocaleString("en-IN")}</div>
               </div>
               <Button className="bg-burgundy hover:bg-burgundy-deep text-white rounded-[5px] h-9 px-6 text-sm font-bold" asChild>
-                <Link href="/signup/register">Trade Now →</Link>
+                <Link href={OPEN_ACCOUNT_URL}>Trade Now →</Link>
               </Button>
             </div>
           </div>

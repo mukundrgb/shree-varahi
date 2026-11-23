@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { LOGIN_URL } from "@/lib/external-links"
+import { LOGIN_URL, OPEN_ACCOUNT_URL } from "@/lib/external-links"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ChevronRight, X, Zap, TrendingUp, Wallet, Percent, ShieldCheck,
@@ -114,10 +114,10 @@ export default function MTFPage() {
             <div className="space-y-4">
               <div className="flex flex-wrap lg:justify-end gap-3">
                 <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
-                  <Link href={LOGIN_URL}>Trade Now</Link>
+                  <Link href={OPEN_ACCOUNT_URL}>Trade Now</Link>
                 </Button>
                 <Button asChild variant="outline" className="border-border bg-white px-7 h-11 font-bold rounded-[5px] hover:bg-secondary">
-                  <Link href={LOGIN_URL}>Open Account</Link>
+                  <Link href={LOGIN_URL}>Login</Link>
                 </Button>
               </div>
               <div className="flex flex-wrap lg:justify-end gap-6">
@@ -148,7 +148,7 @@ export default function MTFPage() {
               </p>
             </div>
             <Button asChild size="sm" className="bg-white hover:bg-gold-champagne text-burgundy font-black text-[12px] h-9 px-5 rounded-[5px] shrink-0">
-              <Link href={LOGIN_URL}>Open Account</Link>
+              <Link href={OPEN_ACCOUNT_URL}>Open Account</Link>
             </Button>
           </div>
         </div>
@@ -354,7 +354,7 @@ export default function MTFPage() {
               </div>
 
               <form
-                onSubmit={(e) => { e.preventDefault(); window.location.assign(LOGIN_URL) }}
+                onSubmit={(e) => { e.preventDefault(); window.location.assign(OPEN_ACCOUNT_URL) }}
                 className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto lg:mx-0"
               >
                 <input

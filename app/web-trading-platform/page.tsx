@@ -12,6 +12,7 @@ import {
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
+import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 
@@ -132,7 +133,7 @@ export default function WebTradingPlatformPage() {
                 Get the complete trading experience on our web trading platform, built with awesome features that every trader wants!
               </p>
               <div className="flex flex-wrap gap-3 mb-8">
-                <Link href="/signup/register">
+                <Link href={OPEN_ACCOUNT_URL}>
                   <Button size="lg" className="bg-burgundy hover:bg-burgundy-deep text-white px-8 h-13 text-sm font-bold rounded-[5px]">
                     Start Now <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
@@ -236,7 +237,7 @@ export default function WebTradingPlatformPage() {
                 </div>
                 <h3 className="text-2xl font-black text-foreground mb-3">{FEATURES[activeFeature].title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-xl">{FEATURES[activeFeature].desc}</p>
-                <Link href="/signup/register">
+                <Link href={OPEN_ACCOUNT_URL}>
                   <Button className="bg-burgundy hover:bg-burgundy-deep text-white rounded-[5px] h-10 px-6 text-sm font-bold">
                     Start Trading <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
@@ -294,7 +295,7 @@ export default function WebTradingPlatformPage() {
                   </div>
                 ))}
               </div>
-              <Link href="/signup/register">
+              <Link href={OPEN_ACCOUNT_URL}>
                 <Button className="bg-burgundy hover:bg-burgundy-deep text-white rounded-[5px] h-11 px-7 text-sm font-bold">
                   Explore More <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -411,7 +412,7 @@ export default function WebTradingPlatformPage() {
           <p className="text-sm text-white/80 mb-7 relative z-10 max-w-lg mx-auto">
             Open your Shree Varahi account in minutes and start trading from the big screen.
           </p>
-          <Link href="/signup/register">
+          <Link href={OPEN_ACCOUNT_URL}>
             <Button className="relative z-10 bg-white text-burgundy hover:bg-white/90 rounded-[5px] h-12 px-9 text-sm font-black">
               Open Free Account
             </Button>

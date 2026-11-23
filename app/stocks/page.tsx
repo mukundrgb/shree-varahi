@@ -1,7 +1,7 @@
 "use client"
 
 import { Suspense, useEffect, useRef, useState } from "react"
-import { LOGIN_URL } from "@/lib/external-links"
+import { LOGIN_URL, OPEN_ACCOUNT_URL } from "@/lib/external-links"
 import { useRouter, useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import {
@@ -433,10 +433,10 @@ export default function StocksPage() {
             {/* Actions + trust stats on the right (the old browse card is gone, so the hero is shorter) */}
             <div className="flex flex-wrap items-center lg:justify-end gap-3">
               <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
-                <Link href={LOGIN_URL}>Start Trading</Link>
+                <Link href={OPEN_ACCOUNT_URL}>Start Trading</Link>
               </Button>
               <Button asChild variant="outline" className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary">
-                <Link href={LOGIN_URL}>Open Account</Link>
+                <Link href={LOGIN_URL}>Login</Link>
               </Button>
               <div className="flex items-center gap-4 sm:ml-3 sm:pl-5 sm:border-l border-border">
                 <div>
@@ -484,7 +484,7 @@ export default function StocksPage() {
             <div>
               <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight leading-none">All Stocks</h2>
               <p className="text-xs text-muted-foreground mt-1.5">
-                <span className="font-bold text-foreground">{stockList?.total?.toLocaleString("en-IN") ?? NO_VALUE}</span> stocks listed on NSE &amp; BSE
+                <span className="font-bold text-foreground">{stockList?.total?.toLocaleString("en-IN") ?? NO_VALUE}</span>{" "}stocks listed on NSE &amp; BSE
               </p>
             </div>
             <SmartSelect
@@ -762,8 +762,8 @@ export default function StocksPage() {
             No percentage fees, no hidden slabs. Just one honest price on every trade: delivery, intraday and F&amp;O.
           </p>
           <div className="mt-7">
-            <Button className="bg-burgundy hover:bg-burgundy-deep text-white px-8 h-11 font-bold rounded-[5px]">
-              Open Free Account →
+            <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-8 h-11 font-bold rounded-[5px]">
+              <a href={OPEN_ACCOUNT_URL}>Open Free Account →</a>
             </Button>
           </div>
         </div>
@@ -856,7 +856,7 @@ export default function StocksPage() {
               </p>
 
               <form
-                onSubmit={(e) => e.preventDefault()}
+                onSubmit={(e) => { e.preventDefault(); window.open(OPEN_ACCOUNT_URL, "_blank", "noopener,noreferrer") }}
                 className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto lg:mx-0"
               >
                 <input

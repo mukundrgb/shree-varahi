@@ -17,6 +17,7 @@ import {
   RefreshCw,
   LayoutDashboard,
 } from "lucide-react"
+import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 const slides = [
   {
@@ -570,7 +571,7 @@ export default function LoginPage() {
                   className="text-center text-[13px] text-muted-foreground mt-6"
                 >
                   Don&apos;t have an account?{" "}
-                  <Link href="/signup/register" className="text-burgundy font-bold hover:underline underline-offset-2">
+                  <Link href={OPEN_ACCOUNT_URL} className="text-burgundy font-bold hover:underline underline-offset-2">
                     Register Now!
                   </Link>
                 </motion.p>

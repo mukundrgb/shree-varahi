@@ -11,6 +11,7 @@ import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { Search, X, ArrowRight, CheckCircle2, Loader2, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 import { Slider } from "@/components/ui/slider"
 import { useMtfStocks, useMtfSummary } from "@/hooks/use-mtf"
 import { formatMultiplier, mtfMultiplier, type MtfStockApi } from "@/lib/mtf/api-client"
@@ -510,7 +511,7 @@ export function MTFSection() {
                   <span className="text-sm font-semibold text-muted-foreground mr-2 border-r border-border/80 pr-2 flex-shrink-0">+91</span>
                   <input type="tel" placeholder="Enter Mobile No." className="bg-transparent text-sm font-medium w-full focus:outline-none placeholder:text-muted-foreground/60" />
                 </div>
-                <Button className="bg-burgundy hover:bg-burgundy-deep text-white font-semibold rounded-[5px] h-11 px-6 whitespace-nowrap">
+                <Button onClick={() => window.open(OPEN_ACCOUNT_URL, "_blank", "noopener,noreferrer")} className="bg-burgundy hover:bg-burgundy-deep text-white font-semibold rounded-[5px] h-11 px-6 whitespace-nowrap">
                   Start Trading
                 </Button>
               </div>

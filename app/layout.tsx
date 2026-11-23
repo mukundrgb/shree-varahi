@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Manrope, DM_Sans, DM_Mono, Cormorant_Garamond } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { ScrollProgress } from '@/components/scroll-progress'
+import { EntryPopup } from '@/components/entry-popup'
 import './globals.css'
 
 const manrope = Manrope({
@@ -58,6 +59,7 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-background text-foreground overflow-x-clip" suppressHydrationWarning>
         <ScrollProgress />
         {children}
+        <EntryPopup />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

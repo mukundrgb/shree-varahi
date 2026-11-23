@@ -23,6 +23,7 @@ import { AppPromoSection } from "@/components/app-promo-section"
 import { GlobalInvestingSection } from "@/components/global-investing-section"
 import { HeroMarketTicker } from "@/components/hero-market-ticker"
 import Link from "next/link"
+import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 /* ── Custom globe SVG ── */
 function GlobeMarketIcon({ color, size = 26 }: { color: string; size?: number }) {
@@ -703,7 +704,7 @@ export function Hero() {
                 transition={{ duration: 0.6, delay: 0.18 }}
                 className="flex flex-wrap gap-3 mb-10"
               >
-                <Link href="/signup/register">
+                <Link href={OPEN_ACCOUNT_URL}>
                   <Button
                     size="lg"
                     className="bg-burgundy hover:bg-burgundy-deep text-white px-8 h-13 text-sm font-bold rounded-[5px] shadow-md shadow-burgundy/10"

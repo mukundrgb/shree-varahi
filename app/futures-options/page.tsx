@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { LOGIN_URL } from "@/lib/external-links"
+import { LOGIN_URL, OPEN_ACCOUNT_URL } from "@/lib/external-links"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
@@ -205,10 +205,10 @@ export default function FuturesOptionsPage() {
             {/* Actions + trust stats on the right (the old browse card is gone, so the hero is shorter) */}
             <div className="flex flex-wrap items-center lg:justify-end gap-3">
               <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
-                <Link href={LOGIN_URL}>Start Trading <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
+                <Link href={OPEN_ACCOUNT_URL}>Start Trading <ArrowRight className="ml-1.5 h-4 w-4" /></Link>
               </Button>
               <Button asChild variant="outline" className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary">
-                <Link href={LOGIN_URL}>Open Account</Link>
+                <Link href={LOGIN_URL}>Login</Link>
               </Button>
               <div className="flex items-center gap-4 sm:ml-3 sm:pl-5 sm:border-l border-border">
                 <div>
@@ -304,11 +304,11 @@ export default function FuturesOptionsPage() {
           <div className="rounded-[8px] border border-border overflow-hidden bg-white shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
             {/* Header */}
             <div
-              className="grid grid-cols-[minmax(0,1fr)_84px_64px_72px] sm:grid-cols-[minmax(0,1fr)_120px_110px_100px] gap-x-2 px-4 py-2.5 border-b border-border bg-cream/70"
+              className="grid grid-cols-[minmax(0,1fr)_88px_78px] sm:grid-cols-[minmax(0,1fr)_120px_110px_100px] gap-x-2 px-4 py-2.5 border-b border-border bg-cream/70"
             >
               <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">Name</div>
               <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">Price (₹)</div>
-              <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">Change</div>
+              <div className="hidden sm:block text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">Change</div>
               <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground text-right">% Change</div>
             </div>
 
@@ -320,7 +320,7 @@ export default function FuturesOptionsPage() {
                 <button onClick={markets.retry} className="mt-3 text-xs font-bold text-burgundy hover:underline">Try again</button>
               </div>
             ) : !marketsData ? (
-              <TableRowsSkeleton rows={MARKETS_PER_PAGE} columns="minmax(0,1fr) 84px 64px 72px" label="Loading prices" />
+              <TableRowsSkeleton rows={MARKETS_PER_PAGE} columns="minmax(0,1fr) 88px 78px" label="Loading prices" />
             ) : marketRows.length === 0 ? (
               <div className="py-16 text-center text-muted-foreground text-sm">No contracts available.</div>
             ) : (
@@ -336,7 +336,7 @@ export default function FuturesOptionsPage() {
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.14, delay: idx * 0.018 }}
-                    className="grid grid-cols-[minmax(0,1fr)_84px_64px_72px] sm:grid-cols-[minmax(0,1fr)_120px_110px_100px] gap-x-2 px-4 py-3 border-b border-border/40 last:border-0 hover:bg-cream/30 transition-colors duration-150"
+                    className="grid grid-cols-[minmax(0,1fr)_88px_78px] sm:grid-cols-[minmax(0,1fr)_120px_110px_100px] gap-x-2 px-4 py-3 border-b border-border/40 last:border-0 hover:bg-cream/30 transition-colors duration-150"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       {row.logoUrl ? (
@@ -348,7 +348,7 @@ export default function FuturesOptionsPage() {
                         </div>
                       )}
                       <div className="min-w-0">
-                        <div className="font-extrabold text-sm text-foreground truncate">{row.name}</div>
+                        <div className="font-extrabold text-[13px] sm:text-sm text-foreground leading-snug line-clamp-2 sm:line-clamp-none sm:truncate">{row.name}</div>
                         {row.symbol !== row.name && (
                           <div className="text-[11px] text-muted-foreground truncate">{row.symbol}</div>
                         )}
@@ -357,7 +357,7 @@ export default function FuturesOptionsPage() {
                     <div className="flex items-center justify-end text-sm font-extrabold text-foreground tabular-nums">
                       {row.ltp === null ? "—" : row.ltp.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
-                    <div className={`flex items-center justify-end text-xs font-black tabular-nums ${tone}`}>
+                    <div className={`hidden sm:flex items-center justify-end text-xs font-black tabular-nums ${tone}`}>
                       {row.change === null ? "—" : `${sign}${row.change.toFixed(2)}`}
                     </div>
                     <div className={`flex items-center justify-end gap-0.5 text-xs font-black tabular-nums ${tone}`}>
@@ -1013,11 +1013,11 @@ export default function FuturesOptionsPage() {
                 </div>
               </div>
 
-              <Button 
+              <Button asChild 
                 size="lg" 
                 className="bg-burgundy hover:bg-burgundy-deep text-white px-10 h-14 text-base font-bold rounded-[5px] shadow-lg shadow-burgundy/25 transition-transform hover:scale-[1.01]"
               >
-                Open Free Account
+                <a href={OPEN_ACCOUNT_URL}>Open Free Account</a>
               </Button>
             </div>
           </motion.div>

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, type ReactNode } from "react"
-import { LOGIN_URL } from "@/lib/external-links"
+import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 import Link from "next/link"
 import { useParams } from "next/navigation"
 import { ChevronRight, ArrowUpRight, ArrowDownRight, Info, Zap } from "lucide-react"
@@ -496,7 +496,7 @@ function EtfDetailView({ etf }: { etf: EtfDetail }) {
                       </div>
                     ))}
                   </div>
-                  <Link href={LOGIN_URL} className="w-full py-3 rounded-[7px] bg-gold text-[#4A0709] font-black text-sm text-center block hover:bg-gold/90 transition-colors">
+                  <Link href={OPEN_ACCOUNT_URL} className="w-full py-3 rounded-[7px] bg-gold text-[#4A0709] font-black text-sm text-center block hover:bg-gold/90 transition-colors">
                     Open Free Account →
                   </Link>
                 </div>

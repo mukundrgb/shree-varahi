@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { LOGIN_URL } from "@/lib/external-links"
+import { LOGIN_URL, OPEN_ACCOUNT_URL } from "@/lib/external-links"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ChevronLeft, ChevronRight, TrendingDown, Plus, X, Layers, Repeat, Eye, LayoutDashboard, FileSearch, Zap,
@@ -14,7 +14,6 @@ import { Footer } from "@/components/footer"
 import { SmartSearch } from "@/components/smart-controls"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { useEtfList } from "@/hooks/etf/use-etf"
 import type { EtfListRow } from "@/lib/etf/types"
 import { formatPrice } from "@/lib/stocks/format"
@@ -90,13 +89,13 @@ const changeText = (value: number | null) => (value === null ? "—" : `${value 
 const changeClass = (value: number | null) =>
   value === null ? "text-muted-foreground" : value >= 0 ? "text-profit" : "text-loss"
 
-// Items with an href open that research page; the rest only switch the preview on the right.
+// Research tools shown as cards in the ETF Research section; each opens its research page.
 const RESEARCH_PARAMS: { icon: React.ElementType; title: string; desc: string; href?: string }[] = [
   { icon: LineChart,   title: "ETF Price",            href: "/etf/compare?sort=price",    desc: "Track real-time ETF prices and market movements to stay updated on current valuations and trading activity." },
   { icon: Landmark,    title: "AUM",                   href: "/etf/compare?sort=aum",      desc: "Analyze Assets Under Management (AUM) to understand the size, scale, and investor participation within an ETF." },
   { icon: Percent,     title: "Expense Ratio",         href: "/etf/compare?sort=expense",  desc: "Compare expense ratios across ETFs to evaluate fund costs and their potential impact on long-term investment returns." },
-  { icon: ListChecks,  title: "Holdings",              href: "/etf/holdings",              desc: "Review the underlying securities held within an ETF to understand portfolio composition and investment exposure." },
   { icon: TrendingUp,  title: "Returns",               href: "/etf/compare?sort=return1Y", desc: "Evaluate historical returns across different time periods to assess past performance and investment consistency." },
+  { icon: ListChecks,  title: "Holdings",              href: "/etf/holdings",              desc: "Review the underlying securities held within an ETF to understand portfolio composition and investment exposure." },
   { icon: PieChart,    title: "Sector Allocation",     href: "/etf/sector-allocation",     desc: "Examine sector-wise distribution to understand which industries contribute most to the ETF's overall portfolio." },
   { icon: Layers,      title: "Asset Allocation",      href: "/etf/asset-allocation",      desc: "Review the allocation of assets across equities, commodities, debt instruments, or other investment categories depending on the ETF type." },
 ]
@@ -114,34 +113,13 @@ const FAQS = [
   { q: "Why invest in ETFs through Shree Varahi?", a: "Shree Varahi combines ETF SIPs, dedicated ETF tracking, comprehensive research tools, portfolio monitoring, multiple ETF categories, and transparent pricing to create a seamless ETF investing experience." },
 ]
 
-// Deterministic candlestick mockup data — uptrend pattern, no live feed
-const CANDLES = Array.from({ length: 26 }, (_, i) => {
-  const trend   = (i / 25) * 30
-  const wobble  = Math.sin(i * 1.7) * 18 + Math.sin(i * 0.6) * 10
-  const close   = 50 + trend + wobble
-  const open    = close - (Math.cos(i * 1.3) * 12)
-  const up      = close >= open
-  const top     = Math.min(open, close)
-  const bodyH   = Math.max(Math.abs(close - open), 4)
-  const wickPad = 6 + Math.abs(Math.sin(i * 2.1)) * 8
-  return {
-    up,
-    bodyTop: Math.max(2, Math.min(94, top)),
-    bodyH: Math.min(bodyH, 96 - top),
-    wickTop: Math.max(0, top - wickPad / 2),
-    wickH: Math.min(bodyH + wickPad, 100),
-  }
-})
-
 // ─── Page ───────────────────────────────────────────────────────────────────
 
 export default function ETFPage() {
-  const router = useRouter()
   /** "All" = every category together. */
   const [activeCat, setActiveCat]     = useState<Category | "All">("All")
   const [etfSearch, setEtfSearch]     = useState("")
   const [mobile, setMobile]           = useState("")
-  const [activeParam, setActiveParam] = useState(0)
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null)
   const activeCatMeta = CATEGORIES.find((c) => c.id === activeCat) ?? null
 
@@ -212,10 +190,10 @@ export default function ETFPage() {
             {/* Actions + trust stats on the right (the old browse card is gone, so the hero is shorter) */}
             <div className="flex flex-wrap items-center lg:justify-end gap-3">
               <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
-                <Link href={LOGIN_URL}>Start Trading</Link>
+                <Link href={OPEN_ACCOUNT_URL}>Start Trading</Link>
               </Button>
               <Button asChild variant="outline" className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary">
-                <Link href={LOGIN_URL}>Open Account</Link>
+                <Link href={LOGIN_URL}>Login</Link>
               </Button>
               <div className="flex items-center gap-4 sm:ml-3 sm:pl-5 sm:border-l border-border">
                 <div>
@@ -299,7 +277,7 @@ export default function ETFPage() {
                   {activeCatMeta ? activeCatMeta.label : "All ETFs"}
                 </h2>
                 <p className="text-xs text-muted-foreground mt-1.5">
-                  <span className="font-bold text-foreground">{etfList.data ? catRows.length : "—"}</span> ETFs
+                  <span className="font-bold text-foreground">{etfList.data ? catRows.length : "—"}</span>{" "}ETFs
                   {etfSearch.trim() && <> matching <span className="font-semibold text-foreground">“{etfSearch.trim()}”</span></>}
                 </p>
               </div>
@@ -317,7 +295,7 @@ export default function ETFPage() {
           <div>
             <div className="rounded-[8px] border border-border overflow-hidden bg-white shadow-[0_2px_16px_rgba(0,0,0,0.04)]">
               {/* Header */}
-              <div className="grid grid-cols-[minmax(0,1fr)_84px_64px_72px] sm:grid-cols-[minmax(0,1fr)_120px_110px_100px] gap-x-2 px-4 py-2.5 border-b border-border bg-cream/70">
+              <div className="grid grid-cols-[minmax(0,1fr)_80px_78px] sm:grid-cols-[minmax(0,1fr)_120px_110px_100px] gap-x-2 px-4 py-2.5 border-b border-border bg-cream/70">
                 <div className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground">Name</div>
                 {ETF_SORT_COLS.map((c) => {
                   const active = etfSort.key === c.key
@@ -325,7 +303,7 @@ export default function ETFPage() {
                   return (
                     <button key={c.key} type="button" onClick={() => sortEtfs(c.key)}
                       aria-label={`Sort by ${c.label}${active ? (etfSort.order === "desc" ? ", highest first" : ", lowest first") : ""}`}
-                      className={`flex items-center justify-end gap-1 text-[10px] font-extrabold uppercase tracking-wider transition-colors ${active ? "text-burgundy" : "text-muted-foreground hover:text-foreground"}`}>
+                      className={`${c.key === "changeAmt" ? "hidden sm:flex" : "flex"} items-center justify-end gap-1 text-[10px] font-extrabold uppercase tracking-wider transition-colors ${active ? "text-burgundy" : "text-muted-foreground hover:text-foreground"}`}>
                       <span className="truncate">{c.label}</span> <Icon className={`w-3 h-3 shrink-0 ${active ? "" : "opacity-50"}`} />
                     </button>
                   )
@@ -340,7 +318,7 @@ export default function ETFPage() {
                   <button onClick={etfList.retry} className="mt-3 text-xs font-bold text-burgundy hover:underline">Try again</button>
                 </div>
               ) : !etfList.data ? (
-                <TableRowsSkeleton rows={ETFS_PER_PAGE} columns="minmax(0,1fr) 84px 64px 72px" avatar label="Loading ETFs" />
+                <TableRowsSkeleton rows={ETFS_PER_PAGE} columns="minmax(0,1fr) 80px 78px" avatar label="Loading ETFs" />
               ) : etfPageRows.length === 0 ? (
                 <div className="py-16 text-center text-muted-foreground text-sm">No ETFs in this category yet.</div>
               ) : (
@@ -357,7 +335,7 @@ export default function ETFPage() {
                     >
                       <Link
                         href={`/etf/${etf.slug}`}
-                        className="grid grid-cols-[minmax(0,1fr)_84px_64px_72px] sm:grid-cols-[minmax(0,1fr)_120px_110px_100px] gap-x-2 px-4 py-3 hover:bg-cream/30 transition-colors duration-150"
+                        className="grid grid-cols-[minmax(0,1fr)_80px_78px] sm:grid-cols-[minmax(0,1fr)_120px_110px_100px] gap-x-2 px-4 py-3 hover:bg-cream/30 transition-colors duration-150"
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <div
@@ -367,7 +345,7 @@ export default function ETFPage() {
                             {etf.name.split(" ").slice(0, 2).map((w) => w[0]).join("")}
                           </div>
                           <div className="min-w-0">
-                            <div className="font-extrabold text-sm text-foreground truncate">{etf.name}</div>
+                            <div className="font-extrabold text-[13px] sm:text-sm text-foreground leading-snug line-clamp-2 sm:line-clamp-none sm:truncate">{etf.name}</div>
                             {etf.symbol && etf.symbol !== etf.name && (
                               <div className="text-[11px] text-muted-foreground truncate">{etf.symbol}</div>
                             )}
@@ -376,7 +354,7 @@ export default function ETFPage() {
                         <div className="flex items-center justify-end text-sm font-extrabold text-foreground tabular-nums">
                           {etf.price}
                         </div>
-                        <div className={`flex items-center justify-end text-xs font-black tabular-nums ${changeClass(etf.change)}`}>
+                        <div className={`hidden sm:flex items-center justify-end text-xs font-black tabular-nums ${changeClass(etf.change)}`}>
                           {etf.changeAmt === null ? "—" : `${sign}${etf.changeAmt.toFixed(2)}`}
                         </div>
                         <div className={`flex items-center justify-end gap-0.5 text-xs font-black tabular-nums ${changeClass(etf.change)}`}>
@@ -441,140 +419,69 @@ export default function ETFPage() {
       </section>
 
       {/* ── ETF DATA & RESEARCH ── */}
-      <section className="py-12 lg:py-16 bg-background border-t border-border/40">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-10 lg:gap-14 items-center">
-            {/* Left — scrollable feature list */}
-            <div>
+      {/* Research tools as identical cards; each opens that tool. */}
+      <section className="relative py-14 lg:py-20 bg-cream border-t border-border/40 overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-[0.35] pointer-events-none"
+          style={{ backgroundImage: "radial-gradient(rgba(139,13,25,0.10) 1px, transparent 1px)", backgroundSize: "22px 22px" }}
+          aria-hidden
+        />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 mb-9 lg:mb-11">
+            <div className="max-w-2xl">
               <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-3">ETF Research</p>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground leading-[1.1] mb-4">
-                Research<br />Before You Invest
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight leading-[1.08]">
+                Research <span className="text-burgundy">Before You Invest</span>
               </h2>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-md">
-                Automate your investments with Shree Varahi, track performance effortlessly, and stay focused on achieving your long-term financial goals.
+              <p className="text-sm sm:text-[15px] text-muted-foreground leading-relaxed mt-4">
+                Seven research tools to judge any ETF on price, size, cost, holdings, returns and allocation, so every investment decision is backed by data.
               </p>
-
-              <div className="space-y-1 lg:max-h-[540px] lg:overflow-y-auto lg:pr-3 lg:-mr-3">
-                {RESEARCH_PARAMS.map((p, i) => {
-                  const Icon = p.icon
-                  const active = activeParam === i
-                  return (
-                    <motion.button
-                      key={p.title}
-                      type="button"
-                      onClick={() => { setActiveParam(i); if (p.href) router.push(p.href) }}
-                      initial={{ opacity: 0, x: -8 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.3, delay: i * 0.03 }}
-                      className={`w-full text-left border-l-4 pl-4 pr-3 py-3 rounded-r-[6px] transition-all duration-200 ${
-                        active
-                          ? "border-burgundy bg-cream"
-                          : "border-border/50 hover:border-gold/40 hover:bg-cream/40"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 mb-1">
-                        <Icon className={`w-3.5 h-3.5 ${active ? "text-burgundy" : "text-muted-foreground"}`} strokeWidth={1.8} />
-                        <h3 className="font-extrabold text-foreground text-[13px]">{p.title}</h3>
-                      </div>
-                      <p className="text-[11px] text-muted-foreground leading-relaxed">{p.desc}</p>
-                    </motion.button>
-                  )
-                })}
-              </div>
             </div>
+            <Link
+              href="/etf/compare"
+              className="self-start lg:self-auto inline-flex items-center gap-2 h-11 px-5 rounded-[6px] bg-white border border-border text-sm font-bold text-foreground hover:border-burgundy/40 hover:text-burgundy transition-colors shrink-0"
+            >
+              Compare all ETFs <ArrowUpRight className="w-4 h-4" />
+            </Link>
+          </div>
 
-            {/* Right — centered terminal + phone mockup */}
-            <div className="lg:sticky lg:top-1/2 lg:-translate-y-1/2 w-full">
-              <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="relative"
-              >
-                {/* Browser/terminal card */}
-                <div className="rounded-[10px] border border-border bg-white shadow-[0_8px_40px_rgba(0,0,0,0.08)] overflow-hidden">
-                  {/* Toolbar */}
-                  <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/60 bg-cream/50">
-                    <div className="flex-1 flex items-center gap-2 bg-white border border-border rounded-[5px] px-2.5 py-1.5">
-                      <Activity className="w-3 h-3 text-muted-foreground/60" />
-                      <span className="text-[10px] text-muted-foreground truncate">{RESEARCH_PARAMS[activeParam].title} · {lead.name}</span>
+          {/* Seven identical cards; flex-wrap centres the shorter last row */}
+          <div className="flex flex-wrap justify-center gap-4">
+            {RESEARCH_PARAMS.map((p, i) => {
+              const Icon = p.icon
+              const tag = ["Live", "Fund size", "Cost", "Performance", "Portfolio", "Sectors", "Asset mix"][i]
+              return (
+                <motion.div
+                  key={p.title}
+                  initial={{ opacity: 0, y: 14 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ duration: 0.35, delay: Math.min(i, 6) * 0.05 }}
+                  className="w-full sm:w-[calc(50%-8px)] lg:w-[calc(25%-12px)]"
+                >
+                  <Link
+                    href={p.href ?? "/etf/compare"}
+                    className="group relative h-full flex flex-col rounded-[14px] border p-4 sm:p-5 bg-white border-border/70 hover:border-burgundy/35 hover:shadow-[0_14px_40px_rgba(0,0,0,0.07)] transition-all duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-burgundy/40"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="w-10 h-10 flex items-center justify-center rounded-[10px] bg-burgundy/[0.07] group-hover:bg-burgundy transition-colors duration-300">
+                        <Icon className="w-[18px] h-[18px] text-burgundy group-hover:text-white transition-colors duration-300" strokeWidth={2} />
+                      </span>
+                      <span className="text-[11px] font-black tabular-nums text-muted-foreground/50">{String(i + 1).padStart(2, "0")}</span>
                     </div>
-                    <div className="hidden sm:flex gap-1.5">
-                      {["ORDERS", "POSITIONS", "BUY", "SELL"].map((label, i) => (
-                        <span
-                          key={label}
-                          className={`text-[9px] font-bold px-2 py-1 rounded-[4px] border ${
-                            i >= 2
-                              ? i === 2
-                                ? "bg-profit/10 text-profit border-profit/30"
-                                : "bg-loss/10 text-loss border-loss/30"
-                              : "bg-white text-muted-foreground border-border"
-                          }`}
-                        >
-                          {label}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Ticker header */}
-                  <div className="flex items-center justify-between px-4 py-2.5 border-b border-border/40">
-                    <span className="text-[13px] font-extrabold text-foreground">
-                      {lead.name} <span className="text-muted-foreground font-semibold">· NSE</span>
+                    <span className="hidden sm:inline-block mt-5 self-start text-[9.5px] font-extrabold uppercase tracking-[0.14em] px-2 py-1 rounded-full bg-cream text-gold-deep">
+                      {tag}
                     </span>
-                    <span className={`text-[12px] font-black ${changeClass(lead.change)}`}>
-                      ₹{lead.price} <span className="text-[10px] font-bold">({changeText(lead.change)})</span>
+                    <h3 className="text-[16px] font-black tracking-tight text-foreground mt-3 sm:mt-2.5">{p.title}</h3>
+                    <p className="text-[12.5px] text-muted-foreground leading-relaxed mt-2 flex-1">{p.desc}</p>
+                    <span className="mt-3 sm:mt-5 inline-flex items-center gap-1.5 text-xs font-black text-burgundy">
+                      Explore
+                      <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                     </span>
-                  </div>
-
-                  {/* Candlestick mockup */}
-                  <div className="px-3 py-7 h-80 flex items-center gap-[3px]">
-                    {CANDLES.map((c, i) => (
-                      <div key={i} className="flex-1 h-full relative">
-                        <div
-                          className="absolute left-1/2 -translate-x-1/2 w-px bg-border"
-                          style={{ top: `${c.wickTop}%`, height: `${c.wickH}%` }}
-                        />
-                        <div
-                          className="absolute left-1/2 -translate-x-1/2 w-[5px] rounded-[1px]"
-                          style={{
-                            top: `${c.bodyTop}%`,
-                            height: `${c.bodyH}%`,
-                            background: c.up ? "#059669" : "#DC2626",
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Phone mockup overlay */}
-                <div className="hidden sm:block absolute -bottom-8 -right-5 w-36 rounded-[16px] border-[5px] border-foreground bg-white shadow-2xl overflow-hidden">
-                  <div className="px-3 py-3 space-y-2.5">
-                    <div>
-                      <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-wide">{lead.name}</p>
-                      <p className="text-[13px] font-black text-foreground">
-                        ₹{lead.price} <span className={`text-[9px] ${changeClass(lead.change)}`}>{changeText(lead.change)}</span>
-                      </p>
-                    </div>
-                    <div className="space-y-1.5 pt-2 border-t border-border/50">
-                      {[
-                        { l: "AUM", v: "₹8,240 Cr" },
-                        { l: "Expense", v: "0.05%" },
-                        { l: "Tracking", v: "Nifty 50" },
-                      ].map((s) => (
-                        <div key={s.l} className="flex items-center justify-between">
-                          <span className="text-[8px] text-muted-foreground font-semibold">{s.l}</span>
-                          <span className="text-[9px] font-bold text-foreground">{s.v}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
+                  </Link>
+                </motion.div>
+              )
+            })}
           </div>
         </div>
       </section>

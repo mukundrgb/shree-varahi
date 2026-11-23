@@ -4,6 +4,7 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Lock, Shield, Building2 } from "lucide-react"
+import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 export function FinalCTA() {
   const [formData, setFormData] = useState({
@@ -117,7 +118,7 @@ export function FinalCTA() {
             <h3 className="text-2xl font-bold mb-6 text-center">
               Open Free Account
             </h3>
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); window.open(OPEN_ACCOUNT_URL, "_blank", "noopener,noreferrer") }}>
               <div>
                 <label className="text-sm text-muted-foreground mb-1.5 block">Full Name</label>
                 <input

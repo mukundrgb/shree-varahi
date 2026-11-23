@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { LOGIN_URL } from "@/lib/external-links"
+import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ChevronRight, Plus, X, Layers, Eye, FileSearch, GitCompare, MonitorSmartphone,
@@ -208,7 +208,7 @@ export default function NFOPage() {
                 <a href="#explore-nfos">Explore NFOs</a>
               </Button>
               <Button asChild variant="outline" className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary">
-                <Link href={LOGIN_URL}>Open Account</Link>
+                <Link href={OPEN_ACCOUNT_URL}>Open Account</Link>
               </Button>
               <div className="flex items-center gap-4 sm:ml-3 sm:pl-5 sm:border-l border-border">
                 <div>
@@ -311,7 +311,7 @@ export default function NFOPage() {
                       </div>
                       {/* Invest Now */}
                       <Link
-                        href={LOGIN_URL}
+                        href={OPEN_ACCOUNT_URL}
                         aria-label={`Invest now in ${f.name}`}
                         className="mt-3 py-2 flex items-center justify-center gap-1.5 rounded-[6px] bg-burgundy text-white text-xs font-black transition-all duration-200 hover:bg-burgundy-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50"
                       >

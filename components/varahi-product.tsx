@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { ArrowRight, ImageIcon, Plus, Quote, Star, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel"
+import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 export const EYEBROW =
   "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/15 border border-gold/30 text-xs font-bold text-gold-deep uppercase tracking-wider"
@@ -33,7 +34,7 @@ export function SiteImage({ image, className = "" }: { image: SiteImageSrc; clas
 
 export function OpenAccountButton({ label, variant = "primary" }: { label: string; variant?: "primary" | "light" }) {
   return (
-    <Link href="/signup/register">
+    <Link href={OPEN_ACCOUNT_URL}>
       <Button
         size="lg"
         className={

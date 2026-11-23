@@ -15,6 +15,7 @@ import {
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
+import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 export const TIMEFRAMES = ["1D", "1W", "1M", "3M", "1Y", "5Y"] as const
 export type TF = typeof TIMEFRAMES[number]
@@ -232,7 +233,7 @@ export function IndexDetailPage({ data }: { data: IndexPageData }) {
                 className="bg-burgundy hover:bg-burgundy-deep text-white rounded-[5px] h-9 px-6 text-sm font-bold"
                 asChild
               >
-                <Link href="/signup/register">Invest in {d.displayName} →</Link>
+                <Link href={OPEN_ACCOUNT_URL}>Invest in {d.displayName} →</Link>
               </Button>
             </div>
           </div>
@@ -608,7 +609,7 @@ export function IndexDetailPage({ data }: { data: IndexPageData }) {
                     className="bg-white text-burgundy hover:bg-white/90 rounded-[5px] h-8 px-4 text-xs font-black w-full"
                     asChild
                   >
-                    <Link href="/signup/register">Open Free Account</Link>
+                    <Link href={OPEN_ACCOUNT_URL}>Open Free Account</Link>
                   </Button>
                 </div>
               </div>

@@ -27,6 +27,7 @@ import {
   NO_VALUE, formatDate, formatPercent, formatPrice, formatQuoteTime, formatRupees, formatVolume,
 } from "@/lib/stocks/format"
 import type { CorporateAction, FinancialsRowFormat, StockSummary } from "@/lib/stocks/types"
+import { OpenAccountCard } from "@/components/open-account-card"
 
 /* ─── Dummy data (replaced by the CMOTS API; kept for reference) ──────────────
 
@@ -930,46 +931,7 @@ function StockDetail({ slug, stock }: { slug: string; stock: StockSummary }) {
             <div className="space-y-4 lg:sticky lg:top-[76px] lg:max-h-[calc(100vh-92px)] lg:overflow-y-auto" style={{ scrollbarWidth: "none" }}>
 
               {/* Open Demat Account CTA */}
-              <div className="rounded-[10px] overflow-hidden relative"
-                style={{ background: "linear-gradient(135deg, #8B0D19 0%, #6B0A13 60%, #4A0709 100%)" }}>
-                {/* Decorative */}
-                <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10"
-                  style={{ background: "radial-gradient(circle, #D9B27C 0%, transparent 70%)", filter: "blur(20px)" }} />
-                <div className="absolute bottom-0 left-0 w-24 h-24 rounded-full opacity-8"
-                  style={{ background: "radial-gradient(circle, #D9B27C 0%, transparent 70%)", filter: "blur(15px)" }} />
-
-                <div className="relative z-10 p-5">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-8 h-8 rounded-[7px] bg-white/10 flex items-center justify-center">
-                      <Zap className="w-4 h-4 text-gold" />
-                    </div>
-                    <div>
-                      <div className="text-[9px] font-extrabold text-gold/80 uppercase tracking-wider">Start Investing</div>
-                      <div className="text-sm font-black text-white leading-tight">Open Demat Account</div>
-                    </div>
-                  </div>
-
-                  <p className="text-[11px] text-white/70 leading-relaxed mb-4">
-                    Start trading {stock.symbol} and 5,000+ stocks with ₹0 account opening & ₹0 AMC.
-                  </p>
-
-                  <div className="space-y-2 mb-4">
-                    {["₹0 Account Opening Fee", "₹17 Flat Brokerage", "3-in-1 Account (Demat + Trading + Bank)", "Instant Account Opening"].map(f => (
-                      <div key={f} className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded-full bg-white/15 flex items-center justify-center shrink-0">
-                          <span className="text-[8px] text-white font-black">✓</span>
-                        </div>
-                        <span className="text-[11px] text-white/80 font-medium">{f}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <Link href="/signup/register"
-                    className="w-full py-3 rounded-[7px] bg-gold text-[#4A0709] font-black text-sm text-center block hover:bg-gold/90 transition-colors">
-                    Open Free Account →
-                  </Link>
-                </div>
-              </div>
+              <OpenAccountCard />
 
               {/* Key quick stats */}
               <div className="border border-border rounded-[10px] bg-white overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.04)]">

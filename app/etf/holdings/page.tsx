@@ -109,7 +109,7 @@ function EtfHoldings() {
               <p className="text-xs text-muted-foreground">
                 {query
                   ? <>Showing <span className="font-bold text-foreground">{visible.length}</span> of {holdings.length} equity holdings</>
-                  : <><span className="font-bold text-foreground">{holdings.length}</span> equity holdings</>}
+                  : <><span className="font-bold text-foreground">{holdings.length}</span>{" "}equity holdings</>}
                 {data?.portfolioDate && <> · as of {formatDate(data.portfolioDate)}</>}
               </p>
             </div>

@@ -6,7 +6,7 @@ import { useParams } from "next/navigation"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import {
-  ChevronRight, ArrowUpRight, ArrowDownRight, Star, Zap, Target, UserCheck,
+  ChevronRight, ArrowUpRight, ArrowDownRight, Star, Target, UserCheck,
   Calendar, Fingerprint, Lock, BarChart3, Percent, Wallet, Coins, Activity, Gauge,
 } from "lucide-react"
 import {
@@ -20,6 +20,7 @@ import { FundSectorAllocation } from "@/components/fund-sector-allocation"
 import { SAMPLE_SECTOR_DETAILS } from "@/lib/mutual-funds/sector-allocation"
 import { DetailPageSkeleton } from "@/components/skeletons"
 import type { ChartPeriod, FundDetailApi, FundReturns } from "@/lib/mutual-funds/api-client"
+import { OpenAccountCard } from "@/components/open-account-card"
 
 // ─── Formatting ──────────────────────────────────────────────────────────────
 
@@ -332,30 +333,8 @@ function FundDetail({ fund }: { fund: FundDetailApi }) {
                 </div>
               </div>
 
-              {/* Open account CTA (same as the stock page) */}
-              <div className="rounded-[10px] overflow-hidden relative"
-                style={{ background: "linear-gradient(135deg, #8B0D19 0%, #6B0A13 60%, #4A0709 100%)" }}>
-                <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-10"
-                  style={{ background: "radial-gradient(circle, #D9B27C 0%, transparent 70%)", filter: "blur(20px)" }} />
-                <div className="relative z-10 p-5">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-8 h-8 rounded-[7px] bg-white/10 flex items-center justify-center">
-                      <Zap className="w-4 h-4 text-gold" />
-                    </div>
-                    <div>
-                      <div className="text-[9px] font-extrabold text-gold/80 uppercase tracking-wider">Start Investing</div>
-                      <div className="text-sm font-black text-white leading-tight">Open Your Account</div>
-                    </div>
-                  </div>
-                  <p className="text-[11px] text-white/70 leading-relaxed mb-4">
-                    Invest in mutual funds through a simple, secure and paperless process with Shree Varahi.
-                  </p>
-                  <Link href="/signup/register"
-                    className="w-full py-3 rounded-[7px] bg-gold text-[#4A0709] font-black text-sm text-center block hover:bg-gold/90 transition-colors">
-                    Open Free Account →
-                  </Link>
-                </div>
-              </div>
+              {/* Open account CTA (same card as the stock page) */}
+              <OpenAccountCard />
 
               <p className="text-[10px] text-muted-foreground leading-relaxed px-1">
                 Mutual fund investments are subject to market risks. Read all scheme related documents carefully. Past performance is not an indicator of future returns.

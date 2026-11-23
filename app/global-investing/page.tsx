@@ -1,14 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { LOGIN_URL } from "@/lib/external-links"
+import { GLOBAL_INVESTING_LINKS } from "@/lib/external-links"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ChevronRight, CheckCircle2, ArrowRight, Plus, X,
   ShieldCheck, Globe2, TrendingDown, Cpu, Layers, Landmark, BadgeCheck, Lock,
   UserCheck, FileCheck2, Send, LineChart, Users, Search, MonitorSmartphone,
-  AlertTriangle, MapPin, Coins, Sparkles,
+  AlertTriangle, MapPin, Coins, Sparkles, BookOpenText, ExternalLink,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -154,7 +154,6 @@ const FAQS = [
   { q: "Is my investment safe?", a: "Yes. Your US brokerage account is usually protected by SIPC (Securities Investor Protection Corporation) up to $500,000, ensuring safety against broker failure." },
 ]
 
-const PHONE_HREF = "tel:02240808080"
 
 // ─── Shared bits ────────────────────────────────────────────────────────────
 
@@ -299,14 +298,32 @@ export default function GlobalInvestingPage() {
                   </li>
                 ))}
               </ul>
-              <div className="flex flex-wrap gap-3 pt-1">
-                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
-                  <Link href="/signup/register">Open Account</Link>
-                </Button>
-                {/* Existing customers go straight to login */}
-                <Button asChild variant="outline" className="border-burgundy/30 text-burgundy hover:bg-burgundy/5 hover:text-burgundy px-7 h-11 font-bold rounded-[5px]">
-                  <Link href={LOGIN_URL}>Login</Link>
-                </Button>
+              <div className="space-y-3 pt-1">
+                <div className="flex flex-wrap gap-3">
+                  <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
+                    <a href={GLOBAL_INVESTING_LINKS.register} target="_blank" rel="noopener noreferrer">Open Account</a>
+                  </Button>
+                  {/* Existing customers go straight to login */}
+                  <Button asChild variant="outline" className="border-burgundy/30 text-burgundy hover:bg-burgundy/5 hover:text-burgundy px-7 h-11 font-bold rounded-[5px]">
+                    <a href={GLOBAL_INVESTING_LINKS.login} target="_blank" rel="noopener noreferrer">Login</a>
+                  </Button>
+                </div>
+                {/* User guide from the exchange (India INX Global Access) */}
+                <a
+                  href={GLOBAL_INVESTING_LINKS.userGuide}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex items-center gap-3 rounded-[8px] border border-dashed border-burgundy/30 bg-white/70 pl-2 pr-4 py-2 hover:border-burgundy/60 hover:bg-white transition-colors"
+                >
+                  <span className="w-8 h-8 rounded-[6px] bg-burgundy/10 flex items-center justify-center shrink-0">
+                    <BookOpenText className="w-4 h-4 text-burgundy" />
+                  </span>
+                  <span className="text-left">
+                    <span className="block text-[13px] font-black text-foreground group-hover:text-burgundy transition-colors">User Guidelines</span>
+                    <span className="block text-[11px] text-muted-foreground">How to register, fund and trade</span>
+                  </span>
+                  <ExternalLink className="w-3.5 h-3.5 text-muted-foreground group-hover:text-burgundy ml-1" />
+                </a>
               </div>
             </div>
 
@@ -647,10 +664,7 @@ export default function GlobalInvestingPage() {
             </h2>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button asChild className="bg-gold hover:bg-gold-champagne text-burgundy font-black h-12 px-7 text-sm rounded-[5px] shadow-xl">
-                <Link href="/signup/register">Open Account <ArrowRight className="w-4 h-4 ml-1.5" /></Link>
-              </Button>
-              <Button asChild variant="outline" className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white font-bold h-12 px-7 text-sm rounded-[5px]">
-                <a href={PHONE_HREF}>Speak to Advisor</a>
+                <a href={GLOBAL_INVESTING_LINKS.register} target="_blank" rel="noopener noreferrer">Open Account <ArrowRight className="w-4 h-4 ml-1.5" /></a>
               </Button>
             </div>
           </div>

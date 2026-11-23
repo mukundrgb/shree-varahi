@@ -104,7 +104,7 @@ export default function MtfEligibleStocksPage() {
           <div className="flex flex-wrap items-center gap-3 mb-4">
             <SmartSearch value={search} onChange={setSearch} placeholder="Search stock e.g. RELIANCE" ariaLabel="Search MTF stocks" loading={result.loading && !!search.trim()} shortcut className="w-72 max-w-full" inputClassName="bg-white" />
             <p className="text-xs text-muted-foreground">
-              Showing <span className="font-bold text-foreground">{data ? data.total.toLocaleString("en-IN") : "—"}</span> stocks
+              Showing <span className="font-bold text-foreground">{data ? data.total.toLocaleString("en-IN") : "—"}</span>{" "}stocks
               {result.loading && data && <span className="ml-2 text-muted-foreground/60">Updating…</span>}
             </p>
           </div>

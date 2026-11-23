@@ -7,6 +7,7 @@ import { ChevronRight, Shield, TrendingUp, Landmark, Percent, Sparkles, Plus, X 
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
+import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 const BENEFITS = [
   { icon: Landmark, title: "Government Backed", desc: "Issued by the Reserve Bank of India on behalf of the Government of India, zero credit risk." },
@@ -64,7 +65,7 @@ export default function SovereignGoldBondPage() {
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button className="bg-burgundy hover:bg-burgundy-deep text-white rounded-[5px] h-11 px-7 text-sm font-bold" asChild>
-                  <Link href="/signup/register">Invest in SGB →</Link>
+                  <Link href={OPEN_ACCOUNT_URL}>Invest in SGB →</Link>
                 </Button>
                 <Button variant="outline" className="rounded-[5px] h-11 px-7 text-sm font-bold" asChild>
                   <Link href="/commodity">View Live Gold Rates</Link>
@@ -166,7 +167,7 @@ export default function SovereignGoldBondPage() {
             <h2 className="text-2xl sm:text-3xl font-black text-white mb-3 relative z-10">Grow Your Gold Holdings, Government-Backed</h2>
             <p className="text-sm text-white/80 mb-6 relative z-10 max-w-lg mx-auto">Zero credit risk, fixed interest income, and tax-free maturity gains.</p>
             <Button className="relative z-10 bg-white text-burgundy hover:bg-white/90 rounded-[5px] h-11 px-8 text-sm font-black" asChild>
-              <Link href="/signup/register">Open Free Account</Link>
+              <Link href={OPEN_ACCOUNT_URL}>Open Free Account</Link>
             </Button>
           </div>
         </section>

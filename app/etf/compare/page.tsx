@@ -145,7 +145,7 @@ function EtfCompare() {
 
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs text-muted-foreground">
-              Showing <span className="font-bold text-foreground">{rows.length}</span> ETFs
+              Showing <span className="font-bold text-foreground">{rows.length}</span>{" "}ETFs
               {category !== "All" && <span className="ml-1.5 font-semibold text-foreground">· {category}</span>}
             </p>
             {hasFilter && (

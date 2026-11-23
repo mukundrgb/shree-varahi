@@ -18,6 +18,7 @@ import { FundCategoryFilter, SelectedCategoryChips, NO_CATEGORY, categoryQuery, 
 import { FundHouseFilter } from "@/components/fund-house-filter"
 import { FilterSheet, SmartSearch, SmartSelect } from "@/components/smart-controls"
 import { CardGridSkeleton, TableRowsSkeleton } from "@/components/skeletons"
+import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 // All fund data comes from the backend (/api/v1/mutual-funds, sourced from Reedos).
@@ -328,8 +329,8 @@ export default function MutualFundsPage() {
                 {info ? `${totalFunds} funds` : "Funds"} across equity, debt, and hybrid from {info ? `${totalAmcs} AMCs` : "leading AMCs"}. Invest with zero commission and research-backed recommendations.
               </p>
               <div className="flex flex-wrap items-center gap-3 pt-1">
-                <Button className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
-                  Start SIP Now
+                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
+                  <a href={OPEN_ACCOUNT_URL}>Start SIP Now</a>
                 </Button>
                 <Button
                   variant="outline"
@@ -367,7 +368,7 @@ export default function MutualFundsPage() {
             <div>
               <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight leading-none">Find Your Fund</h2>
               <p className="text-xs text-muted-foreground mt-1.5">
-                <span className="font-bold text-foreground">{funds ? funds.total.toLocaleString("en-IN") : "—"}</span> funds
+                <span className="font-bold text-foreground">{funds ? funds.total.toLocaleString("en-IN") : "—"}</span>{" "}funds
                 {fundsResult.loading && funds && <span className="ml-2 text-muted-foreground/60">Updating…</span>}
               </p>
             </div>
@@ -803,8 +804,8 @@ export default function MutualFundsPage() {
             Open a free account and invest in {info ? `${totalFunds} mutual funds` : "mutual funds"} with zero commission, expert research, and real-time tracking.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <Button size="lg" className="bg-white hover:bg-gold-champagne text-burgundy font-black px-8 h-11 text-sm rounded-[5px] shadow-xl">
-              Start SIP Now →
+            <Button asChild size="lg" className="bg-white hover:bg-gold-champagne text-burgundy font-black px-8 h-11 text-sm rounded-[5px] shadow-xl">
+              <a href={OPEN_ACCOUNT_URL}>Start SIP Now →</a>
             </Button>
             <Button
               size="lg"

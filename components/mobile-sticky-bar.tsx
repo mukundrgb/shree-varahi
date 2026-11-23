@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
+import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 export function MobileStickyBar() {
   const [isVisible, setIsVisible] = useState(false)
@@ -35,8 +36,8 @@ export function MobileStickyBar() {
               >
                 Explore Platform
               </Button>
-              <Button className="flex-1 bg-burgundy hover:bg-burgundy-deep text-primary-foreground rounded-[5px]">
-                Open Free Account
+              <Button asChild className="flex-1 bg-burgundy hover:bg-burgundy-deep text-primary-foreground rounded-[5px]">
+                <a href={OPEN_ACCOUNT_URL}>Open Free Account</a>
               </Button>
             </div>
           </div>

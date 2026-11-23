@@ -6,6 +6,7 @@ import { ChevronRight, ChevronDown } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
+import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 export type StockRow = {
   name: string
@@ -176,7 +177,7 @@ export function StockListPage({ data }: { data: StockListPageData }) {
                       </td>
                       <td className="text-right px-3.5 py-3 text-sm font-bold text-foreground tabular-nums">{fmt(s.ltp)}</td>
                       <td className="text-center px-3.5 py-3">
-                        <Link href="/signup/register">
+                        <Link href={OPEN_ACCOUNT_URL}>
                           <Button size="sm" className="h-8 px-3.5 text-xs font-bold bg-burgundy hover:bg-burgundy-deep text-white rounded-[5px]">
                             Invest
                           </Button>

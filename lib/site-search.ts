@@ -3,6 +3,7 @@
 // everything here is a static index of pages that exist in the app router.
 
 import { searchKnowledge } from "@/lib/knowledge-center/data"
+import { LOGIN_URL, OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 export interface SitePage {
   title: string
@@ -14,8 +15,8 @@ export interface SitePage {
 
 export const SITE_PAGES: SitePage[] = [
   // Account
-  { title: "Open Free Demat Account", desc: "Start investing in minutes",            href: "/signup/register", keywords: "open account signup register demat trading kyc" },
-  { title: "Login",                   desc: "Sign in to your account",               href: "/login",           keywords: "sign in" },
+  { title: "Open Free Demat Account", desc: "Start investing in minutes",            href: OPEN_ACCOUNT_URL, keywords: "open account signup register demat trading kyc" },
+  { title: "Login",                   desc: "Sign in to your account",               href: LOGIN_URL,         keywords: "sign in" },
   // Trade & invest
   { title: "Stocks",                  desc: "All NSE & BSE stocks",                  href: "/stocks",          keywords: "equity shares" },
   { title: "F&O",                     desc: "Futures & options",                     href: "/futures-options", keywords: "futures options derivatives fno option chain" },

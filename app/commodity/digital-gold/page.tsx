@@ -7,6 +7,7 @@ import { ChevronRight, Shield, Coins, RefreshCw, Home, Sparkles, Plus, X } from 
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
+import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 const BENEFITS = [
   { icon: Coins, title: "Invest from ₹1", desc: "Start with any amount, no minimum purchase quantity required." },
@@ -62,7 +63,7 @@ export default function DigitalGoldPage() {
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button className="bg-burgundy hover:bg-burgundy-deep text-white rounded-[5px] h-11 px-7 text-sm font-bold" asChild>
-                  <Link href="/signup/register">Start Investing →</Link>
+                  <Link href={OPEN_ACCOUNT_URL}>Start Investing →</Link>
                 </Button>
                 <Button variant="outline" className="rounded-[5px] h-11 px-7 text-sm font-bold" asChild>
                   <Link href="/commodity">View Live Gold Rates</Link>
@@ -187,7 +188,7 @@ export default function DigitalGoldPage() {
             <h2 className="text-2xl sm:text-3xl font-black text-white mb-3 relative z-10">Start Your Gold Journey Today</h2>
             <p className="text-sm text-white/80 mb-6 relative z-10 max-w-lg mx-auto">Buy 99.9% pure digital gold in seconds, backed by secure, insured storage.</p>
             <Button className="relative z-10 bg-white text-burgundy hover:bg-white/90 rounded-[5px] h-11 px-8 text-sm font-black" asChild>
-              <Link href="/signup/register">Open Free Account</Link>
+              <Link href={OPEN_ACCOUNT_URL}>Open Free Account</Link>
             </Button>
           </div>
         </section>

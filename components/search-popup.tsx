@@ -16,6 +16,7 @@ import { useStockSearch } from "@/hooks/stocks/use-stock-search"
 import { useApiResource } from "@/hooks/use-api-resource"
 import { mutualFundsApi, fundHref } from "@/lib/mutual-funds/api-client"
 import { searchSite } from "@/lib/site-search"
+import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 interface SearchPopupProps {
   isOpen: boolean
@@ -26,7 +27,7 @@ interface SearchPopupProps {
 const POPULAR = ["Reliance", "HDFC Bank", "Open Demat Account", "IPO", "MTF", "Top Gainers", "Nifty 50", "Mutual Funds"]
 
 const QUICK_LINKS = [
-  { title: "Open Free Account", desc: "Start investing in minutes", href: "/signup/register" },
+  { title: "Open Free Account", desc: "Start investing in minutes", href: OPEN_ACCOUNT_URL },
   { title: "IPO",               desc: "Apply for upcoming IPOs",    href: "/ipo" },
   { title: "Mutual Funds",      desc: "0% commission",              href: "/mutual-funds" },
   { title: "Knowledge Center",  desc: "Guides & articles",          href: "/knowledge-center" },

@@ -13,6 +13,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { TOPICS, searchKnowledge } from "@/lib/knowledge-center/data"
+import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 const ICONS: Record<string, LucideIcon> = {
   Briefcase, PieChart, BookOpen, Wallet, MonitorSmartphone, Timer, TrendingUp, Rocket, GitBranch, Layers, Gem, Handshake,
@@ -92,7 +93,7 @@ export function KcCta() {
           <h2 className="text-2xl sm:text-3xl font-black text-white mb-2">Put Your Knowledge to Work</h2>
           <p className="text-sm text-white/85 max-w-lg">Open your free Shree Varahi account in minutes, zero account opening charges and zero AMC.</p>
         </div>
-        <Link href="/signup/register" className="relative z-10 shrink-0">
+        <Link href={OPEN_ACCOUNT_URL} className="relative z-10 shrink-0">
           <Button className="bg-white text-burgundy hover:bg-white/90 rounded-[5px] h-12 px-8 text-sm font-black">
             Open Free Account <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
