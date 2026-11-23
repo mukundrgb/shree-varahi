@@ -111,8 +111,8 @@ export function AdvisorChat() {
   const openChat = () => { setOpen(true); setShowTeaser(false) }
 
   return (
-    // Sits directly above the scroll-to-top button (56px at bottom/right 28px, components/scroll-progress.tsx).
-    <div className="fixed right-7 bottom-24 z-[60] flex flex-col items-end gap-3">
+    // Sits directly above the scroll-to-top button.
+    <div className="fixed right-5 sm:right-7 bottom-[152px] lg:bottom-[100px] z-[60] flex flex-col items-end gap-3">
       <AnimatePresence>
         {open && (
           <motion.div
@@ -123,7 +123,7 @@ export function AdvisorChat() {
             transition={{ duration: 0.2 }}
             role="dialog"
             aria-label="Chat with an advisor"
-            className="w-[calc(100vw-44px)] sm:w-[380px] h-[min(580px,calc(100vh-180px))] lg:h-[min(600px,calc(100vh-200px))] bg-white rounded-[16px] border border-border shadow-[0_24px_70px_rgba(0,0,0,0.22)] overflow-hidden flex flex-col"
+            className="w-[calc(100vw-40px)] sm:w-[380px] h-[min(540px,calc(100vh-220px))] lg:h-[min(600px,calc(100vh-160px))] bg-white rounded-[16px] border border-border shadow-[0_24px_70px_rgba(0,0,0,0.22)] overflow-hidden flex flex-col"
           >
             {/* Header: advisor */}
             <div className="relative px-4 pt-4 pb-3 text-white" style={{ background: "linear-gradient(135deg, #8B0D19 0%, #c20000 100%)" }}>

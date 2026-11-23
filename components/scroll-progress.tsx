@@ -52,7 +52,7 @@ export function ScrollProgress() {
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
             onClick={scrollToTop}
             aria-label="Scroll to top"
-            className="fixed bottom-7 right-7 z-[199] group"
+            className="fixed bottom-[84px] lg:bottom-8 right-5 sm:right-7 z-[199] group"
           >
             {/* SVG ring */}
             <svg
