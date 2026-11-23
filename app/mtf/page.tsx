@@ -22,20 +22,20 @@ import { ListSkeleton } from "@/components/skeletons"
 // The hero cards show the first popular stocks from the MTF margin list (/api/v1/mtf).
 
 const KEY_BENEFITS = [
-  "Buy Up To 3× More Shares", "Up to 90 Days Holding Period", "0% Interest For First 30 Days",
+  "Buy Up To 3× More Shares", "Up to 90 Days Holding Period", "1.5% Monthly Interest",
   "MTF Eligible Stocks", "Automatic Pledge & Unpledge", "Transparent Charges, No Hidden Fees",
   "Trade From Your Existing Account", "Same-Day Margin Activation",
 ]
 
 const CHARGES = [
-  { icon: Percent,    title: "Interest",          value: "0.049%",  unit: "per day", desc: "Charged only on the borrowed amount, from the buy date until one day before you sell or convert to delivery — including non-trading days." },
+  { icon: Percent,    title: "Interest",          value: "1.5%",    unit: "per month", desc: "Charged only on the borrowed amount, from the buy date until one day before you sell or convert to delivery, including non-trading days." },
   { icon: CreditCard, title: "Brokerage",          value: "17%",     unit: "per executed order", desc: "17% brokerage applies on all MTF transactions." },
   { icon: Layers,     title: "Pledge / Unpledge",  value: "₹15",     unit: "+ GST per ISIN, per request", desc: "Shares bought under MTF are auto-pledged as per SEBI norms, and auto-unpledged on sell or conversion to delivery." },
 ]
 
 const FAQS = [
   { q: "How do I check if MTF is activated on my account?", a: "Open the Shree Varahi app, go to Account → tap your name, and scroll to the MTF section. If the status shows \"Active,\" your MTF segment is enabled. If not, you can activate it directly from the same screen." },
-  { q: "How is MTF interest calculated?", a: "Interest is charged from the buy date until one day before your sell or conversion-to-delivery date, on the borrowed amount — including non-trading days. For example, if you buy on 1st January and sell on 11th January, interest is charged from 1st to 10th January on the funded amount." },
+  { q: "How is MTF interest calculated?", a: "Interest is charged from the buy date until one day before your sell or conversion-to-delivery date, on the borrowed amount, including non-trading days. For example, if you buy on 1st January and sell on 11th January, interest is charged from 1st to 10th January on the funded amount." },
   { q: "How long can I hold a position bought using MTF?", a: "You can hold your MTF positions for up to 90 days. Interest continues to accrue on the funded amount each day you hold until squared off or converted to delivery." },
   { q: "Which segments is MTF available in?", a: "MTF is available only in the equity delivery segment, on exchange-approved stocks that meet SEBI's MTF eligibility criteria." },
   { q: "What is Mark-to-Market (MTM) loss in MTF?", a: "If the market value of shares bought using MTF falls below your original buy price, the difference is an MTM loss. This is tracked daily against your funded position." },
@@ -101,7 +101,7 @@ export default function MTFPage() {
                 <span className="text-burgundy">3× More Shares</span>
               </h1>
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-lg">
-                Trade now, pay later. Use Shree Varahi&apos;s Margin Trading Facility to fund part of your purchase and unlock more buying power on {eligibleStocks} — at just 0.049% interest per day.
+                Trade now, pay later. Use Shree Varahi&apos;s Margin Trading Facility to fund part of your purchase and unlock more buying power on {eligibleStocks}, at just 1.5% interest per month.
               </p>
               {/* Funding cap */}
               <p className="inline-flex items-start gap-2 rounded-[6px] border border-gold/35 bg-gold/10 px-3 py-2 text-[12px] sm:text-[13px] font-semibold text-foreground max-w-lg">
@@ -122,8 +122,8 @@ export default function MTFPage() {
               </div>
               <div className="flex flex-wrap lg:justify-end gap-6">
                 <div className="lg:text-right">
-                  <div className="text-lg font-black text-foreground leading-none">0.049%</div>
-                  <div className="text-[10px] text-muted-foreground font-semibold mt-1">Interest / Day</div>
+                  <div className="text-lg font-black text-foreground leading-none">1.5%</div>
+                  <div className="text-[10px] text-muted-foreground font-semibold mt-1">Interest / Month</div>
                 </div>
                 <div className="lg:text-right">
                   <div className="text-lg font-black text-foreground leading-none">Up to 90 Days</div>
@@ -144,7 +144,7 @@ export default function MTFPage() {
             <div className="flex items-center gap-3 text-center sm:text-left">
               <Zap className="w-5 h-5 text-gold-champagne shrink-0 hidden sm:block" />
               <p className="text-sm font-bold">
-                Avail MTF @ 0.049% Interest Rate <span className="font-semibold text-white/80">— for the first 30 days, on borrowing up to ₹1,00,000.</span>
+                Avail MTF at 3X
               </p>
             </div>
             <Button asChild size="sm" className="bg-white hover:bg-gold-champagne text-burgundy font-black text-[12px] h-9 px-5 rounded-[5px] shrink-0">
@@ -161,7 +161,7 @@ export default function MTFPage() {
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">What Is MTF</p>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">How Does Margin Trading Facility Work?</h2>
             <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
-              MTF lets you purchase shares worth up to 3× your available cash — Shree Varahi funds the remaining amount, so your capital goes further.
+              MTF lets you purchase shares worth up to 3× your available cash, Shree Varahi funds the remaining amount, so your capital goes further.
             </p>
           </div>
 
@@ -194,7 +194,7 @@ export default function MTFPage() {
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">See The Benefit</p>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">How MTF Multiplies Your Returns</h2>
             <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
-              With ₹10,000 cash, buying a stock at ₹1,000/share — if the price rises 10% to ₹1,100 in 10 days, here&apos;s how the outcome compares.
+              With ₹10,000 cash, buying a stock at ₹1,000/share, if the price rises 10% to ₹1,100 in 10 days, here&apos;s how the outcome compares.
             </p>
           </div>
 
@@ -219,7 +219,7 @@ export default function MTFPage() {
             </div>
           </div>
           <p className="text-[11px] text-muted-foreground text-center max-w-2xl mx-auto mt-5">
-            * Illustrative example for understanding only. Actual profit is reduced by applicable MTF interest, brokerage, and other charges. Losses are similarly magnified — trade with discretion.
+            * Illustrative example for understanding only. Actual profit is reduced by applicable MTF interest, brokerage, and other charges. Losses are similarly magnified, so trade with discretion.
           </p>
         </div>
       </section>
@@ -347,11 +347,8 @@ export default function MTFPage() {
             {/* Left — copy + form */}
             <div className="flex-1 text-center lg:text-left space-y-5">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
-                Avail MTF<br className="hidden sm:inline" /> @ 0.049% Interest Rate
+                Avail MTF at 3X
               </h2>
-              <p className="text-sm font-semibold text-white/85">
-                Trade Now. Pay Later. Unlock up to 3× buying power on {eligibleStocks} through Shree Varahi.
-              </p>
               <div className="flex items-center justify-center lg:justify-start gap-1.5 text-sm font-bold text-white/85">
                 4.5 <Star className="w-4 h-4 fill-gold-champagne text-gold-champagne" /> App Rating
               </div>

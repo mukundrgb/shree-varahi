@@ -1,7 +1,8 @@
 "use client"
 
 // News: live CMOTS Market Beat stories (/api/v1/news/market-beat).
-// Layout follows angelone.in/news: Top News, then all news filtered by category, then a Learn block.
+// Layout follows angelone.in/news: Top News, all news filtered by category, then a Learn block.
+// Categories are the CMOTS Live News sections as they are, one chip per section (lib/news/categorize.ts).
 // ?category=<name> preselects a category (used by the story page's category links).
 
 import { Suspense, useEffect, useMemo, useState } from "react"
@@ -11,7 +12,7 @@ import { ArrowRight, BookOpen, Clock, Search, X } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
-import { KcCta, KcHeader, KcPagination } from "@/components/knowledge-center"
+import { KcHeader, KcPagination } from "@/components/knowledge-center"
 import { CategoryChips, PostCover } from "@/components/content-ui"
 import { useMarketBeat } from "@/hooks/use-market-news"
 import { ALL_NEWS_CATEGORIES, newsCategory, newsDateTime, newsSummary } from "@/lib/news/categorize"
@@ -21,8 +22,6 @@ const PAGE_SIZE = 12
 const TOP_COUNT = 5
 
 type Story = StockNewsItem & { category: string }
-
-const coverCategory = (c: string) => (c === "IPO" ? "IPO" : c === "Economy" ? "Economy" : c === "Results" ? "Stocks" : "News")
 
 function StoryMeta({ s }: { s: Story }) {
   return (
@@ -47,8 +46,11 @@ function NewsContent() {
   }, [params])
 
   const stories = useMemo<Story[]>(() => (news.data?.items ?? []).map((n) => ({ ...n, category: newsCategory(n) })), [news.data])
-  // Only categories that have stories right now.
-  const categories = useMemo(() => ALL_NEWS_CATEGORIES.filter((c) => stories.some((s) => s.category === c)), [stories])
+  const counts = useMemo(() => {
+    const out: Record<string, number> = {}
+    for (const s of stories) out[s.category] = (out[s.category] ?? 0) + 1
+    return out
+  }, [stories])
 
   const top = stories.slice(0, TOP_COUNT)
   const filtered = useMemo(() => {
@@ -77,7 +79,7 @@ function NewsContent() {
             Share Market <span className="text-burgundy">News &amp; Updates</span>
           </h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            The latest company announcements, results, IPOs, orders and corporate actions — updated through the trading day.
+            The latest company announcements, results, IPOs, orders and corporate actions, updated through the trading day.
           </p>
         </div>
       </KcHeader>
@@ -96,7 +98,7 @@ function NewsContent() {
                 href={`/news/${top[0].id}`}
                 className="group bg-white border border-border/70 rounded-[14px] overflow-hidden hover:border-burgundy/40 hover:shadow-[0_12px_40px_rgba(0,0,0,0.07)] transition-all flex flex-col"
               >
-                <PostCover category={coverCategory(top[0].category)} large className="h-48 sm:h-60" />
+                <PostCover category={top[0].category} large className="h-48 sm:h-60" />
                 <div className="p-6 flex flex-col flex-1">
                   <StoryMeta s={top[0]} />
                   <h3 className="text-xl lg:text-2xl font-black text-foreground leading-snug mt-3 mb-3 group-hover:text-burgundy transition-colors">{top[0].headline}</h3>
@@ -106,7 +108,7 @@ function NewsContent() {
               <div className="bg-white border border-border/70 rounded-[14px] divide-y divide-border/50">
                 {top.slice(1).map((s) => (
                   <Link key={s.id} href={`/news/${s.id}`} className="group flex gap-4 p-4 hover:bg-cream/40 transition-colors">
-                    <PostCover category={coverCategory(s.category)} className="w-20 h-20 rounded-[10px] shrink-0" />
+                    <PostCover category={s.category} className="w-20 h-20 rounded-[10px] shrink-0" />
                     <span className="min-w-0">
                       <StoryMeta s={s} />
                       <span className="block text-sm font-black text-foreground leading-snug mt-1.5 line-clamp-3 group-hover:text-burgundy transition-colors">{s.headline}</span>
@@ -142,7 +144,7 @@ function NewsContent() {
                 )}
               </label>
             </div>
-            <div className="mb-6"><CategoryChips categories={categories} value={category} onChange={pick} /></div>
+            <div className="mb-6"><CategoryChips categories={ALL_NEWS_CATEGORIES} value={category} onChange={pick} counts={counts} /></div>
 
             {visible.length === 0 ? (
               <p className="py-14 text-center text-sm text-muted-foreground">No posts found.</p>
@@ -183,8 +185,6 @@ function NewsContent() {
           </div>
         </div>
       </section>
-
-      <KcCta />
     </>
   )
 }

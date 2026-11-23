@@ -253,7 +253,7 @@ function OpenIpoCard({ ipo }: { ipo: OpenIpo }) {
         {/* Price / Issue / Lot */}
         <div className="grid grid-cols-3 gap-2 mb-4">
           {[
-            { label: "Price Band", val: ipo.priceMin === null ? "—" : ipo.priceMin === ipo.priceMax ? `₹${ipo.priceMin}` : `₹${ipo.priceMin}–${ipo.priceMax}` },
+            { label: "Price Band", val: ipo.priceMin === null ? "—" : ipo.priceMin === ipo.priceMax ? `₹${ipo.priceMin}` : `₹${ipo.priceMin} to ₹${ipo.priceMax}` },
             { label: "Issue Size",  val: crore(ipo.issueSizeCr) },
             { label: "Lot Size",    val: ipo.lotSize === null ? "—" : `${ipo.lotSize} shares` },
           ].map((d) => (
@@ -737,7 +737,7 @@ export default function IpoPage() {
                 step: "03",
                 icon: Award,
                 title: "Bid & Track",
-                desc: "Enter your price bid and quantity. Funds are blocked via ASBA — no upfront debit. Track allotment instantly.",
+                desc: "Enter your price bid and quantity. Funds are blocked via ASBA, no upfront debit. Track allotment instantly.",
                 color: "#8B0D19",
               },
             ].map((s, i) => {

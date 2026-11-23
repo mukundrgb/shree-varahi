@@ -17,7 +17,7 @@ export function AdvisoryBasketsSection() {
             Invest in <span className="text-burgundy">expert-curated</span> stock baskets.
           </h2>
           <p className="text-muted-foreground text-base max-w-2xl mx-auto">
-            Get diversified exposure to research-backed stock portfolios built by SEBI-registered analysts — invest in a complete strategy with a single click.
+            Get diversified exposure to research-backed stock portfolios built by SEBI-registered analysts, invest in a complete strategy with a single click.
           </p>
         </div>
 
@@ -35,7 +35,7 @@ export function AdvisoryBasketsSection() {
                   Expert-Curated Portfolios
                 </h3>
                 <p className="text-muted-foreground text-base leading-relaxed">
-                  Every basket is built and maintained by SEBI-registered research analysts, combining in-depth fundamental research with active market tracking and smart auto-rebalancing — so your portfolio stays aligned with its strategy.
+                  Every basket is built and maintained by SEBI-registered research analysts, combining in-depth fundamental research with active market tracking and smart auto-rebalancing, so your portfolio stays aligned with its strategy.
                 </p>
                 <div className="flex flex-wrap gap-x-5 gap-y-2 pt-1">
                   <span className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">

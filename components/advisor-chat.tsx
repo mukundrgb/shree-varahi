@@ -20,7 +20,7 @@ const ADVISOR = {
   experience: "10+ years in Indian markets",
   languages: ["English", "Hindi", "Marathi"],
   expertise: ["Stocks & IPOs", "Mutual Funds & SIPs", "F&O", "Portfolio Review"],
-  hours: "Mon–Sat, 9:00 AM – 6:00 PM",
+  hours: "Mon to Sat, 9:00 AM to 6:00 PM",
 }
 
 type Msg = { id: number; from: "bot" | "user"; text: string; link?: { label: string; href: string } }
@@ -29,7 +29,7 @@ const QUICK_REPLIES = ["Open an account", "Brokerage charges", "Upcoming IPOs", 
 
 /** Keyword → reply. The first match wins; anything else offers a callback. */
 const ANSWERS: { test: RegExp; text: string; link?: Msg["link"] }[] = [
-  { test: /open|account|demat|kyc|sign ?up/i, text: "You can open a free demat & trading account in minutes with PAN, Aadhaar and bank details — zero account opening charges.", link: { label: "Open Free Account", href: LOGIN_URL } },
+  { test: /open|account|demat|kyc|sign ?up/i, text: "You can open a free demat & trading account in minutes with PAN, Aadhaar and bank details, zero account opening charges.", link: { label: "Open Free Account", href: LOGIN_URL } },
   { test: /brokerage|charge|fee|cost|amc/i, text: "Equity delivery is free. Intraday and F&O orders have a flat low brokerage per executed order, with zero AMC.", link: { label: "Brokerage Calculator", href: CALCULATOR_LINKS.brokerage } },
   { test: /ipo/i, text: "See every open, upcoming and recently listed IPO with dates, price bands and lot sizes.", link: { label: "View IPOs", href: "/ipo" } },
   { test: /mutual|fund|sip|lumpsum/i, text: "Explore 1,000+ mutual funds with zero commission, compare returns and start a SIP.", link: { label: "Explore Mutual Funds", href: "/mutual-funds" } },
@@ -96,7 +96,7 @@ export function AdvisorChat() {
       const hit = ANSWERS.find((a) => a.test.test(t))
       if (hit) push({ from: "bot", text: hit.text, link: hit.link })
       else {
-        push({ from: "bot", text: "Good question! An advisor can help with that — would you like a callback?" })
+        push({ from: "bot", text: "Good question! An advisor can help with that. Would you like a callback?" })
         setCallback("form")
       }
     }, 700)
@@ -111,7 +111,8 @@ export function AdvisorChat() {
   const openChat = () => { setOpen(true); setShowTeaser(false) }
 
   return (
-    <div className="fixed right-4 sm:right-6 bottom-24 lg:bottom-6 z-[60] flex flex-col items-end gap-3">
+    // Sits directly above the scroll-to-top button (56px at bottom/right 28px, components/scroll-progress.tsx).
+    <div className="fixed right-7 bottom-24 z-[60] flex flex-col items-end gap-3">
       <AnimatePresence>
         {open && (
           <motion.div
@@ -122,7 +123,7 @@ export function AdvisorChat() {
             transition={{ duration: 0.2 }}
             role="dialog"
             aria-label="Chat with an advisor"
-            className="w-[calc(100vw-32px)] sm:w-[380px] h-[min(580px,calc(100vh-180px))] lg:h-[min(600px,calc(100vh-120px))] bg-white rounded-[16px] border border-border shadow-[0_24px_70px_rgba(0,0,0,0.22)] overflow-hidden flex flex-col"
+            className="w-[calc(100vw-44px)] sm:w-[380px] h-[min(580px,calc(100vh-180px))] lg:h-[min(600px,calc(100vh-200px))] bg-white rounded-[16px] border border-border shadow-[0_24px_70px_rgba(0,0,0,0.22)] overflow-hidden flex flex-col"
           >
             {/* Header: advisor */}
             <div className="relative px-4 pt-4 pb-3 text-white" style={{ background: "linear-gradient(135deg, #8B0D19 0%, #c20000 100%)" }}>
@@ -280,7 +281,7 @@ export function AdvisorChat() {
             className="max-w-[240px] text-left bg-white border border-border rounded-[14px] rounded-br-[4px] shadow-[0_12px_40px_rgba(0,0,0,0.15)] px-4 py-3"
           >
             <span className="block text-xs font-black text-foreground">Need help investing?</span>
-            <span className="block text-[11px] text-muted-foreground">Chat with our advisor — we reply instantly.</span>
+            <span className="block text-[11px] text-muted-foreground">Chat with our advisor, we reply instantly.</span>
           </motion.button>
         )}
       </AnimatePresence>

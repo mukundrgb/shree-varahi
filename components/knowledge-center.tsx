@@ -90,7 +90,7 @@ export function KcCta() {
         <div className="absolute -bottom-10 -left-10 w-36 h-36 rounded-full bg-white/10" />
         <div className="relative z-10">
           <h2 className="text-2xl sm:text-3xl font-black text-white mb-2">Put Your Knowledge to Work</h2>
-          <p className="text-sm text-white/85 max-w-lg">Open your free Shree Varahi account in minutes — zero account opening charges and zero AMC.</p>
+          <p className="text-sm text-white/85 max-w-lg">Open your free Shree Varahi account in minutes, zero account opening charges and zero AMC.</p>
         </div>
         <Link href="/signup/register" className="relative z-10 shrink-0">
           <Button className="bg-white text-burgundy hover:bg-white/90 rounded-[5px] h-12 px-8 text-sm font-black">

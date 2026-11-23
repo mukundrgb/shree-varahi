@@ -1,6 +1,6 @@
 "use client"
 
-// Blog post: category, title, meta, cover, body, share row, related posts, open-account card.
+// Blog post: categories sidebar (left), category, title, meta, cover, body, related posts and open-account card (right).
 
 import Link from "next/link"
 import { useParams } from "next/navigation"
@@ -8,9 +8,11 @@ import { ArrowLeft, CalendarDays, Clock } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
-import { KcCta, KcHeader } from "@/components/knowledge-center"
-import { PostCover } from "@/components/content-ui"
-import { formatBlogDate, getPost, getPostBody, getRelatedPosts } from "@/lib/blog/data"
+import { KcHeader } from "@/components/knowledge-center"
+import { CategoryLinkRow, CategorySidebar, PostCover } from "@/components/content-ui"
+import { BLOG_CATEGORIES, BLOG_CATEGORY_COUNTS, formatBlogDate, getPost, getPostBody, getRelatedPosts } from "@/lib/blog/data"
+
+const blogCategoryHref = (c: string) => `/blog?category=${encodeURIComponent(c)}`
 
 export default function BlogPostPage() {
   const params = useParams()
@@ -38,7 +40,9 @@ export default function BlogPostPage() {
 
       <KcHeader crumbs={[{ label: "Home", href: "/" }, { label: "Blog", href: "/blog" }, { label: post.title }]}>
         <div className="max-w-3xl space-y-3">
-          <span className="text-[11px] font-extrabold uppercase tracking-wider text-gold-deep">{post.category}</span>
+          <Link href={blogCategoryHref(post.category)} className="text-[11px] font-extrabold uppercase tracking-wider text-gold-deep hover:text-burgundy transition-colors">
+            {post.category}
+          </Link>
           <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black text-foreground tracking-tight leading-[1.12]">{post.title}</h1>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-semibold text-muted-foreground">
             <span className="flex items-center gap-1.5"><CalendarDays className="w-3.5 h-3.5" /> {formatBlogDate(post.date)}</span>
@@ -49,8 +53,15 @@ export default function BlogPostPage() {
       </KcHeader>
 
       <section className="py-10 lg:py-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid lg:grid-cols-[minmax(0,1fr)_320px] gap-8 lg:gap-12 items-start">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid lg:grid-cols-[230px_minmax(0,1fr)_300px] gap-8 lg:gap-10 items-start">
+          {/* Left: categories (desktop), sticky under the navbar */}
+          <aside className="hidden lg:block lg:sticky lg:top-[76px] lg:max-h-[calc(100vh-92px)] lg:overflow-y-auto" style={{ scrollbarWidth: "none" }}>
+            <CategorySidebar categories={BLOG_CATEGORIES} current={post.category} hrefFor={blogCategoryHref} counts={BLOG_CATEGORY_COUNTS} />
+          </aside>
+
           <article className="min-w-0">
+            {/* Phones / tablets: categories as a swipeable row */}
+            <CategoryLinkRow categories={BLOG_CATEGORIES} current={post.category} hrefFor={blogCategoryHref} />
             <PostCover category={post.category} large className="h-56 sm:h-72 rounded-[14px] mb-8" />
 
             <p className="text-base text-foreground/85 leading-relaxed font-semibold mb-8">{post.excerpt}</p>
@@ -97,7 +108,6 @@ export default function BlogPostPage() {
         </div>
       </section>
 
-      <KcCta />
       <Footer />
     </main>
   )

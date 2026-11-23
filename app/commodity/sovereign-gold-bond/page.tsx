@@ -9,9 +9,9 @@ import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 
 const BENEFITS = [
-  { icon: Landmark, title: "Government Backed", desc: "Issued by the Reserve Bank of India on behalf of the Government of India — zero credit risk." },
+  { icon: Landmark, title: "Government Backed", desc: "Issued by the Reserve Bank of India on behalf of the Government of India, zero credit risk." },
   { icon: Percent, title: "2.5% Annual Interest", desc: "Earn fixed interest on your investment, paid semi-annually, on top of gold price appreciation." },
-  { icon: Shield, title: "No Storage Risk", desc: "Held in demat form — no making charges, no purity concerns, no physical storage needed." },
+  { icon: Shield, title: "No Storage Risk", desc: "Held in demat form, no making charges, no purity concerns, no physical storage needed." },
   { icon: TrendingUp, title: "Tax-Free Capital Gains", desc: "Capital gains are exempt from tax if the bond is held until maturity (8 years)." },
 ]
 
@@ -60,7 +60,7 @@ export default function SovereignGoldBondPage() {
                 Gold Returns, <span className="text-burgundy">Plus Interest.</span>
               </h1>
               <p className="text-base text-muted-foreground leading-relaxed mb-6 max-w-lg">
-                Sovereign Gold Bonds combine gold price appreciation with a fixed 2.5% annual interest — backed by the Government of India, with zero storage hassle.
+                Sovereign Gold Bonds combine gold price appreciation with a fixed 2.5% annual interest, backed by the Government of India, with zero storage hassle.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button className="bg-burgundy hover:bg-burgundy-deep text-white rounded-[5px] h-11 px-7 text-sm font-bold" asChild>

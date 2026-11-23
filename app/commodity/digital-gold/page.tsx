@@ -58,7 +58,7 @@ export default function DigitalGoldPage() {
                 Own Gold, <span className="text-burgundy">Digitally.</span>
               </h1>
               <p className="text-base text-muted-foreground leading-relaxed mb-6 max-w-lg">
-                Buy and sell 99.9% pure gold instantly at live market prices — starting from just ₹1. Secure, insured, and redeemable for physical gold anytime.
+                Buy and sell 99.9% pure gold instantly at live market prices, starting from just ₹1. Secure, insured, and redeemable for physical gold anytime.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button className="bg-burgundy hover:bg-burgundy-deep text-white rounded-[5px] h-11 px-7 text-sm font-bold" asChild>

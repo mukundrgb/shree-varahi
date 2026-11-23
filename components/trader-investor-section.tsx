@@ -8,29 +8,29 @@ import Link from "next/link"
 import { Check, ChevronDown, ChevronUp, BarChart2, LineChart } from "lucide-react"
 
 const traderFeatures = [
-  "5× Intraday Leverage — Trade with up to 5× your capital on NSE & BSE stocks.",
-  "Live Option Chain & Greeks — Delta, Theta, Gamma, Vega updating in real time.",
-  "MTF — 3× Buying Power — Turn ₹10,000 into ₹30,000 across 1,700+ stocks.",
-  "Sub-80ms Order Execution — Trades go through before the market blinks.",
-  "Advanced Order Types — GTT, OCO, AMO, CO, BO — full control every time.",
-  "50+ Stock Screeners — Breakout scans, OI filters, volume surge alerts live.",
-  "Option Strategy Builder — Build, analyse, and execute multi-leg strategies.",
-  "Free Algo & API Access — Automate your strategy with zero extra cost.",
-  "Futures Chain with Live Margin — See required margin before you place the order.",
-  "TradingView Charts — Professional multi-timeframe charting built right in.",
+  "5× Intraday Leverage: Trade with up to 5× your capital on NSE & BSE stocks.",
+  "Live Option Chain & Greeks: Delta, Theta, Gamma, Vega updating in real time.",
+  "MTF 3× Buying Power: Turn ₹10,000 into ₹30,000 across 1,700+ stocks.",
+  "Sub-80ms Order Execution: Trades go through before the market blinks.",
+  "Advanced Order Types: GTT, OCO, AMO, CO, BO for full control every time.",
+  "50+ Stock Screeners: Breakout scans, OI filters, volume surge alerts live.",
+  "Option Strategy Builder: Build, analyse, and execute multi-leg strategies.",
+  "Free Algo & API Access: Automate your strategy with zero extra cost.",
+  "Futures Chain with Live Margin: See required margin before you place the order.",
+  "TradingView Charts: Professional multi-timeframe charting built right in.",
 ]
 
 const investorFeatures = [
-  "₹17 Delivery Brokerage — Buy and hold stocks at a flat ₹17 per delivery order.",
-  "SIP from ₹100/month — Automate investing in stocks or mutual funds.",
-  "Zero-Commission Mutual Funds — Direct plans only. Every rupee of return is yours.",
-  "Free IPO & NFO Applications — Apply via UPI in two taps. No hidden fees.",
-  "US & Global Stocks — Invest in Apple, Tesla, Google directly from India.",
-  "Digital Gold & Silver — Buy 24K gold at live MCX prices. Vault stored.",
-  "XIRR Portfolio Tracker — See your real annualised return across all holdings.",
-  "Dividend Tracker — Never miss a payout. All earnings tracked automatically.",
-  "ETF Investing — Gold, index, and sectoral ETFs at the lowest cost.",
-  "Long-term Capital Gains Tracker — Stay on top of your tax liability year-round.",
+  "₹17 Delivery Brokerage: Buy and hold stocks at a flat ₹17 per delivery order.",
+  "SIP from ₹100/month: Automate investing in stocks or mutual funds.",
+  "Zero-Commission Mutual Funds: Direct plans only. Every rupee of return is yours.",
+  "Free IPO & NFO Applications: Apply via UPI in two taps. No hidden fees.",
+  "US & Global Stocks: Invest in Apple, Tesla, Google directly from India.",
+  "Digital Gold & Silver: Buy 24K gold at live MCX prices. Vault stored.",
+  "XIRR Portfolio Tracker: See your real annualised return across all holdings.",
+  "Dividend Tracker: Never miss a payout. All earnings tracked automatically.",
+  "ETF Investing: Gold, index, and sectoral ETFs at the lowest cost.",
+  "Long-term Capital Gains Tracker: Stay on top of your tax liability year-round.",
 ]
 
 const PREVIEW_COUNT = 4
@@ -170,9 +170,9 @@ function FeatureList({
     <div className="mb-8 flex-1">
       <ul className="space-y-3">
         {visible.map((feature) => {
-          const parts = feature.split(" — ")
-          const heading = parts.length > 1 ? parts.slice(0, -1).join(" — ") : feature
-          const desc = parts.length > 1 ? parts[parts.length - 1] : ""
+          const parts = feature.split(": ")
+          const heading = parts.length > 1 ? parts[0] : feature
+          const desc = parts.length > 1 ? parts.slice(1).join(": ") : ""
           return (
             <li key={feature} className="flex items-start gap-3">
               <div
@@ -183,7 +183,7 @@ function FeatureList({
               </div>
               <span className="text-sm text-foreground/75 leading-relaxed">
                 <strong className="font-bold" style={{ color: headingColor }}>{heading}</strong>
-                {desc && <span className="text-foreground/70"> — {desc}</span>}
+                {desc && <span className="text-foreground/70">: {desc}</span>}
               </span>
             </li>
           )
@@ -253,7 +253,7 @@ export function TraderInvestorSection() {
             One platform. <span className="text-burgundy">Built for both.</span>
           </h2>
           <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-            Whether you&apos;re chasing intraday momentum or building decade-long wealth — every tool you need lives here.
+            Whether you&apos;re chasing intraday momentum or building decade-long wealth, every tool you need lives here.
           </p>
         </motion.div>
 

@@ -135,7 +135,7 @@ const TOOLS = [
   { icon: LineChart,   color: "#8B0D19", title: "Technical Analysis",      desc: "Analyse price action with advanced charts, 100+ indicators, and drawing tools across multiple timeframes." },
   { icon: Zap,         color: "#8B0D19", title: "Margin Trading (MTF)",    desc: "Get up to 3× buying power on 1,700+ stocks. Invest more without liquidating your existing holdings." },
   { icon: ShieldCheck, color: "#8B0D19", title: "Pledge Stocks Benefits",  desc: "Use your existing holdings as collateral to unlock additional margin and put your idle portfolio to work." },
-  { icon: PieChart,    color: "#8B0D19", title: "Portfolio Tracking",      desc: "Monitor your holdings, returns, XIRR performance, dividend payouts, and corporate actions — all in one view." },
+  { icon: PieChart,    color: "#8B0D19", title: "Portfolio Tracking",      desc: "Monitor your holdings, returns, XIRR performance, dividend payouts, and corporate actions, all in one view." },
   { icon: Eye,         color: "#8B0D19", title: "Watchlists",              desc: "Track your favourite stocks in real time. Get price alerts and stay on top of every opportunity as it moves." },
   { icon: RotateCcw,   color: "#8B0D19", title: "SIP In Stocks",           desc: "Invest a fixed amount in selected stocks every month. Build wealth consistently without timing the market." },
   { icon: Bell,        color: "#8B0D19", title: "Market Alerts",           desc: "Set custom alerts on price levels, volume spikes, and news events. Never miss a move that matters." },
@@ -427,7 +427,7 @@ export default function StocksPage() {
                 Stocks Investing With <span className="text-burgundy lg:block">MTF &amp; Pledge Benefits</span>
               </h1>
               <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
-                Trade and invest in 5,000+ NSE &amp; BSE listed stocks with Margin Trading Facility, pledge benefits, and powerful research tools — all on one platform.
+                Trade and invest in 5,000+ NSE &amp; BSE listed stocks with Margin Trading Facility, pledge benefits, and powerful research tools, all on one platform.
               </p>
             </div>
             {/* Actions + trust stats on the right (the old browse card is gone, so the hero is shorter) */}
@@ -759,7 +759,7 @@ export default function StocksPage() {
           <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep mb-4">Simple Pricing</p>
           <div className="text-6xl sm:text-7xl font-black text-gold-deep tracking-tight mb-4">₹17</div>
           <p className="text-base sm:text-lg text-foreground leading-relaxed max-w-xl mx-auto">
-            No percentage fees, no hidden slabs. Just one honest price on every trade — delivery, intraday and F&amp;O.
+            No percentage fees, no hidden slabs. Just one honest price on every trade: delivery, intraday and F&amp;O.
           </p>
           <div className="mt-7">
             <Button className="bg-burgundy hover:bg-burgundy-deep text-white px-8 h-11 font-bold rounded-[5px]">

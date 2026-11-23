@@ -19,7 +19,7 @@ const steps = [
     tag: "TRACK",
     tabLabel: "Invest in one click",
     title: "Invest in One Click",
-    desc: "Get proportional exposure to every stock in the basket instantly. No need to buy shares individually — our platform places all underlying orders simultaneously in under 80ms.",
+    desc: "Get proportional exposure to every stock in the basket instantly. No need to buy shares individually, our platform places all underlying orders simultaneously in under 80ms.",
     icon: TrendingUp,
   },
   {

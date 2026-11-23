@@ -30,7 +30,7 @@ const features = [
     title: "Live Option Chain",
     subtitle: "Real-time Greeks Analysis",
     description:
-      "Delta, Theta, Gamma, Vega — all updating in real-time. Build strategies with confidence using live IV data.",
+      "Delta, Theta, Gamma, Vega, all updating in real-time. Build strategies with confidence using live IV data.",
     visual: "option-chain",
     color: "#059669",
   },

@@ -46,11 +46,11 @@ const FEATURES = [
   },
   {
     icon: PinOff, tag: "Realtime", title: "Sticky Order Window",
-    desc: "Trade directly from charts across all segments, powered by TradingView's charting engine combined with Shree Varahi Web's own order execution flow — keep your order window pinned wherever you are on screen.",
+    desc: "Trade directly from charts across all segments, powered by TradingView's charting engine combined with Shree Varahi Web's own order execution flow, keep your order window pinned wherever you are on screen.",
   },
   {
     icon: Zap, tag: "Realtime", title: "Flash Trade",
-    desc: "Made for swift execution during intense markets! Flash Trade lets you identify option contracts based on your outlook. Analyze ATM contracts, top trades, and more during busy markets — execute in a flash.",
+    desc: "Made for swift execution during intense markets! Flash Trade lets you identify option contracts based on your outlook. Analyze ATM contracts, top trades, and more during busy markets, execute in a flash.",
   },
   {
     icon: ShieldAlert, tag: null, title: "Trader's Control",
@@ -62,11 +62,11 @@ const FEATURES = [
   },
   {
     icon: LayoutGrid, tag: "Realtime", title: "Manage Positions",
-    desc: "One of the best web platform features we have. Manage positions seamlessly — add more quantity, reverse or exit trades in a single tap. Add a stop loss and view everything on a single screen.",
+    desc: "One of the best web platform features we have. Manage positions seamlessly, add more quantity, reverse or exit trades in a single tap. Add a stop loss and view everything on a single screen.",
   },
   {
     icon: Percent, tag: null, title: "Margin Trading Facility",
-    desc: "Buy more with less! Get up to 3× leverage for swing trading and BTST on 1,700+ stocks. Check margin benefits for each scrip with the MTF Estimator — with up to 90 days holding period on your MTF positions.",
+    desc: "Buy more with less! Get up to 3× leverage for swing trading and BTST on 1,700+ stocks. Check margin benefits for each scrip with the MTF Estimator, with up to 90 days holding period on your MTF positions.",
   },
 ]
 
@@ -86,11 +86,11 @@ const TV_FEATURES = [
 
 const FAQS = [
   { q: "Is Shree Varahi Web trading platform safe?", a: "Yes, Shree Varahi Web is a safe web trading platform regulated by SEBI. As a SEBI-registered broker, we use state-of-the-art technology to ensure your data stays safe and secure at all times." },
-  { q: "Is Shree Varahi Web trading platform free?", a: "Yes, you can open a demat account on Shree Varahi Web online for free — and we don't charge AMC or platform fees either." },
+  { q: "Is Shree Varahi Web trading platform free?", a: "Yes, you can open a demat account on Shree Varahi Web online for free, and we don't charge AMC or platform fees either." },
   { q: "What are the brokerage charges on Shree Varahi Web?", a: "Shree Varahi Web enables you to trade in the securities market, especially derivatives like Futures and Options. There's a flat ₹20 brokerage for Equity Intraday & All Segment Futures, and ₹20 per order for All Segment Options. We remain transparent about our pricing, always." },
-  { q: "How long does it take to open a demat and trading account?", a: "Opening a demat account on Shree Varahi takes less than 10 minutes. Click \"Start Now\", verify your mobile number and email, upload the required documents, and complete e-Sign — you'll receive your account details and can start investing right away." },
+  { q: "How long does it take to open a demat and trading account?", a: "Opening a demat account on Shree Varahi takes less than 10 minutes. Click \"Start Now\", verify your mobile number and email, upload the required documents, and complete e-Sign, you'll receive your account details and can start investing right away." },
   { q: "How do I transfer my portfolio from my current broker to Shree Varahi?", a: "Register and log in on CDSL Easiest, click Transaction → Setup, select Bulk Setup → Transaction, enter the execution date and Beneficiary Owner ID (BOID), choose the stock(s) under Account ISINs, submit, verify, and confirm with your CDSL Easiest PIN." },
-  { q: "Does Shree Varahi Web support algo trading?", a: "Yes, Shree Varahi Web is built for algo traders too. Using our Trading APIs, you can automate buy/sell orders with liberal rate limits, a dedicated SDK, and clear documentation — no coding experience required." },
+  { q: "Does Shree Varahi Web support algo trading?", a: "Yes, Shree Varahi Web is built for algo traders too. Using our Trading APIs, you can automate buy/sell orders with liberal rate limits, a dedicated SDK, and clear documentation, no coding experience required." },
 ]
 
 function CheckPill({ label }: { label: string }) {

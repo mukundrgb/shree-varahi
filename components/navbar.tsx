@@ -53,7 +53,7 @@ const MF_SIP: MenuItem[] = [
   { title: "Mutual Funds",   desc: "0% commission", icon: <Landmark  className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/mutual-funds" },
   // SIP Calculator is hidden for now.
   // { title: "SIP Calculator", desc: "Plan your monthly SIP goal",          icon: <RotateCcw className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/mutual-funds" },
-  { title: "NFO",            desc: "New fund offers — invest early",      icon: "🆕",                                                              href: "/nfo" },
+  { title: "NFO",            desc: "New fund offers, invest early",      icon: "🆕",                                                              href: "/nfo" },
 ]
 
 const PRODUCTS: MenuItem[] = [

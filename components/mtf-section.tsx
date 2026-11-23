@@ -197,7 +197,7 @@ export function MTFSection() {
               <div>
                 <h3 className="font-bold text-xl text-foreground">MTF Calculator</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Select a stock to see the exact margin trading facility available — different stocks have different MTF limits.
+                  Select a stock to see the exact margin trading facility available. Different stocks have different MTF limits.
                 </p>
               </div>
 

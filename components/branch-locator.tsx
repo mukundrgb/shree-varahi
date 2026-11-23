@@ -8,19 +8,19 @@ import { Search, MapPin, Phone, ExternalLink } from "lucide-react"
 
 const branches = [
   { city: "Mumbai (HQ)", address: "Unit No 407, IV Floor, Marathon Icon, Marathon Nextgen Campus, Ganpat Rao Kadam Marg, Opposite Peninsula Corporate Park, Lower Parel West", phone: "(022) 43431818" },
-  { city: "Delhi", address: "Narain Manzil, Flat No.710, 7th Floor, Barakhamba Road, Connaught Place, New Delhi - 110001", phone: "(+91) 9354718758" },
+  { city: "Delhi", address: "Narain Manzil, Flat No.710, 7th Floor, Barakhamba Road, Connaught Place, New Delhi 110001", phone: "(+91) 9354718758" },
   { city: "Kolkata", address: "Rabindra Sarani, Poddar Court Gate No.2 6th Floor Room No.37A Kolkata", phone: "+91 33 4080 8080" }, 
-  { city: "Kolkata", address: "9, Weston Street, Siddha Weston, 4th floor, Room no.419, Kolkata - 700013", phone: "(+91) 9830768524" }, 
-  { city: "Varanasi", address: "Shree House C -29/61-5, Teliyabag, Varanasi - 221002", phone: "(+91) 9005750500" },
+  { city: "Kolkata", address: "9, Weston Street, Siddha Weston, 4th floor, Room no.419, Kolkata 700013", phone: "(+91) 9830768524" }, 
+  { city: "Varanasi", address: "Shree House C -29/61-5, Teliyabag, Varanasi 221002", phone: "(+91) 9005750500" },
   { city: "Ahmedabad", address: "B-409 shilp corporate park, Rajpath rangoli road, Bodakdev, Ahmedabad, Gujrat -380054", phone: "(+91) 7969691110" },
-  { city: "Surat", address: "403, Cabin A, Luxuria Business Hub, Near VR Mall, Surat – 395007", phone: "(+91) 9313187844" }, 
-  { city: "Kanpur", address: "Cabin No. 687 Padam Tower-I, 14/113, 4th Floor, Civil Lines, Kanpur - 208001", phone: "(+91) 9389481008" },
-  { city: "Varanasi", address: "C27/273 K1, Indian Press Colony, Varanasi - 221001", phone: "(+91) 92353 95869" },
-  { city: "Ujjain", address: "316, Siddhi Vinayak Tower, Near Shahid Park, Freeganj, Ujjain - 456010", phone: "(+91) 9039468616" },
-  { city: "Varanasi", address: "CK 58/7, Narayan Katra, Nichi Bagh, Varanasi - 221001", phone: "(+91) 63941 57525" },
-  { city: "Durgapur", address: "5/4, Suhatta Commercial Complex, City Centre, Durgapur - 713216", phone: "(+91) 97351 44277" },
+  { city: "Surat", address: "403, Cabin A, Luxuria Business Hub, Near VR Mall, Surat 395007", phone: "(+91) 9313187844" }, 
+  { city: "Kanpur", address: "Cabin No. 687 Padam Tower-I, 14/113, 4th Floor, Civil Lines, Kanpur 208001", phone: "(+91) 9389481008" },
+  { city: "Varanasi", address: "C27/273 K1, Indian Press Colony, Varanasi 221001", phone: "(+91) 92353 95869" },
+  { city: "Ujjain", address: "316, Siddhi Vinayak Tower, Near Shahid Park, Freeganj, Ujjain 456010", phone: "(+91) 9039468616" },
+  { city: "Varanasi", address: "CK 58/7, Narayan Katra, Nichi Bagh, Varanasi 221001", phone: "(+91) 63941 57525" },
+  { city: "Durgapur", address: "5/4, Suhatta Commercial Complex, City Centre, Durgapur 713216", phone: "(+91) 97351 44277" },
   { city: "Patna", address: "Patna Office- patna@lakshmishree.com", phone: "(+91) 7488341545" },
-  // { city: "Dhanbad", address: "Office No. 311, 3rd Floor, Industry House, Shanti Bhawan, Bank More, Dhanbad - 826001", phone: "(+91) 9308308055" },
+  // { city: "Dhanbad", address: "Office No. 311, 3rd Floor, Industry House, Shanti Bhawan, Bank More, Dhanbad 826001", phone: "(+91) 9308308055" },
 ]
 
 // Coordinates mapped to viewBox "0 0 400 450"

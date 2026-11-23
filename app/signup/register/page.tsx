@@ -487,7 +487,7 @@ export default function RegisterPage() {
                     </button>
 
                     <h1 className="text-[21px] font-extrabold text-foreground mb-0.5">Your Details</h1>
-                    <p className="text-sm text-muted-foreground mb-5">Almost there — just a few more details</p>
+                    <p className="text-sm text-muted-foreground mb-5">Almost there, just a few more details</p>
 
                     {/* Full name */}
                     <div className="mb-4">
@@ -638,7 +638,7 @@ export default function RegisterPage() {
                       Identity Verification
                     </h1>
                     <p className="text-sm text-muted-foreground mb-6">
-                      Preparing your eKYC — please don&apos;t close this tab
+                      Preparing your eKYC. Please don&apos;t close this tab
                     </p>
 
                     {/* KYC progress items */}

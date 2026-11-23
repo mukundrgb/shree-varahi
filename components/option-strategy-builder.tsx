@@ -247,7 +247,7 @@ export function OptionStrategyBuilder() {
             <span className="text-burgundy">See the payoff first.</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-            Model any options strategy — visualise profit & loss before placing a single order.
+            Model any options strategy, visualise profit & loss before placing a single order.
           </p>
         </motion.div>
 

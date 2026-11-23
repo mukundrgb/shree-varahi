@@ -72,7 +72,7 @@ const DATA: IndexPageData = {
     "As a bellwether for India's IT export industry, NIFTY IT is closely watched for signals on global technology spending, currency movements, and offshore outsourcing demand.",
   ],
   ctaHeadline: "Trade Nifty It with Zero Brokerage",
-  ctaBody: "Index funds, ETFs & derivatives — all in one place. Start investing from ₹500.",
+  ctaBody: "Index funds, ETFs & derivatives, all in one place. Start investing from ₹500.",
 }
 
 export default function NiftyItPage() {

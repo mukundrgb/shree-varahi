@@ -82,7 +82,7 @@ const promoSlides: PromoSlide[] = [
     src: "/mtf-banner.png",
     badge: "MARGIN TRADING",
     label: "Trade with 3× leverage",
-    sublabel: "Margin Trading Facility — up to 3× on eligible stocks",
+    sublabel: "Margin Trading Facility, up to 3× on eligible stocks",
     href: "/",
   },
   {
@@ -91,7 +91,7 @@ const promoSlides: PromoSlide[] = [
     badgeColor: "#FF0000",
     headline: "₹17",
     headlineSub: "Intraday & F&O",
-    body: "Trade any size lot — just ₹17 per executed order. No percentage, no surprises.",
+    body: "Trade any size lot, just ₹17 per executed order. No percentage, no surprises.",
     bg: ["#150404", "#260808"],
     accent: "#ff6b6b",
     Icon: BarChart2,
@@ -197,7 +197,7 @@ const products: Product[] = [
     icon: Layers,
     title: "ETF",
     description: "Instant diversification at the lowest cost.",
-    detail: "Gold ETFs, index ETFs, sectoral ETFs — live on-exchange prices.",
+    detail: "Gold ETFs, index ETFs, sectoral ETFs, live on-exchange prices.",
     badge: "Low Cost",
     badgeColor: "bg-gold/20 text-gold-deep",
     accentColor: "#8B0D19",
@@ -581,7 +581,7 @@ function ProductStackSection() {
               <span className="text-burgundy">One account.</span>
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-10 text-base">
-              Stocks, F&amp;O, Mutual Funds, IPOs, ETFs, Commodities, US Stocks — one account, one flat ₹17 fee.
+              Stocks, F&amp;O, Mutual Funds, IPOs, ETFs, Commodities, US Stocks, one account, one flat ₹17 fee.
             </p>
             <div className="flex flex-col gap-6 border-t border-border pt-8">
               {[
@@ -669,7 +669,6 @@ export function Hero() {
                 transition={{ duration: 0.5 }}
                 className="text-[11px] tracking-[0.22em] uppercase text-gold-deep font-black mb-5 flex items-center gap-2"
               >
-                <span className="w-5 h-px bg-gold-deep inline-block" />
                 Trusted by 1 Lakh+ Investors
               </motion.div>
 
@@ -692,7 +691,7 @@ export function Hero() {
                 transition={{ duration: 0.6, delay: 0.12 }}
                 className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-[520px] mb-8"
               >
-                Stocks, F&amp;O, Mutual Funds, IPOs, US Equities — one account, one flat fee.
+                Stocks, F&amp;O, Mutual Funds, IPOs, US Equities, one account, one flat fee.
                 Flat ₹17 brokerage on delivery, intraday &amp; F&amp;O.
               </motion.p>
 

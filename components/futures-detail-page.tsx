@@ -240,7 +240,7 @@ export function FuturesDetailPage({ data }: { data: FuturesPageData }) {
           {tab === "Live Markets" && (
             <div className="border border-border rounded-[8px] bg-background overflow-hidden">
               <div className="px-4 sm:px-5 py-3 border-b border-border">
-                <h2 className="text-sm font-bold text-foreground">Live Market Depth — Best Bid / Ask</h2>
+                <h2 className="text-sm font-bold text-foreground">Live Market Depth: Best Bid / Ask</h2>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[640px]">

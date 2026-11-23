@@ -3,15 +3,15 @@
 // Blog: search, category tabs, a featured latest post, then 12 posts per page with numbered pages.
 // UI preview with sample data (lib/blog/data.ts).
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { ArrowRight, Clock, Search, X } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
-import { KcCta, KcHeader, KcPagination } from "@/components/knowledge-center"
+import { KcHeader, KcPagination } from "@/components/knowledge-center"
 import { CategoryChips, PostCover } from "@/components/content-ui"
-import { BLOG_CATEGORIES, BLOG_PAGE_SIZE, POSTS, formatBlogDate, type BlogPost } from "@/lib/blog/data"
+import { BLOG_CATEGORIES, BLOG_CATEGORY_COUNTS, BLOG_PAGE_SIZE, POSTS, formatBlogDate, isBlogCategory, type BlogPost } from "@/lib/blog/data"
 
 function PostMeta({ post }: { post: BlogPost }) {
   return (
@@ -27,6 +27,12 @@ export default function BlogPage() {
   const [category, setCategory] = useState("All")
   const [query, setQuery] = useState("")
   const [page, setPage] = useState(1)
+
+  // ?category=<name> preselects a category (the post page's sidebar links here).
+  useEffect(() => {
+    const c = new URLSearchParams(window.location.search).get("category")
+    if (isBlogCategory(c)) setCategory(c)
+  }, [])
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -56,7 +62,7 @@ export default function BlogPage() {
               Shree Varahi <span className="text-burgundy">Blog</span>
             </h1>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
-              The latest on stocks, IPOs, mutual funds and personal finance — explained simply, so you can invest with confidence.
+              The latest on stocks, IPOs, mutual funds and personal finance, explained simply, so you can invest with confidence.
             </p>
           </div>
           <label className="relative block">
@@ -81,7 +87,7 @@ export default function BlogPage() {
       <section className="py-8 lg:py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8">
-            <CategoryChips categories={BLOG_CATEGORIES} value={category} onChange={pick} />
+            <CategoryChips categories={BLOG_CATEGORIES} value={category} onChange={pick} counts={BLOG_CATEGORY_COUNTS} />
           </div>
 
           {/* Featured (latest) post */}
@@ -132,7 +138,6 @@ export default function BlogPage() {
         </div>
       </section>
 
-      <KcCta />
       <Footer />
     </main>
   )

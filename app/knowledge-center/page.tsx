@@ -35,7 +35,7 @@ export default function KnowledgeCenterPage() {
               Knowledge <span className="text-burgundy">Center</span>
             </h1>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
-              Simple, practical guides on stocks, mutual funds, IPOs, derivatives, taxes and more — organised into topics so you can learn at your own pace.
+              Simple, practical guides on stocks, mutual funds, IPOs, derivatives, taxes and more, organised into topics so you can learn at your own pace.
             </p>
           </div>
           <label className="relative block">

@@ -76,7 +76,7 @@ const DATA: IndexPageData = {
     "Companies in this index are often considered candidates for future inclusion in the NIFTY 50, making it a popular index for investors seeking early exposure to India's next generation of large caps.",
   ],
   ctaHeadline: "Trade Nifty Next 50 with Zero Brokerage",
-  ctaBody: "Index funds, ETFs & derivatives — all in one place. Start investing from ₹500.",
+  ctaBody: "Index funds, ETFs & derivatives, all in one place. Start investing from ₹500.",
 }
 
 export default function NiftyNext50Page() {

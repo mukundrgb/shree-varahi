@@ -48,7 +48,7 @@ export const TOPICS: KcTopic[] = [
   { slug: "cryptocurrency",         title: "Cryptocurrency",             icon: "Bitcoin",        desc: "What cryptocurrencies are, how they are taxed in India, and the risks involved." },
   { slug: "personal-finance",       title: "Personal Finance",           icon: "Calculator",     desc: "Budgeting, emergency funds, insurance and goal planning for everyday money decisions." },
   { slug: "profile-modification",   title: "Profile Modification",       icon: "UserCog",        desc: "How to update your bank account, address, nominee, email and mobile number." },
-  { slug: "loans",                  title: "Loans",                      icon: "Landmark",       desc: "Loan against securities, personal and home loans — how they work and what they cost." },
+  { slug: "loans",                  title: "Loans",                      icon: "Landmark",       desc: "Loan against securities, personal and home loans: how they work and what they cost." },
   { slug: "trading-api",            title: "Trading API",                icon: "Code2",          desc: "Automate your trading with APIs: authentication, order placement and market data." },
   { slug: "mtf",                    title: "MTF",                        icon: "Percent",        desc: "Margin Trading Facility explained: leverage, interest, eligible stocks and pledge process." },
 ]
@@ -58,12 +58,12 @@ const ARTICLE_TITLES: Record<string, string[]> = {
   "demat-account": [
     "What Is Demat Account?",
     "Features & Benefits of Opening a Demat Account",
-    "Dematerialisation – An Overview",
+    "Dematerialisation: An Overview",
     "Documents Required for a Demat Account",
     "How to Use a Demat Account?",
     "How to Compare Brokerage Charges",
     "Demat Account Concepts & Processes",
-    "Frequently Asked Questions – Stock Market",
+    "Frequently Asked Questions: Stock Market",
     "Minor Demat Account",
     "What Is a Bonus Share?",
     "Dematerialisation vs Rematerialisation",
@@ -99,7 +99,7 @@ const DEFAULT_TITLES = (topic: KcTopic) => [
   `${topic.title}: A Beginner's Guide`,
   `Key Terms in ${topic.title}`,
   `Common Mistakes to Avoid in ${topic.title}`,
-  `${topic.title} – Frequently Asked Questions`,
+  `${topic.title}: Frequently Asked Questions`,
   `How to Get Started With ${topic.title}`,
 ]
 
@@ -137,17 +137,17 @@ const WHAT_IS_DEMAT: Omit<KcArticle, "slug" | "topicSlug" | "title"> = {
       "Dematerialisation is the process of converting physical share certificates into electronic holdings. You submit the certificates to your DP with a request form, and the shares are credited to your demat account once verified.",
     ] },
     { heading: "Features of a Demat Account", bullets: [
-      "Easy access — view your holdings anytime on web or mobile.",
-      "Quick transfers — shares move electronically within the settlement cycle.",
-      "Corporate actions — dividends, bonuses and splits are credited automatically.",
-      "Pledging — use your holdings as collateral for margin.",
-      "Freezing — temporarily block debits from your account for safety.",
+      "Easy access: view your holdings anytime on web or mobile.",
+      "Quick transfers: shares move electronically within the settlement cycle.",
+      "Corporate actions: dividends, bonuses and splits are credited automatically.",
+      "Pledging: use your holdings as collateral for margin.",
+      "Freezing: temporarily block debits from your account for safety.",
     ] },
     { heading: "Types of Demat Account", bullets: [
-      "Regular demat account — for resident Indian investors.",
-      "Repatriable demat account — for NRIs who want to move funds abroad, linked to an NRE account.",
-      "Non-repatriable demat account — for NRIs, linked to an NRO account.",
-      "Basic Services Demat Account (BSDA) — low-cost account for small holdings.",
+      "Regular demat account: for resident Indian investors.",
+      "Repatriable demat account: for NRIs who want to move funds abroad, linked to an NRE account.",
+      "Non-repatriable demat account: for NRIs, linked to an NRO account.",
+      "Basic Services Demat Account (BSDA): low-cost account for small holdings.",
     ] },
     { heading: "Documents Required", bullets: [
       "PAN card", "Aadhaar card (for address proof and e-sign)", "A cancelled cheque or bank statement",
@@ -170,7 +170,7 @@ const WHAT_IS_DEMAT: Omit<KcArticle, "slug" | "topicSlug" | "title"> = {
 /** Sample body for any other article, built from its title and topic. */
 function genericArticle(title: string, topic: KcTopic): Omit<KcArticle, "slug" | "topicSlug" | "title"> {
   return {
-    summary: `A quick guide to "${title}" — what it means, why it matters and what to keep in mind as an investor.`,
+    summary: `A quick guide to "${title}": what it means, why it matters and what to keep in mind as an investor.`,
     readMin: 4,
     updated: "20 Nov 2026",
     takeaways: [

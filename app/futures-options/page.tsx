@@ -963,7 +963,7 @@ export default function FuturesOptionsPage() {
               </h2>
 
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto font-medium">
-                At Shree Varahi, every futures and options order is charged a flat ₹17 — no percentage, no slabs, no hidden fees.
+                At Shree Varahi, every futures and options order is charged a flat ₹17, no percentage, no slabs, no hidden fees.
               </p>
 
               {/* Savings Calculator Interactive Area */}

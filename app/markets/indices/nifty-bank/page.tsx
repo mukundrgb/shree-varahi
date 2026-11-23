@@ -72,7 +72,7 @@ const DATA: IndexPageData = {
     "NIFTY BANK serves as the benchmark for the Indian banking sector and is widely used for index funds, ETFs, and derivatives trading on both private and public sector banks.",
   ],
   ctaHeadline: "Trade Nifty Bank with Zero Brokerage",
-  ctaBody: "Index funds, ETFs & derivatives — all in one place. Start investing from ₹500.",
+  ctaBody: "Index funds, ETFs & derivatives, all in one place. Start investing from ₹500.",
 }
 
 export default function NiftyBankPage() {

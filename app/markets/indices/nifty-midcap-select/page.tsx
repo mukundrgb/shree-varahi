@@ -75,7 +75,7 @@ const DATA: IndexPageData = {
     "Launched in February 2024 as a futures &amp; options index, it offers focused mid-cap exposure with better liquidity characteristics than the broader midcap universe.",
   ],
   ctaHeadline: "Trade Nifty Midcap Select with Zero Brokerage",
-  ctaBody: "Index funds, ETFs & derivatives — all in one place. Start investing from ₹500.",
+  ctaBody: "Index funds, ETFs & derivatives, all in one place. Start investing from ₹500.",
 }
 
 export default function NiftyMidcapSelectPage() {

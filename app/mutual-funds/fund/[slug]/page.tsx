@@ -16,6 +16,8 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { useFundDetail } from "@/hooks/use-mutual-funds"
 import { FundReturnCalculator } from "@/components/fund-return-calculator"
+import { FundSectorAllocation } from "@/components/fund-sector-allocation"
+import { SAMPLE_SECTOR_DETAILS } from "@/lib/mutual-funds/sector-allocation"
 import { DetailPageSkeleton } from "@/components/skeletons"
 import type { ChartPeriod, FundDetailApi, FundReturns } from "@/lib/mutual-funds/api-client"
 
@@ -267,6 +269,9 @@ function FundDetail({ fund }: { fund: FundDetailApi }) {
                   </table>
                 </div>
               </div>
+
+              {/* Sector allocation: sample data for every fund until the API is integrated */}
+              <FundSectorAllocation sectors={SAMPLE_SECTOR_DETAILS} card={card} />
 
               {/* Fund overview */}
               <div className={card}>

@@ -72,7 +72,7 @@ const DATA: IndexPageData = {
     "BANKEX serves as a key benchmark for banking sector funds and is used extensively for derivatives trading and sector-specific investment strategies.",
   ],
   ctaHeadline: "Trade Bse Bankex with Zero Brokerage",
-  ctaBody: "Index funds, ETFs & derivatives — all in one place. Start investing from ₹500.",
+  ctaBody: "Index funds, ETFs & derivatives, all in one place. Start investing from ₹500.",
 }
 
 export default function BseBankexPage() {

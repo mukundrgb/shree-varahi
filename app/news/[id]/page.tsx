@@ -9,7 +9,7 @@ import { ArrowLeft, ArrowRight, CalendarDays } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
-import { KcCta, KcHeader } from "@/components/knowledge-center"
+import { KcHeader } from "@/components/knowledge-center"
 
 import { useMarketBeat } from "@/hooks/use-market-news"
 import { ALL_NEWS_CATEGORIES, newsCategory, newsDateTime, newsParagraphs } from "@/lib/news/categorize"
@@ -61,7 +61,7 @@ export default function NewsStoryPage() {
           {story.caption && <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">{story.caption}</p>}
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-semibold text-muted-foreground">
             <span className="flex items-center gap-1.5"><CalendarDays className="w-3.5 h-3.5" /> {newsDateTime(story.publishedAt)} IST</span>
-            <span>Source: Capital Market – Live News</span>
+            <span>Source: Capital Market Live News</span>
           </div>
         </div>
       </KcHeader>
@@ -157,7 +157,6 @@ export default function NewsStoryPage() {
         </div>
       </section>
 
-      <KcCta />
       <Footer />
     </main>
   )

@@ -58,12 +58,10 @@ export function GlobalInvestingSection() {
         
         {/* Centered Header */}
         <div className="text-center max-w-4xl mx-auto space-y-4">
-          <div className="flex items-center justify-center gap-2">
-            <span className="w-8 h-px bg-gold-deep" />
+          <div className="flex items-center justify-center">
             <p className="text-xs tracking-[0.2em] uppercase text-gold-deep font-extrabold block">
               Global Exposure
             </p>
-            <span className="w-8 h-px bg-gold-deep" />
           </div>
           
           <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black leading-tight text-foreground text-balance">

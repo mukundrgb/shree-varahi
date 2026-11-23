@@ -76,7 +76,7 @@ const DATA: IndexPageData = {
     "Mid-cap stocks typically offer a balance between the stability of large caps and the growth potential of small caps, making the index a popular benchmark for diversified equity funds.",
   ],
   ctaHeadline: "Trade Bse Mid Cap with Zero Brokerage",
-  ctaBody: "Index funds, ETFs & derivatives — all in one place. Start investing from ₹500.",
+  ctaBody: "Index funds, ETFs & derivatives, all in one place. Start investing from ₹500.",
 }
 
 export default function BseMidCapPage() {

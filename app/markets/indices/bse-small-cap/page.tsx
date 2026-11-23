@@ -76,7 +76,7 @@ const DATA: IndexPageData = {
     "Small cap stocks carry higher volatility and liquidity risk relative to large caps, but historically offer higher long-term growth potential across economic cycles.",
   ],
   ctaHeadline: "Trade Bse Small Cap with Zero Brokerage",
-  ctaBody: "Index funds, ETFs & derivatives — all in one place. Start investing from ₹500.",
+  ctaBody: "Index funds, ETFs & derivatives, all in one place. Start investing from ₹500.",
 }
 
 export default function BseSmallCapPage() {

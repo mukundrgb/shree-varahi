@@ -179,7 +179,7 @@ export function CalculatorSection() {
                 <span className="text-burgundy">you invest.</span>
               </h2>
               <p className="text-[14px] text-muted-foreground mb-8 max-w-lg">
-                From SIP corpus to exact brokerage charges — get every number right before placing an order.
+                From SIP corpus to exact brokerage charges, get every number right before placing an order.
               </p>
 
               {/* Calculator pills */}

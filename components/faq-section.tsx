@@ -12,12 +12,12 @@ const faqData = {
       a: "We charge a flat ₹17 per executed order for all intraday equity, F&O, and commodities trades. This is one of the lowest in the industry.",
     },
     {
-      q: "Is equity delivery really free — no hidden charges?",
+      q: "Is equity delivery really free with no hidden charges?",
       a: "Yes. We charge ₹0 brokerage on all equity delivery trades, forever. No hidden charges, no conditions. Hold stocks for the long term without any brokerage costs.",
     },
     {
       q: "What are the MTF interest rates?",
-      a: "MTF interest rates start from 0.049% per day (approximately 18% per annum). Rates may vary based on the stock and duration.",
+      a: "MTF interest is charged at 1.5% per month on the funded amount.",
     },
     {
       q: "Can I trade US stocks from India via Shree Varahi?",
@@ -29,7 +29,7 @@ const faqData = {
     },
     {
       q: "What advanced order types do you support?",
-      a: "We support GTT (Good Till Triggered), OCO (One Cancels Other), AMO (After Market Orders), CO (Cover Orders), and BO (Bracket Orders) — giving you full control over every trade.",
+      a: "We support GTT (Good Till Triggered), OCO (One Cancels Other), AMO (After Market Orders), CO (Cover Orders), and BO (Bracket Orders), giving you full control over every trade.",
     },
   ],
   "Account & Products": [

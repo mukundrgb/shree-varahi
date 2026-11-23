@@ -199,7 +199,7 @@ export default function NFOPage() {
                 Discover &amp; Invest In <span className="text-burgundy lg:block">New Fund Offers</span>
               </h1>
               <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
-                Discover New Opportunities. Invest Early. Build Your Portfolio With Confidence — with live NFO tracking, research, and a unified fund dashboard.
+                Discover New Opportunities. Invest Early. Build Your Portfolio With Confidence, with live NFO tracking, research, and a unified fund dashboard.
               </p>
             </div>
             {/* Actions + trust stats on the right, so the hero stays short */}
@@ -452,7 +452,7 @@ export default function NFOPage() {
                     {[
                       { l: "Fund Category",      v: featured?.category ?? "—" },
                       { l: "Fund House",         v: featured?.amcName ?? "—" },
-                      { l: "Subscription Dates", v: featured ? `${shortDate(featured.launchDate)} – ${shortDate(featured.closingDate)}` : "—" },
+                      { l: "Subscription Dates", v: featured ? `${shortDate(featured.launchDate)} to ${shortDate(featured.closingDate)}` : "—" },
                       { l: "Face Value",         v: featured?.faceValue != null ? rupees(featured.faceValue) : "—" },
                       { l: "Minimum Investment", v: rupees(featured?.minInvestment ?? null) },
                       { l: "Minimum SIP",        v: featured ? (featured.minSip !== null ? rupees(featured.minSip) : "Not available") : "—" },

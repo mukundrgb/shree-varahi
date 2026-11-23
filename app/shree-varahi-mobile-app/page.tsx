@@ -7,7 +7,7 @@ import { Bell, ClipboardList, LineChart, PieChart, ShieldCheck, Zap } from "luci
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import {
-  EYEBROW, FaqSection, HeroSection, InvestmentAccountBanner, OpenAccountButton, ReviewsSection, SiteImage,
+  AppStoreButtons, EYEBROW, FaqSection, HeroSection, InvestmentAccountBanner, ReviewsSection, SiteImage,
   VARAHI_WEB_FAQS, fadeUp, type SiteImageSrc,
 } from "@/components/varahi-product"
 
@@ -71,7 +71,7 @@ export default function ShreeVarahiMobileAppPage() {
                 </a>
               ))}
             </div>
-            <OpenAccountButton label="Open an Account" />
+            <AppStoreButtons />
           </motion.div>
           <motion.div initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.15 }}>
             <SiteImage image={IMAGES.appInterface} className="max-w-[500px] mx-auto drop-shadow-[0_25px_50px_rgba(0,0,0,0.15)]" />

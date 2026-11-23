@@ -76,7 +76,7 @@ export function synthesizeETFList(slug: string, opts: { crumbCategory: string; t
   return {
     slug, crumbCategory: opts.crumbCategory, title,
     lastUpdated: "13 Jul 2026 at 13:01",
-    description: opts.description ?? `A curated list of ETFs under "${title}" — covering LTP, AUM, volume, historical returns, and expense ratio to help you compare and invest.`,
+    description: opts.description ?? `A curated list of ETFs under "${title}", covering LTP, AUM, volume, historical returns, and expense ratio to help you compare and invest.`,
     etfs,
   }
 }

@@ -109,7 +109,7 @@ const DATA: IndexPageData = {
     "Launched in April 1996, the index serves as the primary benchmark for Indian equity markets and is widely used for index funds, ETFs, and derivatives trading. It uses a free-float market capitalisation methodology and is reviewed quarterly.",
   ],
   ctaHeadline: "Trade Nifty F&O with Zero Brokerage",
-  ctaBody: "Index funds, ETFs & derivatives — all in one place. Start investing from ₹500.",
+  ctaBody: "Index funds, ETFs & derivatives, all in one place. Start investing from ₹500.",
 }
 
 export default function Nifty50Page() {

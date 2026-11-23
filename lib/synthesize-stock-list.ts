@@ -101,7 +101,7 @@ export function synthesizeStockList(
     crumbCategory: opts.crumbCategory,
     title,
     lastUpdated: "13 Jul 2026 at 12:21",
-    description: opts.description ?? `A curated list of stocks under "${title}" — covering price, market cap, valuation ratios, and return metrics to help you make informed investment decisions.`,
+    description: opts.description ?? `A curated list of stocks under "${title}", covering price, market cap, valuation ratios, and return metrics to help you make informed investment decisions.`,
     stocks,
   }
 }

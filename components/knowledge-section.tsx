@@ -52,7 +52,7 @@ function NewsIllustration() {
     {
       tag: "Economy",
       tagColor: "bg-blue-50 text-blue-600",
-      title: "RBI holds repo rate at 6.5% — inflation remains primary focus",
+      title: "RBI holds repo rate at 6.5%, inflation remains primary focus",
       time: "2 min ago",
       up: true,
     },
@@ -206,7 +206,7 @@ export function KnowledgeSection() {
                 <span className="text-burgundy">Shree Varahi.</span>
               </h2>
               <p className="text-sm sm:text-base text-slate-500 leading-relaxed max-w-lg">
-                Markets made simple — explore expert knowledge, daily news, and in-depth research all in one place.
+                Markets made simple, explore expert knowledge, daily news, and in-depth research all in one place.
               </p>
             </div>
 

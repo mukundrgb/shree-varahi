@@ -586,7 +586,7 @@ export default function ETFPage() {
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">What You Can Do</p>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Every tool you need to invest in ETFs.</h2>
             <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
-              Browse, analyse, and invest in ETFs across indices, sectors, and asset classes — all from one platform.
+              Browse, analyse, and invest in ETFs across indices, sectors, and asset classes, all from one platform.
             </p>
           </div>
 

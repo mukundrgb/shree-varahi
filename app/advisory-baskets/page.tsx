@@ -25,7 +25,7 @@ const LIVE_BASKETS = [
   {
     icon: BarChart3,
     title: "Blue Chip High Growth Low Valuation Strategy",
-    desc: "A fundamentals-driven basket of established large-cap leaders, selected for strong growth at reasonable valuations — built for steady, long-term wealth creation.",
+    desc: "A fundamentals-driven basket of established large-cap leaders, selected for strong growth at reasonable valuations, built for steady, long-term wealth creation.",
     points: ["Moderate Risk", "Min. ₹2.5 Lakhs", "3 Year Horizon", "2.5% Advisory Fee / Year"],
     href: "https://lakshmishree.valuestocks.in/",
   },
@@ -105,7 +105,7 @@ export default function AdvisoryBasketsPage() {
                 <span className="text-burgundy">Stock Baskets</span>
               </h1>
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-lg">
-                Get diversified exposure to research-backed stock portfolios built by SEBI-registered analysts — invest in a complete strategy with a single click.
+                Get diversified exposure to research-backed stock portfolios built by SEBI-registered analysts, invest in a complete strategy with a single click.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
@@ -164,7 +164,7 @@ export default function AdvisoryBasketsPage() {
             <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep mb-2">Live On ValueStocks</p>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Explore Our Live Baskets</h2>
             <p className="text-sm text-muted-foreground mt-3">
-              A look at two active strategies on our ValueStocks advisory platform — click through to view full details and subscribe.
+              A look at two active strategies on our ValueStocks advisory platform, click through to view full details and subscribe.
             </p>
           </div>
 

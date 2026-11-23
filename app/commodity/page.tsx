@@ -215,7 +215,7 @@ export default function CommodityPage() {
                 <span className="text-burgundy">Advanced Trading Tools</span>
               </h1>
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-lg">
-                Trade Precious Metals, Energy &amp; More With Confidence — backed by option chain analytics, Greeks, pledge margin benefits, and TradingView charts.
+                Trade Precious Metals, Energy &amp; More With Confidence, backed by option chain analytics, Greeks, pledge margin benefits, and TradingView charts.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">

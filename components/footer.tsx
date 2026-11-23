@@ -659,10 +659,10 @@ function AboutAccordion() {
               <div className="pb-6 space-y-3 text-[13px] text-[#3a1414]/85 leading-relaxed max-w-4xl">
                 <p>
                   <strong className="text-[#3a1414]/90 font-semibold">Shree Varahi</strong> is the digital trading and investment platform of{" "}
-                  <strong className="text-[#3a1414]/90 font-semibold">Lakshmishree Investment & Securities Ltd.</strong> — a SEBI-registered stockbroker with over 31 years of market presence since 1993. We offer flat-fee brokerage at ₹17 per executed order for equity delivery, intraday and F&O trades.
+                  <strong className="text-[#3a1414]/90 font-semibold">Lakshmishree Investment & Securities Ltd.</strong>, a SEBI-registered stockbroker with over 31 years of market presence since 1993. We offer flat-fee brokerage at ₹17 per executed order for equity delivery, intraday and F&O trades.
                 </p>
                 <p>
-                  Our platform provides access to NSE, BSE, MCX, and international markets through a single unified account. We offer stocks, futures & options, mutual funds, IPOs, ETFs, digital gold, and US equities — all under one roof with no hidden charges.
+                  Our platform provides access to NSE, BSE, MCX, and international markets through a single unified account. We offer stocks, futures & options, mutual funds, IPOs, ETFs, digital gold, and US equities, all under one roof with no hidden charges.
                 </p>
                 <p>
                   SEBI Registration No: <span className="text-[#3a1414]/80">INZ000215633</span> &nbsp;|&nbsp;
@@ -673,7 +673,7 @@ function AboutAccordion() {
                   CIN: <span className="text-[#3a1414]/80">U67120MH1993PLC074454</span>
                 </p>
                 <p>
-                  Registered Office: 1st Floor, Vaswani Chambers, 264-265, Dr. Annie Besant Road, Worli, Mumbai – 400 025, Maharashtra, India.
+                  Registered Office: 1st Floor, Vaswani Chambers, 264-265, Dr. Annie Besant Road, Worli, Mumbai 400 025, Maharashtra, India.
                 </p>
               </div>
             </motion.div>
@@ -850,13 +850,13 @@ export function Footer() {
 
           {/* Copyright */}
           <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-6 pt-6" style={{ borderTop: "1px solid rgba(58,20,20,0.1)" }}>
-            <p className="text-[13px] text-[#3a1414]/70">© 2026 Shree Varahi — Lakshmishree Investment & Securities Ltd.</p>
+            <p className="text-[13px] text-[#3a1414]/70">© 2026 Shree Varahi | Lakshmishree Investment & Securities Ltd.</p>
             <p className="text-[12px] text-[#3a1414]/65 flex items-center gap-1.5">
               Built with
               <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-[#3a1414]/55" style={{ animation: "footer-heartbeat 1.2s ease-in-out infinite" }} aria-hidden="true">
                 <path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z" />
               </svg>
-              for traders, savers & dreamers — Made in India
+              for traders, savers & dreamers. Made in India
             </p>
           </div>
           <p className="text-[12px] text-[#3a1414]/65 text-center sm:text-right mt-2">
