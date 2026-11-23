@@ -48,7 +48,7 @@ export function AppPromoSection() {
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-3 gap-y-2 text-xs sm:text-sm font-semibold text-muted-foreground">
             <span>1 Lakh+ Investors</span>
             <span className="text-gold-deep">◆</span>
-            <span>31+ Years of Trust</span>
+            <span>More than 3 decades of trust</span>
           </div>
 
           {/* Store Download Buttons */}
