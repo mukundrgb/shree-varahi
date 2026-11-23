@@ -1,7 +1,7 @@
 "use client"
 
 // News story: headline, category, date/time, source, share row, full story text, related news and categories.
-// There is no single-story endpoint, so the story is found in the latest Market Beat list (up to 50 stories).
+// UI preview: the story is looked up in the sample stories (lib/news/sample.ts); no API is called yet.
 
 import Link from "next/link"
 import { useParams } from "next/navigation"
@@ -11,14 +11,13 @@ import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { KcHeader } from "@/components/knowledge-center"
 
-import { useMarketBeat } from "@/hooks/use-market-news"
 import { ALL_NEWS_CATEGORIES, newsCategory, newsDateTime, newsParagraphs } from "@/lib/news/categorize"
+import { SAMPLE_NEWS } from "@/lib/news/sample"
 
 export default function NewsStoryPage() {
   const params = useParams()
   const id = typeof params.id === "string" ? params.id : ""
-  const news = useMarketBeat(50)
-  const items = news.data?.items ?? []
+  const items = SAMPLE_NEWS
   const story = items.find((n) => n.id === id)
 
   if (!story) {
@@ -26,17 +25,9 @@ export default function NewsStoryPage() {
       <main className="min-h-screen bg-background">
         <Navbar />
         <div className="pt-36 pb-24 text-center">
-          {news.error && !news.data ? (
-            <p className="text-sm text-muted-foreground">Unable to load this story. <button onClick={news.retry} className="text-burgundy font-bold hover:underline">Retry</button></p>
-          ) : !news.data ? (
-            <p className="text-sm text-muted-foreground">Loading story…</p>
-          ) : (
-            <>
-              <p className="text-lg font-black text-foreground mb-2">Story not available</p>
-              <p className="text-sm text-muted-foreground mb-3">It may be older than the latest news we show.</p>
-              <Link href="/news" className="text-sm font-bold text-burgundy hover:underline">Back to News</Link>
-            </>
-          )}
+          <p className="text-lg font-black text-foreground mb-2">Story not available</p>
+          <p className="text-sm text-muted-foreground mb-3">It may be older than the latest news we show.</p>
+          <Link href="/news" className="text-sm font-bold text-burgundy hover:underline">Back to News</Link>
         </div>
         <Footer />
       </main>

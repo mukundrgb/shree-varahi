@@ -1,6 +1,6 @@
 "use client"
 
-// News: live CMOTS Market Beat stories (/api/v1/news/market-beat).
+// News: UI preview with sample stories (lib/news/sample.ts); no API is called yet.
 // Layout follows angelone.in/news: Top News, all news filtered by category, then a Learn block.
 // Categories are the CMOTS Live News sections as they are, one chip per section (lib/news/categorize.ts).
 // ?category=<name> preselects a category (used by the story page's category links).
@@ -14,14 +14,16 @@ import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { KcHeader, KcPagination } from "@/components/knowledge-center"
 import { CategoryChips, PostCover } from "@/components/content-ui"
-import { useMarketBeat } from "@/hooks/use-market-news"
 import { ALL_NEWS_CATEGORIES, newsCategory, newsDateTime, newsSummary } from "@/lib/news/categorize"
+import { SAMPLE_NEWS } from "@/lib/news/sample"
 import type { StockNewsItem } from "@/lib/stocks/types"
 
 const PAGE_SIZE = 12
 const TOP_COUNT = 5
 
 type Story = StockNewsItem & { category: string }
+
+const STORIES: Story[] = SAMPLE_NEWS.map((n) => ({ ...n, category: newsCategory(n) }))
 
 function StoryMeta({ s }: { s: Story }) {
   return (
@@ -35,7 +37,6 @@ function StoryMeta({ s }: { s: Story }) {
 
 function NewsContent() {
   const params = useSearchParams()
-  const news = useMarketBeat(50)
   const [category, setCategory] = useState("All")
   const [query, setQuery] = useState("")
   const [page, setPage] = useState(1)
@@ -45,7 +46,7 @@ function NewsContent() {
     if (c && ALL_NEWS_CATEGORIES.includes(c)) setCategory(c)
   }, [params])
 
-  const stories = useMemo<Story[]>(() => (news.data?.items ?? []).map((n) => ({ ...n, category: newsCategory(n) })), [news.data])
+  const stories = STORIES
   const counts = useMemo(() => {
     const out: Record<string, number> = {}
     for (const s of stories) out[s.category] = (out[s.category] ?? 0) + 1
@@ -63,10 +64,6 @@ function NewsContent() {
 
   const pick = (c: string) => { setCategory(c); setPage(1) }
   const goTo = (p: number) => { setPage(p); document.getElementById("all-news")?.scrollIntoView({ behavior: "smooth", block: "start" }) }
-
-  const status = news.error && !news.data
-    ? <>Unable to load news. <button onClick={news.retry} className="text-burgundy font-bold hover:underline">Retry</button></>
-    : !news.data ? "Loading news…" : null
 
   return (
     <>
@@ -88,9 +85,7 @@ function NewsContent() {
       <section className="py-8 lg:py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight mb-6">Top <span className="text-burgundy">News</span></h2>
-          {status ? (
-            <p className="py-16 text-center text-sm text-muted-foreground">{status}</p>
-          ) : top.length === 0 ? (
+          {top.length === 0 ? (
             <p className="py-16 text-center text-sm text-muted-foreground">No news right now.</p>
           ) : (
             <div className="grid lg:grid-cols-[1.15fr_1fr] gap-5">
@@ -122,7 +117,7 @@ function NewsContent() {
       </section>
 
       {/* ── ALL NEWS ── */}
-      {!status && stories.length > 0 && (
+      {stories.length > 0 && (
         <section id="all-news" className="bg-cream border-y border-border/40 py-10 lg:py-14 scroll-mt-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-5">
