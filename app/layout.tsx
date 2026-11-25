@@ -1,36 +1,19 @@
 import type { Metadata } from 'next'
-import { Manrope, DM_Sans, DM_Mono, Cormorant_Garamond } from 'next/font/google'
+import localFont from 'next/font/local'
 import { Analytics } from '@vercel/analytics/next'
 import { ScrollProgress } from '@/components/scroll-progress'
 import { EntryPopup } from '@/components/entry-popup'
+import './fonts/fonts.css'
 import './globals.css'
 
-const manrope = Manrope({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
-  variable: '--font-manrope',
+// Fonts are files in app/fonts, not downloaded from Google during the build. See app/fonts/fonts.css.
+const manrope = localFont({
+  src: './fonts/manrope-latin.woff2',
+  weight: '400 800',
+  variable: '--font-manrope-latin',
   display: 'swap',
-})
-
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-dm-sans',
-  display: 'swap',
-})
-
-const dmMono = DM_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500'],
-  variable: '--font-dm-mono',
-  display: 'swap',
-})
-
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: ['400', '600', '700'],
-  variable: '--font-cormorant',
-  display: 'swap',
+  adjustFontFallback: false,
+  declarations: [{ prop: 'unicode-range', value: 'U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD' }],
 })
 
 export const metadata: Metadata = {
@@ -54,7 +37,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${manrope.variable} ${dmSans.variable} ${dmMono.variable} ${cormorant.variable} bg-background overflow-x-clip`}>
+    <html lang="en" className={`${manrope.variable} bg-background overflow-x-clip`}>
       {/* Browser extensions (e.g. ColorZilla's cz-shortcut-listen) add attributes to <body>; don't warn about those. */}
       <body className="font-sans antialiased bg-background text-foreground overflow-x-clip" suppressHydrationWarning>
         <ScrollProgress />
