@@ -28,7 +28,7 @@ export interface KcArticle {
 export const KC_PAGE_SIZE = 12
 
 export const TOPICS: KcTopic[] = [
-  { slug: "demat-account",          title: "Demat Account",              icon: "Briefcase",          desc: "Learn how a demat account holds your shares, ETFs, bonds and mutual funds electronically, and how to open and use one." },
+  { slug: "demat-account",          title: "Demat Account",              icon: "Briefcase",          desc: "Learn how a demat account holds your shares, ETF, bonds and mutual funds electronically, and how to open and use one." },
   { slug: "mutual-funds",           title: "Mutual Funds",               icon: "PieChart",       desc: "Understand fund types, NAV, SIPs, returns and costs so you can choose funds that fit your goals." },
   { slug: "shree-varahi-user-manual", title: "Shree Varahi User Manual", icon: "BookOpen",       desc: "Step-by-step guides to using the Shree Varahi web, mobile and desktop platforms." },
   { slug: "trading-account",        title: "Trading Account",            icon: "Wallet",         desc: "What a trading account is, how it links to your demat and bank accounts, and how orders flow through it." },
@@ -123,7 +123,7 @@ const WHAT_IS_DEMAT: Omit<KcArticle, "slug" | "topicSlug" | "title"> = {
   readMin: 6,
   updated: "20 Nov 2026",
   takeaways: [
-    "A demat account stores securities like shares, ETFs, bonds and mutual fund units electronically.",
+    "A demat account stores securities like shares, ETF, bonds and mutual fund units electronically.",
     "It is opened with a Depository Participant (DP) such as Shree Varahi, and held with NSDL or CDSL.",
     "You need a demat account linked with a trading account to buy and sell shares on the exchange.",
     "Opening a demat account with Shree Varahi is free, with zero AMC.",
@@ -154,7 +154,7 @@ const WHAT_IS_DEMAT: Omit<KcArticle, "slug" | "topicSlug" | "title"> = {
       "Passport-size photograph", "Signature", "Income proof (only for F&O and commodity segments)",
     ] },
     { heading: "Conclusion", paragraphs: [
-      "A demat account is the first step to investing in the Indian markets. Open one with Shree Varahi in minutes and start investing in stocks, IPOs, ETFs and mutual funds from a single account.",
+      "A demat account is the first step to investing in the Indian markets. Open one with Shree Varahi in minutes and start investing in stocks, IPOs, ETF and mutual funds from a single account.",
     ] },
   ],
   faqs: [

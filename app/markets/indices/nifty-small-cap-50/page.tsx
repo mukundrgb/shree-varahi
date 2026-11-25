@@ -75,7 +75,7 @@ const DATA: IndexPageData = {
     "The index is popular among traders and momentum investors given the higher volatility and growth potential typically associated with small-cap stocks.",
   ],
   ctaHeadline: "Trade Nifty Smallcap 50 with Zero Brokerage",
-  ctaBody: "Index funds, ETFs & derivatives, all in one place. Start investing from ₹500.",
+  ctaBody: "Index funds, ETF & derivatives, all in one place. Start investing from ₹500.",
 }
 
 export default function NiftySmallCap50Page() {

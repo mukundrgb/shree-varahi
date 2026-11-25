@@ -29,7 +29,7 @@ const POPULAR = ["Reliance", "HDFC Bank", "Open Demat Account", "IPO", "MTF", "T
 const QUICK_LINKS = [
   { title: "Open Free Account", desc: "Start investing in minutes", href: OPEN_ACCOUNT_URL },
   { title: "IPO",               desc: "Apply for upcoming IPOs",    href: "/ipo" },
-  { title: "Mutual Funds",      desc: "0% commission",              href: "/mutual-funds" },
+  { title: "Mutual Funds",      desc: "Invest by SIP or lumpsum",   href: "/mutual-funds" },
   { title: "Knowledge Center",  desc: "Guides & articles",          href: "/knowledge-center" },
 ]
 

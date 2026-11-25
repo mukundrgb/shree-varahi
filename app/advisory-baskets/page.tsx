@@ -4,23 +4,16 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ChevronRight, Plus, X, Star, Users, RefreshCw,
-  TrendingUp, CheckCircle2, Layers, ArrowRight, BarChart3,
+  TrendingUp, CheckCircle2, ArrowRight, BarChart3,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
+import { MobileInput } from "@/components/form-inputs"
 import Link from "next/link"
-import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
+import { LOGIN_URL, OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 // ─── Data ───────────────────────────────────────────────────────────────────
-
-const SAMPLE_BASKET = [
-  { name: "HDFC Bank",       weight: 18 },
-  { name: "Reliance",        weight: 15 },
-  { name: "TCS",             weight: 12 },
-  { name: "ICICI Bank",      weight: 11 },
-  { name: "L&T",             weight: 9 },
-]
 
 const LIVE_BASKETS = [
   {
@@ -75,8 +68,8 @@ export default function AdvisoryBasketsPage() {
     <main className="min-h-screen bg-background">
       <Navbar />
 
-      {/* ── HERO ── */}
-      <section className="relative bg-cream border-b border-border/40 pt-28 pb-16 overflow-hidden">
+      {/* ── HERO (compact) ── */}
+      <section className="relative bg-cream border-b border-border/40 pt-24 pb-6 lg:pb-8 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div
             className="absolute inset-0 opacity-[0.04]"
@@ -85,73 +78,44 @@ export default function AdvisoryBasketsPage() {
               backgroundSize: "56px 56px",
             }}
           />
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-cream to-transparent" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gold/5 rounded-full blur-[100px]" />
+          <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[520px] h-[360px] bg-gold/10 rounded-full blur-[110px]" />
         </div>
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 z-10">
-          <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-6">
+          <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-4">
             <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3" />
             <span className="text-foreground font-semibold">Advisory Baskets</span>
           </nav>
 
-          <div className="grid lg:grid-cols-[1fr_auto] gap-10 items-center">
-            <div className="space-y-5 max-w-2xl">
-              <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">
-                Advisory Baskets
-              </p>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground tracking-tight leading-tight">
-                Invest In Expert-Curated<br />
-                <span className="text-burgundy">Stock Baskets</span>
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_auto] gap-5 lg:gap-12 items-center">
+            <div className="space-y-3">
+              <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">Advisory Baskets</p>
+              <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-black text-foreground tracking-tight leading-[1.1]">
+                Invest In Expert-Curated <span className="text-burgundy lg:block">Stock Baskets</span>
               </h1>
-              <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-lg">
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
                 Get diversified exposure to research-backed stock portfolios built by SEBI-registered analysts, invest in a complete strategy with a single click.
               </p>
-              <div className="flex flex-wrap gap-3">
-                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
-                  <a href={OPEN_ACCOUNT_URL}>Start Investing</a>
-                </Button>
-                <Button asChild variant="outline" className="border-border px-7 h-11 font-bold rounded-[5px] hover:bg-secondary">
-                  <a href={OPEN_ACCOUNT_URL}>Open Account</a>
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-4 pt-1">
-                <div>
-                  <div className="text-lg font-black text-foreground">31+</div>
-                  <div className="text-[10px] text-muted-foreground font-semibold">Years of Trust</div>
-                </div>
-                <div>
-                  <div className="text-lg font-black text-foreground flex items-center gap-1">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
-                  <div className="text-[10px] text-muted-foreground font-semibold">App Rating</div>
-                </div>
-              </div>
             </div>
-
-            {/* Hero visual — sample basket card */}
-            <div className="hidden lg:block">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="w-[280px] rounded-[12px] bg-white border border-border shadow-xl p-5 space-y-4"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-gold-deep">Bluechip Leaders Basket</span>
-                  <Layers className="w-3.5 h-3.5 text-[#8B0D19]" />
+            {/* Actions + trust stats on the right, so the hero stays short */}
+            <div className="flex flex-wrap items-center lg:justify-end gap-3">
+              <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
+                <a href={LOGIN_URL}>Start Investing</a>
+              </Button>
+              <Button asChild variant="outline" className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary">
+                <a href={OPEN_ACCOUNT_URL}>Open Account</a>
+              </Button>
+              <div className="flex items-center gap-4 sm:ml-3 sm:pl-5 sm:border-l border-border">
+                <div>
+                  <div className="text-base font-black text-foreground leading-none">31+</div>
+                  <div className="text-[10px] text-muted-foreground font-semibold mt-1">Years of Trust</div>
                 </div>
-                {SAMPLE_BASKET.map((s) => (
-                  <div key={s.name} className="flex items-center justify-between">
-                    <span className="text-[11px] font-semibold text-foreground truncate pr-2">{s.name}</span>
-                    <span className="text-[11px] font-bold text-muted-foreground shrink-0">{s.weight}%</span>
-                  </div>
-                ))}
-                <div className="pt-1 border-t border-border/40">
-                  <Button asChild size="sm" className="w-full bg-burgundy hover:bg-burgundy-deep text-white text-[11px] font-bold rounded-[5px] h-8">
-                    <a href={OPEN_ACCOUNT_URL}>Invest in Basket</a>
-                  </Button>
+                <div>
+                  <div className="text-base font-black text-foreground flex items-center gap-1 leading-none">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
+                  <div className="text-[10px] text-muted-foreground font-semibold mt-1">App Rating</div>
                 </div>
-              </motion.div>
+              </div>
             </div>
           </div>
         </div>
@@ -161,7 +125,7 @@ export default function AdvisoryBasketsPage() {
       <section className="py-12 lg:py-16 bg-background border-t border-border/40">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Live Baskets */}
-          <div className="text-center mt-16 mb-10 max-w-2xl mx-auto">
+          <div className="text-center mb-10 max-w-2xl mx-auto">
             <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep mb-2">Live On ValueStocks</p>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Explore Our Live Baskets</h2>
             <p className="text-sm text-muted-foreground mt-3">
@@ -300,10 +264,11 @@ export default function AdvisoryBasketsPage() {
                 onSubmit={(e) => e.preventDefault()}
                 className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto lg:mx-0"
               >
-                <input
-                  type="tel"
+                <MobileInput
+                  required
+                  aria-label="Mobile number"
                   value={mobile}
-                  onChange={(e) => setMobile(e.target.value)}
+                  onValueChange={setMobile}
                   placeholder="Enter your mobile number"
                   className="w-full sm:flex-1 h-12 px-4 rounded-[5px] bg-white text-foreground placeholder:text-muted-foreground text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-gold"
                 />

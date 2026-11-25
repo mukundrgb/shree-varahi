@@ -5,6 +5,8 @@ import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Building2, Users, BookOpen, Percent, Headphones, Smartphone } from "lucide-react"
 import { SmartSelect } from "@/components/smart-controls"
+import { MobileInput, NameInput } from "@/components/form-inputs"
+import { cleanName } from "@/lib/validation"
 
 const benefits = [
   { icon: Smartphone, text: "Shree Varahi Technology Platform: Full trading platform for your clients. No tech costs." },
@@ -115,10 +117,9 @@ export function PartnerSection() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="text-sm text-muted-foreground mb-1.5 block">Full Name</label>
-                <input
-                  type="text"
+                <NameInput
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onValueChange={(name) => setFormData({ ...formData, name })}
                   className="w-full px-4 py-3 rounded-[5px] bg-secondary border border-border focus:outline-none focus:ring-2 focus:ring-gold/50"
                   placeholder="Enter your full name"
                   required
@@ -128,8 +129,9 @@ export function PartnerSection() {
                 <label className="text-sm text-muted-foreground mb-1.5 block">City / Location</label>
                 <input
                   type="text"
+                  maxLength={60}
                   value={formData.city}
-                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, city: cleanName(e.target.value) })}
                   className="w-full px-4 py-3 rounded-[5px] bg-secondary border border-border focus:outline-none focus:ring-2 focus:ring-gold/50"
                   placeholder="Enter your city"
                   required
@@ -141,10 +143,9 @@ export function PartnerSection() {
                   <span className="px-4 py-3 bg-secondary rounded-l-[5px] border border-r-0 border-border text-muted-foreground">
                     +91
                   </span>
-                  <input
-                    type="tel"
+                  <MobileInput
                     value={formData.mobile}
-                    onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
+                    onValueChange={(mobile) => setFormData({ ...formData, mobile })}
                     className="w-full px-4 py-3 rounded-r-[5px] bg-secondary border border-border focus:outline-none focus:ring-2 focus:ring-gold/50"
                     placeholder="Enter mobile number"
                     required

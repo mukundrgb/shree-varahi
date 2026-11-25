@@ -8,8 +8,8 @@ import { synthesizeETFList, titleFromSlug } from "@/lib/synthesize-mf-etf"
 const TITLES: Record<string, string> = {
   "nifty-50-etfs": "Nifty 50 ETF", "nifty-next-50-etfs": "Nifty Next 50 ETF", "bank-nifty-etfs": "Bank Nifty ETF",
   "nifty-it-etfs": "Nifty IT ETF", "sensex-etfs": "Sensex ETF", "gold-etfs": "Gold ETF", "silver-etfs": "Silver ETF",
-  "commodity-etfs": "Commodity ETFs", "international-etfs": "International ETF", "banking-etfs": "Banking ETF",
-  "defence-etfs": "Defence ETF", "index-etfs": "Index ETFs",
+  "commodity-etfs": "Commodity ETF", "international-etfs": "International ETF", "banking-etfs": "Banking ETF",
+  "defence-etfs": "Defence ETF", "index-etfs": "Index ETF",
 }
 
 export default function ETFTradedFundsDynamicPage() {

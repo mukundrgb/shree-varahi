@@ -13,6 +13,7 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { SmartSearch } from "@/components/smart-controls"
 import { Button } from "@/components/ui/button"
+import { MobileInput } from "@/components/form-inputs"
 import Link from "next/link"
 import { useEtfList } from "@/hooks/etf/use-etf"
 import type { EtfListRow } from "@/lib/etf/types"
@@ -22,12 +23,12 @@ import { TableRowsSkeleton } from "@/components/skeletons"
 // ─── Data ───────────────────────────────────────────────────────────────────
 
 const TOOLS = [
-  { icon: Layers,           color: "#8B0D19", title: "Invest In ETFs",        desc: "Invest in ETFs across different markets, industries, and asset types like gold and global stocks, helping you diversify your investments with ease." },
+  { icon: Layers,           color: "#8B0D19", title: "Invest In ETF",        desc: "Invest in ETF across different markets, industries, and asset types like gold and global stocks, helping you diversify your investments with ease." },
   { icon: Repeat,           color: "#8B0D19", title: "ETF SIP",               desc: "Start a daily, weekly, or monthly ETF SIP and grow your investments step by step with regular investing and long-term market opportunities." },
   { icon: Eye,              color: "#8B0D19", title: "ETF Watchlists",        desc: "Create personalized ETF watchlists to monitor your preferred funds, track price movements, and identify investment opportunities in real time." },
   { icon: LayoutDashboard,  color: "#8B0D19", title: "ETF Dashboard",         desc: "See all your ETF investments in one place and easily monitor your holdings, portfolio value, investment distribution, and growth over time." },
   { icon: FileSearch,       color: "#8B0D19", title: "ETF Research",          desc: "Check an ETF's performance history, invested companies, sector distribution, costs, and comparison with market benchmarks before investing." },
-  { icon: Zap,              color: "#8B0D19", title: "MTF For Eligible ETFs", desc: "Use MTF to invest in eligible ETFs with extra funding support, helping you increase your buying power and maximize investment opportunities." },
+  { icon: Zap,              color: "#8B0D19", title: "MTF For Eligible ETF", desc: "Use MTF to invest in eligible ETF with extra funding support, helping you increase your buying power and maximize investment opportunities." },
   { icon: Activity,         color: "#8B0D19", title: "Market Tracking",       desc: "Track ETF price movements, market trends, and trading activity in real time to stay informed about your investments." },
   { icon: PieChart,         color: "#8B0D19", title: "Portfolio Monitoring",  desc: "See how your ETF investments are performing by tracking returns, portfolio growth, profits, losses, and investment distribution in one dashboard." },
 ]
@@ -35,10 +36,10 @@ const TOOLS = [
 type Category = "Equity" | "Commodity" | "Debt" | "Global"
 
 const CATEGORIES: { id: Category; label: string; icon: React.ElementType; color: string; desc: string }[] = [
-  { id: "Equity",    label: "Equity ETFs",    icon: BarChart3, color: "#8B0D19", desc: "Track benchmark indices and market sectors to gain diversified exposure to Indian equities." },
-  { id: "Commodity", label: "Commodity ETFs", icon: Coins,     color: "#8B0D19", desc: "Invest in gold and silver digitally through easy-to-access Commodity ETFs." },
-  { id: "Debt",      label: "Debt ETFs",      icon: Landmark,  color: "#8B0D19", desc: "Invest in bonds and debt securities to earn stable returns and diversify your portfolio." },
-  { id: "Global",    label: "Global ETFs",    icon: Globe,     color: "#8B0D19", desc: "Get exposure to companies and economies around the world through a single investment." },
+  { id: "Equity",    label: "Equity ETF",    icon: BarChart3, color: "#8B0D19", desc: "Track benchmark indices and market sectors to gain diversified exposure to Indian equities." },
+  { id: "Commodity", label: "Commodity ETF", icon: Coins,     color: "#8B0D19", desc: "Invest in gold and silver digitally through easy-to-access Commodity ETF." },
+  { id: "Debt",      label: "Debt ETF",      icon: Landmark,  color: "#8B0D19", desc: "Invest in bonds and debt securities to earn stable returns and diversify your portfolio." },
+  { id: "Global",    label: "Global ETF",    icon: Globe,     color: "#8B0D19", desc: "Get exposure to companies and economies around the world through a single investment." },
 ]
 
 // ETF rows come from the backend (/api/v1/etfs), grouped by category tab.
@@ -93,7 +94,7 @@ const changeClass = (value: number | null) =>
 const RESEARCH_PARAMS: { icon: React.ElementType; title: string; desc: string; href?: string }[] = [
   { icon: LineChart,   title: "ETF Price",            href: "/etf/compare?sort=price",    desc: "Track real-time ETF prices and market movements to stay updated on current valuations and trading activity." },
   { icon: Landmark,    title: "AUM",                   href: "/etf/compare?sort=aum",      desc: "Analyze Assets Under Management (AUM) to understand the size, scale, and investor participation within an ETF." },
-  { icon: Percent,     title: "Expense Ratio",         href: "/etf/compare?sort=expense",  desc: "Compare expense ratios across ETFs to evaluate fund costs and their potential impact on long-term investment returns." },
+  { icon: Percent,     title: "Expense Ratio",         href: "/etf/compare?sort=expense",  desc: "Compare expense ratios across ETF options to evaluate fund costs and their potential impact on long-term investment returns." },
   { icon: TrendingUp,  title: "Returns",               href: "/etf/compare?sort=return1Y", desc: "Evaluate historical returns across different time periods to assess past performance and investment consistency." },
   { icon: ListChecks,  title: "Holdings",              href: "/etf/holdings",              desc: "Review the underlying securities held within an ETF to understand portfolio composition and investment exposure." },
   { icon: PieChart,    title: "Sector Allocation",     href: "/etf/sector-allocation",     desc: "Examine sector-wise distribution to understand which industries contribute most to the ETF's overall portfolio." },
@@ -101,16 +102,16 @@ const RESEARCH_PARAMS: { icon: React.ElementType; title: string; desc: string; h
 ]
 
 const FAQS = [
-  { q: "What are ETFs?", a: "Exchange Traded Funds (ETFs) are investment instruments that track an index, commodity, sector, or basket of assets and trade on stock exchanges like regular stocks. ETFs offer diversification, transparency, and flexibility while allowing investors to buy and sell units during market hours." },
-  { q: "Which ETF categories are available?", a: "Shree Varahi provides access to multiple ETF categories, including Equity ETFs, Commodity ETFs, Debt ETFs, and Global ETFs. Investors can choose categories based on their financial goals, risk appetite, and investment preferences." },
-  { q: "Can I start ETF SIPs?", a: "Yes. You can invest in selected ETFs through Systematic Investment Plans (SIPs) with daily, weekly, or monthly investment frequencies. ETF SIPs help build wealth through disciplined and consistent investing over the long term." },
-  { q: "Is MTF available for ETFs?", a: "Yes. Margin Trading Facility (MTF) is available on eligible ETFs, allowing investors to enhance buying power and utilize capital more efficiently, subject to applicable terms and eligibility criteria." },
+  { q: "What is an ETF?", a: "Exchange Traded Funds (ETF) are investment instruments that track an index, commodity, sector, or basket of assets and trade on stock exchanges like regular stocks. An ETF offers diversification, transparency, and flexibility while allowing investors to buy and sell units during market hours." },
+  { q: "Which ETF categories are available?", a: "Shree Varahi provides access to multiple ETF categories, including Equity ETF, Commodity ETF, Debt ETF, and Global ETF. Investors can choose categories based on their financial goals, risk appetite, and investment preferences." },
+  { q: "Can I start ETF SIPs?", a: "Yes. You can invest in a selected ETF through Systematic Investment Plans (SIPs) with daily, weekly, or monthly investment frequencies. ETF SIPs help build wealth through disciplined and consistent investing over the long term." },
+  { q: "Is MTF available for ETF?", a: "Yes. Margin Trading Facility (MTF) is available on every eligible ETF, allowing investors to enhance buying power and utilize capital more efficiently, subject to applicable terms and eligibility criteria." },
   { q: "What are ETF brokerage charges?", a: "ETF transactions are generally charged as per the applicable brokerage plan for exchange-traded products. Brokerage, taxes, exchange charges, and other statutory levies may apply as per the prevailing tariff structure." },
-  { q: "How can I start investing?", a: "Getting started is simple. Open a Demat and Trading Account with Shree Varahi, complete the KYC process, add funds to your account, explore available ETFs, and begin investing based on your financial goals." },
+  { q: "How can I start investing?", a: "Getting started is simple. Open a Demat and Trading Account with Shree Varahi, complete the KYC process, add funds to your account, explore the available ETF options, and begin investing based on your financial goals." },
   { q: "Can I track my ETF investments separately?", a: "Yes. A dedicated ETF dashboard allows you to monitor ETF holdings, portfolio allocation, returns, and overall investment performance separately from other investments." },
-  { q: "How do I choose the right ETF?", a: "You can evaluate ETFs using key research parameters such as ETF price, AUM, expense ratio, holdings, historical returns, tracking index, sector allocation, and asset allocation to make informed investment decisions." },
-  { q: "Are ETFs suitable for long-term investing?", a: "Yes. ETFs are widely used for long-term wealth creation because they offer diversification, lower costs, transparency, and exposure to various asset classes through a single investment." },
-  { q: "Why invest in ETFs through Shree Varahi?", a: "Shree Varahi combines ETF SIPs, dedicated ETF tracking, comprehensive research tools, portfolio monitoring, multiple ETF categories, and transparent pricing to create a seamless ETF investing experience." },
+  { q: "How do I choose the right ETF?", a: "You can evaluate an ETF using key research parameters such as ETF price, AUM, expense ratio, holdings, historical returns, tracking index, sector allocation, and asset allocation to make informed investment decisions." },
+  { q: "Is an ETF suitable for long-term investing?", a: "Yes. An ETF is widely used for long-term wealth creation because it offers diversification, lower costs, transparency, and exposure to various asset classes through a single investment." },
+  { q: "Why invest in ETF through Shree Varahi?", a: "Shree Varahi combines ETF SIPs, dedicated ETF tracking, comprehensive research tools, portfolio monitoring, multiple ETF categories, and transparent pricing to create a seamless ETF investing experience." },
 ]
 
 // ─── Page ───────────────────────────────────────────────────────────────────
@@ -181,10 +182,10 @@ export default function ETFPage() {
             <div className="space-y-3">
               <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep">Exchange Traded Funds</p>
               <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-black text-foreground tracking-tight leading-[1.1]">
-                Invest In ETFs With <span className="text-burgundy lg:block">Simplicity &amp; Flexibility</span>
+                Invest In ETF With <span className="text-burgundy lg:block">Simplicity &amp; Flexibility</span>
               </h1>
               <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
-                Access a wide range of ETFs through Shree Varahi and diversify your investments more easily and flexibly.
+                Access a wide range of ETF options through Shree Varahi and diversify your investments more easily and flexibly.
               </p>
             </div>
             {/* Actions + trust stats on the right (the old browse card is gone, so the hero is shorter) */}
@@ -218,12 +219,12 @@ export default function ETFPage() {
           {/* Filters */}
           {/* Desktop sidebar; phones get search + a swipeable category row above the table */}
           <aside className="hidden lg:block lg:sticky lg:top-20 rounded-[8px] border border-border bg-white p-4 space-y-4">
-            <SmartSearch value={etfSearch} onChange={(v) => { setEtfSearch(v); setEtfPage(1) }} placeholder="Search ETFs…" ariaLabel="Search ETFs" shortcut />
+            <SmartSearch value={etfSearch} onChange={(v) => { setEtfSearch(v); setEtfPage(1) }} placeholder="Search ETF…" ariaLabel="Search ETF" shortcut />
 
             <div>
               <p className="text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground mb-2">Category</p>
               <div className="grid grid-cols-2 lg:grid-cols-1 gap-1">
-                {[{ id: "All" as const, label: "All ETFs", icon: Layers }, ...CATEGORIES].map((c) => {
+                {[{ id: "All" as const, label: "All ETF", icon: Layers }, ...CATEGORIES].map((c) => {
                   const Icon = c.icon
                   const active = activeCat === c.id
                   const count = c.id === "All" ? allEtfs.length : ETFS[c.id].length
@@ -255,9 +256,9 @@ export default function ETFPage() {
           {/* Results */}
           <div className="min-w-0">
             <div className="lg:hidden space-y-3 mb-4">
-              <SmartSearch value={etfSearch} onChange={(v) => { setEtfSearch(v); setEtfPage(1) }} placeholder="Search ETFs…" ariaLabel="Search ETFs" />
+              <SmartSearch value={etfSearch} onChange={(v) => { setEtfSearch(v); setEtfPage(1) }} placeholder="Search ETF…" ariaLabel="Search ETF" />
               <div className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-1" style={{ scrollbarWidth: "none" }} role="tablist" aria-label="ETF category">
-                {[{ id: "All" as const, label: "All ETFs", icon: Layers }, ...CATEGORIES].map((c) => {
+                {[{ id: "All" as const, label: "All ETF", icon: Layers }, ...CATEGORIES].map((c) => {
                   const count = c.id === "All" ? allEtfs.length : ETFS[c.id].length
                   return (
                     <button key={c.id} role="tab" aria-selected={activeCat === c.id} onClick={() => pickCategory(c.id)}
@@ -274,10 +275,10 @@ export default function ETFPage() {
             <div className="flex flex-wrap items-end justify-between gap-3 mb-3">
               <div>
                 <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight leading-none">
-                  {activeCatMeta ? activeCatMeta.label : "All ETFs"}
+                  {activeCatMeta ? activeCatMeta.label : "All ETF"}
                 </h2>
                 <p className="text-xs text-muted-foreground mt-1.5">
-                  <span className="font-bold text-foreground">{etfList.data ? catRows.length : "—"}</span>{" "}ETFs
+                  <span className="font-bold text-foreground">{etfList.data ? catRows.length : "—"}</span>{" "}ETF
                   {etfSearch.trim() && <> matching <span className="font-semibold text-foreground">“{etfSearch.trim()}”</span></>}
                 </p>
               </div>
@@ -313,14 +314,14 @@ export default function ETFPage() {
               {/* Rows */}
               {etfList.error && !etfList.data ? (
                 <div className="py-16 text-center text-sm">
-                  <p className="font-black text-foreground">Unable to load ETFs</p>
+                  <p className="font-black text-foreground">Unable to load ETF</p>
                   <p className="text-xs text-muted-foreground mt-1.5">{etfList.error.message}</p>
                   <button onClick={etfList.retry} className="mt-3 text-xs font-bold text-burgundy hover:underline">Try again</button>
                 </div>
               ) : !etfList.data ? (
-                <TableRowsSkeleton rows={ETFS_PER_PAGE} columns="minmax(0,1fr) 80px 78px" avatar label="Loading ETFs" />
+                <TableRowsSkeleton rows={ETFS_PER_PAGE} columns="minmax(0,1fr) 80px 78px" avatar label="Loading ETF" />
               ) : etfPageRows.length === 0 ? (
-                <div className="py-16 text-center text-muted-foreground text-sm">No ETFs in this category yet.</div>
+                <div className="py-16 text-center text-muted-foreground text-sm">No ETF in this category yet.</div>
               ) : (
                 etfPageRows.map((etf, idx) => {
                   const up = (etf.change ?? 0) >= 0
@@ -441,7 +442,7 @@ export default function ETFPage() {
               href="/etf/compare"
               className="self-start lg:self-auto inline-flex items-center gap-2 h-11 px-5 rounded-[6px] bg-white border border-border text-sm font-bold text-foreground hover:border-burgundy/40 hover:text-burgundy transition-colors shrink-0"
             >
-              Compare all ETFs <ArrowUpRight className="w-4 h-4" />
+              Compare all ETF <ArrowUpRight className="w-4 h-4" />
             </Link>
           </div>
 
@@ -491,9 +492,9 @@ export default function ETFPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <p className="text-[10px] font-extrabold tracking-[0.2em] uppercase text-gold-deep mb-2">What You Can Do</p>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Every tool you need to invest in ETFs.</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground text-balance">Every tool you need to invest in ETF.</h2>
             <p className="text-sm text-muted-foreground mt-3 max-w-2xl mx-auto">
-              Browse, analyse, and invest in ETFs across indices, sectors, and asset classes, all from one platform.
+              Browse, analyse, and invest in ETF across indices, sectors, and asset classes, all from one platform.
             </p>
           </div>
 
@@ -535,7 +536,7 @@ export default function ETFPage() {
               Frequently Asked Questions
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Have questions about investing in ETFs at Shree Varahi? Review answers to our most popular inquiries.
+              Have questions about investing in ETF at Shree Varahi? Review answers to our most popular inquiries.
             </p>
           </div>
 
@@ -604,7 +605,7 @@ export default function ETFPage() {
             {/* Left — copy + form */}
             <div className="flex-1 text-center lg:text-left space-y-5">
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
-                Start Building Wealth<br className="hidden sm:inline" /> Through ETFs
+                Start Building Wealth<br className="hidden sm:inline" /> Through ETF
               </h2>
               <div className="flex items-center justify-center lg:justify-start gap-1.5 text-sm font-bold text-white/85">
                 4.5 <Star className="w-4 h-4 fill-gold-champagne text-gold-champagne" /> App Rating
@@ -614,10 +615,11 @@ export default function ETFPage() {
                 onSubmit={(e) => e.preventDefault()}
                 className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto lg:mx-0"
               >
-                <input
-                  type="tel"
+                <MobileInput
+                  required
+                  aria-label="Mobile number"
                   value={mobile}
-                  onChange={(e) => setMobile(e.target.value)}
+                  onValueChange={setMobile}
                   placeholder="Enter your mobile number"
                   className="w-full sm:flex-1 h-12 px-4 rounded-[5px] bg-white text-foreground placeholder:text-muted-foreground text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-gold"
                 />

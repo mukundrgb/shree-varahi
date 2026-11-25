@@ -18,6 +18,7 @@ import {
   LayoutDashboard,
 } from "lucide-react"
 import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
+import { MOBILE_ERROR, cleanCode, cleanMobile, isMobile } from "@/lib/validation"
 
 const slides = [
   {
@@ -313,7 +314,7 @@ export default function LoginPage() {
   const displayName = tab === "mobile" ? `+91 ${mobile}` : clientId
 
   const handleSend = () => {
-    if (tab === "mobile" && mobile.length < 10) return
+    if (tab === "mobile" && !isMobile(mobile)) return
     if (tab === "client" && clientId.trim().length < 3) return
     setStep("otp")
     setTimeout(() => otpRefs.current[0]?.focus(), 150)
@@ -462,13 +463,16 @@ export default function LoginPage() {
                               <input
                                 type="tel"
                                 placeholder="Enter 10-digit number"
-                                maxLength={10}
+                                inputMode="numeric"
+                                autoComplete="tel-national"
+                                aria-invalid={mobile.length === 10 && !isMobile(mobile)}
                                 value={mobile}
-                                onChange={(e) => setMobile(e.target.value.replace(/\D/g, ""))}
+                                onChange={(e) => setMobile(cleanMobile(e.target.value))}
                                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
                                 className="flex-1 min-w-0 px-3 py-3 bg-transparent text-[14px] text-foreground placeholder:text-muted-foreground/50 outline-none"
                               />
                             </div>
+                            {mobile.length === 10 && !isMobile(mobile) && <p className="-mt-3 mb-4 text-[11px] font-semibold text-loss">{MOBILE_ERROR}</p>}
                           </motion.div>
                         ) : (
                           <motion.div key="cid" initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.16 }}>
@@ -477,7 +481,7 @@ export default function LoginPage() {
                               type="text"
                               placeholder="e.g. SV123456"
                               value={clientId}
-                              onChange={(e) => setClientId(e.target.value)}
+                              onChange={(e) => setClientId(cleanCode(e.target.value))}
                               onKeyDown={(e) => e.key === "Enter" && handleSend()}
                               className="w-full px-3 py-3 bg-[#F5F5F5] border border-border rounded-[5px] text-[14px] text-foreground placeholder:text-muted-foreground/50 outline-none focus:border-gold focus:ring-2 focus:ring-gold/15 transition-all mb-5"
                             />
@@ -487,7 +491,7 @@ export default function LoginPage() {
 
                       <button
                         onClick={handleSend}
-                        disabled={tab === "mobile" ? mobile.length < 10 : clientId.trim().length < 3}
+                        disabled={tab === "mobile" ? !isMobile(mobile) : clientId.trim().length < 3}
                         className="w-full bg-burgundy hover:bg-burgundy-deep disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-3 rounded-[5px] transition-colors duration-200 flex items-center justify-center gap-2 text-[14px] shadow-[0_2px_10px_rgba(255,0,0,0.18)]"
                       >
                         Get OTP <ChevronRight className="w-4 h-4" />

@@ -4,7 +4,9 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Lock, Shield, Building2 } from "lucide-react"
+import { MobileInput, NameInput } from "@/components/form-inputs"
 import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
+import { isMobile } from "@/lib/validation"
 
 export function FinalCTA() {
   const [formData, setFormData] = useState({
@@ -15,7 +17,7 @@ export function FinalCTA() {
   const [otpSent, setOtpSent] = useState(false)
 
   const handleOtpChange = (index: number, value: string) => {
-    if (value.length > 1) return
+    if (!/^\d?$/.test(value)) return
     const newOtp = [...formData.otp]
     newOtp[index] = value
     setFormData({ ...formData, otp: newOtp })
@@ -52,7 +54,7 @@ export function FinalCTA() {
             </h2>
             <p className="text-lg text-muted-foreground">
               Join 1 Lakh+ investors who trust Shree Varahi for their trading and investment needs.{" "}
-              Open your account in under 10 minutes. Start with ₹0.
+              Open your account in under 15 minutes. Start with ₹0.
             </p>
 
             {/* App download buttons */}
@@ -120,31 +122,32 @@ export function FinalCTA() {
             </h3>
             <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); window.open(OPEN_ACCOUNT_URL, "_blank", "noopener,noreferrer") }}>
               <div>
-                <label className="text-sm text-muted-foreground mb-1.5 block">Full Name</label>
-                <input
-                  type="text"
+                <label htmlFor="cta-name" className="text-sm text-muted-foreground mb-1.5 block">Full Name</label>
+                <NameInput
+                  id="cta-name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onValueChange={(name) => setFormData({ ...formData, name })}
                   className="w-full px-4 py-3 rounded-[5px] bg-secondary border border-border focus:outline-none focus:ring-2 focus:ring-gold/50"
                   placeholder="Enter your full name"
                 />
               </div>
               <div>
-                <label className="text-sm text-muted-foreground mb-1.5 block">Mobile Number</label>
+                <label htmlFor="cta-mobile" className="text-sm text-muted-foreground mb-1.5 block">Mobile Number <span className="text-burgundy" aria-hidden="true">*</span></label>
                 <div className="flex gap-2">
                   <div className="flex flex-1">
                     <span className="px-4 py-3 bg-secondary rounded-l-[5px] border border-r-0 border-border text-muted-foreground">
                       +91
                     </span>
-                    <input
-                      type="tel"
+                    <MobileInput
+                      id="cta-mobile"
+                      required
                       value={formData.mobile}
-                      onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
+                      onValueChange={(mobile) => { setFormData({ ...formData, mobile, otp: ["", "", "", "", "", ""] }); setOtpSent(false) }}
                       className="w-full px-4 py-3 rounded-r-[5px] bg-secondary border border-border focus:outline-none focus:ring-2 focus:ring-gold/50"
                       placeholder="Enter mobile number"
                     />
                   </div>
-                  {!otpSent && formData.mobile.length === 10 && (
+                  {!otpSent && isMobile(formData.mobile) && (
                     <Button
                       type="button"
                       variant="outline"

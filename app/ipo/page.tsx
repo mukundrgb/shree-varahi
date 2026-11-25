@@ -474,7 +474,7 @@ export default function IpoPage() {
                 Upcoming IPO <span className="text-burgundy">2026</span>
               </h1>
               <p className="text-sm text-muted-foreground leading-relaxed max-w-lg">
-                Apply for the latest IPOs with zero commission. Real-time subscription data, GMP tracking, and instant allotment status.
+                Apply for the latest IPOs online with UPI. Real-time subscription data, GMP tracking, and instant allotment status.
               </p>
             </div>
 

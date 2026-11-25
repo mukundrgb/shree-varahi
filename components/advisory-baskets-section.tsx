@@ -1,5 +1,6 @@
 import { ArrowRight, Layers, Users, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { TalkToAdvisorButton } from "@/components/talk-to-advisor-button"
 import Link from "next/link"
 
 const BASKETS = ["VS Bluechip Edge Fundamental", "VS Emerging Winners Fundamental"]
@@ -58,9 +59,7 @@ export function AdvisoryBasketsSection() {
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
-                <Button variant="outline" className="border-border text-foreground hover:bg-secondary rounded-[5px] px-6 py-2.5">
-                  Talk to a portfolio advisor
-                </Button>
+                <TalkToAdvisorButton />
               </div>
             </div>
 

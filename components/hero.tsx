@@ -81,11 +81,11 @@ const promoSlides: PromoSlide[] = [
   },
   {
     kind: "image",
-    src: "/mtf-banner.png",
+    src: "/hero-banner.png",
     badge: "MARGIN TRADING",
     label: "Trade with 3× leverage",
     sublabel: "Margin Trading Facility, up to 3× on eligible stocks",
-    href: "/",
+    href: "/mtf",
   },
   {
     kind: "text",
@@ -118,7 +118,7 @@ const promoSlides: PromoSlide[] = [
     bg: ["#07070f", "#0f0f1e"],
     accent: "#818cf8",
     Icon: Zap,
-    stat: "3.25 Cr+",
+    stat: "1 Lakh+",
     statLabel: "Investors trust us",
   },
 ]
@@ -164,7 +164,7 @@ const products: Product[] = [
   {
     icon: Landmark,
     title: "Mutual Funds",
-    description: "Zero commission. Keep every rupee of your return.",
+    description: "Invest through SIP or lumpsum, at your own pace.",
     detail: "5,000+ funds, SIP, STP, SWP, goal-based investing in one click.",
     badge: "",
     badgeColor: "",
@@ -199,7 +199,7 @@ const products: Product[] = [
     icon: Layers,
     title: "ETF",
     description: "Instant diversification at the lowest cost.",
-    detail: "Gold ETFs, index ETFs, sectoral ETFs, live on-exchange prices.",
+    detail: "Gold ETF, index ETF, sectoral ETF, live on-exchange prices.",
     badge: "Low Cost",
     badgeColor: "bg-gold/20 text-gold-deep",
     accentColor: "#8B0D19",
@@ -583,7 +583,7 @@ function ProductStackSection() {
               <span className="text-burgundy">One account.</span>
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-10 text-base">
-              Stocks, F&amp;O, Mutual Funds, IPOs, ETFs, Commodities, US Stocks, one account, one flat ₹17 fee.
+              Stocks, F&amp;O, Mutual Funds, IPOs, ETF, Commodities, US Stocks, one account, one flat ₹17 fee.
             </p>
             <div className="flex flex-col gap-6 border-t border-border pt-8">
               {[

@@ -35,7 +35,7 @@ const faqData = {
   "Account & Products": [
     {
       q: "How do I open a Shree Varahi demat account?",
-      a: "You can open a demat account in under 10 minutes with our digital e-KYC process. You'll need your Aadhaar, PAN, and a selfie. It's completely free to open.",
+      a: "You can open a demat account in under 15 minutes with our digital e-KYC process. You'll need your Aadhaar, PAN, and a selfie. It's completely free to open.",
     },
     {
       q: "How do I set up a SIP in stocks or mutual funds?",

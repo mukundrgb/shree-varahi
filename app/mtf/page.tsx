@@ -10,6 +10,7 @@ import {
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
+import { MobileInput } from "@/components/form-inputs"
 import { MTFSection } from "@/components/mtf-section"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -357,10 +358,11 @@ export default function MTFPage() {
                 onSubmit={(e) => { e.preventDefault(); window.location.assign(OPEN_ACCOUNT_URL) }}
                 className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto lg:mx-0"
               >
-                <input
-                  type="tel"
+                <MobileInput
+                  required
+                  aria-label="Mobile number"
                   value={mobile}
-                  onChange={(e) => setMobile(e.target.value)}
+                  onValueChange={setMobile}
                   placeholder="Enter your mobile number"
                   className="w-full sm:flex-1 h-12 px-4 rounded-[5px] bg-white text-foreground placeholder:text-muted-foreground text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-gold"
                 />

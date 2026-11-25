@@ -326,7 +326,7 @@ export default function MutualFundsPage() {
                 Invest in <span className="text-burgundy">Mutual Funds</span>
               </h1>
               <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
-                {info ? `${totalFunds} funds` : "Funds"} across equity, debt, and hybrid from {info ? `${totalAmcs} AMCs` : "leading AMCs"}. Invest with zero commission and research-backed recommendations.
+                {info ? `${totalFunds} funds` : "Funds"} across equity, debt, and hybrid from {info ? `${totalAmcs} AMCs` : "leading AMCs"}. Invest by SIP or lumpsum with research-backed recommendations.
               </p>
               <div className="flex flex-wrap items-center gap-3 pt-1">
                 <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
@@ -345,7 +345,7 @@ export default function MutualFundsPage() {
             {/* Key numbers, moved up from under the heading to use the right side */}
             <div className="grid grid-cols-2 gap-3">
               {[
-                { v: "₹0",       l: "Commission"      },
+                { v: "₹100",     l: "SIP Starts From" },
                 { v: totalFunds, l: "Funds Available" },
                 { v: formatCount(info?.stats.totalCategories), l: "Categories" },
                 { v: totalAmcs,  l: "AMC Partners"    },
@@ -642,8 +642,8 @@ export default function MutualFundsPage() {
               {
                 icon: Award,
                 color: "#8B0D19",
-                title: "0% Commission",
-                desc: "Invest directly in regular & direct mutual funds with zero hidden charges or commission.",
+                title: "SIP or Lumpsum",
+                desc: "Invest a fixed amount every month or a one-time amount, across equity, debt and hybrid funds.",
                 points: ["No entry load", "No exit penalties", "Transparent pricing"],
               },
               {
@@ -801,7 +801,7 @@ export default function MutualFundsPage() {
             Start your SIP today. Watch it grow.
           </h2>
           <p className="text-sm text-white/75 max-w-xl mx-auto leading-relaxed">
-            Open a free account and invest in {info ? `${totalFunds} mutual funds` : "mutual funds"} with zero commission, expert research, and real-time tracking.
+            Open a free account and invest in {info ? `${totalFunds} mutual funds` : "mutual funds"} with expert research and real-time tracking.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Button asChild size="lg" className="bg-white hover:bg-gold-champagne text-burgundy font-black px-8 h-11 text-sm rounded-[5px] shadow-xl">

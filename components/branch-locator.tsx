@@ -4,7 +4,7 @@ import { useState } from "react"
 import { SmartSearch } from "@/components/smart-controls"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import { Search, MapPin, Phone, ExternalLink } from "lucide-react"
+import { Search, MapPin, Phone } from "lucide-react"
 
 const branches = [
   { city: "Mumbai (HQ)", address: "Unit No 407, IV Floor, Marathon Icon, Marathon Nextgen Campus, Ganpat Rao Kadam Marg, Opposite Peninsula Corporate Park, Lower Parel West", phone: "(022) 43431818" },
@@ -215,12 +215,6 @@ export function BranchLocator() {
                         {branch.phone}
                       </p>
                     </div>
-                    <a
-                      href="#"
-                      className="text-burgundy hover:text-burgundy-deep p-2 hover:bg-burgundy/10 rounded-[5px] transition-colors"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
                   </div>
                 </motion.div>
               ))}

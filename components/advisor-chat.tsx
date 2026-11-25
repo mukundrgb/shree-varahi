@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { AnimatePresence, motion } from "framer-motion"
 import { ArrowRight, BadgeCheck, Clock, Globe, MessageCircle, PhoneCall, Send, Sparkles, UserRound, X } from "lucide-react"
+import { MobileInput, NameInput } from "@/components/form-inputs"
 import { CALCULATOR_LINKS, OPEN_ACCOUNT_URL } from "@/lib/external-links"
 // TODO: replace with the real advisor's details and photo.
 const ADVISOR = {
@@ -31,7 +32,7 @@ const ANSWERS: { test: RegExp; text: string; link?: Msg["link"] }[] = [
   { test: /open|account|demat|kyc|sign ?up/i, text: "You can open a free demat & trading account in minutes with PAN, Aadhaar and bank details, zero account opening charges.", link: { label: "Open Free Account", href: OPEN_ACCOUNT_URL } },
   { test: /brokerage|charge|fee|cost|amc/i, text: "Equity delivery is free. Intraday and F&O orders have a flat low brokerage per executed order, with zero AMC.", link: { label: "Brokerage Calculator", href: CALCULATOR_LINKS.brokerage } },
   { test: /ipo/i, text: "See every open, upcoming and recently listed IPO with dates, price bands and lot sizes.", link: { label: "View IPOs", href: "/ipo" } },
-  { test: /mutual|fund|sip|lumpsum/i, text: "Explore 1,000+ mutual funds with zero commission, compare returns and start a SIP.", link: { label: "Explore Mutual Funds", href: "/mutual-funds" } },
+  { test: /mutual|fund|sip|lumpsum/i, text: "Explore 1,000+ mutual funds, compare returns and invest by SIP or lumpsum.", link: { label: "Explore Mutual Funds", href: "/mutual-funds" } },
   { test: /mtf|margin|leverage/i, text: "With the Margin Trading Facility you can buy eligible stocks with up to 3× buying power.", link: { label: "Learn about MTF", href: "/mtf" } },
   { test: /f&o|fno|future|option/i, text: "Trade index and stock futures & options with live option chains and strategy tools.", link: { label: "Go to F&O", href: "/futures-options" } },
   { test: /learn|guide|beginner|knowledge/i, text: "Our Knowledge Center has simple guides on stocks, IPOs, F&O, taxes and more.", link: { label: "Knowledge Center", href: "/knowledge-center" } },
@@ -51,6 +52,11 @@ function Avatar({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
     </span>
   )
 }
+
+const OPEN_EVENT = "open-advisor-chat"
+
+/** Opens the chat from anywhere on a page that shows <AdvisorChat />. */
+export const openAdvisorChat = () => { window.dispatchEvent(new Event(OPEN_EVENT)) }
 
 export function AdvisorChat() {
   const [open, setOpen] = useState(false)
@@ -108,6 +114,13 @@ export function AdvisorChat() {
   }
 
   const openChat = () => { setOpen(true); setShowTeaser(false) }
+
+  // "Talk to a portfolio advisor" buttons open the chat tab.
+  useEffect(() => {
+    const onOpen = () => { setTab("chat"); setOpen(true); setShowTeaser(false) }
+    window.addEventListener(OPEN_EVENT, onOpen)
+    return () => window.removeEventListener(OPEN_EVENT, onOpen)
+  }, [])
 
   return (
     // Sits directly above the scroll-to-top button.
@@ -228,13 +241,13 @@ export function AdvisorChat() {
                   {callback === "form" && (
                     <form onSubmit={submitCallback} className="bg-white border border-border rounded-[12px] p-3.5 space-y-2.5 ml-10">
                       <p className="text-xs font-black text-foreground">Request a callback</p>
-                      <input
-                        required value={cbName} onChange={(e) => setCbName(e.target.value)} placeholder="Your name" autoComplete="name"
+                      <NameInput
+                        required aria-label="Your name" value={cbName} onValueChange={setCbName} placeholder="Your name"
                         className="w-full h-9 px-3 rounded-[6px] border border-border bg-cream/40 text-sm focus:outline-none focus:ring-2 focus:ring-gold/30"
                       />
-                      <input
-                        required value={cbPhone} onChange={(e) => setCbPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                        placeholder="10-digit mobile number" inputMode="numeric" pattern="[0-9]{10}" title="Enter a 10-digit mobile number" autoComplete="tel"
+                      <MobileInput
+                        required aria-label="Mobile number" value={cbPhone} onValueChange={setCbPhone}
+                        placeholder="10-digit mobile number"
                         className="w-full h-9 px-3 rounded-[6px] border border-border bg-cream/40 text-sm focus:outline-none focus:ring-2 focus:ring-gold/30"
                       />
                       <button type="submit" className="w-full h-9 rounded-[6px] bg-burgundy hover:bg-burgundy-deep text-white text-xs font-black">Call me back</button>
@@ -258,6 +271,7 @@ export function AdvisorChat() {
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Type your question…"
                     aria-label="Type your question"
+                    maxLength={500}
                     className="flex-1 h-10 px-3.5 rounded-full border border-border bg-cream/40 text-sm focus:outline-none focus:ring-2 focus:ring-gold/30 focus:bg-white"
                   />
                   <button type="submit" disabled={!input.trim()} aria-label="Send" className="w-10 h-10 rounded-full bg-burgundy hover:bg-burgundy-deep text-white flex items-center justify-center disabled:opacity-40 transition-opacity">

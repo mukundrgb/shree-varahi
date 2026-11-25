@@ -50,7 +50,7 @@ const TRADE_INVEST: MenuItem[] = [
 ]
 
 const MF_SIP: MenuItem[] = [
-  { title: "Mutual Funds",   desc: "0% commission", icon: <Landmark  className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/mutual-funds" },
+  { title: "Mutual Funds",   desc: "Invest by SIP or lumpsum", icon: <Landmark  className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/mutual-funds" },
   // SIP Calculator is hidden for now.
   // { title: "SIP Calculator", desc: "Plan your monthly SIP goal",          icon: <RotateCcw className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/mutual-funds" },
   { title: "NFO",            desc: "New fund offers, invest early",      icon: "🆕",                                                              href: "/nfo" },
@@ -74,7 +74,7 @@ type MktExchange = "NSE" | "BSE" | "MCX" | "GLOBAL"
 type MarketItem  = { name: string; href: string; exchange?: MktExchange; meta?: string }
 
 // The "Indices" tab is hidden for now (desktop dropdown and mobile menu); add it back to the list to show it.
-const MARKETS_TABS = [/* "Indices", */ "Stocks", "F&O", "Mutual Funds", "ETFs", "Tools"] as const
+const MARKETS_TABS = [/* "Indices", */ "Stocks", "F&O", "Mutual Funds", "ETF", "Tools"] as const
 /** Tab the Markets menu opens on. */
 const DEFAULT_MARKETS_TAB = MARKETS_TABS[0]
 
@@ -84,7 +84,7 @@ const MARKETS_SUBS: Record<string, string[]> = {
   // "Commodity Option Chain" and "Commodity Futures" are hidden for now.
   "F&O":           ["Index Option Chain", "Index F&O", "Stock Option Chain", "Stock Futures", "Stock Options" /* , "Commodity Option Chain", "Commodity Futures" */],
   "Mutual Funds":  ["Equity Funds", "Debt Funds", "Hybrid Funds", "Index Funds", "Mutual Funds AMCs", "Popular Mutual Funds", "Popular Schemes"],
-  "ETFs":          ["Index ETFs", "Commodity ETFs", "Popular ETFs", "ETF AMCs"],
+  "ETF":          ["Index ETF", "Commodity ETF", "Popular ETF", "ETF AMCs"],
   "Tools":         ["Calculators", "Screeners"],
 }
 
@@ -356,19 +356,19 @@ const MARKETS_DATA: Record<string, Record<string, MarketItem[]>> = {
       { name: "HDFC Mid Cap Fund",             href: "/mutual-funds/hdfc-midcap-opportunities-fund-direct-growth" },
     ],
   },
-  "ETFs": {
-    "Index ETFs": [
+  "ETF": {
+    "Index ETF": [
       { name: "Nifty 50 ETF",      href: "/etf/traded-funds/nifty-50-etfs",      exchange: "NSE" },
       { name: "Nifty Next 50 ETF", href: "/etf/traded-funds/nifty-next-50-etfs", exchange: "NSE" },
       { name: "Bank Nifty ETF",    href: "/etf/traded-funds/bank-nifty-etfs",    exchange: "NSE" },
       { name: "Nifty IT ETF",      href: "/etf/traded-funds/nifty-it-etfs",      exchange: "NSE" },
       { name: "Sensex ETF",        href: "/etf/traded-funds/sensex-etfs",        exchange: "BSE" },
     ],
-    "Commodity ETFs": [
+    "Commodity ETF": [
       { name: "Gold ETF",   href: "/etf/traded-funds/gold-etfs" },
       { name: "Silver ETF", href: "/etf/traded-funds/silver-etfs" },
     ],
-    "Popular ETFs": [
+    "Popular ETF": [
       { name: "Best Index ETF",    href: "/etf/traded-funds/index-etfs" },
       { name: "International ETF", href: "/etf/traded-funds/international-etfs" },
       { name: "Commodity ETF",     href: "/etf/traded-funds/commodity-etfs" },
@@ -376,11 +376,11 @@ const MARKETS_DATA: Record<string, Record<string, MarketItem[]>> = {
       { name: "Defence ETF",       href: "/etf/traded-funds/defence-etfs" },
     ],
     "ETF AMCs": [
-      { name: "Nippon ETFs",  href: "/etf/traded-funds/nippon-etf" },
-      { name: "SBI ETFs",     href: "/etf/traded-funds/sbi-etf" },
-      { name: "Tata ETFs",    href: "/etf/traded-funds/tata-etf" },
-      { name: "Zerodha ETFs", href: "/etf/traded-funds/zerodha-etf" },
-      { name: "ICICI ETFs",   href: "/etf/traded-funds/icici-etf" },
+      { name: "Nippon ETF",  href: "/etf/traded-funds/nippon-etf" },
+      { name: "SBI ETF",     href: "/etf/traded-funds/sbi-etf" },
+      { name: "Tata ETF",    href: "/etf/traded-funds/tata-etf" },
+      { name: "Zerodha ETF", href: "/etf/traded-funds/zerodha-etf" },
+      { name: "ICICI ETF",   href: "/etf/traded-funds/icici-etf" },
     ],
   },
   "Tools": {
@@ -411,7 +411,7 @@ const STOCKS_EXTRA_SUBS = ["Market Movers"]
 /** "View all …" link in the menu footer, per tab. */
 const TAB_HOME: Record<string, string> = {
   "Indices": "/stocks", "Stocks": "/stocks", "F&O": "/futures-options", "Mutual Funds": "/mutual-funds",
-  "ETFs": "/etf/compare", "Tools": "/stocks",
+  "ETF": "/etf/compare", "Tools": "/stocks",
 }
 
 /**
@@ -533,7 +533,7 @@ export function Navbar() {
 
   const mobileLive = useLiveMarkets(mobileMenuOpen && expandedSection === "Markets", mobileMktTab, null)
   // Mobile lists every sub-tab at once, so only tabs whose data comes in one call use live data.
-  const mobileMenu = mobileMktTab === "Mutual Funds" || mobileMktTab === "ETFs"
+  const mobileMenu = mobileMktTab === "Mutual Funds" || mobileMktTab === "ETF"
     ? menuFor(mobileMktTab, mobileLive)
     : menuFor(mobileMktTab, {})
   const mobileGroups: [string, MarketItem[] | null][] = mobileMenu.subs.map((s) => [s, mobileMenu.items(s)])

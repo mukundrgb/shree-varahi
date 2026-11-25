@@ -78,7 +78,7 @@ const DATA: IndexPageData = {
     "First published in 1986 with a base year of 1978-79, SENSEX is one of the oldest stock indices in Asia and is widely tracked as a barometer of the Indian stock market and economy.",
   ],
   ctaHeadline: "Trade Sensex with Zero Brokerage",
-  ctaBody: "Index funds, ETFs & derivatives, all in one place. Start investing from ₹500.",
+  ctaBody: "Index funds, ETF & derivatives, all in one place. Start investing from ₹500.",
 }
 
 export default function SensexPage() {

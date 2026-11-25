@@ -109,14 +109,14 @@ function EtfCompare() {
           <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-5">
             <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3" />
-            <Link href="/etf" className="hover:text-foreground transition-colors">ETFs</Link>
+            <Link href="/etf" className="hover:text-foreground transition-colors">ETF</Link>
             <ChevronRight className="w-3 h-3" />
-            <span className="text-foreground font-semibold">Compare ETFs</span>
+            <span className="text-foreground font-semibold">Compare ETF</span>
           </nav>
           <p className="text-[10px] font-extrabold tracking-[0.22em] uppercase text-gold-deep mb-2">ETF Research</p>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight">All ETFs</h1>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-foreground tracking-tight">All ETF</h1>
           <p className="text-sm text-muted-foreground mt-2 max-w-2xl">
-            Compare ETFs by price, fund size, cost and returns. Click any column heading to sort.
+            Compare ETF by price, fund size, cost and returns. Click any column heading to sort.
           </p>
         </div>
       </section>
@@ -125,7 +125,7 @@ function EtfCompare() {
       <section className="bg-background py-6 pb-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap gap-2.5 mb-4">
-            <SmartSearch value={search} onChange={(v) => { setSearch(v); setPage(1) }} placeholder="Search ETFs…" ariaLabel="Search ETFs" shortcut className="w-full sm:w-80" />
+            <SmartSearch value={search} onChange={(v) => { setSearch(v); setPage(1) }} placeholder="Search ETF…" ariaLabel="Search ETF" shortcut className="w-full sm:w-80" />
             <div className="flex gap-1.5 flex-wrap">
               {CATEGORIES.map((c) => (
                 <button
@@ -145,7 +145,7 @@ function EtfCompare() {
 
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs text-muted-foreground">
-              Showing <span className="font-bold text-foreground">{rows.length}</span>{" "}ETFs
+              Showing <span className="font-bold text-foreground">{rows.length}</span>{" "}ETF
               {category !== "All" && <span className="ml-1.5 font-semibold text-foreground">· {category}</span>}
             </p>
             {hasFilter && (
@@ -187,12 +187,12 @@ function EtfCompare() {
 
                 {/* Rows */}
                 {list.loading && !list.data ? (
-                  <TableRowsSkeleton rows={PER_PAGE} columns={grid} cells={7} avatar label="Loading ETFs" />
+                  <TableRowsSkeleton rows={PER_PAGE} columns={grid} cells={7} avatar label="Loading ETF" />
                 ) : pageRows.length === 0 ? (
                   <div className="py-16 text-center text-muted-foreground text-sm">
                     {list.error ? (
-                      <>Unable to load ETFs. <button onClick={list.retry} className="text-burgundy font-bold hover:underline">Retry</button></>
-                    ) : "No ETFs match your filters."}
+                      <>Unable to load ETF. <button onClick={list.retry} className="text-burgundy font-bold hover:underline">Retry</button></>
+                    ) : "No ETF matches your filters."}
                   </div>
                 ) : (
                   pageRows.map((r) => (

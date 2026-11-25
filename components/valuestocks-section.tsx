@@ -1,8 +1,10 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
+import { TalkToAdvisorButton } from "@/components/talk-to-advisor-button"
 import { ArrowRight, TrendingUp, RefreshCw, MousePointerClick, Check } from "lucide-react"
 
 const steps = [
@@ -315,13 +317,13 @@ export function ValuestocksSection() {
               
               {/* Action buttons */}
               <div className="flex flex-wrap gap-3 pt-4">
-                <Button className="bg-burgundy hover:bg-burgundy-deep text-primary-foreground font-bold rounded-[5px] px-6 py-2.5 flex items-center gap-2">
-                  Explore Valuestocks
-                  <ArrowRight className="h-4 w-4" />
+                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-primary-foreground font-bold rounded-[5px] px-6 py-2.5 flex items-center gap-2">
+                  <Link href="/advisory-baskets">
+                    Explore Valuestocks
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
                 </Button>
-                <Button variant="outline" className="border-border text-foreground hover:bg-secondary rounded-[5px] px-6 py-2.5">
-                  Talk to a portfolio advisor
-                </Button>
+                <TalkToAdvisorButton />
               </div>
             </div>
 

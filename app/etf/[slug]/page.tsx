@@ -258,7 +258,7 @@ export default function EtfDetailPage() {
     return (
       <PageShell>
         <p className="text-2xl font-black text-foreground">ETF not found</p>
-        <Link href="/etf" className="text-burgundy font-semibold hover:underline">← Back to ETFs</Link>
+        <Link href="/etf" className="text-burgundy font-semibold hover:underline">← Back to ETF</Link>
       </PageShell>
     )
   }
@@ -305,7 +305,7 @@ function EtfDetailView({ etf }: { etf: EtfDetail }) {
           <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-4">
             <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3" />
-            <Link href="/etf" className="hover:text-foreground transition-colors">ETFs</Link>
+            <Link href="/etf" className="hover:text-foreground transition-colors">ETF</Link>
             <ChevronRight className="w-3 h-3" />
             <span className="text-foreground font-semibold truncate">{etf.name}</span>
           </nav>
@@ -489,7 +489,7 @@ function EtfDetailView({ etf }: { etf: EtfDetail }) {
               </Card>
 
               {/* Similar ETFs */}
-              <Card title="Similar ETFs" subtitle="Selection based on fund size (AUM)">
+              <Card title="Similar ETF" subtitle="Selection based on fund size (AUM)">
                 <SimilarEtfs etfs={etf.similar} currentSlug={etf.slug} />
               </Card>
             </div>

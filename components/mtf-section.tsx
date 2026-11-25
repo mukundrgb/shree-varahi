@@ -11,6 +11,7 @@ import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { Search, X, ArrowRight, CheckCircle2, Loader2, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { MobileInput } from "@/components/form-inputs"
 import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 import { Slider } from "@/components/ui/slider"
 import { useMtfStocks, useMtfSummary } from "@/hooks/use-mtf"
@@ -201,7 +202,13 @@ export function MTFSection() {
                   Select a stock to see the exact margin trading facility available. Different stocks have different MTF limits.
                 </p>
               </div>
-
+              <Link
+                href="/mtf/eligible-stocks"
+                className="inline-flex items-center justify-center gap-1.5 shrink-0 h-9 px-4 rounded-[5px] border border-burgundy/40 bg-white text-[13px] font-bold text-burgundy hover:bg-burgundy hover:text-white transition-colors whitespace-nowrap"
+              >
+                View all{totalStocks ? ` ${totalStocks}` : ""} eligible stocks
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
 
             {/* Two-column layout — scrolls horizontally on mobile */}
@@ -506,26 +513,21 @@ export function MTFSection() {
 
             {/* Bottom CTA */}
             <div className="bg-cream/50 border-t border-border rounded-b-[8px] flex flex-col gap-4 p-5 sm:p-6">
-              <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
+              <form
+                onSubmit={(e) => { e.preventDefault(); window.open(OPEN_ACCOUNT_URL, "_blank", "noopener,noreferrer") }}
+                className="flex flex-col sm:flex-row items-stretch gap-2.5"
+              >
                 <div className="flex items-center border border-border rounded-[5px] bg-white h-11 px-3 focus-within:border-burgundy focus-within:ring-1 focus-within:ring-burgundy/20 transition-all flex-1">
                   <span className="text-sm font-semibold text-muted-foreground mr-2 border-r border-border/80 pr-2 flex-shrink-0">+91</span>
-                  <input type="tel" placeholder="Enter Mobile No." className="bg-transparent text-sm font-medium w-full focus:outline-none placeholder:text-muted-foreground/60" />
+                  <MobileInput required aria-label="Mobile number" placeholder="Enter Mobile No." className="bg-transparent text-sm font-medium w-full focus:outline-none placeholder:text-muted-foreground/60" />
                 </div>
-                <Button onClick={() => window.open(OPEN_ACCOUNT_URL, "_blank", "noopener,noreferrer")} className="bg-burgundy hover:bg-burgundy-deep text-white font-semibold rounded-[5px] h-11 px-6 whitespace-nowrap">
+                <Button type="submit" className="bg-burgundy hover:bg-burgundy-deep text-white font-semibold rounded-[5px] h-11 px-6 whitespace-nowrap">
                   Start Trading
                 </Button>
-              </div>
+              </form>
             </div>
 
           </div>
-
-          {/* View all link */}
-          <p className="text-center mt-6">
-            <Link href="/mtf/eligible-stocks" className="text-sm text-burgundy hover:underline inline-flex items-center gap-1 font-semibold">
-              View all{totalStocks ? ` ${totalStocks}` : ""} MTF eligible stocks
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </p>
         </motion.div>
       </div>
     </section>

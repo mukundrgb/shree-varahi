@@ -26,7 +26,7 @@ export const SITE_PAGES: SitePage[] = [
   { title: "MTF Eligible Stocks",     desc: "Stocks available on MTF",               href: "/mtf/eligible-stocks", keywords: "mtf stocks list margin" },
   { title: "Global Investing",        desc: "Invest in US stocks from India",        href: "/global-investing", keywords: "us stocks international" },
   // Mutual funds
-  { title: "Mutual Funds",            desc: "Explore & invest with 0% commission",   href: "/mutual-funds",    keywords: "sip lumpsum funds" },
+  { title: "Mutual Funds",            desc: "Explore & invest by SIP or lumpsum",   href: "/mutual-funds",    keywords: "sip lumpsum funds" },
   { title: "NFO",                     desc: "New fund offers",                       href: "/nfo",             keywords: "new fund offer" },
   // Market movers
   { title: "Top Gainers Today",       desc: "Market movers",                         href: "/stock-market-live/top-gainers-today",     keywords: "gainers movers" },

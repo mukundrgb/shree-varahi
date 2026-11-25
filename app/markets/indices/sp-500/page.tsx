@@ -70,7 +70,7 @@ const DATA: IndexPageData = {
   aboutTitle: "About S&P 500",
   aboutParagraphs: [
     "The <strong>S&amp;P 500</strong> is a market-capitalisation weighted index tracking 500 of the largest publicly traded US companies, widely regarded as the best gauge of large-cap US equities.",
-    "Maintained by S&amp;P Dow Jones Indices, the S&amp;P 500 covers roughly 80% of available US market capitalisation and underlies trillions of dollars in index funds and ETFs globally.",
+    "Maintained by S&amp;P Dow Jones Indices, the S&amp;P 500 covers roughly 80% of available US market capitalisation and underlies trillions of dollars in index funds and ETF globally.",
   ],
   ctaHeadline: "Invest in S&P 500 via Global Investing",
   ctaBody: "Access global markets directly from India with Shree Varahi's Global Investing platform.",

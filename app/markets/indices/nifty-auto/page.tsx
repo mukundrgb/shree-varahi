@@ -74,7 +74,7 @@ const DATA: IndexPageData = {
     "The index reflects the health of India's automobile sector, spanning passenger vehicles, commercial vehicles, two-wheelers, and component makers, and is closely tied to consumer spending trends.",
   ],
   ctaHeadline: "Trade Nifty Auto with Zero Brokerage",
-  ctaBody: "Index funds, ETFs & derivatives, all in one place. Start investing from ₹500.",
+  ctaBody: "Index funds, ETF & derivatives, all in one place. Start investing from ₹500.",
 }
 
 export default function NiftyAutoPage() {

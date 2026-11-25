@@ -1,8 +1,11 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronRight, ArrowLeft, ArrowRight, Newspaper, BookOpen, TrendingUp, TrendingDown } from "lucide-react"
+import { ChevronRight, ArrowLeft, ArrowRight, Newspaper, BookOpen, Rss, TrendingUp, TrendingDown } from "lucide-react"
+import { newsDateTime } from "@/lib/news/categorize"
+import { SAMPLE_NEWS } from "@/lib/news/sample"
 
 /* ─── Tab data ─── */
 
@@ -12,6 +15,12 @@ const tabs = [
     title: "Market News",
     icon: Newspaper,
     desc: "Live market developments, earnings updates, policy changes, and sector-specific news curated every day by our team.",
+  },
+  {
+    id: "stories",
+    title: "Latest News",
+    icon: Rss,
+    desc: "Company announcements, results, IPOs, the economy and global markets, updated through the trading day.",
   },
   {
     id: "blog",
@@ -123,6 +132,39 @@ function NewsIllustration() {
   )
 }
 
+/* Latest stories from /news, one per section; each opens its story */
+const LATEST_STORIES = ["Corporate News", "IPO News", "Economy News", "Foreign Markets"]
+  .map((section) => SAMPLE_NEWS.find((n) => n.tag === section))
+  .filter((n) => n !== undefined)
+
+function StoriesPanel() {
+  return (
+    <BrowserShell url="varahi.in/news">
+      <div className="p-4 flex flex-col gap-3 h-full">
+        <div className="flex items-center justify-between shrink-0">
+          <span className="flex items-center gap-1.5 text-[11px] font-black text-foreground">
+            <span className="w-1.5 h-1.5 rounded-full bg-burgundy" /> Latest News
+          </span>
+          <Link href="/news" className="text-[10px] font-bold text-burgundy hover:underline flex items-center gap-0.5">
+            View all news <ChevronRight className="w-3 h-3" />
+          </Link>
+        </div>
+        <div className="flex flex-col gap-1.5 flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
+          {LATEST_STORIES.map((s) => (
+            <Link key={s.id} href={`/news/${s.id}`} className="group block px-2.5 py-1.5 rounded-[8px] bg-slate-50/70 border border-border/50 hover:border-burgundy/30 transition-colors">
+              <span className="flex items-center gap-2 mb-1">
+                <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-[3px] bg-burgundy/[0.07] text-burgundy">{s.tag}</span>
+                <span className="text-[9px] text-muted-foreground/70">{newsDateTime(s.publishedAt)}</span>
+              </span>
+              <span className="block text-[11px] font-semibold text-foreground leading-snug line-clamp-1 sm:line-clamp-2 group-hover:text-burgundy transition-colors">{s.headline}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </BrowserShell>
+  )
+}
+
 /* Blog illustration */
 function BlogIllustration() {
   return (
@@ -210,7 +252,7 @@ export function KnowledgeSection() {
               </p>
             </div>
 
-            {/* Two clickable cards */}
+            {/* Clickable cards */}
             <div className="space-y-3">
               {tabs.map((tab) => {
                 const Icon = tab.icon
@@ -306,7 +348,7 @@ export function KnowledgeSection() {
                     transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                     className="w-full h-full"
                   >
-                    {active === "news" ? <NewsIllustration /> : <BlogIllustration />}
+                    {active === "news" ? <NewsIllustration /> : active === "stories" ? <StoriesPanel /> : <BlogIllustration />}
                   </motion.div>
                 </AnimatePresence>
               </div>

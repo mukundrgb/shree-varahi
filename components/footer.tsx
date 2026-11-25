@@ -107,7 +107,7 @@ const marketTabs: MarketTab[] = [
     links: [
       { name: "Best Large Cap Funds", href: "#" }, { name: "Best Mid Cap Funds", href: "#" },
       { name: "Best Small Cap Funds", href: "#" }, { name: "Best ELSS Funds", href: "#" },
-      { name: "Direct Plans Only", href: "#" }, { name: "Zero Commission MF", href: "#" },
+      { name: "Direct Plans Only", href: "#" }, { name: "SIP & Lumpsum MF", href: "#" },
       { name: "SIP from ₹100", href: "#" }, { name: "Flexi Cap Funds", href: "#" },
       { name: "Debt Funds", href: "#" }, { name: "Hybrid Funds", href: "#" },
       { name: "Index Funds", href: "#" }, { name: "Sectoral Funds", href: "#" },
@@ -159,7 +159,7 @@ const marketTabs: MarketTab[] = [
   */
   {
     id: "etf",
-    label: "ETFs",
+    label: "ETF",
     links: [
       { name: "Nifty 50 ETF", href: "/etf" }, { name: "Bank Nifty ETF", href: "/etf" },
       { name: "Gold ETF", href: "/etf" }, { name: "Silver ETF", href: "/etf" },
@@ -330,7 +330,7 @@ const exploreCategories: ExploreCategory[] = [
     { name: "Zinc", href: "/commodity" }, { name: "Zinc Mini", href: "/commodity" },
   ]},
   */
-  { label: "Most Searched ETFs", links: [
+  { label: "Most Searched ETF", links: [
     { name: "ICICI Pru Nifty 50 ETF", href: "/etf" }, { name: "ICICI Pru Bharat 22 ETF", href: "/etf" }, { name: "SBI Nifty 50 ETF", href: "/etf" },
     { name: "SBI Nifty IT ETF", href: "/etf" }, { name: "Nippon India Nifty 50 ETF", href: "/etf" }, { name: "Nippon India Nifty Consumption ETF", href: "/etf" },
     { name: "Nippon India Gold ETF", href: "/etf" }, { name: "Kotak Nifty 50 ETF", href: "/etf" }, { name: "Kotak Nifty IT ETF", href: "/etf" },
@@ -398,7 +398,7 @@ const exploreCategories: ExploreCategory[] = [
   */
   { label: "Margin Stocks / Mutual Funds", links: [
     { name: "Intraday Margin Stocks List", href: "#" }, { name: "MTF Stocks List", href: "#" }, { name: "Margin Pledge Stocks List", href: "#" },
-    { name: "Mutual Funds for Margin Benefit", href: "#" }, { name: "ETFs & Bonds Pledge List", href: "#" }, { name: "G-Sec & TB Pledge List", href: "#" },
+    { name: "Mutual Funds for Margin Benefit", href: "#" }, { name: "ETF & Bonds Pledge List", href: "#" }, { name: "G-Sec & TB Pledge List", href: "#" },
   ]},
   { label: "Surveillance Stocks", links: [
     { name: "NSE ASM List", href: "/stocks" }, { name: "BSE ASM List", href: "/stocks" }, { name: "NSE GSM List", href: "/stocks" },
@@ -436,12 +436,12 @@ const exploreCategories: ExploreCategory[] = [
     { name: "CAC", href: "/#global-investing" }, { name: "NIKKEI 225", href: "/#global-investing" }, { name: "DOW JONES", href: "/#global-investing" },
     { name: "S&P", href: "/#global-investing" }, { name: "Gift Nifty", href: "/#global-investing" },
   ]},
-  { label: "Popular ETFs", links: [
-    { name: "Nippon ETFs", href: "/etf" }, { name: "SBI ETFs", href: "/etf" }, { name: "Tata ETFs", href: "/etf" },
-    { name: "Zerodha ETFs", href: "/etf" }, { name: "ICICI ETFs", href: "/etf" }, { name: "HDFC ETFs", href: "/etf" },
-    { name: "Motilal Oswal ETFs", href: "/etf" }, { name: "Groww ETFs", href: "/etf" }, { name: "Mirae ETFs", href: "/etf" },
-    { name: "Axis ETFs", href: "/etf" }, { name: "Kotak ETFs", href: "/etf" }, { name: "Aditya Birla ETFs", href: "/etf" },
-    { name: "UTI ETFs", href: "/etf" }, { name: "All ETFs", href: "/etf" },
+  { label: "Popular ETF", links: [
+    { name: "Nippon ETF", href: "/etf" }, { name: "SBI ETF", href: "/etf" }, { name: "Tata ETF", href: "/etf" },
+    { name: "Zerodha ETF", href: "/etf" }, { name: "ICICI ETF", href: "/etf" }, { name: "HDFC ETF", href: "/etf" },
+    { name: "Motilal Oswal ETF", href: "/etf" }, { name: "Groww ETF", href: "/etf" }, { name: "Mirae ETF", href: "/etf" },
+    { name: "Axis ETF", href: "/etf" }, { name: "Kotak ETF", href: "/etf" }, { name: "Aditya Birla ETF", href: "/etf" },
+    { name: "UTI ETF", href: "/etf" }, { name: "All ETF", href: "/etf" },
   ]},
   { label: "Popular Funds Comparison", links: [
     { name: "SBI Small Cap vs Quant Small Cap", href: "#" }, { name: "HDFC Flexi Cap vs Parag Parikh Flexi Cap", href: "#" }, { name: "UTI Nifty 50 Index vs Tata Nifty 50 Index", href: "#" },
@@ -459,9 +459,9 @@ const exploreCategories: ExploreCategory[] = [
     { name: "Nifty 50 vs Sensex", href: "/stocks" }, { name: "Nifty 50 vs Nifty Next 50", href: "/stocks" }, { name: "Nifty 50 vs Nifty 100", href: "/stocks" },
     { name: "Nifty Next 50 vs Nifty Midcap 150", href: "/stocks" }, { name: "Nifty 50 vs Nifty 500", href: "/stocks" }, { name: "Compare Indices", href: "/stocks" },
   ]},
-  { label: "Popular ETFs Comparison", links: [
+  { label: "Popular ETF Comparison", links: [
     { name: "SBI Nifty 50 ETF vs UTI Nifty 50 ETF", href: "/etf" }, { name: "Nippon Gold ETF vs HDFC Gold ETF", href: "/etf" }, { name: "UTI Sensex ETF vs ICICI Pru Sensex ETF", href: "/etf" },
-    { name: "Nippon Silver ETF vs ICICI Pru Silver ETF", href: "/etf" }, { name: "SBI Gold ETF vs ICICI Pru Gold ETF", href: "/etf" }, { name: "Compare ETFs", href: "/etf" },
+    { name: "Nippon Silver ETF vs ICICI Pru Silver ETF", href: "/etf" }, { name: "SBI Gold ETF vs ICICI Pru Gold ETF", href: "/etf" }, { name: "Compare ETF", href: "/etf" },
   ]},
   { label: "Gainers & Losers", links: [
     { name: "Nifty 50 Gainers", href: "/stocks" }, { name: "Nifty 50 Losers", href: "/stocks" }, { name: "Nifty Next 50 Gainers", href: "/stocks" },
@@ -488,7 +488,7 @@ const exploreCategories: ExploreCategory[] = [
     { name: "Micron Tech Share Price", href: "/#global-investing" }, { name: "Eli Lilly & Company Share Price", href: "/#global-investing" }, { name: "Berkshire Hathaway Share Price", href: "/#global-investing" },
     { name: "JP Morgan Chase & Co Share Price", href: "/#global-investing" }, { name: "Walmart Share Price", href: "/#global-investing" },
   ]},
-  { label: "Popular US ETFs", links: [
+  { label: "Popular US ETF", links: [
     { name: "Vanguard S&P 500 ETF", href: "/#global-investing" }, { name: "iShares Core S&P 500 ETF", href: "/#global-investing" }, { name: "State Street SPDR S&P 500 ETF", href: "/#global-investing" },
     { name: "Vanguard Total Stock Market ETF", href: "/#global-investing" }, { name: "Invesco QQQ Trust Series I", href: "/#global-investing" }, { name: "Vanguard Growth ETF", href: "/#global-investing" },
     { name: "State Street SPDR Portfolio S&P 500 ETF", href: "/#global-investing" }, { name: "Vanguard Value ETF", href: "/#global-investing" }, { name: "iShares Core U.S. Aggregate Bond ETF", href: "/#global-investing" },
@@ -662,7 +662,7 @@ function AboutAccordion() {
                   <strong className="text-[#3a1414]/90 font-semibold">Lakshmishree Investment & Securities Ltd.</strong>, a SEBI-registered stockbroker with over 31 years of market presence since 1993. We offer flat-fee brokerage at ₹17 per executed order for equity delivery, intraday and F&O trades.
                 </p>
                 <p>
-                  Our platform provides access to NSE, BSE, MCX, and international markets through a single unified account. We offer stocks, futures & options, mutual funds, IPOs, ETFs, digital gold, and US equities, all under one roof with no hidden charges.
+                  Our platform provides access to NSE, BSE, MCX, and international markets through a single unified account. We offer stocks, futures & options, mutual funds, IPOs, ETF, digital gold, and US equities, all under one roof with no hidden charges.
                 </p>
                 <p>
                   SEBI Registration No: <span className="text-[#3a1414]/80">INZ000215633</span> &nbsp;|&nbsp;

@@ -10,6 +10,7 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { SmartSearch } from "@/components/smart-controls"
 import { Button } from "@/components/ui/button"
+import { MobileInput } from "@/components/form-inputs"
 import { useFnoCards } from "@/hooks/use-fno"
 import { fnoDetailHref, type FnoCategory } from "@/lib/fno/api-client"
 import { 
@@ -758,7 +759,7 @@ export default function FuturesOptionsPage() {
               {[
                 {
                   title: "Open & Activate",
-                  desc: "Complete Aadhaar e-KYC in under 10 minutes and activate F&O trading from your account settings in one tap."
+                  desc: "Complete Aadhaar e-KYC in under 15 minutes and activate F&O trading from your account settings in one tap."
                 },
                 {
                   title: "Pick Your Instrument",
@@ -825,7 +826,7 @@ export default function FuturesOptionsPage() {
                       <div className="space-y-4 text-center">
                         <Smartphone className="h-10 w-10 text-gold mx-auto animate-bounce" />
                         <h5 className="font-bold text-sm">Open &amp; Activate</h5>
-                        <p className="text-[9px] text-slate-400 leading-relaxed px-2">Complete Aadhaar e-KYC in under 10 minutes and activate F&amp;O trading from your settings.</p>
+                        <p className="text-[9px] text-slate-400 leading-relaxed px-2">Complete Aadhaar e-KYC in under 15 minutes and activate F&amp;O trading from your settings.</p>
                       </div>
                       <div className="space-y-2">
                         <div className="w-full h-8 bg-slate-900 border border-slate-800 rounded-[5px] flex items-center justify-center text-[10px] text-slate-350">
@@ -1160,11 +1161,11 @@ export default function FuturesOptionsPage() {
                 onSubmit={triggerSms}
                 className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto lg:mx-0"
               >
-                <input
-                  type="tel"
+                <MobileInput
                   required
+                  aria-label="Mobile number"
                   value={smsNum}
-                  onChange={(e) => setSmsNum(e.target.value.replace(/\D/g, ""))}
+                  onValueChange={setSmsNum}
                   placeholder="Enter your mobile number"
                   className="w-full sm:flex-1 h-12 px-4 rounded-[5px] bg-white text-foreground placeholder:text-muted-foreground text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-gold"
                 />

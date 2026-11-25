@@ -73,7 +73,7 @@ const DATA: IndexPageData = {
     "Launched in January 2021, FINNIFTY has become one of the most actively traded weekly options indices on the NSE, alongside NIFTY 50 and NIFTY BANK.",
   ],
   ctaHeadline: "Trade Nifty Financial Services with Zero Brokerage",
-  ctaBody: "Index funds, ETFs & derivatives, all in one place. Start investing from ₹500.",
+  ctaBody: "Index funds, ETF & derivatives, all in one place. Start investing from ₹500.",
 }
 
 export default function FinniftyPage() {

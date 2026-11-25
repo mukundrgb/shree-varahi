@@ -107,7 +107,7 @@ export function EtfAllocationPage({
           <nav className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-5">
             <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3" />
-            <Link href="/etf" className="hover:text-foreground transition-colors">ETFs</Link>
+            <Link href="/etf" className="hover:text-foreground transition-colors">ETF</Link>
             <ChevronRight className="w-3 h-3" />
             <span className="text-foreground font-semibold">{breadcrumb}</span>
           </nav>

@@ -14,6 +14,7 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { SmartSelect } from "@/components/smart-controls"
 import { Button } from "@/components/ui/button"
+import { EmailInput, MobileInput, NameInput } from "@/components/form-inputs"
 
 // ─── Content ────────────────────────────────────────────────────────────────
 
@@ -105,8 +106,8 @@ const OPTIONS = [
   {
     id: "etfs",
     numeral: "II",
-    title: "ETFs",
-    desc: "Invest in global index ETFs, sector ETFs, and thematic funds to build a diversified and balanced portfolio.",
+    title: "ETF",
+    desc: "Invest in global index ETF, sector ETF, and thematic funds to build a diversified and balanced portfolio.",
     items: [
       { name: "Vanguard S&P 500",      tag: "Top 500 US Cos." },
       { name: "Invesco QQQ",           tag: "Top 100 Tech Cos." },
@@ -132,7 +133,7 @@ const STEPS = [
   { icon: UserCheck,  title: "Open Account",    desc: "Register online and open your global investment account in just a few minutes." },
   { icon: FileCheck2, title: "Complete KYC",    desc: "Finish the digital KYC process securely to activate your global investment account." },
   { icon: Send,       title: "Fund via LRS",    desc: "Transfer funds abroad securely under RBI guidelines using the Liberalised Remittance Scheme (LRS)." },
-  { icon: LineChart,  title: "Start Investing", desc: "Buy global stocks and ETFs and track your investments from one platform." },
+  { icon: LineChart,  title: "Start Investing", desc: "Buy global stocks and ETF and track your investments from one platform." },
 ]
 
 const COMPLIANCE = [
@@ -222,15 +223,15 @@ function LeadForm() {
           >
             <div>
               <label htmlFor="gi-name" className="block text-[11px] font-bold text-foreground mb-1">Full Name</label>
-              <input id="gi-name" name="name" required autoComplete="name" placeholder="Enter your full name" className={inputClass} />
+              <NameInput id="gi-name" name="name" required className={inputClass} />
             </div>
             <div>
               <label htmlFor="gi-email" className="block text-[11px] font-bold text-foreground mb-1">Email Address</label>
-              <input id="gi-email" name="email" type="email" required autoComplete="email" placeholder="you@example.com" className={inputClass} />
+              <EmailInput id="gi-email" name="email" required className={inputClass} />
             </div>
             <div>
               <label htmlFor="gi-phone" className="block text-[11px] font-bold text-foreground mb-1">Phone Number</label>
-              <input id="gi-phone" name="phone" type="tel" required autoComplete="tel" inputMode="numeric" pattern="[0-9]{10}" title="Enter a 10-digit mobile number" placeholder="10-digit mobile number" className={inputClass} />
+              <MobileInput id="gi-phone" name="phone" required placeholder="10-digit mobile number" className={inputClass} />
             </div>
             <div>
               <label htmlFor="gi-goal" className="block text-[11px] font-bold text-foreground mb-1">Primary Investment Goal</label>
@@ -456,7 +457,7 @@ export default function GlobalInvestingPage() {
           <SectionHeading
             eyebrow="What You Can Invest In"
             title="Global Investment Options Available to You"
-            desc="Build a diversified global portfolio with access to international stocks, ETFs, and thematic investment opportunities."
+            desc="Build a diversified global portfolio with access to international stocks, ETF, and thematic investment opportunities."
           />
 
           <div className="grid lg:grid-cols-[360px_1fr] gap-6">

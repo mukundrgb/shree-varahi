@@ -13,6 +13,7 @@ import {
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
+import { MobileInput } from "@/components/form-inputs"
 import { StockAvatar } from "@/components/stock-avatar"
 import { TradingViewCredit, TradingViewMiniChart } from "@/components/tradingview-chart"
 import { TableRowsSkeleton } from "@/components/skeletons"
@@ -852,17 +853,18 @@ export default function StocksPage() {
                 Start your investment<br className="hidden sm:inline" /> journey with Shree Varahi.
               </h2>
               <p className="text-sm text-white/75 max-w-md mx-auto lg:mx-0 leading-relaxed">
-                Trade and invest in Stocks, F&amp;O, Mutual Funds, ETFs, US Stocks, Commodities, IPOs and more, all from one trusted platform backed by 31 years of experience.
+                Trade and invest in Stocks, F&amp;O, Mutual Funds, ETF, US Stocks, Commodities, IPOs and more, all from one trusted platform backed by 31 years of experience.
               </p>
 
               <form
                 onSubmit={(e) => { e.preventDefault(); window.open(OPEN_ACCOUNT_URL, "_blank", "noopener,noreferrer") }}
                 className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto lg:mx-0"
               >
-                <input
-                  type="tel"
+                <MobileInput
+                  required
+                  aria-label="Mobile number"
                   value={mobile}
-                  onChange={(e) => setMobile(e.target.value)}
+                  onValueChange={setMobile}
                   placeholder="Enter your mobile number"
                   className="w-full sm:flex-1 h-12 px-4 rounded-[5px] bg-white text-foreground placeholder:text-muted-foreground text-sm shadow-inner focus:outline-none focus:ring-2 focus:ring-gold"
                 />

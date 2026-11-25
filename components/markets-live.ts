@@ -124,10 +124,10 @@ function useEtfTab(enabled: boolean): LiveTab {
   const cats = (data?.categories ?? []).filter((c) => c.count > 0)
 
   return {
-    subs: cats.map((c) => `${c.category} ETFs`),
+    subs: cats.map((c) => `${c.category} ETF`),
     items: (s) => {
       if (!data) return null
-      const cat = cats.find((c) => `${c.category} ETFs` === s)
+      const cat = cats.find((c) => `${c.category} ETF` === s)
       if (!cat) return []
       return data.items.filter((e) => e.category === cat.category).slice(0, MENU_ITEMS)
         .map((e) => ({
@@ -149,6 +149,6 @@ export function useLiveMarkets(open: boolean, tab: string, sub: string | null): 
   const stocks = useStocksTab(open && tab === "Stocks", tab === "Stocks" ? sub : null)
   const fno = useFnoTab(open && tab === "F&O", tab === "F&O" ? sub : null)
   const funds = useFundsTab(open && tab === "Mutual Funds")
-  const etfs = useEtfTab(open && tab === "ETFs")
-  return { "Stocks": stocks, "F&O": fno, "Mutual Funds": funds, "ETFs": etfs }
+  const etfs = useEtfTab(open && tab === "ETF")
+  return { "Stocks": stocks, "F&O": fno, "Mutual Funds": funds, "ETF": etfs }
 }

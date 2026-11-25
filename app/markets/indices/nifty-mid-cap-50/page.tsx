@@ -75,7 +75,7 @@ const DATA: IndexPageData = {
     "The index is widely used as a benchmark for mid-cap mutual funds and offers exposure to companies in a growth phase between small-cap and large-cap status.",
   ],
   ctaHeadline: "Trade Nifty Midcap 50 with Zero Brokerage",
-  ctaBody: "Index funds, ETFs & derivatives, all in one place. Start investing from ₹500.",
+  ctaBody: "Index funds, ETF & derivatives, all in one place. Start investing from ₹500.",
 }
 
 export default function NiftyMidCap50Page() {

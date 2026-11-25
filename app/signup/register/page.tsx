@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { LOGIN_URL } from "@/lib/external-links"
+import { EMAIL_ERROR, MOBILE_ERROR, cleanCode, cleanEmail, cleanMobile, cleanName, isEmail, isMobile, isName } from "@/lib/validation"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
@@ -374,17 +375,20 @@ export default function RegisterPage() {
                         <input
                           type="tel"
                           placeholder="10-digit mobile number"
-                          maxLength={10}
+                          inputMode="numeric"
+                          autoComplete="tel-national"
+                          aria-invalid={mobile.length === 10 && !isMobile(mobile)}
                           value={mobile}
-                          onChange={(e) => setMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                          onChange={(e) => setMobile(cleanMobile(e.target.value))}
                           className="flex-1 min-w-0 px-3 py-3 bg-transparent text-[14px] text-foreground placeholder:text-muted-foreground/50 outline-none"
                         />
-                        {mobile.length === 10 && (
+                        {isMobile(mobile) && (
                           <span className="flex items-center pr-3 text-emerald-500">
                             <CheckCircle2 className="w-4 h-4" />
                           </span>
                         )}
                       </div>
+                      {mobile.length === 10 && !isMobile(mobile) && <p className="mt-1.5 text-[11px] font-semibold text-loss">{MOBILE_ERROR}</p>}
                     </div>
 
                     {/* Introducer */}
@@ -397,7 +401,7 @@ export default function RegisterPage() {
                         type="text"
                         placeholder="Enter referral or introducer code"
                         value={introCode}
-                        onChange={(e) => setIntroCode(e.target.value)}
+                        onChange={(e) => setIntroCode(cleanCode(e.target.value, 20))}
                         className="w-full px-3 py-3 bg-[#F5F5F5] border border-border rounded-[5px] text-[14px] text-foreground placeholder:text-muted-foreground/50 outline-none focus:border-burgundy focus:ring-2 focus:ring-burgundy/15 transition-all"
                       />
                     </div>
@@ -412,7 +416,7 @@ export default function RegisterPage() {
 
                     <button
                       onClick={() => goNext("mobile-otp")}
-                      disabled={mobile.length !== 10}
+                      disabled={!isMobile(mobile)}
                       className="w-full bg-burgundy hover:bg-burgundy-deep disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-[5px] transition-colors flex items-center justify-center gap-2 text-[14px] shadow-[0_2px_10px_rgba(255,0,0,0.18)]"
                     >
                       Send OTP <ChevronRight className="w-4 h-4" />
@@ -500,7 +504,7 @@ export default function RegisterPage() {
                           type="text"
                           placeholder="As per PAN card"
                           value={name}
-                          onChange={(e) => setName(e.target.value)}
+                          onChange={(e) => setName(cleanName(e.target.value))}
                           className="w-full pl-9 pr-3 py-3 bg-[#F5F5F5] border border-border rounded-[5px] text-[14px] text-foreground placeholder:text-muted-foreground/50 outline-none focus:border-burgundy focus:ring-2 focus:ring-burgundy/15 transition-all"
                         />
                       </div>
@@ -537,15 +541,17 @@ export default function RegisterPage() {
                           type="email"
                           placeholder="yourname@example.com"
                           value={email}
-                          onChange={(e) => setEmail(e.target.value)}
+                          onChange={(e) => setEmail(cleanEmail(e.target.value))}
                           className="w-full pl-9 pr-3 py-3 bg-[#F5F5F5] border border-border rounded-[5px] text-[14px] text-foreground placeholder:text-muted-foreground/50 outline-none focus:border-burgundy focus:ring-2 focus:ring-burgundy/15 transition-all"
                         />
                       </div>
                     </div>
 
+                    {email.includes("@") && email.length > 5 && !isEmail(email) && <p className="-mt-2 mb-4 text-[11px] font-semibold text-loss">{EMAIL_ERROR}</p>}
+
                     <button
                       onClick={() => goNext("email-otp")}
-                      disabled={!name.trim() || !email.includes("@")}
+                      disabled={!isName(name) || !isEmail(email)}
                       className="w-full bg-burgundy hover:bg-burgundy-deep disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-[5px] transition-colors flex items-center justify-center gap-2 text-[14px] shadow-[0_2px_10px_rgba(255,0,0,0.18)] mb-4"
                     >
                       Continue <ArrowRight className="w-4 h-4" />

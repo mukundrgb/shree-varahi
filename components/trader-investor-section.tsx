@@ -23,13 +23,13 @@ const traderFeatures = [
 const investorFeatures = [
   "₹17 Delivery Brokerage: Buy and hold stocks at a flat ₹17 per delivery order.",
   "SIP from ₹100/month: Automate investing in stocks or mutual funds.",
-  "Zero-Commission Mutual Funds: Direct plans only. Every rupee of return is yours.",
+  "Mutual Funds: Invest by SIP or lumpsum across equity, debt and hybrid funds.",
   "Free IPO & NFO Applications: Apply via UPI in two taps. No hidden fees.",
   "US & Global Stocks: Invest in Apple, Tesla, Google directly from India.",
   "Digital Gold & Silver: Buy 24K gold at live MCX prices. Vault stored.",
   "XIRR Portfolio Tracker: See your real annualised return across all holdings.",
   "Dividend Tracker: Never miss a payout. All earnings tracked automatically.",
-  "ETF Investing: Gold, index, and sectoral ETFs at the lowest cost.",
+  "ETF Investing: Gold, index, and sectoral ETF at the lowest cost.",
   "Long-term Capital Gains Tracker: Stay on top of your tax liability year-round.",
 ]
 

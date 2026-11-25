@@ -82,7 +82,7 @@ export function ETFListPage({ data }: { data: ETFListPageData }) {
           <nav className="flex items-center gap-1.5 text-xs text-muted-foreground flex-wrap">
             <Link href="/"     className="hover:text-foreground transition-colors">Home</Link>
             <ChevronRight className="w-3 h-3" />
-            <Link href="/etf"  className="hover:text-foreground transition-colors">ETFs</Link>
+            <Link href="/etf"  className="hover:text-foreground transition-colors">ETF</Link>
             <ChevronRight className="w-3 h-3" />
             <span>{d.crumbCategory}</span>
             <ChevronRight className="w-3 h-3" />
@@ -184,7 +184,7 @@ export function ETFListPage({ data }: { data: ETFListPageData }) {
           </div>
 
           <p className="text-[11px] text-muted-foreground mt-3">
-            Showing {d.etfs.length} ETFs · Data shown is for illustration purposes · Scroll table horizontally for more metrics
+            Showing {d.etfs.length} ETF · Data shown is for illustration purposes · Scroll table horizontally for more metrics
           </p>
         </div>
       </main>

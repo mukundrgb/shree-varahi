@@ -106,10 +106,10 @@ const DATA: IndexPageData = {
   aboutTitle: "About Nifty 50",
   aboutParagraphs: [
     "The <strong>NIFTY 50</strong> is the flagship large-cap index of the National Stock Exchange of India (NSE). It tracks the performance of 50 of the largest, most liquid, and financially sound companies listed across multiple sectors of the Indian economy.",
-    "Launched in April 1996, the index serves as the primary benchmark for Indian equity markets and is widely used for index funds, ETFs, and derivatives trading. It uses a free-float market capitalisation methodology and is reviewed quarterly.",
+    "Launched in April 1996, the index serves as the primary benchmark for Indian equity markets and is widely used for index funds, ETF, and derivatives trading. It uses a free-float market capitalisation methodology and is reviewed quarterly.",
   ],
   ctaHeadline: "Trade Nifty F&O with Zero Brokerage",
-  ctaBody: "Index funds, ETFs & derivatives, all in one place. Start investing from ₹500.",
+  ctaBody: "Index funds, ETF & derivatives, all in one place. Start investing from ₹500.",
 }
 
 export default function Nifty50Page() {

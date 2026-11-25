@@ -7,6 +7,7 @@
 import { useId, useState } from "react"
 import { ArrowRight, BadgeCheck, ShieldCheck, Sparkles, Zap } from "lucide-react"
 import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
+import { MOBILE_ERROR, cleanMobile, isMobile } from "@/lib/validation"
 
 const TRUST = [
   { icon: Zap, label: "Opens in minutes" },
@@ -21,8 +22,8 @@ export function OpenAccountCard({ className = "" }: { className?: string }) {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!/^[6-9]\d{9}$/.test(mobile)) {
-      setError("Enter a valid 10 digit mobile number")
+    if (!isMobile(mobile)) {
+      setError(MOBILE_ERROR)
       return
     }
     setError("")
@@ -78,9 +79,8 @@ export function OpenAccountCard({ className = "" }: { className?: string }) {
             type="tel"
             inputMode="numeric"
             autoComplete="tel-national"
-            maxLength={10}
             value={mobile}
-            onChange={(e) => { setMobile(e.target.value.replace(/\D/g, "").slice(0, 10)); setError("") }}
+            onChange={(e) => { setMobile(cleanMobile(e.target.value)); setError("") }}
             placeholder="Enter Mobile Number"
             aria-invalid={!!error}
             aria-describedby={error ? `${id}-err` : undefined}

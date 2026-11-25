@@ -69,10 +69,10 @@ const DATA: IndexPageData = {
   aboutTitle: "About Nifty Bank",
   aboutParagraphs: [
     "The <strong>NIFTY BANK</strong> index tracks the performance of the most liquid and large capitalised Indian banking stocks listed on the NSE. It comprises 12 stocks from the banking sector.",
-    "NIFTY BANK serves as the benchmark for the Indian banking sector and is widely used for index funds, ETFs, and derivatives trading on both private and public sector banks.",
+    "NIFTY BANK serves as the benchmark for the Indian banking sector and is widely used for index funds, ETF, and derivatives trading on both private and public sector banks.",
   ],
   ctaHeadline: "Trade Nifty Bank with Zero Brokerage",
-  ctaBody: "Index funds, ETFs & derivatives, all in one place. Start investing from ₹500.",
+  ctaBody: "Index funds, ETF & derivatives, all in one place. Start investing from ₹500.",
 }
 
 export default function NiftyBankPage() {
