@@ -73,7 +73,10 @@ const LEARN_NEWS: MenuItem[] = [
 type MktExchange = "NSE" | "BSE" | "MCX" | "GLOBAL"
 type MarketItem  = { name: string; href: string; exchange?: MktExchange; meta?: string }
 
-const MARKETS_TABS = ["Indices", "Stocks", "F&O", "Mutual Funds", "ETFs", "Tools"] as const
+// The "Indices" tab is hidden for now (desktop dropdown and mobile menu); add it back to the list to show it.
+const MARKETS_TABS = [/* "Indices", */ "Stocks", "F&O", "Mutual Funds", "ETFs", "Tools"] as const
+/** Tab the Markets menu opens on. */
+const DEFAULT_MARKETS_TAB = MARKETS_TABS[0]
 
 const MARKETS_SUBS: Record<string, string[]> = {
   "Indices":       ["Major Indices", "Global Indices"],
@@ -473,9 +476,9 @@ export function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [searchOpen, setSearchOpen] = useState(false)
   const [expandedSection, setExpandedSection] = useState<string | null>(null)
-  const [marketsTab, setMarketsTab] = useState("Indices")
-  const [marketsSub, setMarketsSub] = useState("Major Indices")
-  const [mobileMktTab, setMobileMktTab] = useState("Indices")
+  const [marketsTab, setMarketsTab] = useState<string>(DEFAULT_MARKETS_TAB)
+  const [marketsSub, setMarketsSub] = useState("")
+  const [mobileMktTab, setMobileMktTab] = useState<string>(DEFAULT_MARKETS_TAB)
   const [isMac, setIsMac] = useState<boolean | null>(null)
   const [searchIdx, setSearchIdx] = useState(0)
 
@@ -541,8 +544,8 @@ export function Navbar() {
 
   useEffect(() => {
     if (activeDropdown !== "Markets") {
-      setMarketsTab("Indices")
-      setMarketsSub("Major Indices")
+      setMarketsTab(DEFAULT_MARKETS_TAB)
+      setMarketsSub("")
       setMarketsPinned(false)
     }
   }, [activeDropdown])
