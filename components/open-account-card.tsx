@@ -1,13 +1,9 @@
-"use client"
-
 // "Open Free Demat Account!" card for the stock, mutual fund and ETF detail sidebars.
-// Layout: red header (title + ₹17 brokerage line) → ₹0 lifetime AMC coupon → mobile number + CTA → trust points.
-// UI only: the mobile number is checked for 10 digits, then the visitor is sent to the eKYC portal.
+// Layout: red header (title + ₹17 brokerage line) → ₹0 lifetime AMC coupon → CTA → trust points.
+// The button opens the eKYC portal in a new tab; no details are asked for here.
 
-import { useId, useState } from "react"
 import { ArrowRight, BadgeCheck, ShieldCheck, Sparkles, Zap } from "lucide-react"
 import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
-import { MOBILE_ERROR, cleanMobile, isMobile } from "@/lib/validation"
 
 const TRUST = [
   { icon: Zap, label: "Opens in minutes" },
@@ -16,20 +12,6 @@ const TRUST = [
 ]
 
 export function OpenAccountCard({ className = "" }: { className?: string }) {
-  const id = useId()
-  const [mobile, setMobile] = useState("")
-  const [error, setError] = useState("")
-
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!isMobile(mobile)) {
-      setError(MOBILE_ERROR)
-      return
-    }
-    setError("")
-    window.open(OPEN_ACCOUNT_URL, "_blank", "noopener,noreferrer")
-  }
-
   return (
     <div className={`bg-white border border-border rounded-[14px] overflow-hidden shadow-[0_6px_28px_rgba(0,0,0,0.06)] ${className}`}>
       {/* Header */}
@@ -66,36 +48,20 @@ export function OpenAccountCard({ className = "" }: { className?: string }) {
         </div>
       </div>
 
-      {/* Mobile number + CTA */}
-      <form onSubmit={submit} className="px-4 pt-4 pb-4 space-y-2.5" noValidate>
+      {/* CTA */}
+      <div className="px-4 pt-4 pb-4 space-y-2.5">
         <p className="text-[12px] text-muted-foreground text-center">
           Join our <span className="font-black text-foreground">1L+</span> happy customers
         </p>
-        <label htmlFor={`${id}-mobile`} className="sr-only">Mobile number</label>
-        <div className={`flex items-center h-12 rounded-[10px] border bg-cream/40 transition-colors focus-within:bg-white focus-within:ring-2 focus-within:ring-burgundy/15 ${error ? "border-loss" : "border-border focus-within:border-burgundy/50"}`}>
-          <span className="pl-4 pr-3 h-full flex items-center text-sm font-bold text-foreground/70 border-r border-border">+91</span>
-          <input
-            id={`${id}-mobile`}
-            type="tel"
-            inputMode="numeric"
-            autoComplete="tel-national"
-            value={mobile}
-            onChange={(e) => { setMobile(cleanMobile(e.target.value, mobile)); setError("") }}
-            placeholder="Enter Mobile Number"
-            aria-invalid={!!error}
-            aria-describedby={error ? `${id}-err` : undefined}
-            className="flex-1 min-w-0 h-full px-3 bg-transparent text-sm font-semibold text-foreground placeholder:text-muted-foreground/70 placeholder:font-medium focus:outline-none"
-          />
-        </div>
-        {error && <p id={`${id}-err`} className="text-[11px] font-semibold text-loss">{error}</p>}
-
-        <button
-          type="submit"
+        <a
+          href={OPEN_ACCOUNT_URL}
+          target="_blank"
+          rel="noopener noreferrer"
           className="group w-full h-12 rounded-[10px] bg-burgundy hover:bg-burgundy-deep text-white text-sm font-black inline-flex items-center justify-center gap-2 shadow-[0_8px_20px_rgba(255,0,0,0.22)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-burgundy/40 focus-visible:ring-offset-2"
         >
           Get Free Demat Account <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-        </button>
-      </form>
+        </a>
+      </div>
 
       {/* Trust points */}
       <ul className="grid grid-cols-3 border-t border-border/60 divide-x divide-border/60">
