@@ -75,7 +75,7 @@ const DATA: IndexPageData = {
     "The <strong>BSE SMALL CAP</strong> index represents companies ranked below the top 250 by market capitalisation on the BSE, offering exposure to India's small-cap growth universe.",
     "Small cap stocks carry higher volatility and liquidity risk relative to large caps, but historically offer higher long-term growth potential across economic cycles.",
   ],
-  ctaHeadline: "Trade Bse Small Cap with Zero Brokerage",
+  ctaHeadline: "Trade Bse Small Cap at Flat ₹17 Brokerage",
   ctaBody: "Index funds, ETF & derivatives, all in one place. Start investing from ₹500.",
 }
 

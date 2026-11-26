@@ -71,7 +71,7 @@ const DATA: IndexPageData = {
     "The <strong>NIFTY BANK</strong> index tracks the performance of the most liquid and large capitalised Indian banking stocks listed on the NSE. It comprises 12 stocks from the banking sector.",
     "NIFTY BANK serves as the benchmark for the Indian banking sector and is widely used for index funds, ETF, and derivatives trading on both private and public sector banks.",
   ],
-  ctaHeadline: "Trade Nifty Bank with Zero Brokerage",
+  ctaHeadline: "Trade Nifty Bank at Flat ₹17 Brokerage",
   ctaBody: "Index funds, ETF & derivatives, all in one place. Start investing from ₹500.",
 }
 

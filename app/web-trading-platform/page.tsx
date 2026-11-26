@@ -73,9 +73,9 @@ const FEATURES = [
 
 const PRICING = [
   { title: "Account Opening, AMC & Platform Fees", value: "₹0", desc: "Open a free account with zero AMC or platform fees." },
-  { title: "Equity Delivery, ETF, IPO & Mutual Funds", value: "₹0", desc: "Absolutely free! No hidden charges ever." },
-  { title: "Equity & ETF Intraday and MTF", value: "₹20", desc: "or 0.03% of trade value per executed order, whichever is lower." },
-  { title: "All Segment Options & Futures", value: "₹20", desc: "per executed order for equity & commodity F&O." },
+  { title: "Equity Delivery", value: "₹17", desc: "flat per executed order. No hidden charges." },
+  { title: "Equity & ETF Intraday", value: "₹17", desc: "flat per executed order." },
+  { title: "All Segment Options & Futures", value: "₹17", desc: "per executed order for equity & commodity F&O." },
 ]
 
 const TV_FEATURES = [
@@ -88,7 +88,7 @@ const TV_FEATURES = [
 const FAQS = [
   { q: "Is Shree Varahi Web trading platform safe?", a: "Yes, Shree Varahi Web is a safe web trading platform regulated by SEBI. As a SEBI-registered broker, we use state-of-the-art technology to ensure your data stays safe and secure at all times." },
   { q: "Is Shree Varahi Web trading platform free?", a: "Yes, you can open a demat account on Shree Varahi Web online for free, and we don't charge AMC or platform fees either." },
-  { q: "What are the brokerage charges on Shree Varahi Web?", a: "Shree Varahi Web enables you to trade in the securities market, especially derivatives like Futures and Options. There's a flat ₹20 brokerage for Equity Intraday & All Segment Futures, and ₹20 per order for All Segment Options. We remain transparent about our pricing, always." },
+  { q: "What are the brokerage charges on Shree Varahi Web?", a: "Shree Varahi Web enables you to trade in the securities market, especially derivatives like Futures and Options. There's a flat ₹17 brokerage per executed order for Equity Delivery, Intraday, and all segment Futures and Options. We remain transparent about our pricing, always." },
   { q: "How long does it take to open a demat and trading account?", a: "Opening a demat account on Shree Varahi takes less than 15 minutes. Click \"Start Now\", verify your mobile number and email, upload the required documents, and complete e-Sign, you'll receive your account details and can start investing right away." },
   { q: "How do I transfer my portfolio from my current broker to Shree Varahi?", a: "Register and log in on CDSL Easiest, click Transaction → Setup, select Bulk Setup → Transaction, enter the execution date and Beneficiary Owner ID (BOID), choose the stock(s) under Account ISINs, submit, verify, and confirm with your CDSL Easiest PIN." },
   { q: "Does Shree Varahi Web support algo trading?", a: "Yes, Shree Varahi Web is built for algo traders too. Using our Trading APIs, you can automate buy/sell orders with liberal rate limits, a dedicated SDK, and clear documentation, no coding experience required." },

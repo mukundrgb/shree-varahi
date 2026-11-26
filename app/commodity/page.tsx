@@ -229,8 +229,8 @@ export default function CommodityPage() {
               </div>
               <div className="flex flex-wrap gap-4 pt-1">
                 <div>
-                  <div className="text-lg font-black text-foreground">31+</div>
-                  <div className="text-[10px] text-muted-foreground font-semibold">Years of Trust</div>
+                  <div className="text-lg font-black text-foreground">3</div>
+                  <div className="text-[10px] text-muted-foreground font-semibold">Decades of Trust</div>
                 </div>
                 <div>
                   <div className="text-lg font-black text-foreground flex items-center gap-1">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>

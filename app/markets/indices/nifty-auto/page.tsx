@@ -73,7 +73,7 @@ const DATA: IndexPageData = {
     "<strong>NIFTY AUTO</strong> tracks the performance of the largest automobile manufacturers and auto ancillary companies listed on the NSE.",
     "The index reflects the health of India's automobile sector, spanning passenger vehicles, commercial vehicles, two-wheelers, and component makers, and is closely tied to consumer spending trends.",
   ],
-  ctaHeadline: "Trade Nifty Auto with Zero Brokerage",
+  ctaHeadline: "Trade Nifty Auto at Flat ₹17 Brokerage",
   ctaBody: "Index funds, ETF & derivatives, all in one place. Start investing from ₹500.",
 }
 

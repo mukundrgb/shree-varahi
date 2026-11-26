@@ -14,7 +14,7 @@ type Props = Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "onChan
 
 function CheckedInput({ value, onValueChange, required, clean, valid, emptyError, error, ...rest }: Props & {
   type: string
-  clean: (v: string) => string
+  clean: (v: string, previous: string) => string
   valid: (v: string) => boolean
   emptyError: string
   error: string
@@ -31,7 +31,7 @@ function CheckedInput({ value, onValueChange, required, clean, valid, emptyError
       ref={ref}
       required={required}
       value={current}
-      onChange={(e) => { const next = clean(e.target.value); setOwn(next); onValueChange?.(next) }}
+      onChange={(e) => { const next = clean(e.target.value, current); setOwn(next); onValueChange?.(next) }}
       {...rest}
     />
   )

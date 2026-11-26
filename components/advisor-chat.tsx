@@ -30,7 +30,7 @@ const QUICK_REPLIES = ["Open an account", "Brokerage charges", "Upcoming IPOs", 
 /** Keyword → reply. The first match wins; anything else offers a callback. */
 const ANSWERS: { test: RegExp; text: string; link?: Msg["link"] }[] = [
   { test: /open|account|demat|kyc|sign ?up/i, text: "You can open a free demat & trading account in minutes with PAN, Aadhaar and bank details, zero account opening charges.", link: { label: "Open Free Account", href: OPEN_ACCOUNT_URL } },
-  { test: /brokerage|charge|fee|cost|amc/i, text: "Equity delivery is free. Intraday and F&O orders have a flat low brokerage per executed order, with zero AMC.", link: { label: "Brokerage Calculator", href: CALCULATOR_LINKS.brokerage } },
+  { test: /brokerage|charge|fee|cost|amc/i, text: "Delivery, intraday and F&O orders are charged a flat ₹17 per executed order, with zero AMC.", link: { label: "Brokerage Calculator", href: CALCULATOR_LINKS.brokerage } },
   { test: /ipo/i, text: "See every open, upcoming and recently listed IPO with dates, price bands and lot sizes.", link: { label: "View IPOs", href: "/ipo" } },
   { test: /mutual|fund|sip|lumpsum/i, text: "Explore 1,000+ mutual funds, compare returns and invest by SIP or lumpsum.", link: { label: "Explore Mutual Funds", href: "/mutual-funds" } },
   { test: /mtf|margin|leverage/i, text: "With the Margin Trading Facility you can buy eligible stocks with up to 3× buying power.", link: { label: "Learn about MTF", href: "/mtf" } },

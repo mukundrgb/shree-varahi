@@ -12,8 +12,8 @@ const faqData = {
       a: "We charge a flat ₹17 per executed order for all intraday equity, F&O, and commodities trades. This is one of the lowest in the industry.",
     },
     {
-      q: "Is equity delivery really free with no hidden charges?",
-      a: "Yes. We charge ₹0 brokerage on all equity delivery trades, forever. No hidden charges, no conditions. Hold stocks for the long term without any brokerage costs.",
+      q: "What is the brokerage for equity delivery?",
+      a: "Equity delivery trades are charged a flat ₹17 per executed order. No hidden charges, no conditions.",
     },
     {
       q: "What are the MTF interest rates?",
@@ -47,11 +47,11 @@ const faqData = {
     },
     {
       q: "What is the annual maintenance charge (AMC)?",
-      a: "We charge ₹0 AMC for the first year. From the second year onwards, a nominal AMC may apply based on your account type.",
+      a: "We charge ₹0 AMC for life. There is no annual maintenance charge on your account, in the first year or after.",
     },
     {
       q: "How do I contact customer support?",
-      a: "You can reach us via the in-app chat, call our helpline at 022-4080-8080, or email support@shreevarahi.com. We have 14 physical branches across India.",
+      a: "You can reach us via the in-app chat, call our helpline at 022-4080-8080, or email support@shreevarahi.com. We have 13 physical branches across India.",
     },
     {
       q: "Can I transfer my holdings from another broker?",

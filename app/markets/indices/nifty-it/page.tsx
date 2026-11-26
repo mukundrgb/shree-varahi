@@ -71,7 +71,7 @@ const DATA: IndexPageData = {
     "<strong>NIFTY IT</strong> tracks the performance of the largest and most liquid Indian IT services and software companies listed on the NSE.",
     "As a bellwether for India's IT export industry, NIFTY IT is closely watched for signals on global technology spending, currency movements, and offshore outsourcing demand.",
   ],
-  ctaHeadline: "Trade Nifty It with Zero Brokerage",
+  ctaHeadline: "Trade Nifty It at Flat ₹17 Brokerage",
   ctaBody: "Index funds, ETF & derivatives, all in one place. Start investing from ₹500.",
 }
 

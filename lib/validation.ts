@@ -4,12 +4,22 @@ export const MOBILE_ERROR = "Enter a valid 10 digit mobile number"
 export const EMAIL_ERROR = "Enter a valid email address, e.g. name@example.com"
 export const NAME_ERROR = "Enter your name using letters only"
 
-/** Keeps digits only, at most 10. A pasted "+91 98765 43210" or "098765 43210" becomes 9876543210. */
-export function cleanMobile(value: string): string {
-  let digits = value.replace(/\D/g, "").replace(/^0+/, "")
+/**
+ * Keeps digits only, at most 10, without the country code or a leading 0.
+ * Pasted or autofilled "+91 98765 43210", "+91 098765 43210", "919876543210" and "098765 43210" all become 9876543210.
+ * Pass the field's current value as `previous` so a digit typed into a full field is ignored instead of shifting the number.
+ */
+export function cleanMobile(value: string, previous = ""): string {
+  const digits = value.replace(/\D/g, "")
+  if (digits.length <= 10) return digits.replace(/^0+/, "")
+  // One more digit typed at the end of a complete number: keep the number as it was.
+  if (previous.length === 10 && digits.length === 11 && digits.startsWith(previous)) return previous
+  let d = digits
   // 91 is the country code only when a full number follows it: 9123456789 is a normal mobile number.
-  if (digits.length >= 12 && digits.startsWith("91")) digits = digits.slice(2)
-  return digits.slice(0, 10)
+  if (d.length >= 12 && d.startsWith("91")) d = d.slice(2)
+  d = d.replace(/^0+/, "")
+  // Anything still in front of the last 10 digits is a prefix (country code or trunk 0), not part of the number.
+  return d.length > 10 ? d.slice(-10) : d
 }
 
 /** Indian mobile numbers have 10 digits and start with 6, 7, 8 or 9. */

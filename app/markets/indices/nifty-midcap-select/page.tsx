@@ -74,7 +74,7 @@ const DATA: IndexPageData = {
     "<strong>NIFTY MIDCAP SELECT</strong> tracks the performance of 25 liquid, tradeable mid-cap companies listed on the NSE, designed specifically for derivatives trading.",
     "Launched in February 2024 as a futures &amp; options index, it offers focused mid-cap exposure with better liquidity characteristics than the broader midcap universe.",
   ],
-  ctaHeadline: "Trade Nifty Midcap Select with Zero Brokerage",
+  ctaHeadline: "Trade Nifty Midcap Select at Flat ₹17 Brokerage",
   ctaBody: "Index funds, ETF & derivatives, all in one place. Start investing from ₹500.",
 }
 

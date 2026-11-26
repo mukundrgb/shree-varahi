@@ -10,7 +10,7 @@ import { cleanName } from "@/lib/validation"
 
 const benefits = [
   { icon: Smartphone, text: "Shree Varahi Technology Platform: Full trading platform for your clients. No tech costs." },
-  { icon: Building2, text: "31 Years of Brand Trust: Leverage three decades of SEBI-registered credibility." },
+  { icon: Building2, text: "3 Decades of Brand Trust: Leverage three decades of SEBI-registered credibility." },
   { icon: BookOpen, text: "In-House Research Access: Daily calls and webinars for your clients. Included." },
   { icon: Percent, text: "Competitive Revenue Sharing: Transparent monthly payouts. Grow together." },
   { icon: Headphones, text: "Dedicated Branch Support: Training, onboarding, marketing materials." },
@@ -63,7 +63,7 @@ export function PartnerSection() {
             <span className="text-burgundy">Build your own brokerage business.</span>
           </h2>
           <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-            Join India&apos;s 31-year-old broker as a franchise partner. Get the technology, brand, research support: you focus on growth.
+            Join a broker with 3 decades of trust as a franchise partner. Get the technology, brand, research support: you focus on growth.
           </p>
         </motion.div>
 

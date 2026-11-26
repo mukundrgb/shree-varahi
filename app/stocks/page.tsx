@@ -165,7 +165,7 @@ const FAQS = [
   { q: "What is MTF?", a: "Margin Trading Facility (MTF) allows investors to buy eligible stocks by paying only a portion of the total transaction value upfront. The remaining amount is funded by the broker, enabling investors to take larger positions while utilizing their capital more efficiently." },
   { q: "Which stocks support MTF?", a: "MTF is available only on approved stocks that meet regulatory and risk management criteria. The list of eligible stocks may be updated periodically based on exchange and broker guidelines." },
   { q: "Can I pledge stocks?", a: "Yes. You can pledge approved stocks held in your Demat account and use them as collateral to access additional trading margin. This allows you to retain ownership of your investments while utilizing their value for margin benefits." },
-  { q: "What are the brokerage charges?", a: "Shree Varahi follows a transparent brokerage structure. Equity Delivery trades are charged a flat ₹17 per executed order, while Intraday orders are ₹17 and MTF orders are charged at 17%. Other statutory charges may apply as per regulations." },
+  { q: "What are the brokerage charges?", a: "Shree Varahi follows a transparent brokerage structure. Equity Delivery trades are charged a flat ₹17 per executed order, while Intraday and MTF orders are also ₹17 per executed order. Other statutory charges may apply as per regulations." },
   { q: "Do I get stock research tools?", a: "Yes. Investors gain access to comprehensive research tools, including company financials, valuation metrics, technical charts, market trends, sector comparisons, stock screeners, and investment insights to support informed decision-making." },
   { q: "How can I start investing?", a: "Getting started is simple. Open a Demat and Trading Account with Shree Varahi, complete the required KYC process, add funds to your account, research investment opportunities, and begin investing in stocks through the platform." },
   { q: "Can I track my portfolio on the platform?", a: "Yes. The platform provides portfolio tracking tools that allow you to monitor holdings, profit and loss, dividends, and overall investment performance in real time." },
@@ -441,8 +441,8 @@ export default function StocksPage() {
               </Button>
               <div className="flex items-center gap-4 sm:ml-3 sm:pl-5 sm:border-l border-border">
                 <div>
-                  <div className="text-base font-black text-foreground leading-none">31+</div>
-                  <div className="text-[10px] text-muted-foreground font-semibold mt-1">Years of Trust</div>
+                  <div className="text-base font-black text-foreground leading-none">3</div>
+                  <div className="text-[10px] text-muted-foreground font-semibold mt-1">Decades of Trust</div>
                 </div>
                 <div>
                   <div className="text-base font-black text-foreground flex items-center gap-1 leading-none">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
@@ -853,7 +853,7 @@ export default function StocksPage() {
                 Start your investment<br className="hidden sm:inline" /> journey with Shree Varahi.
               </h2>
               <p className="text-sm text-white/75 max-w-md mx-auto lg:mx-0 leading-relaxed">
-                Trade and invest in Stocks, F&amp;O, Mutual Funds, ETF, US Stocks, Commodities, IPOs and more, all from one trusted platform backed by 31 years of experience.
+                Trade and invest in Stocks, F&amp;O, Mutual Funds, ETF, US Stocks, Commodities, IPOs and more, all from one trusted platform backed by 3 decades of trust.
               </p>
 
               <form

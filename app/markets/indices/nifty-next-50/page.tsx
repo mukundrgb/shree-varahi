@@ -75,7 +75,7 @@ const DATA: IndexPageData = {
     "<strong>NIFTY NEXT 50</strong> represents 50 companies from the NIFTY 100 that are not part of the NIFTY 50, effectively capturing India's emerging large-cap universe.",
     "Companies in this index are often considered candidates for future inclusion in the NIFTY 50, making it a popular index for investors seeking early exposure to India's next generation of large caps.",
   ],
-  ctaHeadline: "Trade Nifty Next 50 with Zero Brokerage",
+  ctaHeadline: "Trade Nifty Next 50 at Flat ₹17 Brokerage",
   ctaBody: "Index funds, ETF & derivatives, all in one place. Start investing from ₹500.",
 }
 

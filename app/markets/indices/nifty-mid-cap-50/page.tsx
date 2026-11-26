@@ -74,7 +74,7 @@ const DATA: IndexPageData = {
     "<strong>NIFTY MIDCAP 50</strong> tracks the performance of 50 mid-cap companies listed on the NSE, selected based on average daily turnover and free-float market capitalisation.",
     "The index is widely used as a benchmark for mid-cap mutual funds and offers exposure to companies in a growth phase between small-cap and large-cap status.",
   ],
-  ctaHeadline: "Trade Nifty Midcap 50 with Zero Brokerage",
+  ctaHeadline: "Trade Nifty Midcap 50 at Flat ₹17 Brokerage",
   ctaBody: "Index funds, ETF & derivatives, all in one place. Start investing from ₹500.",
 }
 

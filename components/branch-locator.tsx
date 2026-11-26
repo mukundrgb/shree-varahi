@@ -5,6 +5,7 @@ import { SmartSearch } from "@/components/smart-controls"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import { Search, MapPin, Phone } from "lucide-react"
+import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 const branches = [
   { city: "Mumbai (HQ)", address: "Unit No 407, IV Floor, Marathon Icon, Marathon Nextgen Campus, Ganpat Rao Kadam Marg, Opposite Peninsula Corporate Park, Lower Parel West", phone: "(022) 43431818" },
@@ -221,7 +222,7 @@ export function BranchLocator() {
             </div>
 
             <p className="text-center">
-              <a href="#" className="text-sm text-burgundy hover:underline font-medium">
+              <a href={OPEN_ACCOUNT_URL} target="_blank" rel="noopener noreferrer" className="text-sm text-burgundy hover:underline font-medium">
                 {"Can't find your city? Open a digital account"}
               </a>
             </p>
@@ -238,7 +239,7 @@ export function BranchLocator() {
           {[
             { value: "10+", label: "Cities" },
             { value: "200+", label: "Team Members" },
-            { value: "31", label: "Years" },
+            { value: "3", label: "Decades of Trust" },
             { value: "Pan India", label: "Service" },
           ].map((stat) => (
             <div key={stat.label} className="text-center bg-white border border-border rounded-[5px] py-4">

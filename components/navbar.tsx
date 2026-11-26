@@ -39,31 +39,31 @@ type MenuItem = {
 // ── Menu data ─────────────────────────────────────────────────────────────
 
 const TRADE_INVEST: MenuItem[] = [
-  { title: "Stocks",    desc: "NSE & BSE equities, ₹17 delivery",   icon: <TrendingUp className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/stocks" },
-  { title: "F&O",       desc: "Futures & options, ₹17 flat",        icon: <PieChart   className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/futures-options" },
-  { title: "ETF",       desc: "Exchange traded funds",               icon: <Layers     className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/etf" },
-  { title: "IPO",       desc: "Apply for upcoming IPOs free",        icon: <Target     className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/ipo" },
+  { title: "Stocks",    desc: "Buy & sell NSE and BSE shares",   icon: <TrendingUp className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/stocks" },
+  { title: "F&O",       desc: "Index & stock futures and options", icon: <PieChart   className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/futures-options" },
+  { title: "ETF",       desc: "Index, gold & sector ETFs", icon: <Layers     className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/etf" },
+  { title: "IPO",       desc: "Apply with UPI, no application fee", icon: <Target     className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/ipo" },
   // Commodity is hidden for now.
   // { title: "Commodity", desc: "MCX gold, silver & crude oil",        icon: <Box        className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/commodity" },
-  { title: "MTF",       desc: "3× margin buying power on stocks",   icon: <Zap        className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/mtf" },
+  { title: "MTF",       desc: "Up to 3× buying power on stocks", icon: <Zap        className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/mtf" },
   { title: "Global Investing", desc: "Invest in US stocks from India", icon: <Globe  className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/global-investing" },
 ]
 
 const MF_SIP: MenuItem[] = [
-  { title: "Mutual Funds",   desc: "Invest by SIP or lumpsum", icon: <Landmark  className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/mutual-funds" },
+  { title: "Mutual Funds",   desc: "Start a SIP or invest lumpsum", icon: <Landmark  className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/mutual-funds" },
   // SIP Calculator is hidden for now.
   // { title: "SIP Calculator", desc: "Plan your monthly SIP goal",          icon: <RotateCcw className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/mutual-funds" },
-  { title: "NFO",            desc: "New fund offers, invest early",      icon: "🆕",                                                              href: "/nfo" },
+  { title: "NFO",            desc: "Invest in new funds at launch", icon: "🆕",                                                              href: "/nfo" },
 ]
 
 const PRODUCTS: MenuItem[] = [
   { title: "Shree Varahi Web",         desc: "Trade from any browser",         icon: "💻",                                                                href: "/shree-varahi-web" },
   { title: "Shree Varahi Mobile App",  desc: "iOS & Android trading app",      icon: "📱",                                                                href: "/shree-varahi-mobile-app" },
-  { title: "Shree Varahi Desktop App", desc: "Professional desktop platform",  icon: <BarChart2 className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />,   href: "/shree-varahi-desktop-app" },
+  { title: "Shree Varahi Desktop App", desc: "Trading terminal for your PC",  icon: <BarChart2 className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />,   href: "/shree-varahi-desktop-app" },
 ]
 
 const LEARN_NEWS: MenuItem[] = [
-  { title: "Knowledge Panel", desc: "Courses, guides & tutorials",  icon: <BookOpen className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/knowledge-center" },
+  { title: "Knowledge Center", desc: "Simple guides on investing",  icon: <BookOpen className="h-5 w-5 text-[#8B0D19]" strokeWidth={2.2} />, href: "/knowledge-center" },
   { title: "Blog",            desc: "Market insights & analysis",   icon: "📝",                                                             href: "/blog" },
   { title: "News",            desc: "Live market news & updates",   icon: "📰",                                                             href: "/news" },
 ]

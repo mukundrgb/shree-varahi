@@ -74,7 +74,7 @@ const DATA: IndexPageData = {
     "<strong>NIFTY SMALLCAP 50</strong> tracks the performance of 50 tradeable small-cap companies listed on the NSE, selected for liquidity and free-float market capitalisation.",
     "The index is popular among traders and momentum investors given the higher volatility and growth potential typically associated with small-cap stocks.",
   ],
-  ctaHeadline: "Trade Nifty Smallcap 50 with Zero Brokerage",
+  ctaHeadline: "Trade Nifty Smallcap 50 at Flat ₹17 Brokerage",
   ctaBody: "Index funds, ETF & derivatives, all in one place. Start investing from ₹500.",
 }
 

@@ -379,7 +379,7 @@ export default function RegisterPage() {
                           autoComplete="tel-national"
                           aria-invalid={mobile.length === 10 && !isMobile(mobile)}
                           value={mobile}
-                          onChange={(e) => setMobile(cleanMobile(e.target.value))}
+                          onChange={(e) => setMobile(cleanMobile(e.target.value, mobile))}
                           className="flex-1 min-w-0 px-3 py-3 bg-transparent text-[14px] text-foreground placeholder:text-muted-foreground/50 outline-none"
                         />
                         {isMobile(mobile) && (

@@ -198,8 +198,8 @@ export default function ETFPage() {
               </Button>
               <div className="flex items-center gap-4 sm:ml-3 sm:pl-5 sm:border-l border-border">
                 <div>
-                  <div className="text-base font-black text-foreground leading-none">31+</div>
-                  <div className="text-[10px] text-muted-foreground font-semibold mt-1">Years of Trust</div>
+                  <div className="text-base font-black text-foreground leading-none">3</div>
+                  <div className="text-[10px] text-muted-foreground font-semibold mt-1">Decades of Trust</div>
                 </div>
                 <div>
                   <div className="text-base font-black text-foreground flex items-center gap-1 leading-none">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>

@@ -72,7 +72,7 @@ const DATA: IndexPageData = {
     "<strong>NIFTY FINANCIAL SERVICES (FINNIFTY)</strong> tracks the performance of banks, NBFCs, insurance, housing finance and other financial services companies listed on the NSE.",
     "Launched in January 2021, FINNIFTY has become one of the most actively traded weekly options indices on the NSE, alongside NIFTY 50 and NIFTY BANK.",
   ],
-  ctaHeadline: "Trade Nifty Financial Services with Zero Brokerage",
+  ctaHeadline: "Trade Nifty Financial Services at Flat ₹17 Brokerage",
   ctaBody: "Index funds, ETF & derivatives, all in one place. Start investing from ₹500.",
 }
 

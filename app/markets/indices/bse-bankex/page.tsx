@@ -71,7 +71,7 @@ const DATA: IndexPageData = {
     "The <strong>BSE BANKEX</strong> tracks the performance of the leading banking sector stocks listed on the Bombay Stock Exchange, spanning both private and public sector banks.",
     "BANKEX serves as a key benchmark for banking sector funds and is used extensively for derivatives trading and sector-specific investment strategies.",
   ],
-  ctaHeadline: "Trade Bse Bankex with Zero Brokerage",
+  ctaHeadline: "Trade Bse Bankex at Flat ₹17 Brokerage",
   ctaBody: "Index funds, ETF & derivatives, all in one place. Start investing from ₹500.",
 }
 

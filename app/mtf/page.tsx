@@ -30,7 +30,7 @@ const KEY_BENEFITS = [
 
 const CHARGES = [
   { icon: Percent,    title: "Interest",          value: "1.5%",    unit: "per month", desc: "Charged only on the borrowed amount, from the buy date until one day before you sell or convert to delivery, including non-trading days." },
-  { icon: CreditCard, title: "Brokerage",          value: "17%",     unit: "per executed order", desc: "17% brokerage applies on all MTF transactions." },
+  { icon: CreditCard, title: "Brokerage",          value: "₹17",     unit: "per executed order", desc: "A flat ₹17 brokerage applies on all MTF transactions." },
   { icon: Layers,     title: "Pledge / Unpledge",  value: "₹15",     unit: "+ GST per ISIN, per request", desc: "Shares bought under MTF are auto-pledged as per SEBI norms, and auto-unpledged on sell or conversion to delivery." },
 ]
 

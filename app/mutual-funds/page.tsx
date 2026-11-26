@@ -664,8 +664,8 @@ export default function MutualFundsPage() {
                 icon: Users,
                 color: "#8B0D19",
                 title: "Trusted by Millions",
-                desc: `31+ years of experience. Backed by 5 lakh+ active investors and ${info ? `${totalAmcs} AMC partners` : "leading AMC partners"}.`,
-                points: ["31 years legacy", info ? `${totalAmcs} AMC partners` : "AMC partners", "Secure & regulated"],
+                desc: `3 decades of trust. Backed by 1 Lakh+ active investors and ${info ? `${totalAmcs} AMC partners` : "leading AMC partners"}.`,
+                points: ["3 decades of trust", info ? `${totalAmcs} AMC partners` : "AMC partners", "Secure & regulated"],
               },
             ].map((b, i) => {
               const Icon = b.icon

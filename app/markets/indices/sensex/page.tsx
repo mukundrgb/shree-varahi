@@ -77,7 +77,7 @@ const DATA: IndexPageData = {
     "The <strong>S&P BSE SENSEX</strong> (Sensitive Index) is the benchmark index of the Bombay Stock Exchange (BSE), comprising 30 of the largest and most actively traded stocks representing key sectors of the Indian economy.",
     "First published in 1986 with a base year of 1978-79, SENSEX is one of the oldest stock indices in Asia and is widely tracked as a barometer of the Indian stock market and economy.",
   ],
-  ctaHeadline: "Trade Sensex with Zero Brokerage",
+  ctaHeadline: "Trade Sensex at Flat ₹17 Brokerage",
   ctaBody: "Index funds, ETF & derivatives, all in one place. Start investing from ₹500.",
 }
 

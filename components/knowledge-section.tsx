@@ -3,9 +3,9 @@
 import { useState } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronRight, ArrowLeft, ArrowRight, Newspaper, BookOpen, Rss, TrendingUp, TrendingDown } from "lucide-react"
-import { newsDateTime } from "@/lib/news/categorize"
-import { SAMPLE_NEWS } from "@/lib/news/sample"
+import { ChevronRight, ArrowLeft, ArrowRight, Newspaper, BookOpen, GraduationCap, TrendingUp, TrendingDown } from "lucide-react"
+import { TopicIcon } from "@/components/knowledge-center"
+import { TOPICS } from "@/lib/knowledge-center/data"
 
 /* ─── Tab data ─── */
 
@@ -17,10 +17,10 @@ const tabs = [
     desc: "Live market developments, earnings updates, policy changes, and sector-specific news curated every day by our team.",
   },
   {
-    id: "stories",
-    title: "Latest News",
-    icon: Rss,
-    desc: "Company announcements, results, IPOs, the economy and global markets, updated through the trading day.",
+    id: "knowledge",
+    title: "Knowledge Center",
+    icon: GraduationCap,
+    desc: "Simple guides on demat accounts, mutual funds, IPOs, F&O, taxes and more, to help you invest with confidence.",
   },
   {
     id: "blog",
@@ -132,31 +132,33 @@ function NewsIllustration() {
   )
 }
 
-/* Latest stories from /news, one per section; each opens its story */
-const LATEST_STORIES = ["Corporate News", "IPO News", "Economy News", "Foreign Markets"]
-  .map((section) => SAMPLE_NEWS.find((n) => n.tag === section))
-  .filter((n) => n !== undefined)
+/* Featured Knowledge Center topics; each opens its topic page */
+const FEATURED_TOPICS = ["demat-account", "mutual-funds", "ipo", "futures-and-options-trading", "income-tax", "mtf"]
+  .map((slug) => TOPICS.find((t) => t.slug === slug))
+  .filter((t) => t !== undefined)
 
-function StoriesPanel() {
+function KnowledgePanel() {
   return (
-    <BrowserShell url="varahi.in/news">
+    <BrowserShell url="varahi.in/knowledge-center">
       <div className="p-4 flex flex-col gap-3 h-full">
         <div className="flex items-center justify-between shrink-0">
           <span className="flex items-center gap-1.5 text-[11px] font-black text-foreground">
-            <span className="w-1.5 h-1.5 rounded-full bg-burgundy" /> Latest News
+            <span className="w-1.5 h-1.5 rounded-full bg-burgundy" /> Knowledge Center
           </span>
-          <Link href="/news" className="text-[10px] font-bold text-burgundy hover:underline flex items-center gap-0.5">
-            View all news <ChevronRight className="w-3 h-3" />
+          <Link href="/knowledge-center" className="text-[10px] font-bold text-burgundy hover:underline flex items-center gap-0.5">
+            View all topics <ChevronRight className="w-3 h-3" />
           </Link>
         </div>
-        <div className="flex flex-col gap-1.5 flex-1 min-h-0 overflow-y-auto" style={{ scrollbarWidth: "none" }}>
-          {LATEST_STORIES.map((s) => (
-            <Link key={s.id} href={`/news/${s.id}`} className="group block px-2.5 py-1.5 rounded-[8px] bg-slate-50/70 border border-border/50 hover:border-burgundy/30 transition-colors">
-              <span className="flex items-center gap-2 mb-1">
-                <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-[3px] bg-burgundy/[0.07] text-burgundy">{s.tag}</span>
-                <span className="text-[9px] text-muted-foreground/70">{newsDateTime(s.publishedAt)}</span>
+        <div className="grid grid-cols-2 gap-2 flex-1 min-h-0 content-start overflow-y-auto" style={{ scrollbarWidth: "none" }}>
+          {FEATURED_TOPICS.map((t) => (
+            <Link key={t.slug} href={`/knowledge-center/${t.slug}`} className="group flex items-start gap-2 px-2.5 py-2 rounded-[8px] bg-slate-50/70 border border-border/50 hover:border-burgundy/30 transition-colors">
+              <span className="w-6 h-6 rounded-[6px] bg-burgundy/10 flex items-center justify-center shrink-0">
+                <TopicIcon name={t.icon} className="w-3.5 h-3.5" />
               </span>
-              <span className="block text-[11px] font-semibold text-foreground leading-snug line-clamp-1 sm:line-clamp-2 group-hover:text-burgundy transition-colors">{s.headline}</span>
+              <span className="min-w-0">
+                <span className="block text-[11px] font-bold text-foreground leading-snug group-hover:text-burgundy transition-colors">{t.title}</span>
+                <span className="hidden sm:block text-[9px] text-muted-foreground/80 leading-snug line-clamp-2">{t.desc}</span>
+              </span>
             </Link>
           ))}
         </div>
@@ -348,7 +350,7 @@ export function KnowledgeSection() {
                     transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                     className="w-full h-full"
                   >
-                    {active === "news" ? <NewsIllustration /> : active === "stories" ? <StoriesPanel /> : <BlogIllustration />}
+                    {active === "news" ? <NewsIllustration /> : active === "knowledge" ? <KnowledgePanel /> : <BlogIllustration />}
                   </motion.div>
                 </AnimatePresence>
               </div>

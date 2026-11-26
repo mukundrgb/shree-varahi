@@ -75,7 +75,7 @@ const DATA: IndexPageData = {
     "The <strong>BSE MID CAP</strong> index tracks companies ranked 101st to 250th by market capitalisation on the BSE, capturing India's mid-sized growth companies.",
     "Mid-cap stocks typically offer a balance between the stability of large caps and the growth potential of small caps, making the index a popular benchmark for diversified equity funds.",
   ],
-  ctaHeadline: "Trade Bse Mid Cap with Zero Brokerage",
+  ctaHeadline: "Trade Bse Mid Cap at Flat ₹17 Brokerage",
   ctaBody: "Index funds, ETF & derivatives, all in one place. Start investing from ₹500.",
 }
 

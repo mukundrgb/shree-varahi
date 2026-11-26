@@ -80,7 +80,7 @@ export function OpenAccountCard({ className = "" }: { className?: string }) {
             inputMode="numeric"
             autoComplete="tel-national"
             value={mobile}
-            onChange={(e) => { setMobile(cleanMobile(e.target.value)); setError("") }}
+            onChange={(e) => { setMobile(cleanMobile(e.target.value, mobile)); setError("") }}
             placeholder="Enter Mobile Number"
             aria-invalid={!!error}
             aria-describedby={error ? `${id}-err` : undefined}

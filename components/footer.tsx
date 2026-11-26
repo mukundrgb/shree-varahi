@@ -659,7 +659,7 @@ function AboutAccordion() {
               <div className="pb-6 space-y-3 text-[13px] text-[#3a1414]/85 leading-relaxed max-w-4xl">
                 <p>
                   <strong className="text-[#3a1414]/90 font-semibold">Shree Varahi</strong> is the digital trading and investment platform of{" "}
-                  <strong className="text-[#3a1414]/90 font-semibold">Lakshmishree Investment & Securities Ltd.</strong>, a SEBI-registered stockbroker with over 31 years of market presence since 1993. We offer flat-fee brokerage at ₹17 per executed order for equity delivery, intraday and F&O trades.
+                  <strong className="text-[#3a1414]/90 font-semibold">Lakshmishree Investment & Securities Ltd.</strong>, a SEBI-registered stockbroker with 3 decades of trust, since 1993. We offer flat-fee brokerage at ₹17 per executed order for equity delivery, intraday and F&O trades.
                 </p>
                 <p>
                   Our platform provides access to NSE, BSE, MCX, and international markets through a single unified account. We offer stocks, futures & options, mutual funds, IPOs, ETF, digital gold, and US equities, all under one roof with no hidden charges.

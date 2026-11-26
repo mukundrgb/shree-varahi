@@ -17,7 +17,7 @@ const manrope = localFont({
 })
 
 export const metadata: Metadata = {
-  title: 'Shree Varahi | 31 Years of Trust. One Powerful Platform.',
+  title: 'Shree Varahi | 3 Decades of Trust. One Powerful Platform.',
   description: 'Trade stocks, F&O, mutual funds, IPOs, and US equities with Shree Varahi by Lakshmishree Investment & Securities Ltd. Flat ₹17 brokerage on delivery, intraday & F&O. SEBI registered since 1993.',
   keywords: ['trading platform', 'stocks', 'F&O', 'mutual funds', 'IPO', 'demat account', 'Lakshmishree', 'SEBI registered'],
   icons: {
@@ -25,9 +25,14 @@ export const metadata: Metadata = {
     apple: '/apple-icon.png',
   },
   openGraph: {
-    title: 'Shree Varahi | 31 Years of Trust. One Powerful Platform.',
-    description: 'Trade with confidence. SEBI registered since 1993. 1 Lakh+ active investors trust us.',
+    title: 'Shree Varahi | 3 Decades of Trust. One Powerful Platform.',
+    description: 'Trade with confidence. SEBI registered since 1993. Flat ₹17 brokerage. 1 Lakh+ active investors trust us.',
     type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Shree Varahi | 3 Decades of Trust. One Powerful Platform.',
+    description: 'Trade with confidence. SEBI registered since 1993. Flat ₹17 brokerage. 1 Lakh+ active investors trust us.',
   },
 }
 
