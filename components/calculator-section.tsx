@@ -214,8 +214,6 @@ export function CalculatorSection() {
               {/* Explore link */}
               <Link
                 href={CALCULATOR_LINKS.all}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-[12px] font-extrabold tracking-[0.15em] uppercase text-burgundy hover:text-burgundy-deep transition-colors group"
               >
                 Explore all calculators

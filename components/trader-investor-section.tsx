@@ -5,7 +5,8 @@ import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Check, ChevronDown, ChevronUp, BarChart2, LineChart } from "lucide-react"
+import Image from "next/image"
+import { Check, ChevronDown, ChevronUp } from "lucide-react"
 
 const traderFeatures = [
   "5× Intraday Leverage: Trade with up to 5× your capital on NSE & BSE stocks.",
@@ -35,113 +36,14 @@ const investorFeatures = [
 
 const PREVIEW_COUNT = 4
 
-/* ── Trader image placeholder ── */
-function TraderImagePlaceholder() {
+/* ── Platform screenshot under each card heading ── */
+function PlatformShot({ src, alt, width, height, border, glow }: { src: string; alt: string; width: number; height: number; border: string; glow: string }) {
   return (
     <div
-      className="relative w-full rounded-[8px] overflow-hidden mb-8 flex items-center justify-center"
-      style={{
-        height: "180px",
-        background: "linear-gradient(135deg, rgba(139,13,25,0.06) 0%, rgba(139,13,25,0.03) 100%)",
-        border: "1px dashed rgba(139,13,25,0.22)",
-      }}
+      className="relative w-full rounded-[8px] overflow-hidden mb-8 bg-white"
+      style={{ border: `1px solid ${border}`, boxShadow: `0 8px 28px ${glow}` }}
     >
-      {/* Decorative mini chart SVG */}
-      <svg
-        viewBox="0 0 240 80"
-        className="absolute inset-0 w-full h-full opacity-[0.12]"
-        preserveAspectRatio="xMidYMid slice"
-        aria-hidden="true"
-      >
-        {[20, 40, 60].map((y) => (
-          <line key={y} x1="0" y1={y} x2="240" y2={y} stroke="#8B0D19" strokeWidth="0.5" />
-        ))}
-        <polyline
-          points="0,65 30,55 60,60 90,40 120,45 150,25 180,30 210,15 240,20"
-          fill="none"
-          stroke="#8B0D19"
-          strokeWidth="1.5"
-        />
-        <polyline
-          points="0,65 30,55 60,60 90,40 120,45 150,25 180,30 210,15 240,20 240,80 0,80"
-          fill="rgba(139,13,25,0.08)"
-        />
-        {[
-          [90, 40, 55], [150, 25, 38], [210, 15, 28],
-        ].map(([x, y, bodyTop]) => (
-          <g key={x}>
-            <line x1={x} y1={y - 6} x2={x} y2={y + 8} stroke="#8B0D19" strokeWidth="0.8" />
-            <rect x={x - 4} y={bodyTop} width="8" height="8" fill="rgba(139,13,25,0.4)" stroke="#8B0D19" strokeWidth="0.6" />
-          </g>
-        ))}
-      </svg>
-
-      {/* Center icon + label */}
-      <div className="relative z-10 flex flex-col items-center gap-2">
-        <div
-          className="w-12 h-12 rounded-[8px] flex items-center justify-center"
-          style={{ background: "rgba(139,13,25,0.08)", border: "1px solid rgba(139,13,25,0.2)" }}
-        >
-          <BarChart2 className="w-6 h-6 text-[#8B0D19]" strokeWidth={1.5} />
-        </div>
-        <span className="text-[11px] font-semibold" style={{ color: "rgba(139,13,25,0.5)" }}>
-          Trading Dashboard Preview
-        </span>
-      </div>
-    </div>
-  )
-}
-
-/* ── Investor image placeholder ── */
-function InvestorImagePlaceholder() {
-  return (
-    <div
-      className="relative w-full rounded-[8px] overflow-hidden mb-8 flex items-center justify-center"
-      style={{
-        height: "180px",
-        background: "linear-gradient(135deg, rgba(184,146,74,0.07) 0%, rgba(217,178,124,0.03) 100%)",
-        border: "1px dashed rgba(184,146,74,0.3)",
-      }}
-    >
-      {/* Decorative growth chart */}
-      <svg
-        viewBox="0 0 240 80"
-        className="absolute inset-0 w-full h-full opacity-[0.13]"
-        preserveAspectRatio="xMidYMid slice"
-        aria-hidden="true"
-      >
-        {[20, 40, 60].map((y) => (
-          <line key={y} x1="0" y1={y} x2="240" y2={y} stroke="#B8924A" strokeWidth="0.5" />
-        ))}
-        <polyline
-          points="0,70 40,65 80,55 120,48 160,35 200,22 240,12"
-          fill="none"
-          stroke="#B8924A"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <polyline
-          points="0,70 40,65 80,55 120,48 160,35 200,22 240,12 240,80 0,80"
-          fill="rgba(184,146,74,0.1)"
-        />
-        {[40, 120, 200].map((x, i) => (
-          <circle key={x} cx={x} cy={[65, 48, 22][i]} r="3" fill="rgba(184,146,74,0.5)" stroke="#B8924A" strokeWidth="0.8" />
-        ))}
-      </svg>
-
-      {/* Center icon + label */}
-      <div className="relative z-10 flex flex-col items-center gap-2">
-        <div
-          className="w-12 h-12 rounded-[8px] flex items-center justify-center"
-          style={{ background: "rgba(184,146,74,0.1)", border: "1px solid rgba(184,146,74,0.3)" }}
-        >
-          <LineChart className="w-6 h-6 text-gold-deep" strokeWidth={1.5} />
-        </div>
-        <span className="text-[11px] font-semibold" style={{ color: "rgba(184,146,74,0.6)" }}>
-          Portfolio Growth Preview
-        </span>
-      </div>
+      <Image src={src} alt={alt} width={width} height={height} sizes="(min-width: 1024px) 560px, 100vw" className="w-full h-auto block" />
     </div>
   )
 }
@@ -287,10 +189,10 @@ export function TraderInvestorSection() {
                 For Active Traders
               </span>
 
-              <h3 className="text-2xl lg:text-3xl font-bold mb-1 text-foreground">Built for speed. <span className="text-2xl lg:text-3xl font-bold mb-6 text-burgundy">Built for F&amp;O.</span></h3>
+              <h3 className="text-2xl lg:text-3xl font-bold mb-6 text-foreground">Built for speed. <span className="text-burgundy">Built for F&amp;O.</span></h3>
               
 
-              <TraderImagePlaceholder />
+              <PlatformShot src="/dash.png" alt="Shree Varahi trading dashboard with watchlist, portfolio P&L and top gainers and losers" width={1366} height={652} border="rgba(139,13,25,0.18)" glow="rgba(139,13,25,0.10)" />
 
               <FeatureList
                 features={traderFeatures}
@@ -336,7 +238,7 @@ export function TraderInvestorSection() {
 
               <h3 className="text-2xl lg:text-3xl font-bold mb-6 text-foreground">Grow wealth. <span className="text-gold-deep">No brokerage.</span></h3>
 
-              <InvestorImagePlaceholder />
+              <PlatformShot src="/protfolio.png" alt="Shree Varahi portfolio screen with holdings, invested and current value and profit and loss" width={1365} height={651} border="rgba(184,146,74,0.3)" glow="rgba(184,146,74,0.12)" />
 
               <FeatureList
                 features={investorFeatures}

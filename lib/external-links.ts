@@ -13,15 +13,29 @@ export const GLOBAL_INVESTING_LINKS = {
   userGuide:  "https://www.indiainxga.com/static/marketoperations/userguide.aspx",
 } as const
 
-/** Calculators app. */
-export const CALCULATORS_URL = "http://l5b7booc1v6okc4700748zn9.187.127.157.145.sslip.io"
+/** Calculators live inside this site at /calculators (app/calculators). */
+export const CALCULATORS_URL = "/calculators"
 
 export const CALCULATOR_LINKS = {
-  all:       `${CALCULATORS_URL}/`,
-  brokerage: `${CALCULATORS_URL}/brokerage`,
-  margin:    `${CALCULATORS_URL}/margin`,
-  mfReturns: `${CALCULATORS_URL}/mf-returns`,
-  cagr:      `${CALCULATORS_URL}/cagr`,
-  goalSip:   `${CALCULATORS_URL}/goal-sip`,
-  lumpsum:   `${CALCULATORS_URL}/lumpsum`,
+  all:              CALCULATORS_URL,
+  brokerage:        `${CALCULATORS_URL}/brokerage`,
+  margin:           `${CALCULATORS_URL}/margin`,
+  mfReturns:        `${CALCULATORS_URL}/mf-returns`,
+  cagr:             `${CALCULATORS_URL}/cagr`,
+  goalSip:          `${CALCULATORS_URL}/goal-sip`,
+  lumpsum:          `${CALCULATORS_URL}/lumpsum`,
+  sip:              `${CALCULATORS_URL}/sip`,
+  xirr:             `${CALCULATORS_URL}/xirr`,
+  inflation:        `${CALCULATORS_URL}/inflation`,
+  retirement:       `${CALCULATORS_URL}/retirement`,
+  ppf:              `${CALCULATORS_URL}/ppf`,
+  epf:              `${CALCULATORS_URL}/epf`,
+  fd:               `${CALCULATORS_URL}/fd`,
+  rd:               `${CALCULATORS_URL}/rd`,
+  nps:              `${CALCULATORS_URL}/nps`,
+  nsc:              `${CALCULATORS_URL}/nsc`,
+  compoundInterest: `${CALCULATORS_URL}/compound-interest`,
+  emi:              `${CALCULATORS_URL}/emi-calculator`,
+  hra:              `${CALCULATORS_URL}/hra-calculator`,
+  gratuity:         `${CALCULATORS_URL}/gratuity-calculator`,
 } as const

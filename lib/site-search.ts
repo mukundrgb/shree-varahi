@@ -3,7 +3,7 @@
 // everything here is a static index of pages that exist in the app router.
 
 import { searchKnowledge } from "@/lib/knowledge-center/data"
-import { LOGIN_URL, OPEN_ACCOUNT_URL } from "@/lib/external-links"
+import { CALCULATOR_LINKS, LOGIN_URL, OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 export interface SitePage {
   title: string
@@ -25,6 +25,16 @@ export const SITE_PAGES: SitePage[] = [
   { title: "MTF",                     desc: "Margin Trading Facility",               href: "/mtf",             keywords: "margin trading leverage calculator" },
   { title: "MTF Eligible Stocks",     desc: "Stocks available on MTF",               href: "/mtf/eligible-stocks", keywords: "mtf stocks list margin" },
   { title: "Global Investing",        desc: "Invest in US stocks from India",        href: "/global-investing", keywords: "us stocks international" },
+  // Calculators
+  { title: "All Calculators",         desc: "35+ free financial calculators",        href: CALCULATOR_LINKS.all,       keywords: "calculator tools planning sip emi fd ppf tax" },
+  { title: "Brokerage Calculator",    desc: "Charges for your stock orders",         href: CALCULATOR_LINKS.brokerage, keywords: "brokerage charges fees calculator" },
+  { title: "Margin Calculator",       desc: "Margin needed for a trade",             href: CALCULATOR_LINKS.margin,    keywords: "margin intraday calculator" },
+  { title: "EMI Calculator",          desc: "Monthly loan instalment",               href: CALCULATOR_LINKS.emi,       keywords: "emi loan home car calculator" },
+  { title: "FD Calculator",           desc: "Fixed deposit returns",                 href: CALCULATOR_LINKS.fd,        keywords: "fd fixed deposit calculator" },
+  { title: "PPF Calculator",          desc: "Public Provident Fund returns",         href: CALCULATOR_LINKS.ppf,       keywords: "ppf provident fund calculator" },
+  { title: "Lumpsum Calculator",      desc: "One-time investment returns",           href: CALCULATOR_LINKS.lumpsum,   keywords: "lumpsum mutual fund calculator" },
+  { title: "CAGR Calculator",         desc: "Compound annual growth rate",           href: CALCULATOR_LINKS.cagr,      keywords: "cagr growth return calculator" },
+  { title: "Income Tax Calculator",   desc: "Old vs new regime tax",                 href: `${CALCULATOR_LINKS.all}/income-tax-calculator`, keywords: "income tax regime calculator" },
   // Mutual funds
   { title: "Mutual Funds",            desc: "Explore & invest by SIP or lumpsum",   href: "/mutual-funds",    keywords: "sip lumpsum funds" },
   { title: "NFO",                     desc: "New fund offers",                       href: "/nfo",             keywords: "new fund offer" },

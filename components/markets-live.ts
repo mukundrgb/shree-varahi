@@ -2,7 +2,8 @@
 
 // Live data for the navbar's Markets menu: Stocks, F&O, Mutual Funds and ETFs are grouped by
 // the categories the APIs send, and every item links to its real page. Nothing is fetched
-// until the menu is opened. If an API fails, the menu falls back to its hand-written links.
+// until the menu is opened. If an API fails, the tab says live data isn't available (there are no
+// hand-written fallback lists any more; only Stocks › Market Movers is hand-written).
 //
 //   Stocks        sectors (StockListResult.categories) → stocks in the hovered sector (loaded then)
 //   F&O           the four /fno categories → contracts in the hovered category (loaded then)

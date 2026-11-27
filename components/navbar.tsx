@@ -78,13 +78,12 @@ const MARKETS_TABS = [/* "Indices", */ "Stocks", "F&O", "Mutual Funds", "ETF", "
 /** Tab the Markets menu opens on. */
 const DEFAULT_MARKETS_TAB = MARKETS_TABS[0]
 
+// Hand-written sub-tabs. Stocks, F&O, Mutual Funds and ETF are filled only from the live APIs
+// (components/markets-live.ts); the one hand-written list they keep is Stocks › Market Movers,
+// whose pages show API data. When an API is down the tab says so instead of showing old lists.
 const MARKETS_SUBS: Record<string, string[]> = {
   "Indices":       ["Major Indices", "Global Indices"],
-  "Stocks":        ["Market Movers", "Top Nifty 50 Stocks", "Top Nifty Bank Stocks", "Nifty Stocks", "Sensex Stocks", "Stocks by Sector", "Stocks by Group", "Stocks by MarketCap", "Popular Stocks"],
-  // "Commodity Option Chain" and "Commodity Futures" are hidden for now.
-  "F&O":           ["Index Option Chain", "Index F&O", "Stock Option Chain", "Stock Futures", "Stock Options" /* , "Commodity Option Chain", "Commodity Futures" */],
-  "Mutual Funds":  ["Equity Funds", "Debt Funds", "Hybrid Funds", "Index Funds", "Mutual Funds AMCs", "Popular Mutual Funds", "Popular Schemes"],
-  "ETF":          ["Index ETF", "Commodity ETF", "Popular ETF", "ETF AMCs"],
+  "Stocks":        ["Market Movers"],
   "Tools":         ["Calculators", "Screeners"],
 }
 
@@ -126,270 +125,12 @@ const MARKETS_DATA: Record<string, Record<string, MarketItem[]>> = {
       { name: "Most Active by Value",  href: "/stock-market-live/most-active-by-value" },
       { name: "Most Active by Volume", href: "/stock-market-live/most-active-by-volume" },
     ],
-    "Top Nifty 50 Stocks": [
-      { name: "Reliance Industries", href: "/stocks/reliance-industries-ltd-share-price" },
-      { name: "TCS",                 href: "/stocks/tcs-tata-consultancy-services-ltd-share-price" },
-      { name: "HDFC Bank",           href: "/stocks/hdfc-bank-ltd-share-price" },
-      { name: "ICICI Bank",          href: "/stocks/icici-bank-ltd-share-price" },
-      { name: "Bharti Airtel",       href: "/stocks/bharti-airtel-ltd-share-price" },
-      { name: "State Bank of India", href: "/stocks/state-bank-of-india-ltd-share-price" },
-      { name: "Infosys",             href: "/stocks/infosys-ltd-share-price" },
-      { name: "ITC",                 href: "/stocks/itc-ltd-share-price" },
-    ],
-    "Top Nifty Bank Stocks": [
-      { name: "HDFC Bank",             href: "/stocks/hdfc-bank-ltd-share-price",             exchange: "NSE" },
-      { name: "ICICI Bank",            href: "/stocks/icici-bank-ltd-share-price",            exchange: "NSE" },
-      { name: "Axis Bank",             href: "/stocks/axis-bank-ltd-share-price",             exchange: "NSE" },
-      { name: "Kotak Mahindra Bank",   href: "/stocks/kotak-mahindra-bank-ltd-share-price",   exchange: "NSE" },
-      { name: "State Bank of India",   href: "/stocks/state-bank-of-india-ltd-share-price",   exchange: "NSE" },
-      { name: "IndusInd Bank",         href: "/stocks/indusind-bank-ltd-share-price",         exchange: "NSE" },
-      { name: "Bank of Baroda",        href: "/stocks/bank-of-baroda-ltd-share-price",        exchange: "NSE" },
-    ],
-    "Nifty Stocks": [
-      { name: "Nifty 50",       href: "/nifty-stocks-list/nifty-50",       exchange: "NSE" },
-      { name: "Nifty Next 50",  href: "/nifty-stocks-list/nifty-next-50",  exchange: "NSE" },
-      { name: "Nifty Bank",     href: "/nifty-stocks-list/nifty-bank",     exchange: "NSE" },
-      { name: "Finnifty",       href: "/nifty-stocks-list/nifty-fin-services", exchange: "NSE" },
-      { name: "Nifty IT",       href: "/nifty-stocks-list/nifty-it",       exchange: "NSE" },
-      { name: "Nifty Auto",     href: "/nifty-stocks-list/nifty-auto",     exchange: "NSE" },
-      { name: "Nifty FMCG",     href: "/nifty-stocks-list/nifty-fmcg",     exchange: "NSE" },
-      { name: "Nifty Pharma",   href: "/nifty-stocks-list/nifty-pharma",   exchange: "NSE" },
-      { name: "Nifty Metal",    href: "/nifty-stocks-list/nifty-metal",    exchange: "NSE" },
-      { name: "Nifty Energy",   href: "/nifty-stocks-list/nifty-energy",   exchange: "NSE" },
-      { name: "Nifty Realty",   href: "/nifty-stocks-list/nifty-realty",   exchange: "NSE" },
-    ],
-    "Sensex Stocks": [
-      { name: "BSE Sensex",     href: "/bse-stocks-list/bse-sensex",     exchange: "BSE" },
-      { name: "BSE PSU",        href: "/bse-stocks-list/bse-psu",        exchange: "BSE" },
-      { name: "BSE Healthcare", href: "/bse-stocks-list/bse-healthcare", exchange: "BSE" },
-      { name: "BSE Bankex",     href: "/bse-stocks-list/bse-bankex",     exchange: "BSE" },
-      { name: "BSE IT",         href: "/bse-stocks-list/bse-it",         exchange: "BSE" },
-      { name: "BSE Large Cap",  href: "/bse-stocks-list/bse-large-cap",  exchange: "BSE" },
-      { name: "BSE Mid Cap",    href: "/bse-stocks-list/bse-mid-cap",    exchange: "BSE" },
-      { name: "BSE Small Cap",  href: "/bse-stocks-list/bse-small-cap",  exchange: "BSE" },
-      { name: "BSE 100",        href: "/bse-stocks-list/bse-100",        exchange: "BSE" },
-      { name: "BSE 500",        href: "/bse-stocks-list/bse-500",        exchange: "BSE" },
-    ],
-    "Stocks by Sector": [
-      { name: "Bank Stocks",        href: "/stocks/sector/bank-stocks" },
-      { name: "IT Stocks",          href: "/stocks/sector/it-software-stocks" },
-      { name: "FMCG Stocks",        href: "/stocks/sector/fmcg-stocks" },
-      { name: "Petroleum Stocks",   href: "/stocks/sector/refinery-stocks" },
-      { name: "Engineering Stocks", href: "/stocks/sector/engineering-stocks" },
-      { name: "Chemical Stocks",    href: "/stocks/sector/chemical-stocks" },
-      { name: "Finance Stocks",     href: "/stocks/sector/finance-stocks" },
-      { name: "Auto Stocks",        href: "/stocks/sector/automobile-stocks" },
-      { name: "Pharma Stocks",      href: "/stocks/sector/pharmaceuticals-stocks" },
-      { name: "Power Stocks",       href: "/stocks/sector/power-generation-stocks" },
-      { name: "Cement Stocks",      href: "/stocks/sector/cement-stocks" },
-    ],
-    "Stocks by Group": [
-      { name: "Tata Group Stocks",         href: "/stocks/market/tata-group-stocks" },
-      { name: "Adani Group Stocks",        href: "/stocks/market/adani-group-stocks" },
-      { name: "Mukesh Ambani Group Stocks",href: "/stocks/market/mukesh-ambani-group-stocks" },
-      { name: "Anil Ambani Group Stocks",  href: "/stocks/market/anil-ambani-group-stocks" },
-      { name: "Birla Group Stocks",        href: "/stocks/market/birla-group-stocks" },
-      { name: "Bajaj Group Stocks",        href: "/stocks/market/bajaj-group-stocks" },
-      { name: "HDFC Group Stocks",         href: "/stocks/market/hdfc-group-stocks" },
-      { name: "ICICI Group Stocks",        href: "/stocks/market/icici-group-stocks" },
-      { name: "Mahindra Group Stocks",     href: "/stocks/market/mahindra-group-stocks" },
-    ],
-    "Stocks by MarketCap": [
-      { name: "Large Cap Stocks",       href: "/stocks/market/large-cap-stocks" },
-      { name: "Mid Cap Stocks",         href: "/stocks/market/mid-cap-stocks" },
-      { name: "Small Cap Stocks",       href: "/stocks/market/small-cap-stocks" },
-      { name: "Micro Cap Stocks",       href: "/stocks/market/micro-cap-stocks" },
-      { name: "Nano Cap Stocks",        href: "/stocks/market/nano-cap-stocks" },
-      { name: "Top 100 Market Cap Stocks", href: "/stocks/market/top-100-market-cap-stocks" },
-    ],
-    "Popular Stocks": [
-      { name: "Intraday Stocks",           href: "/stocks/market/intraday-stocks" },
-      { name: "Penny Stocks",              href: "/stocks/market/penny-stocks" },
-      { name: "Multibagger Stocks",        href: "/stocks/market/multibagger-stocks" },
-      { name: "Dividend Stocks",           href: "/stocks/market/dividend-stocks" },
-      { name: "High Return Stocks",        href: "/stocks/market/high-return-stocks" },
-      { name: "High Growth Stocks",        href: "/stocks/market/high-growth-stocks" },
-      { name: "All Time High Stocks",      href: "/stocks/market/all-time-high-stocks" },
-      { name: "Undervalued Stocks",        href: "/stocks/market/undervalued-stocks" },
-      { name: "Nifty 50 Gainers",          href: "/stocks/market/nifty-50-gainers" },
-      { name: "Nifty 50 Losers",           href: "/stocks/market/nifty-50-losers" },
-    ],
-  },
-  "F&O": {
-    "Index Option Chain": [
-      { name: "Nifty Bank Option Chain",           href: "/options/nifty-bank-option-chain",           exchange: "NSE" },
-      { name: "Nifty 50 Option Chain",             href: "/options/nifty-50-option-chain",             exchange: "NSE" },
-      { name: "Finnifty Option Chain",             href: "/options/finnifty-option-chain",             exchange: "NSE" },
-      { name: "Nifty Midcap Select Option Chain",  href: "/options/nifty-midcap-select-option-chain",  exchange: "NSE" },
-      { name: "Nifty Next 50 Option Chain",        href: "/options/nifty-next-50-option-chain",        exchange: "NSE" },
-      { name: "Sensex Option Chain",               href: "/options/bse-sensex-option-chain",           exchange: "BSE" },
-      { name: "Bankex Option Chain",               href: "/options/bse-bankex-option-chain",           exchange: "BSE" },
-    ],
-    "Index F&O": [
-      { name: "Nifty Bank Options",             href: "/options/bank-nifty-options",              exchange: "NSE" },
-      { name: "Nifty Bank Futures",             href: "/futures/bank-nifty-futures",              exchange: "NSE" },
-      { name: "Finnifty Options",               href: "/options/finnifty-options",                exchange: "NSE" },
-      { name: "Finnifty Futures",               href: "/futures/finnifty-futures",                exchange: "NSE" },
-      { name: "Nifty Midcap Select Options",    href: "/options/nifty-midcap-select-options",     exchange: "NSE" },
-      { name: "Nifty Midcap Select Futures",    href: "/futures/nifty-midcap-select-futures",     exchange: "NSE" },
-      { name: "Nifty 50 Options",               href: "/options/nifty-50-options",                exchange: "NSE" },
-      { name: "Nifty 50 Futures",               href: "/futures/nifty-50-futures",                exchange: "NSE" },
-      { name: "Sensex Options",                 href: "/options/sensex-options",                  exchange: "BSE" },
-      { name: "Sensex Futures",                 href: "/futures/sensex-futures",                  exchange: "BSE" },
-      { name: "Bankex Options",                 href: "/options/bankex-options",                  exchange: "BSE" },
-      { name: "Bankex Futures",                 href: "/futures/bankex-futures",                  exchange: "BSE" },
-    ],
-    "Stock Option Chain": [
-      { name: "Reliance Option Chain",   href: "/options/reliance-industries-ltd-option-chain" },
-      { name: "HDFC Option Chain",       href: "/options/hdfc-bank-ltd-option-chain" },
-      { name: "TCS Option Chain",        href: "/options/tcs-tata-consultancy-services-ltd-option-chain" },
-      { name: "ICICI Bank Option Chain", href: "/options/icici-bank-ltd-option-chain" },
-      { name: "SBI Option Chain",        href: "/options/state-bank-of-india-ltd-option-chain" },
-      { name: "Infosys Option Chain",    href: "/options/infosys-ltd-option-chain" },
-      { name: "ITC Option Chain",        href: "/options/itc-ltd-option-chain" },
-      { name: "Wipro Option Chain",      href: "/options/wipro-ltd-option-chain" },
-    ],
-    "Stock Futures": [
-      { name: "Tata Motors Futures",  href: "/futures/tata-motors-ltd-futures-summary" },
-      { name: "Reliance Futures",     href: "/futures/reliance-industries-ltd-futures-summary" },
-      { name: "Tata Steel Futures",   href: "/futures/tata-steel-ltd-futures-summary" },
-      { name: "SBI Futures",          href: "/futures/state-bank-of-india-ltd-futures-summary" },
-      { name: "TCS Futures",          href: "/futures/tcs-tata-consultancy-services-ltd-futures-summary" },
-      { name: "Infosys Futures",      href: "/futures/infosys-ltd-futures-summary" },
-      { name: "ITC Futures",          href: "/futures/itc-ltd-futures-summary" },
-      { name: "HDFC Futures",         href: "/futures/hdfc-bank-ltd-futures-summary" },
-    ],
-    "Stock Options": [
-      { name: "HAL Options",          href: "/options/hal-hindustan-aeronautics-ltd-options-summary" },
-      { name: "Tata Motors Options",  href: "/options/tata-motors-ltd-options-summary" },
-      { name: "Reliance Options",     href: "/options/reliance-industries-ltd-options-summary" },
-      { name: "SBI Options",          href: "/options/state-bank-of-india-ltd-options-summary" },
-      { name: "Tata Steel Options",   href: "/options/tata-steel-ltd-options-summary" },
-      { name: "Bajaj Finance Options",href: "/options/bajaj-finance-ltd-options-summary" },
-      { name: "PNB Options",          href: "/options/punjab-national-bank-ltd-options-summary" },
-    ],
-    /* Commodity links are hidden for now.
-    "Commodity Option Chain": [
-      { name: "Crude Oil Options Chain",   href: "/commodity/options/crude-oil", exchange: "MCX" },
-      { name: "Natural Gas Options Chain", href: "/commodity/options/natural-gas", exchange: "MCX" },
-      { name: "Gold Options Chain",        href: "/commodity/options/gold", exchange: "MCX" },
-      { name: "Silver Options Chain",      href: "/commodity/options/silver", exchange: "MCX" },
-    ],
-    "Commodity Futures": [
-      { name: "Gold Futures",       href: "/commodity/futures/gold",         exchange: "MCX" },
-      { name: "Natural Gas Futures",href: "/commodity/futures/natural-gas",  exchange: "MCX" },
-      { name: "Crude Oil Futures",  href: "/commodity/futures/crude-oil",    exchange: "MCX" },
-      { name: "Silver Futures",     href: "/commodity/futures/silver",       exchange: "MCX" },
-      { name: "Copper Futures",     href: "/commodity/futures/copper",       exchange: "MCX" },
-      { name: "Aluminium Futures",  href: "/commodity/futures/aluminium",    exchange: "MCX" },
-      { name: "Zinc Futures",       href: "/commodity/futures/zinc",         exchange: "MCX" },
-      { name: "Silver Mini Futures",href: "/commodity/futures/silver-mini",  exchange: "MCX" },
-      { name: "Gold Mini Futures",  href: "/commodity/futures/gold-mini",    exchange: "MCX" },
-    ],
-    */
-  },
-  "Mutual Funds": {
-    "Equity Funds": [
-      { name: "Large Cap Funds",     href: "/mutual-funds/equity-funds/large-cap-funds" },
-      { name: "Bluechip Funds",      href: "/mutual-funds/equity-funds/bluechip-funds" },
-      { name: "Mid Cap Funds",       href: "/mutual-funds/equity-funds/mid-cap-funds" },
-      { name: "Focused Funds",       href: "/mutual-funds/equity-funds/focused-funds" },
-      { name: "Small Cap Funds",     href: "/mutual-funds/equity-funds/small-cap-funds" },
-      { name: "Sectoral Funds",      href: "/mutual-funds/equity-funds/sectoral-funds" },
-      { name: "Flexi Cap Funds",     href: "/mutual-funds/equity-funds/flexi-cap-funds" },
-      { name: "International Funds",href: "/mutual-funds/equity-funds/international-funds" },
-      { name: "ELSS Funds",         href: "/mutual-funds/elss-funds" },
-    ],
-    "Debt Funds": [
-      { name: "Liquid Funds",             href: "/mutual-funds/debt-funds/liquid-funds" },
-      { name: "Credit Risk Funds",        href: "/mutual-funds/debt-funds/credit-risk-funds" },
-      { name: "Banking & PSU Funds",      href: "/mutual-funds/debt-funds/banking-psu-funds" },
-      { name: "Gilt Funds",               href: "/mutual-funds/debt-funds/gilt-funds" },
-      { name: "Corporate Bond Funds",     href: "/mutual-funds/debt-funds/corporate-bond-funds" },
-      { name: "Dynamic Bond Funds",       href: "/mutual-funds/debt-funds/dynamic-bond-funds" },
-      { name: "Overnight Funds",          href: "/mutual-funds/debt-funds/overnight-funds" },
-      { name: "Ultra Short Duration Funds", href: "/mutual-funds/debt-funds/ultra-short-duration-funds" },
-    ],
-    "Hybrid Funds": [
-      { name: "Conservative Funds",          href: "/mutual-funds/hybrid-funds/conservative-funds" },
-      { name: "Aggressive Funds",            href: "/mutual-funds/hybrid-funds/aggressive-funds" },
-      { name: "Balanced Funds",              href: "/mutual-funds/hybrid-funds/balanced-funds" },
-      { name: "Arbitrage Funds",             href: "/mutual-funds/hybrid-funds/arbitrage-funds" },
-      { name: "Equity Savings Funds",        href: "/mutual-funds/hybrid-funds/equity-savings-funds" },
-      { name: "Multi Asset Allocation Funds",href: "/mutual-funds/hybrid-funds/multi-asset-allocation-funds" },
-    ],
-    "Index Funds": [
-      { name: "Nifty 50 Funds",      href: "/mutual-funds/index-funds/nifty-50-funds" },
-      { name: "Nifty Next 50 Funds", href: "/mutual-funds/index-funds/nifty-next-50-funds" },
-      { name: "Nifty Small Cap Funds", href: "/mutual-funds/index-funds/nifty-small-cap-funds" },
-      { name: "Nifty Mid Cap Funds", href: "/mutual-funds/index-funds/nifty-mid-cap-funds" },
-      { name: "Nifty Bank Funds",    href: "/mutual-funds/index-funds/nifty-bank-funds" },
-      { name: "Sensex Funds",        href: "/mutual-funds/index-funds/sensex-funds" },
-    ],
-    "Mutual Funds AMCs": [
-      { name: "SBI Mutual Funds",        href: "/mutual-funds/amc/sbi-mutual-fund" },
-      { name: "ICICI Prudential Mutual Funds", href: "/mutual-funds/amc/icici-prudential-mutual-fund" },
-      { name: "HDFC Mutual Funds",       href: "/mutual-funds/amc/hdfc-mutual-fund" },
-      { name: "Nippon India Funds",      href: "/mutual-funds/amc/nippon-india-mutual-fund" },
-      { name: "Kotak Mahindra Mutual Funds", href: "/mutual-funds/amc/kotak-mahindra-mutual-fund" },
-      { name: "UTI Mutual Funds",        href: "/mutual-funds/amc/uti-mutual-fund" },
-      { name: "Axis Mutual Funds",       href: "/mutual-funds/amc/axis-mutual-fund" },
-      { name: "Mirae Asset Mutual Funds",href: "/mutual-funds/amc/mirae-asset-mutual-fund" },
-    ],
-    "Popular Mutual Funds": [
-      { name: "SIP for Beginners",              href: "/mutual-funds/mf-to-invest/best-sip-for-beginners" },
-      { name: "Mutual Funds in IT Sector",      href: "/mutual-funds/mf-to-invest/best-it-mutual-funds" },
-      { name: "Mutual Funds for Long Term",     href: "/mutual-funds/mf-to-invest/best-long-term-mutual-funds" },
-      { name: "Gold Mutual Funds",              href: "/mutual-funds/mf-to-invest/best-gold-mutual-funds" },
-      { name: "Top Rated Mutual Funds",         href: "/mutual-funds/mf-to-invest/top-rated-mutual-funds" },
-      { name: "Best SIP for 5 Years",           href: "/mutual-funds/mf-to-invest/best-sip-for-5-years" },
-      { name: "Best Mutual Funds for SIP",      href: "/mutual-funds/mf-to-invest/best-mutual-funds-for-sip" },
-      { name: "Best 80C Mutual Funds",          href: "/mutual-funds/mf-to-invest/best-80c-mutual-funds" },
-    ],
-    "Popular Schemes": [
-      { name: "Motilal Oswal Midcap Fund",     href: "/mutual-funds/motilal-oswal-midcap-fund-direct-growth" },
-      { name: "Quant Small Cap Fund",          href: "/mutual-funds/quant-small-cap-fund-direct-growth" },
-      { name: "Nippon India Large Cap Fund",   href: "/mutual-funds/nippon-india-large-cap-fund-direct-growth" },
-      { name: "Parag Parikh Flexi Cap Fund",   href: "/mutual-funds/parag-parikh-flexi-cap-fund-direct-growth" },
-      { name: "ICICI Pru Bluechip Fund",       href: "/mutual-funds/icici-prudential-bluechip-fund-direct-growth" },
-      { name: "Nippon India Small Cap Fund",   href: "/mutual-funds/nippon-india-small-cap-fund-direct-growth" },
-      { name: "HDFC Mid Cap Fund",             href: "/mutual-funds/hdfc-midcap-opportunities-fund-direct-growth" },
-    ],
-  },
-  "ETF": {
-    "Index ETF": [
-      { name: "Nifty 50 ETF",      href: "/etf/traded-funds/nifty-50-etfs",      exchange: "NSE" },
-      { name: "Nifty Next 50 ETF", href: "/etf/traded-funds/nifty-next-50-etfs", exchange: "NSE" },
-      { name: "Bank Nifty ETF",    href: "/etf/traded-funds/bank-nifty-etfs",    exchange: "NSE" },
-      { name: "Nifty IT ETF",      href: "/etf/traded-funds/nifty-it-etfs",      exchange: "NSE" },
-      { name: "Sensex ETF",        href: "/etf/traded-funds/sensex-etfs",        exchange: "BSE" },
-    ],
-    "Commodity ETF": [
-      { name: "Gold ETF",   href: "/etf/traded-funds/gold-etfs" },
-      { name: "Silver ETF", href: "/etf/traded-funds/silver-etfs" },
-    ],
-    "Popular ETF": [
-      { name: "Best Index ETF",    href: "/etf/traded-funds/index-etfs" },
-      { name: "International ETF", href: "/etf/traded-funds/international-etfs" },
-      { name: "Commodity ETF",     href: "/etf/traded-funds/commodity-etfs" },
-      { name: "Banking ETF",       href: "/etf/traded-funds/banking-etfs" },
-      { name: "Defence ETF",       href: "/etf/traded-funds/defence-etfs" },
-    ],
-    "ETF AMCs": [
-      { name: "Nippon ETF",  href: "/etf/traded-funds/nippon-etf" },
-      { name: "SBI ETF",     href: "/etf/traded-funds/sbi-etf" },
-      { name: "Tata ETF",    href: "/etf/traded-funds/tata-etf" },
-      { name: "Zerodha ETF", href: "/etf/traded-funds/zerodha-etf" },
-      { name: "ICICI ETF",   href: "/etf/traded-funds/icici-etf" },
-    ],
   },
   "Tools": {
     "Calculators": [
       // { name: "SIP Calculator",       href: "/mutual-funds" },
       { name: "Brokerage Calculator", href: CALCULATOR_LINKS.brokerage },
       { name: "Margin Calculator",    href: CALCULATOR_LINKS.margin },
-      { name: "MTF Calculator",       href: "/mtf" },
-      { name: "MF Returns Calculator", href: CALCULATOR_LINKS.mfReturns },
       { name: "CAGR Calculator",      href: CALCULATOR_LINKS.cagr },
       { name: "Lumpsum Calculator",   href: CALCULATOR_LINKS.lumpsum },
       { name: "Goal-based SIP",       href: CALCULATOR_LINKS.goalSip },
@@ -405,8 +146,11 @@ const MARKETS_DATA: Record<string, Record<string, MarketItem[]>> = {
   },
 }
 
-/** Stocks keeps these hand-written sub-tabs after the live sector list. */
+/** Stocks keeps these hand-written sub-tabs in front of the live sector list. They show even when the API is down. */
 const STOCKS_EXTRA_SUBS = ["Market Movers"]
+
+/** Tabs whose content comes only from the live APIs. */
+const LIVE_ONLY_TABS = ["Stocks", "F&O", "Mutual Funds", "ETF"]
 
 /** "View all …" link in the menu footer, per tab. */
 const TAB_HOME: Record<string, string> = {
@@ -414,23 +158,47 @@ const TAB_HOME: Record<string, string> = {
   "ETF": "/etf/compare", "Tools": "/stocks",
 }
 
+type MenuState = { subs: string[]; items: (sub: string) => MarketItem[] | null; live: boolean; loading: boolean; unavailable: boolean }
+
 /**
- * Sub-tabs and items for one Markets tab: the live API categories when they have loaded,
- * the hand-written lists when that tab has no live data or its API failed.
- * `items` returns null while a list is still loading.
+ * Sub-tabs and items for one Markets tab.
+ * - Indices and Tools: their hand-written lists.
+ * - Stocks, F&O, Mutual Funds, ETF: only what the APIs send. Stocks also always has Market Movers.
+ *   `unavailable` is true when the API failed or sent nothing, so the menu can say so.
+ * `items` returns null while a list is still loading. `live` = not opened yet (no data asked for).
  */
-function menuFor(tab: string, live: Partial<Record<string, LiveTab>>): { subs: string[]; items: (sub: string) => MarketItem[] | null; live: boolean } {
-  const fallback = { subs: MARKETS_SUBS[tab] ?? [], items: (s: string) => MARKETS_DATA[tab]?.[s] ?? [], live: false }
-  const lt = live[tab]
-  if (!lt || lt.failed) return fallback
-  if (lt.loading) return { subs: [], items: () => null, live: true }
-  const extras = tab === "Stocks" ? STOCKS_EXTRA_SUBS : []
-  if (lt.subs.length === 0) return fallback
-  return {
-    subs: [...lt.subs, ...extras],
-    items: (s) => (extras.includes(s) ? MARKETS_DATA[tab]?.[s] ?? [] : lt.items(s)),
-    live: true,
+function menuFor(tab: string, live: Partial<Record<string, LiveTab>>): MenuState {
+  const handWritten = (s: string) => MARKETS_DATA[tab]?.[s] ?? []
+  if (!LIVE_ONLY_TABS.includes(tab)) {
+    return { subs: MARKETS_SUBS[tab] ?? [], items: handWritten, live: false, loading: false, unavailable: false }
   }
+  const extras = tab === "Stocks" ? STOCKS_EXTRA_SUBS : []
+  const lt = live[tab]
+  const loading = !!lt && lt.loading && !lt.failed
+  const unavailable = !lt || lt.failed || (!lt.loading && lt.subs.length === 0)
+  const liveSubs = lt && !lt.failed && !lt.loading ? lt.subs : []
+  return {
+    subs: [...extras, ...liveSubs],
+    items: (s) => (extras.includes(s) ? handWritten(s) : lt && !lt.failed ? lt.items(s) : []),
+    live: liveSubs.length > 0,
+    loading,
+    unavailable: unavailable && !loading,
+  }
+}
+
+/**
+ * Shown in a Markets tab that has nothing to list: its API is down or sent nothing.
+ * `compact` = the list is never loaded here (mobile F&O), so only the link is shown.
+ */
+function MarketsUnavailable({ tab, onNavigate, compact = false }: { tab: string; onNavigate: () => void; compact?: boolean }) {
+  return (
+    <div className="px-2 py-1">
+      {!compact && <p className="text-[12px] text-muted-foreground mb-2">Live {tab} data isn&apos;t available right now. Please check back shortly.</p>}
+      <Link href={TAB_HOME[tab] ?? "/stocks"} onClick={onNavigate} className="inline-flex items-center gap-1 text-[12px] font-bold text-burgundy hover:underline">
+        Go to the {tab} page <ChevronRight className="w-3 h-3" />
+      </Link>
+    </div>
+  )
 }
 
 function ExchangeBadge({ exchange }: { exchange: MktExchange }) {
@@ -672,7 +440,6 @@ export function Navbar() {
                       {/* Body: sidebar (scrolls when a tab has many sub-tabs) + content */}
                       <div className="flex h-[340px]">
                         <div className="w-[190px] border-r border-border shrink-0 py-2 overflow-y-auto overscroll-contain" style={{ background: "var(--cream, #FAF8F5)", scrollbarWidth: "thin" }}>
-                          {deskSubs.length === 0 && <ListSkeleton rows={7} className="px-4 py-2" label="Loading categories" />}
                           {deskSubs.map((sub) => (
                             <button key={sub} onMouseEnter={() => setMarketsSub(sub)} onClick={() => setMarketsSub(sub)}
                               className={`w-full text-left px-4 py-2.5 text-[12px] font-semibold flex items-center justify-between gap-2 transition-all ${deskSub === sub ? "text-burgundy bg-white/60" : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"}`}
@@ -681,9 +448,15 @@ export function Navbar() {
                               {deskSub === sub && <ChevronRight className="w-3 h-3 shrink-0 text-burgundy" />}
                             </button>
                           ))}
+                          {desk.loading && <ListSkeleton rows={deskSubs.length ? 4 : 7} className="px-4 py-2" label="Loading categories" />}
+                          {desk.unavailable && deskSubs.length > 0 && (
+                            <p className="px-4 py-2 text-[11px] leading-snug text-muted-foreground">More {marketsTab.toLowerCase()} lists show here when live data is available.</p>
+                          )}
                         </div>
                         <div className="flex-1 p-4 overflow-y-auto overscroll-contain" style={{ scrollbarWidth: "thin" }}>
-                          {deskItems === null ? (
+                          {!deskSub && desk.unavailable ? (
+                            <MarketsUnavailable tab={marketsTab} onNavigate={closeMarkets} />
+                          ) : deskItems === null ? (
                             <ListSkeleton rows={8} label="Loading" className="grid grid-cols-2 gap-x-3 gap-y-3 space-y-0" />
                           ) : deskItems.length === 0 ? (
                             <p className="text-[12px] text-muted-foreground px-2 py-1">Nothing to show here right now.</p>
@@ -1014,7 +787,9 @@ export function Navbar() {
                         </div>
                         {/* Items grouped by sub-category */}
                         <div className="px-4 pb-4 space-y-3">
-                          {mobileGroups.length === 0 && <ListSkeleton rows={6} label="Loading" />}
+                          {mobileGroups.length === 0 && (mobileMenu.loading
+                            ? <ListSkeleton rows={6} label="Loading" />
+                            : <MarketsUnavailable tab={mobileMktTab} onNavigate={() => setMobileMenuOpen(false)} compact={mobileMktTab === "F&O"} />)}
                           {mobileGroups.map(([subName, items]) => (
                             <div key={subName}>
                               <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 px-1 mb-1.5">{subName}</p>

@@ -1,0 +1,213 @@
+/* ═══════════════════════════════════════════════════════════════
+   Calculators — styles from the ShreeVarahi-Calculator app.
+   Everything is scoped to `.sv-calc` (the wrapper in
+   app/calculators/layout.tsx) so these tokens do not override the
+   site's own variables (the site uses --accent for gold, the
+   calculators use it for red).
+   ═══════════════════════════════════════════════════════════════ */
+
+.sv-calc {
+  /* Backgrounds */
+  --bg-base:        #FAF8F5;
+  --bg-surface:     #FFFFFF;
+  --bg-elevated:    #FFFFFF;
+  --bg-card:        rgba(255,255,255,0.95);
+  --bg-card-hover:  rgba(255,255,255,1);
+
+  /* Borders */
+  --border:             #E5E7EB;
+  --glass-border:       #E5E7EB;
+  --glass-border-hover: #D1D5DB;
+  --border-gold:        rgba(217,178,124,0.4);
+  --border-strong:      #D1D5DB;
+
+  /* Red accent */
+  --accent:         #FF0000;
+  --accent-deep:    #D40000;
+  --accent-bright:  #FF3333;
+  --accent-glow:    rgba(255,0,0,0.18);
+  --accent-subtle:  rgba(255,0,0,0.07);
+
+  /* Gold */
+  --gold:           #D9B27C;
+  --gold-deep:      #B8924A;
+  --gold-champagne: #FFE8C0;
+
+  /* Semantic */
+  --positive:       #059669;
+  --positive-glow:  rgba(5,150,105,0.2);
+  --positive-subtle:rgba(5,150,105,0.08);
+  --negative:       #EF4444;
+  --warning:        #D97706;
+
+  /* Text */
+  --text-primary:   #171717;
+  --text-secondary: #4B5563;
+  --text-muted:     #9CA3AF;
+  --text-dim:       #D1D5DB;
+
+  /* Shadows */
+  --shadow-sm:    0 1px 3px rgba(255,0,0,0.08);
+  --shadow-md:    0 4px 16px rgba(255,0,0,0.12);
+  --shadow-lg:    0 8px 32px rgba(255,0,0,0.16);
+  --shadow-accent:0 8px 32px rgba(255,0,0,0.2);
+  --shadow-glow:  0 0 40px rgba(255,0,0,0.10);
+  --shadow-gold:  0 2px 8px rgba(217,178,124,0.15);
+
+  /* Gradients */
+  --grad-accent:  linear-gradient(135deg, #FF0000, #D40000);
+  --grad-gold:    linear-gradient(135deg, #D9B27C, #B8924A);
+  --grad-hero:    linear-gradient(135deg, #FAF8F5 0%, #F5F0EB 60%, #F9F4EF 100%);
+  --grad-card:    linear-gradient(145deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+
+  /* Fonts: use the site's Manrope for both body and headings */
+  --font-display: var(--font-manrope), system-ui, sans-serif;
+
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+}
+
+.sv-calc .font-display { font-family: var(--font-display); }
+
+.sv-calc .scrollbar-hide::-webkit-scrollbar { display: none; }
+.sv-calc .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Range slider ── */
+.sv-calc input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 5px;
+  border-radius: 99px;
+  background: var(--border);
+  outline: none;
+  cursor: pointer;
+  margin: 14px 0 6px;
+}
+
+.sv-calc input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  border: 3px solid var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-glow), 0 2px 8px rgba(0,0,0,0.12);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sv-calc input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 6px var(--accent-glow), 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.sv-calc input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 8px rgba(200,16,46,0.12), 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.sv-calc input[type="range"]::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+  border: 3px solid var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-glow);
+}
+
+/* ── Number input ── */
+.sv-calc input[type=number]::-webkit-outer-spin-button,
+.sv-calc input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.sv-calc input[type=number] { -moz-appearance: textfield; }
+
+/* ── Card ── (overrides the site's .glass-card inside calculators only) */
+.sv-calc .glass-card {
+  background: white;
+  backdrop-filter: none;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-sm);
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.25s ease, transform 0.2s ease;
+}
+
+.sv-calc .glass-card:hover {
+  border-color: var(--hover-border, var(--glass-border-hover));
+  box-shadow: 0 8px 24px var(--hover-shadow, rgba(0,0,0,0.06)), inset 0 0 0 1px var(--hover-border, transparent);
+  transform: translateY(-2px);
+}
+
+/* ── Animations ── */
+@keyframes svc-fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes svc-fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes svc-fadeInScale {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes svc-slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.sv-calc .animate-fade-up    { animation: svc-fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.sv-calc .animate-fade-in    { animation: svc-fadeIn 0.3s ease both; }
+.sv-calc .animate-fade-scale { animation: svc-fadeInScale 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.sv-calc .animate-slide-right{ animation: svc-slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+.sv-calc .stagger-1 { animation-delay: 0.05s; }
+.sv-calc .stagger-2 { animation-delay: 0.10s; }
+.sv-calc .stagger-3 { animation-delay: 0.15s; }
+.sv-calc .stagger-4 { animation-delay: 0.20s; }
+
+/* ── Gradient text ── */
+.sv-calc .gradient-text {
+  background: var(--grad-accent);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sv-calc .gradient-text-gold {
+  background: var(--grad-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── Accent button ── */
+.sv-calc .btn-accent {
+  background: var(--grad-accent);
+  color: white;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sv-calc .btn-accent::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.sv-calc .btn-accent:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-accent);
+}
+.sv-calc .btn-accent:hover::before { opacity: 1; }
+.sv-calc .btn-accent:active { transform: translateY(0); }
