@@ -1,0 +1,24 @@
+# Not needed in the image (and secrets must never be copied into it)
+node_modules
+.next
+out
+build
+coverage
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+*.log
+npm-debug.log*
+pnpm-debug.log*
+.vercel
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+Dockerfile
+.dockerignore
+# Stale npm lockfile; the image installs with pnpm-lock.yaml
+package-lock.json
+docs
