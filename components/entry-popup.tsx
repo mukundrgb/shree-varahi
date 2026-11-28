@@ -10,6 +10,7 @@ import { useEffect, useRef, useState } from "react"
 import { usePathname } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
 import { X } from "lucide-react"
+import { useSiteConfig } from "@/components/site-config"
 
 const SESSION_KEY = "sv-entry-popup-shown"
 const isExcluded = (path: string | null) => !path || /^\/(login|signup)/.test(path)
@@ -29,6 +30,13 @@ const SOURCE =
 
 export function EntryPopup() {
   const pathname = usePathname()
+  // Text and on/off from the admin panel (Masters → Disclosures), this file's text as the fallback.
+  const risk = useSiteConfig()["masters.legal"]?.riskPopup
+  const enabled = risk?.enabled !== false
+  const title = risk?.title || "Risk Disclosures on Derivatives"
+  const points = risk?.points?.filter(Boolean).length ? risk.points.filter(Boolean) : POINTS
+  const source = risk?.source || SOURCE
+  const button = risk?.button || "I Understand"
   // Home: open from the very first render, so it is already in the server HTML (no wait for JavaScript).
   const [open, setOpen] = useState(() => pathname === "/")
   const firstPage = useRef(true)
@@ -47,18 +55,18 @@ export function EntryPopup() {
 
   // Esc closes; lock page scroll while open
   useEffect(() => {
-    if (!open) return
+    if (!open || !enabled) return
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false) }
     const prev = document.body.style.overflow
     document.body.style.overflow = "hidden"
     window.addEventListener("keydown", onKey)
     closeBtn.current?.focus()
     return () => { document.body.style.overflow = prev; window.removeEventListener("keydown", onKey) }
-  }, [open])
+  }, [open, enabled])
 
   return (
     <AnimatePresence initial={false}>
-      {open && (
+      {open && enabled && (
         <motion.div
           className="fixed inset-0 z-[100] flex items-center justify-center p-4"
           initial={{ opacity: 0 }}
@@ -89,16 +97,16 @@ export function EntryPopup() {
 
             <div className="overflow-y-auto px-5 sm:px-10 pt-10 sm:pt-12 pb-6 sm:pb-8">
               <h2 id="risk-disclosure-title" className="text-center text-[15px] sm:text-base font-black tracking-wide uppercase text-foreground">
-                Risk Disclosures on Derivatives
+                {title}
               </h2>
               <hr className="my-5 sm:my-6 border-border" />
 
               <ul className="list-disc pl-5 space-y-2 text-[13.5px] sm:text-[14.5px] text-foreground/90 leading-[1.75]">
-                {POINTS.map((p) => <li key={p}>{p}</li>)}
+                {points.map((p) => <li key={p}>{p}</li>)}
               </ul>
 
               <p className="mt-6 text-base sm:text-lg font-semibold text-foreground">Source :</p>
-              <p className="mt-3 text-[13px] sm:text-[14px] leading-[1.8] text-burgundy-deep">{SOURCE}</p>
+              <p className="mt-3 text-[13px] sm:text-[14px] leading-[1.8] text-burgundy-deep">{source}</p>
 
               <div className="mt-7 flex justify-center">
                 <button
@@ -106,7 +114,7 @@ export function EntryPopup() {
                   onClick={() => setOpen(false)}
                   className="h-11 px-8 rounded-[6px] bg-burgundy hover:bg-burgundy-deep text-white text-sm font-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-burgundy/40 focus-visible:ring-offset-2"
                 >
-                  I Understand
+                  {button}
                 </button>
               </div>
             </div>

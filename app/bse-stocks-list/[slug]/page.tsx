@@ -17,6 +17,7 @@ export default function BseStocksListDynamicPage() {
   const slug = typeof params.slug === "string" ? params.slug : params.slug?.[0] ?? ""
   const data = useMemo(() => synthesizeStockList(slug, {
     crumbCategory: "BSE Stocks",
+    group: /^bse-(large|mid|small)-cap$/.test(slug) ? "cap" : "index",
     titleOverride: TITLES[slug] ?? titleFromSlug(slug),
   }), [slug])
   return <StockListPage data={data} />

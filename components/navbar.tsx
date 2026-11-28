@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { CALCULATOR_LINKS, LOGIN_URL, OPEN_ACCOUNT_URL } from "@/lib/external-links"
+import { useLink, useSiteConfig } from "@/components/site-config"
 import { useLiveMarkets, type LiveTab } from "@/components/markets-live"
 import { ListSkeleton } from "@/components/skeletons"
 import { motion, AnimatePresence } from "framer-motion"
@@ -239,6 +240,11 @@ const POPULAR_SEARCHES = [
 ]
 
 export function Navbar() {
+  // Logo and account links from the admin panel (Masters), with the site's own values as fallback.
+  const siteConfig = useSiteConfig()
+  const logoSrc = siteConfig["masters.logos"]?.primary || "/favicon.jpg"
+  const loginUrl = useLink("account.login", LOGIN_URL)
+  const openAccountUrl = useLink("account.open", OPEN_ACCOUNT_URL)
   const [scrolled, setScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
@@ -353,7 +359,7 @@ export function Navbar() {
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 shrink-0">
               <Image
-                src="/favicon.jpg"
+                src={logoSrc}
                 alt="Shree Varahi"
                 width={40}
                 height={40}
@@ -556,10 +562,10 @@ export function Navbar() {
                 )}
               </button>
               <Button variant="ghost" className="text-foreground hover:text-burgundy rounded-[5px] whitespace-nowrap px-3" asChild>
-                <Link href={LOGIN_URL}>Login</Link>
+                <Link href={loginUrl}>Login</Link>
               </Button>
               <Button className="bg-burgundy hover:bg-burgundy-deep text-primary-foreground rounded-[5px] whitespace-nowrap" asChild>
-                <Link href={OPEN_ACCOUNT_URL}>Open Free Account</Link>
+                <Link href={openAccountUrl}>Open Free Account</Link>
               </Button>
             </div>
 
@@ -615,7 +621,7 @@ export function Navbar() {
                   className="flex items-center gap-2.5"
                 >
                   <Image
-                    src="/favicon.jpg"
+                    src={logoSrc}
                     alt="Shree Varahi"
                     width={34}
                     height={34}
@@ -871,7 +877,7 @@ export function Navbar() {
                     className="border-border text-foreground rounded-[5px] h-10 font-semibold"
                     asChild
                   >
-                    <Link href={LOGIN_URL} onClick={() => setMobileMenuOpen(false)}>
+                    <Link href={loginUrl} onClick={() => setMobileMenuOpen(false)}>
                       Login
                     </Link>
                   </Button>
@@ -879,7 +885,7 @@ export function Navbar() {
                     className="bg-burgundy hover:bg-burgundy-deep text-white rounded-[5px] h-10 font-bold"
                     asChild
                   >
-                    <Link href={OPEN_ACCOUNT_URL} onClick={() => setMobileMenuOpen(false)}>
+                    <Link href={openAccountUrl} onClick={() => setMobileMenuOpen(false)}>
                       Open Account
                     </Link>
                   </Button>

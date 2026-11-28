@@ -18,7 +18,6 @@ export default function ETFTradedFundsDynamicPage() {
   const data = useMemo(() => synthesizeETFList(slug, {
     crumbCategory: "Traded Funds",
     titleOverride: TITLES[slug] ?? titleFromSlug(slug),
-    priceRange: slug.includes("gold") || slug.includes("silver") ? [90, 145] : [30, 300],
   }), [slug])
   return <ETFListPage data={data} />
 }

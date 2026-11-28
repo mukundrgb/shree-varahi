@@ -1,9 +1,9 @@
 // "Open Free Demat Account!" card for the stock, mutual fund and ETF detail sidebars.
 // Layout: red header (title + ₹17 brokerage line) → ₹0 lifetime AMC coupon → CTA → trust points.
-// The button opens the eKYC portal in a new tab; no details are asked for here.
+// The "Invest Now" button opens the trading login (LOGIN_URL) in a new tab; no details are asked for here.
 
 import { ArrowRight, BadgeCheck, ShieldCheck, Sparkles, Zap } from "lucide-react"
-import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
+import { LOGIN_URL } from "@/lib/external-links"
 
 const TRUST = [
   { icon: Zap, label: "Opens in minutes" },
@@ -54,12 +54,12 @@ export function OpenAccountCard({ className = "" }: { className?: string }) {
           Join our <span className="font-black text-foreground">1L+</span> happy customers
         </p>
         <a
-          href={OPEN_ACCOUNT_URL}
+          href={LOGIN_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="group w-full h-12 rounded-[10px] bg-burgundy hover:bg-burgundy-deep text-white text-sm font-black inline-flex items-center justify-center gap-2 shadow-[0_8px_20px_rgba(255,0,0,0.22)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-burgundy/40 focus-visible:ring-offset-2"
         >
-          Get Free Demat Account <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+          Invest Now <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
         </a>
       </div>
 

@@ -5,7 +5,6 @@ import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronRight, ArrowLeft, ArrowRight, Newspaper, BookOpen, GraduationCap, TrendingUp, TrendingDown } from "lucide-react"
 import { TopicIcon } from "@/components/knowledge-center"
-import { TOPICS } from "@/lib/knowledge-center/data"
 
 /* ─── Tab data ─── */
 
@@ -55,89 +54,63 @@ function BrowserShell({ children, url }: { children: React.ReactNode; url: strin
   )
 }
 
-/* News illustration */
-function NewsIllustration() {
-  const headlines = [
-    {
-      tag: "Economy",
-      tagColor: "bg-blue-50 text-blue-600",
-      title: "RBI holds repo rate at 6.5%, inflation remains primary focus",
-      time: "2 min ago",
-      up: true,
-    },
-    {
-      tag: "Results",
-      tagColor: "bg-emerald-50 text-emerald-600",
-      title: "TCS Q3 beats estimates: 8.2% YoY revenue growth reported",
-      time: "18 min ago",
-      up: true,
-    },
-    {
-      tag: "Regulation",
-      tagColor: "bg-amber-50 text-amber-700",
-      title: "SEBI revises F&O margin norms for retail participants",
-      time: "1 hr ago",
-      up: false,
-    },
-  ]
+/* Real content for the three panels comes from the home page (server): latest CMOTS / team news,
+   live Knowledge Center topics and the latest blog posts. Nothing here is made up; an empty panel
+   says the content is on its way. */
 
+export type HomeNews = { id: string; headline: string; tag: string; publishedAt: string | null; editorial?: boolean }
+export type HomeTopic = { slug: string; title: string; icon: string; desc: string }
+export type HomePost = { slug: string; title: string; category: string; publishedAt: string | null; readingTimeMinutes: number; author: string }
+
+const ago = (iso: string | null) => {
+  if (!iso) return ""
+  const min = Math.round((Date.now() - new Date(iso).getTime()) / 60000)
+  if (min < 60) return `${Math.max(1, min)} min ago`
+  if (min < 48 * 60) return `${Math.round(min / 60)} hr ago`
+  return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" })
+}
+const shortDate = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" }) : "")
+const TAG_COLORS = ["bg-blue-50 text-blue-600", "bg-emerald-50 text-emerald-600", "bg-amber-50 text-amber-700", "bg-violet-50 text-violet-600", "bg-red-50 text-red-600"]
+
+function Empty({ text }: { text: string }) {
+  return <div className="flex-1 grid place-items-center text-center text-[11px] text-muted-foreground px-6">{text}</div>
+}
+
+/* News: the latest stories */
+function NewsIllustration({ items }: { items: HomeNews[] }) {
   return (
-    <BrowserShell url="varahi.in/market-news">
+    <BrowserShell url="varahi.in/news">
       <div className="p-4 flex flex-col gap-3 h-full">
-        {/* Ticker bar */}
-        <div className="flex items-center gap-3 px-3 py-2 rounded-[6px] bg-[#0B0707] shrink-0">
-          <span className="text-[10px] font-black text-white/40 uppercase tracking-wider">Live</span>
-          <div className="flex items-center gap-1">
-            <span className="text-[10px] font-bold text-white/70">NIFTY</span>
-            <span className="text-[10px] font-black text-emerald-400">24,837</span>
-            <TrendingUp className="w-3 h-3 text-emerald-400" />
-          </div>
-          <div className="w-px h-3 bg-white/10" />
-          <div className="flex items-center gap-1">
-            <span className="text-[10px] font-bold text-white/70">SENSEX</span>
-            <span className="text-[10px] font-black text-emerald-400">81,224</span>
-            <TrendingUp className="w-3 h-3 text-emerald-400" />
-          </div>
-          <div className="w-px h-3 bg-white/10" />
-          <div className="flex items-center gap-1">
-            <span className="text-[10px] font-bold text-white/70">BANK NIFTY</span>
-            <span className="text-[10px] font-black text-red-400">52,340</span>
-            <TrendingDown className="w-3 h-3 text-red-400" />
-          </div>
+        <div className="flex items-center justify-between gap-3 px-3 py-2 rounded-[6px] bg-[#0B0707] shrink-0">
+          <span className="text-[10px] font-black text-white/70 uppercase tracking-wider">Latest market news</span>
+          <Link href="/news" className="text-[10px] font-bold text-gold hover:underline flex items-center gap-0.5">All news <ChevronRight className="w-3 h-3" /></Link>
         </div>
-
-        {/* News items */}
-        <div className="flex flex-col gap-2.5 flex-1">
-          {headlines.map((item, i) => (
-            <div key={i} className="flex items-start gap-3 p-3 rounded-[8px] bg-slate-50/70 border border-border/50 hover:border-border transition-colors">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-[3px] ${item.tagColor}`}>{item.tag}</span>
-                  <span className="text-[9px] text-muted-foreground/60">{item.time}</span>
+        {items.length === 0 ? <Empty text="Market news will appear here soon." /> : (
+          <div className="flex flex-col gap-2.5 flex-1 min-h-0 overflow-hidden">
+            {items.slice(0, 3).map((item, i) => (
+              <Link key={item.id} href={item.editorial ? `/news/${item.id}` : `/news/cmots-${item.id}`} className="flex items-start gap-3 p-3 rounded-[8px] bg-slate-50/70 border border-border/50 hover:border-burgundy/30 transition-colors">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-[3px] ${TAG_COLORS[i % TAG_COLORS.length]}`}>{item.tag}</span>
+                    <span className="text-[9px] text-muted-foreground/60">{ago(item.publishedAt)}</span>
+                  </div>
+                  <p className="text-[11px] font-semibold text-foreground leading-snug line-clamp-2">{item.headline}</p>
                 </div>
-                <p className="text-[11px] font-semibold text-foreground leading-snug line-clamp-2">{item.title}</p>
-              </div>
-              <div className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${item.up ? "bg-emerald-400" : "bg-red-400"}`} />
-            </div>
-          ))}
-        </div>
-
-        {/* Bottom skeleton */}
-        <div className="flex gap-2 pt-1 border-t border-border/40 shrink-0">
-          <div className="h-1.5 rounded-full bg-slate-100 flex-1" />
-          <div className="h-1.5 rounded-full bg-slate-100 w-1/3" />
-        </div>
+              </Link>
+            ))}
+          </div>
+        )}
+        <p className="text-[9px] text-muted-foreground/70 shrink-0">Source: CMOTS and Shree Varahi Desk</p>
       </div>
     </BrowserShell>
   )
 }
 
-/* Featured Knowledge Center topics; each opens its topic page */
-const FEATURED_TOPICS = ["demat-account", "mutual-funds", "ipo", "futures-and-options-trading", "income-tax", "mtf"]
-  .map((slug) => TOPICS.find((t) => t.slug === slug))
-  .filter((t) => t !== undefined)
+/* Knowledge Center topics; each opens its topic page */
+const FEATURED_SLUGS = ["demat-account", "mutual-funds", "ipo", "futures-and-options-trading", "income-tax", "mtf"]
 
-function KnowledgePanel() {
+function KnowledgePanel({ topics }: { topics: HomeTopic[] }) {
+  const featured = [...FEATURED_SLUGS.map((s) => topics.find((t) => t.slug === s)).filter((t): t is HomeTopic => !!t), ...topics.filter((t) => !FEATURED_SLUGS.includes(t.slug))].slice(0, 6)
   return (
     <BrowserShell url="varahi.in/knowledge-center">
       <div className="p-4 flex flex-col gap-3 h-full">
@@ -149,86 +122,74 @@ function KnowledgePanel() {
             View all topics <ChevronRight className="w-3 h-3" />
           </Link>
         </div>
-        <div className="grid grid-cols-2 gap-2 flex-1 min-h-0 content-start overflow-y-auto" style={{ scrollbarWidth: "none" }}>
-          {FEATURED_TOPICS.map((t) => (
-            <Link key={t.slug} href={`/knowledge-center/${t.slug}`} className="group flex items-start gap-2 px-2.5 py-2 rounded-[8px] bg-slate-50/70 border border-border/50 hover:border-burgundy/30 transition-colors">
-              <span className="w-6 h-6 rounded-[6px] bg-burgundy/10 flex items-center justify-center shrink-0">
-                <TopicIcon name={t.icon} className="w-3.5 h-3.5" />
-              </span>
-              <span className="min-w-0">
-                <span className="block text-[11px] font-bold text-foreground leading-snug group-hover:text-burgundy transition-colors">{t.title}</span>
-                <span className="hidden sm:block text-[9px] text-muted-foreground/80 leading-snug line-clamp-2">{t.desc}</span>
-              </span>
-            </Link>
-          ))}
-        </div>
+        {featured.length === 0 ? <Empty text="New guides are on their way." /> : (
+          <div className="grid grid-cols-2 gap-2 flex-1 min-h-0 content-start overflow-y-auto" style={{ scrollbarWidth: "none" }}>
+            {featured.map((t) => (
+              <Link key={t.slug} href={`/knowledge-center/${t.slug}`} className="group flex items-start gap-2 px-2.5 py-2 rounded-[8px] bg-slate-50/70 border border-border/50 hover:border-burgundy/30 transition-colors">
+                <span className="w-6 h-6 rounded-[6px] bg-burgundy/10 flex items-center justify-center shrink-0">
+                  <TopicIcon name={t.icon} className="w-3.5 h-3.5" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-[11px] font-bold text-foreground leading-snug group-hover:text-burgundy transition-colors">{t.title}</span>
+                  <span className="hidden sm:block text-[9px] text-muted-foreground/80 leading-snug line-clamp-2">{t.desc}</span>
+                </span>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </BrowserShell>
   )
 }
 
-/* Blog illustration */
-function BlogIllustration() {
+/* Blog: the latest posts */
+function BlogIllustration({ posts }: { posts: HomePost[] }) {
+  const [lead, ...rest] = posts
   return (
     <BrowserShell url="varahi.in/blog">
       <div className="p-4 flex flex-col gap-3 h-full">
-        {/* Featured article header */}
-        <div className="rounded-[8px] overflow-hidden shrink-0" style={{ background: "linear-gradient(135deg, #1A0808 0%, #3D0808 50%, #1A0808 100%)" }}>
-          <div className="px-4 py-5 relative">
-            {/* Decorative chart lines in bg */}
-            <svg className="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 200 80" preserveAspectRatio="none">
-              <polyline points="0,60 30,50 60,55 90,30 120,38 150,20 180,25 200,18" fill="none" stroke="#D9B27C" strokeWidth="1.5" />
-            </svg>
-            <div className="relative z-10">
-              <span className="text-[8px] font-bold text-gold tracking-wider uppercase">Technical Analysis</span>
-              <h4 className="text-[12px] font-black text-white mt-1 leading-snug">
-                Understanding MACD: A Complete Guide for Indian Traders
-              </h4>
-              <div className="flex items-center gap-3 mt-2">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-4 h-4 rounded-full bg-gold/40 flex items-center justify-center">
-                    <span className="text-[7px] font-black text-white">R</span>
+        {!lead ? <Empty text="New posts are on their way." /> : (
+          <>
+            <Link href={`/blog/${lead.slug}`} className="rounded-[8px] overflow-hidden shrink-0 block" style={{ background: "linear-gradient(135deg, #1A0808 0%, #3D0808 50%, #1A0808 100%)" }}>
+              <div className="px-4 py-5 relative">
+                <svg className="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden>
+                  <polyline points="0,60 30,50 60,55 90,30 120,38 150,20 180,25 200,18" fill="none" stroke="#D9B27C" strokeWidth="1.5" />
+                </svg>
+                <div className="relative z-10">
+                  <span className="text-[8px] font-bold text-gold tracking-wider uppercase">{lead.category}</span>
+                  <h4 className="text-[12px] font-black text-white mt-1 leading-snug line-clamp-2">{lead.title}</h4>
+                  <div className="flex items-center gap-3 mt-2">
+                    <span className="text-[9px] text-white/50 font-medium">{lead.author}</span>
+                    <span className="text-white/20 text-[9px]">·</span>
+                    <span className="text-[9px] text-white/40">{lead.readingTimeMinutes} min read</span>
                   </div>
-                  <span className="text-[9px] text-white/50 font-medium">Research Team</span>
                 </div>
-                <span className="text-white/20 text-[9px]">·</span>
-                <span className="text-[9px] text-white/40">8 min read</span>
               </div>
+            </Link>
+            <div className="flex flex-col gap-2 flex-1 min-h-0 overflow-hidden">
+              {rest.slice(0, 2).map((item, i) => (
+                <Link key={item.slug} href={`/blog/${item.slug}`} className="flex items-start gap-3 p-3 rounded-[8px] border border-border/50 bg-slate-50/60 hover:border-burgundy/30 transition-colors">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-[3px] ${TAG_COLORS[(i + 3) % TAG_COLORS.length]}`}>{item.category}</span>
+                      <span className="text-[9px] text-muted-foreground/60">{shortDate(item.publishedAt)}</span>
+                    </div>
+                    <p className="text-[11px] font-semibold text-foreground leading-snug line-clamp-2">{item.title}</p>
+                  </div>
+                </Link>
+              ))}
             </div>
-          </div>
-        </div>
-
-        {/* Article list */}
-        <div className="flex flex-col gap-2 flex-1">
-          {[
-            { tag: "Investing", color: "bg-violet-50 text-violet-600", title: "Top 5 Large-Cap Stocks for Long-Term SIP in 2026", date: "Jun 18" },
-            { tag: "F&O", color: "bg-red-50 text-red-600", title: "How to Build a Risk-Free Iron Condor in Bank Nifty Weekly", date: "Jun 17" },
-          ].map((item, i) => (
-            <div key={i} className="flex items-start gap-3 p-3 rounded-[8px] border border-border/50 bg-slate-50/60">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-[3px] ${item.color}`}>{item.tag}</span>
-                  <span className="text-[9px] text-muted-foreground/60">{item.date}</span>
-                </div>
-                <p className="text-[11px] font-semibold text-foreground leading-snug">{item.title}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Skeleton */}
-        <div className="space-y-1.5 pt-1 border-t border-border/40 shrink-0">
-          <div className="h-1.5 rounded-full bg-slate-100 w-3/4" />
-          <div className="h-1.5 rounded-full bg-slate-100 w-1/2" />
-        </div>
+          </>
+        )}
       </div>
     </BrowserShell>
   )
 }
 
+
 /* ─── Section ─── */
 
-export function KnowledgeSection() {
+export function KnowledgeSection({ news = [], topics = [], posts = [] }: { news?: HomeNews[]; topics?: HomeTopic[]; posts?: HomePost[] }) {
   const [active, setActive] = useState("news")
 
   return (
@@ -350,7 +311,7 @@ export function KnowledgeSection() {
                     transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                     className="w-full h-full"
                   >
-                    {active === "news" ? <NewsIllustration /> : active === "knowledge" ? <KnowledgePanel /> : <BlogIllustration />}
+                    {active === "news" ? <NewsIllustration items={news} /> : active === "knowledge" ? <KnowledgePanel topics={topics} /> : <BlogIllustration posts={posts} />}
                   </motion.div>
                 </AnimatePresence>
               </div>

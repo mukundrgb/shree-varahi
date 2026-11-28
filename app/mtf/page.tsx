@@ -111,16 +111,8 @@ export default function MTFPage() {
               </p>
             </div>
 
-            {/* Right: actions + key numbers (the Top MTF Stocks card is gone, so the hero is shorter) */}
+            {/* Right: key numbers, with both buttons below them */}
             <div className="space-y-4">
-              <div className="flex flex-wrap lg:justify-end gap-3">
-                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
-                  <Link href={OPEN_ACCOUNT_URL}>Trade Now</Link>
-                </Button>
-                <Button asChild variant="outline" className="border-border bg-white px-7 h-11 font-bold rounded-[5px] hover:bg-secondary">
-                  <Link href={LOGIN_URL}>Login</Link>
-                </Button>
-              </div>
               <div className="flex flex-wrap lg:justify-end gap-6">
                 <div className="lg:text-right">
                   <div className="text-lg font-black text-foreground leading-none">1.5%</div>
@@ -134,6 +126,14 @@ export default function MTFPage() {
                   <div className="text-lg font-black text-foreground flex items-center lg:justify-end gap-1 leading-none">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
                   <div className="text-[10px] text-muted-foreground font-semibold mt-1">App Rating</div>
                 </div>
+              </div>
+              <div className="flex flex-wrap lg:justify-end gap-3">
+                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
+                  <Link href={OPEN_ACCOUNT_URL}>Trade Now</Link>
+                </Button>
+                <Button asChild variant="outline" className="border-border bg-white px-7 h-11 font-bold rounded-[5px] hover:bg-secondary">
+                  <Link href={LOGIN_URL}>Login</Link>
+                </Button>
               </div>
             </div>
           </div>

@@ -2,7 +2,6 @@
 // Stocks and mutual funds are searched through the backend APIs in components/search-popup.tsx;
 // everything here is a static index of pages that exist in the app router.
 
-import { searchKnowledge } from "@/lib/knowledge-center/data"
 import { CALCULATOR_LINKS, LOGIN_URL, OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
 export interface SitePage {
@@ -80,11 +79,6 @@ export function searchSite(query: string): SiteHit[] {
     .slice(0, 6)
     .map(({ page }) => ({ title: page.title, desc: page.desc, href: page.href, group: "Pages" as const }))
 
-  const learn = searchKnowledge(q, 5).map((h) => ({
-    title: h.title,
-    desc: h.kind === "topic" ? "Knowledge Center topic" : `Knowledge Center · ${h.subtitle}`,
-    href: h.href,
-    group: "Learn" as const,
-  }))
-  return [...pages, ...learn]
+  // Knowledge Center guides are searched on the Knowledge Center pages (from the backend).
+  return pages
 }

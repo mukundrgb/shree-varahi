@@ -1,6 +1,6 @@
 // Stocks page calls to the backend: /api/v1/stocks
 
-import { apiGet, seg } from "@/lib/api/client"
+import { apiGet, apiGetList, seg } from "@/lib/api/client"
 import type {
   CorporateAction,
   FinancialsPeriod,
@@ -25,7 +25,7 @@ export const stocksApi = {
   financials: (slug: string, period: FinancialsPeriod, type: FinancialsType, signal?: AbortSignal) =>
     apiGet<FinancialsTable>(`/stocks${seg(slug)}/financials`, { query: { period, type }, signal }),
   corporateActions: (slug: string, signal?: AbortSignal) =>
-    apiGet<CorporateAction[]>(`/stocks${seg(slug)}/corporate-actions`, { signal }),
+    apiGetList<CorporateAction>(`/stocks${seg(slug)}/corporate-actions`, { signal }),
   peers: (slug: string, signal?: AbortSignal) => apiGet<StockSummary[]>(`/stocks${seg(slug)}/peers`, { signal }),
   about: (slug: string, signal?: AbortSignal) => apiGet<StockAbout>(`/stocks${seg(slug)}/about`, { signal }),
   news: (slug: string, signal?: AbortSignal) => apiGet<StockNews>(`/stocks${seg(slug)}/news`, { signal }),

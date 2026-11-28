@@ -1,79 +1,96 @@
-"use client"
+// Blog post: categories (left), category, title, meta, cover, body, related posts and open-account card (right).
+// Server-rendered from the backend. An old address redirects (308); an unknown one is a real 404.
 
-// Blog post: categories sidebar (left), category, title, meta, cover, body, related posts and open-account card (right).
-
+import type { Metadata } from "next"
 import Link from "next/link"
-import { useParams } from "next/navigation"
+import { notFound, permanentRedirect } from "next/navigation"
 import { ArrowLeft, CalendarDays, Clock } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { KcHeader } from "@/components/knowledge-center"
-import { CategoryLinkRow, CategorySidebar, PostCover } from "@/components/content-ui"
-import { BLOG_CATEGORIES, BLOG_CATEGORY_COUNTS, formatBlogDate, getPost, getPostBody, getRelatedPosts } from "@/lib/blog/data"
+import { ArticleBody } from "@/components/article-body"
+import { CardCover, CategoryRowNav, CategorySidebarNav } from "@/components/content-controls"
+import { JsonLd, articleJsonLd, breadcrumbJsonLd, SITE_URL } from "@/lib/seo"
+import { formatDate, getArticle, getCategories, type ArticleFull } from "@/lib/server/cms"
 import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
 
-const blogCategoryHref = (c: string) => `/blog?category=${encodeURIComponent(c)}`
+type Params = Promise<{ slug: string }>
 
-export default function BlogPostPage() {
-  const params = useParams()
-  const slug = typeof params.slug === "string" ? params.slug : ""
-  const post = getPost(slug)
+async function load(slug: string): Promise<ArticleFull> {
+  const a = await getArticle("blog", slug)
+  if (!a) notFound()
+  if (a.redirectTo) permanentRedirect(a.redirectTo)
+  return a
+}
 
-  if (!post) {
-    return (
-      <main className="min-h-screen bg-background">
-        <Navbar />
-        <div className="pt-36 pb-24 text-center">
-          <p className="text-lg font-black text-foreground mb-2">Post not found</p>
-          <Link href="/blog" className="text-sm font-bold text-burgundy hover:underline">Back to Blog</Link>
-        </div>
-        <Footer />
-      </main>
-    )
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+  const { slug } = await params
+  const a = await getArticle("blog", slug)
+  if (!a || a.redirectTo) return { title: "Post not found" }
+  const image = a.seo.ogImage || a.coverImage?.url
+  return {
+    title: a.seo.title,
+    description: a.seo.description,
+    keywords: a.seo.keyword || undefined,
+    alternates: { canonical: a.seo.canonical || `/blog/${a.slug}` },
+    robots: a.seo.noindex ? { index: false, follow: true } : undefined,
+    openGraph: { type: "article", title: a.seo.title, description: a.seo.description, url: `${SITE_URL}/blog/${a.slug}`, publishedTime: a.publishedAt ?? undefined, modifiedTime: a.updatedAt ?? undefined, images: image ? [image] : undefined },
   }
+}
 
-  const related = getRelatedPosts(post, 4)
+export default async function BlogPostPage({ params }: { params: Params }) {
+  const { slug } = await params
+  const [post, cats] = await Promise.all([load(slug), getCategories("blog")])
+  const catLinks = cats.map((c) => ({ name: c.name, slug: c.slug, count: c.count }))
+  const catName = post.category?.name ?? ""
 
   return (
     <main className="min-h-screen bg-background overflow-x-clip">
+      <JsonLd data={[articleJsonLd(post, "BlogPosting", `/blog/${post.slug}`), breadcrumbJsonLd([["Home", "/"], ["Blog", "/blog"], [post.title, `/blog/${post.slug}`]])]} />
       <Navbar />
 
       <KcHeader crumbs={[{ label: "Home", href: "/" }, { label: "Blog", href: "/blog" }, { label: post.title }]}>
         <div className="max-w-3xl space-y-3">
-          <Link href={blogCategoryHref(post.category)} className="text-[11px] font-extrabold uppercase tracking-wider text-gold-deep hover:text-burgundy transition-colors">
-            {post.category}
-          </Link>
+          {post.category && (
+            <Link href={`/blog?category=${post.category.slug}`} className="text-[11px] font-extrabold uppercase tracking-wider text-gold-deep hover:text-burgundy transition-colors">
+              {catName}
+            </Link>
+          )}
           <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black text-foreground tracking-tight leading-[1.12]">{post.title}</h1>
+          {post.subtitle && <p className="text-lg text-foreground/70 font-semibold">{post.subtitle}</p>}
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-semibold text-muted-foreground">
-            <span className="flex items-center gap-1.5"><CalendarDays className="w-3.5 h-3.5" /> {formatBlogDate(post.date)}</span>
-            <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {post.readMin} min read</span>
-            <span>by Team Shree Varahi</span>
+            <span className="flex items-center gap-1.5"><CalendarDays className="w-3.5 h-3.5" /> {formatDate(post.publishedAt)}</span>
+            <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {post.readingTimeMinutes} min read</span>
+            <span>by {post.author?.name ?? "Team Shree Varahi"}</span>
           </div>
         </div>
       </KcHeader>
 
       <section className="py-10 lg:py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid lg:grid-cols-[230px_minmax(0,1fr)_300px] gap-8 lg:gap-10 items-start">
-          {/* Left: categories (desktop), sticky under the navbar */}
           <aside className="hidden lg:block lg:sticky lg:top-[76px] lg:max-h-[calc(100vh-92px)] lg:overflow-y-auto" style={{ scrollbarWidth: "none" }}>
-            <CategorySidebar categories={BLOG_CATEGORIES} current={post.category} hrefFor={blogCategoryHref} counts={BLOG_CATEGORY_COUNTS} />
+            {catLinks.length > 0 && <CategorySidebarNav cats={catLinks} current={post.category?.slug} base="/blog" />}
           </aside>
 
           <article className="min-w-0">
-            {/* Phones / tablets: categories as a swipeable row */}
-            <CategoryLinkRow categories={BLOG_CATEGORIES} current={post.category} hrefFor={blogCategoryHref} />
-            <PostCover category={post.category} large className="h-56 sm:h-72 rounded-[14px] mb-8" />
+            {catLinks.length > 0 && <CategoryRowNav cats={catLinks} current={post.category?.slug} base="/blog" />}
+            <CardCover cover={post.coverImage} category={catName} large className="h-56 sm:h-72 rounded-[14px] mb-8" />
+            {post.excerpt && <p className="text-base text-foreground/85 leading-relaxed font-semibold mb-8">{post.excerpt}</p>}
+            <ArticleBody doc={post.body?.doc} />
 
-            <p className="text-base text-foreground/85 leading-relaxed font-semibold mb-8">{post.excerpt}</p>
-            <div className="space-y-8">
-              {getPostBody(post).map((s) => (
-                <section key={s.heading}>
-                  <h2 className="text-xl sm:text-2xl font-black text-foreground tracking-tight mb-3">{s.heading}</h2>
-                  {s.paragraphs.map((p) => <p key={p} className="text-[15px] text-foreground/80 leading-relaxed mb-3">{p}</p>)}
-                </section>
-              ))}
-            </div>
+            {post.tags.length > 0 && (
+              <div className="mt-8 flex flex-wrap gap-2">
+                {post.tags.map((t) => <span key={t.slug} className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-cream border border-border text-foreground/70">#{t.name}</span>)}
+              </div>
+            )}
+            {post.author && (post.author.designation || post.author.credentials) && (
+              <div className="mt-8 rounded-[12px] border border-border bg-cream/50 p-5">
+                <p className="text-sm font-black text-foreground">{post.author.name}</p>
+                <p className="text-xs text-gold-deep font-bold">{post.author.designation}</p>
+                {post.author.credentials && <p className="text-[11px] text-muted-foreground mt-1">{post.author.credentials}</p>}
+              </div>
+            )}
 
             <div className="mt-10 pt-6 border-t border-border/60">
               <Link href="/blog" className="inline-flex items-center gap-2 text-sm font-bold text-burgundy hover:underline">
@@ -92,19 +109,21 @@ export default function BlogPostPage() {
               </Link>
             </div>
 
-            <div className="bg-white border border-border rounded-[12px] overflow-hidden">
-              <p className="px-5 py-3 border-b border-border/60 text-xs font-black text-foreground">Related Posts</p>
-              <ul className="divide-y divide-border/40">
-                {related.map((r) => (
-                  <li key={r.slug}>
-                    <Link href={`/blog/${r.slug}`} className="block px-5 py-3 hover:bg-cream/40 transition-colors group">
-                      <span className="block text-[10px] font-extrabold uppercase tracking-wider text-gold-deep mb-0.5">{r.category}</span>
-                      <span className="block text-sm font-bold text-foreground leading-snug group-hover:text-burgundy transition-colors">{r.title}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {post.related.length > 0 && (
+              <div className="bg-white border border-border rounded-[12px] overflow-hidden">
+                <p className="px-5 py-3 border-b border-border/60 text-xs font-black text-foreground">Related Posts</p>
+                <ul className="divide-y divide-border/40">
+                  {post.related.map((r) => (
+                    <li key={r.slug}>
+                      <Link href={`/blog/${r.slug}`} className="block px-5 py-3 hover:bg-cream/40 transition-colors group">
+                        <span className="block text-[10px] font-extrabold uppercase tracking-wider text-gold-deep mb-0.5">{r.category?.name}</span>
+                        <span className="block text-sm font-bold text-foreground leading-snug group-hover:text-burgundy transition-colors">{r.title}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </aside>
         </div>
       </section>

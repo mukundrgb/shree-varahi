@@ -47,5 +47,22 @@ export async function apiGet<T>(path: string, { query, signal }: { query?: Query
   return body.data
 }
 
+/**
+ * Like apiGet for list endpoints that send `data` (an array) and `pagination` (with `meta`) side by
+ * side: returns the array with `meta` attached, so "still loading" (meta.status "pending") can be seen.
+ */
+export async function apiGetList<T>(path: string, opts: { query?: Query; signal?: AbortSignal } = {}): Promise<T[] & { meta?: unknown }> {
+  let response: Response
+  try {
+    response = await fetch(`${API_URL}${path}${toQueryString(opts.query)}`, { signal: opts.signal })
+  } catch (error) {
+    if (opts.signal?.aborted) throw error
+    throw new ApiError("Unable to reach the server", 0)
+  }
+  const body = (await response.json().catch(() => null)) as { success?: boolean; data?: T[]; pagination?: { meta?: unknown }; message?: string } | null
+  if (!response.ok || !body?.success) throw new ApiError(body?.message || "Unable to load market data", response.status)
+  return Object.assign(body.data ?? [], { meta: body.pagination?.meta })
+}
+
 /** Encodes one path segment, e.g. a slug or symbol. */
 export const seg = (value: string) => `/${encodeURIComponent(value)}`

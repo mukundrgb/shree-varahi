@@ -12,8 +12,11 @@ import {
   Search, Timer, TrendingUp, UserCog, Wallet, X, type LucideIcon,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { TOPICS, searchKnowledge } from "@/lib/knowledge-center/data"
+import { apiGet } from "@/lib/api/client"
 import { OPEN_ACCOUNT_URL } from "@/lib/external-links"
+
+/** A Knowledge Center topic as the pages pass it in (from the backend's published topics). */
+export type KcTopicLink = { slug: string; title: string; icon: string; desc?: string }
 
 const ICONS: Record<string, LucideIcon> = {
   Briefcase, PieChart, BookOpen, Wallet, MonitorSmartphone, Timer, TrendingUp, Rocket, GitBranch, Layers, Gem, Handshake,
@@ -105,14 +108,35 @@ export function KcCta() {
 
 // ── Search (all topics + articles) ──────────────────────────────────────────
 
-/** Search box with a results dropdown; ↑ / ↓ / Enter work, Esc closes. */
-export function KcSearch({ className = "" }: { className?: string }) {
+type Hit = { kind: "topic" | "article"; title: string; subtitle: string; href: string }
+type ArticleHit = { slug: string; title: string; category: { name: string; slug: string } | null }
+
+/** Search box with a results dropdown; ↑ / ↓ / Enter work, Esc closes. Topics match here; articles come from the backend. */
+export function KcSearch({ className = "", topics }: { className?: string; topics: KcTopicLink[] }) {
   const router = useRouter()
   const [query, setQuery] = useState("")
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState(0)
+  const [articles, setArticles] = useState<Hit[]>([])
   const boxRef = useRef<HTMLDivElement>(null)
-  const hits = useMemo(() => searchKnowledge(query, 8), [query])
+  const topicHits = useMemo<Hit[]>(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return []
+    return topics.filter((t) => t.title.toLowerCase().includes(q)).slice(0, 3).map((t) => ({ kind: "topic", title: t.title, subtitle: "Topic", href: `/knowledge-center/${t.slug}` }))
+  }, [query, topics])
+  const hits = [...topicHits, ...articles].slice(0, 8)
+
+  useEffect(() => {
+    const q = query.trim()
+    if (q.length < 2) { setArticles([]); return }
+    const ctrl = new AbortController()
+    const t = setTimeout(() => {
+      apiGet<{ items: ArticleHit[] }>("/content/knowledge-center/articles", { query: { q, limit: 6 }, signal: ctrl.signal })
+        .then((r) => setArticles(r.items.filter((a) => a.category).map((a) => ({ kind: "article", title: a.title, subtitle: a.category!.name, href: `/knowledge-center/${a.category!.slug}/${a.slug}` }))))
+        .catch(() => {})
+    }, 250)
+    return () => { clearTimeout(t); ctrl.abort() }
+  }, [query])
 
   useEffect(() => setActive(0), [query])
   useEffect(() => {
@@ -185,12 +209,12 @@ export function KcSearch({ className = "" }: { className?: string }) {
 // ── Categories: sidebar list (desktop) and auto-scrolling strip (mobile) ────
 
 /** Vertical list of every topic, current one highlighted. */
-export function KcCategoryList({ current }: { current?: string }) {
+export function KcCategoryList({ current, topics }: { current?: string; topics: KcTopicLink[] }) {
   return (
     <div className="bg-white border border-border rounded-[12px] overflow-hidden">
       <p className="px-4 py-3 border-b border-border/60 text-[10px] font-extrabold uppercase tracking-wider text-gold-deep">All Categories</p>
       <ul className="py-1">
-        {TOPICS.map((t) => {
+        {topics.map((t) => {
           const isCurrent = t.slug === current
           return (
             <li key={t.slug}>
@@ -216,7 +240,7 @@ const STRIP_SPEED_PX = 0.5
 const STRIP_RESUME_MS = 3000
 
 /** Horizontal strip of topics that scrolls by itself; pauses while touched or scrolled by hand. Mobile / tablet only. */
-export function KcCategoryStrip({ current }: { current?: string }) {
+export function KcCategoryStrip({ current, topics }: { current?: string; topics: KcTopicLink[] }) {
   const ref = useRef<HTMLDivElement>(null)
   const pausedUntil = useRef(0)
 
@@ -248,7 +272,7 @@ export function KcCategoryStrip({ current }: { current?: string }) {
 
   const pause = () => { pausedUntil.current = Date.now() + STRIP_RESUME_MS }
 
-  const chip = (t: (typeof TOPICS)[number], copy: number) => {
+  const chip = (t: KcTopicLink, copy: number) => {
     const isCurrent = t.slug === current
     return (
       <Link
@@ -277,19 +301,19 @@ export function KcCategoryStrip({ current }: { current?: string }) {
       style={{ scrollbarWidth: "none" }}
       aria-label="Knowledge Center categories"
     >
-      {TOPICS.map((t) => chip(t, 0))}
-      {TOPICS.map((t) => chip(t, 1))}
+      {topics.map((t) => chip(t, 0))}
+      {topics.map((t) => chip(t, 1))}
     </div>
   )
 }
 
 /** All topics as tags (shown at the bottom of topic and article pages). */
-export function KcAllCategories({ current }: { current?: string }) {
+export function KcAllCategories({ current, topics }: { current?: string; topics: KcTopicLink[] }) {
   return (
     <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-12">
       <p className="text-[10px] font-extrabold uppercase tracking-wider text-gold-deep mb-3">All Categories</p>
       <div className="flex flex-wrap gap-2">
-        {TOPICS.map((t) => (
+        {topics.map((t) => (
           <Link
             key={t.slug}
             href={`/knowledge-center/${t.slug}`}

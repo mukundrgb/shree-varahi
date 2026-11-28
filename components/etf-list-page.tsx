@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
-import { ChevronRight, ChevronDown } from "lucide-react"
+import { ChevronRight, ChevronDown, Clock } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -94,7 +94,7 @@ export function ETFListPage({ data }: { data: ETFListPageData }) {
         <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 pt-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
             <h1 className="text-2xl lg:text-3xl font-black text-foreground tracking-tight">{d.title}</h1>
-            <span className="text-[11px] text-muted-foreground font-medium">Last Updated on {d.lastUpdated}</span>
+            {d.lastUpdated && <span className="text-[11px] text-muted-foreground font-medium">Last Updated on {d.lastUpdated}</span>}
           </div>
 
           <div className="border border-border rounded-[8px] bg-background p-4 sm:p-5">
@@ -113,7 +113,26 @@ export function ETFListPage({ data }: { data: ETFListPageData }) {
           </div>
         </div>
 
+        {/* ── No real data yet: say so instead of showing made-up numbers ── */}
+        {d.etfs.length === 0 && (
+          <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 mt-5 pb-20">
+            <div className="border border-border rounded-[8px] bg-cream/60 px-6 py-14 text-center">
+              <div className="w-12 h-12 mx-auto rounded-full bg-burgundy/10 text-burgundy grid place-items-center mb-4">
+                <Clock className="w-6 h-6" />
+              </div>
+              <h2 className="text-lg font-extrabold text-foreground">Data coming soon</h2>
+              <p className="text-sm text-muted-foreground mt-1.5 max-w-md mx-auto">
+                Live prices and figures for these ETFs will appear here shortly. Meanwhile, you can browse all ETFs.
+              </p>
+              <Link href="/etf" className="inline-flex items-center gap-1.5 mt-5 h-10 px-5 rounded-[6px] bg-burgundy hover:bg-burgundy-deep text-white text-sm font-bold transition-colors">
+                Browse all ETFs <ChevronRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* ── Table ───────────────────────────────────────────────────── */}
+        {d.etfs.length > 0 && (
         <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 mt-5 pb-20">
           <div className="border border-border rounded-[8px] bg-background overflow-hidden">
             <div className="overflow-x-auto" style={{ scrollbarWidth: "thin" }}>
@@ -184,9 +203,10 @@ export function ETFListPage({ data }: { data: ETFListPageData }) {
           </div>
 
           <p className="text-[11px] text-muted-foreground mt-3">
-            Showing {d.etfs.length} ETF · Data shown is for illustration purposes · Scroll table horizontally for more metrics
+            Showing {d.etfs.length} ETF · Scroll table horizontally for more metrics
           </p>
         </div>
+        )}
       </main>
       <Footer />
     </>

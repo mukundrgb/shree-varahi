@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { CALCULATOR_LINKS } from "@/lib/external-links"
+import { useSiteConfig } from "@/components/site-config"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
@@ -221,6 +222,38 @@ const othersLinks = [
   { name: "Information Security Practices", href: "#" },
   { name: "Investor Charter and Grievance", href: "#" },
 ]
+
+/**
+ * Footer values from the admin panel's Masters (social profiles, legal links, company registrations,
+ * disclaimer, registration line, copyright), with the values above as the fallback for anything
+ * that hasn't been published.
+ */
+function useFooterData() {
+  const cfg = useSiteConfig()
+  const company = cfg["masters.company"]
+  const legal = cfg["masters.legal"]
+  const iconFor = (name: string) => {
+    const n = name.toLowerCase()
+    return socials.find((s) => (n.includes("twitter") || n === "x" || n.startsWith("x ") ? s.name.startsWith("X") : s.name.toLowerCase() === n || n.includes(s.name.toLowerCase())))?.path
+  }
+  const social = cfg["masters.social"]?.items
+    ?.map((i) => ({ name: i.name, href: i.url, path: iconFor(i.name) }))
+    .filter((i): i is { name: string; href: string; path: string } => !!i.href && !!i.path)
+  const exchanges = othersLinks.slice(0, 3)
+  const legalLinks = legal?.legalLinks?.filter((l) => l.enabled && l.url).map((l) => ({ name: l.label, href: l.url }))
+  const r = company?.registrations
+  const hidden = new Set(legal?.hiddenItems ?? [])
+  return {
+    socials: social?.length ? social : socials,
+    others: legalLinks ? [...exchanges, ...legalLinks] : othersLinks,
+    legalName: company?.legalName || "Lakshmishree Investment & Securities Ltd.",
+    registrations: r ? [["SEBI Registration No", r.sebi], ["NSE Member ID", r.nseMember], ["BSE Member ID", r.bseMember], ["MCX Member ID", r.mcxMember], ["CDSL DP ID", r.cdslDp], ["CIN", r.cin]].filter(([, v]) => v) as [string, string][] : null,
+    office: company?.registeredOffice || "",
+    disclaimer: legal?.disclaimer || "",
+    regulatoryLine: legal?.regulatoryLine || "",
+    copyright: hidden.has("copyright") ? null : legal?.copyright || "",
+  }
+}
 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
 
@@ -633,6 +666,7 @@ function MarketTabsSection() {
 /* ─── About Accordion ─── */
 function AboutAccordion() {
   const [open, setOpen] = useState(false)
+  const fd = useFooterData()
 
   return (
     <div style={{ borderTop: "1px solid rgba(58,20,20,0.12)" }}>
@@ -664,16 +698,24 @@ function AboutAccordion() {
                 <p>
                   Our platform provides access to NSE, BSE, MCX, and international markets through a single unified account. We offer stocks, futures & options, mutual funds, IPOs, ETF, digital gold, and US equities, all under one roof with no hidden charges.
                 </p>
+                {fd.registrations ? (
+                  <p>
+                    {fd.registrations.map(([label, value], i) => (
+                      <span key={label}>{label}: <span className="text-[#3a1414]/80">{value}</span>{i < fd.registrations!.length - 1 && <> &nbsp;|&nbsp; </>}</span>
+                    ))}
+                  </p>
+                ) : (
+                  <p>
+                    SEBI Registration No: <span className="text-[#3a1414]/80">INZ000215633</span> &nbsp;|&nbsp;
+                    NSE Member ID: <span className="text-[#3a1414]/80">14136</span> &nbsp;|&nbsp;
+                    BSE Member ID: <span className="text-[#3a1414]/80">6736</span> &nbsp;|&nbsp;
+                    MCX Member ID: <span className="text-[#3a1414]/80">46685</span> &nbsp;|&nbsp;
+                    CDSL DP ID: <span className="text-[#3a1414]/80">IN-DP-596-2021</span> &nbsp;|&nbsp;
+                    CIN: <span className="text-[#3a1414]/80">U67120MH1993PLC074454</span>
+                  </p>
+                )}
                 <p>
-                  SEBI Registration No: <span className="text-[#3a1414]/80">INZ000215633</span> &nbsp;|&nbsp;
-                  NSE Member ID: <span className="text-[#3a1414]/80">14136</span> &nbsp;|&nbsp;
-                  BSE Member ID: <span className="text-[#3a1414]/80">6736</span> &nbsp;|&nbsp;
-                  MCX Member ID: <span className="text-[#3a1414]/80">46685</span> &nbsp;|&nbsp;
-                  CDSL DP ID: <span className="text-[#3a1414]/80">IN-DP-596-2021</span> &nbsp;|&nbsp;
-                  CIN: <span className="text-[#3a1414]/80">U67120MH1993PLC074454</span>
-                </p>
-                <p>
-                  Registered Office: 1st Floor, Vaswani Chambers, 264-265, Dr. Annie Besant Road, Worli, Mumbai 400 025, Maharashtra, India.
+                  Registered Office: {fd.office || "1st Floor, Vaswani Chambers, 264-265, Dr. Annie Besant Road, Worli, Mumbai 400 025, Maharashtra, India."}
                 </p>
               </div>
             </motion.div>
@@ -686,6 +728,7 @@ function AboutAccordion() {
 
 /* ─── Footer ─── */
 export function Footer() {
+  const fd = useFooterData()
   return (
     <footer
       className="relative overflow-hidden text-[#3a1414]"
@@ -723,7 +766,7 @@ export function Footer() {
 
               {/* Social icons */}
               <div className="flex gap-2 mb-5">
-                {socials.map((s) => (
+                {fd.socials.map((s) => (
                   <a
                     key={s.name}
                     href={s.href}
@@ -805,10 +848,10 @@ export function Footer() {
             <div className="py-4 flex flex-wrap items-start gap-x-0 gap-y-2" style={{ borderBottom: "1px solid rgba(58,20,20,0.1)" }}>
               <span className="text-[12px] font-bold text-[#3a1414]/90 mr-3 flex-shrink-0 pt-px">Others:</span>
               <div className="flex flex-wrap items-center gap-x-0 gap-y-1.5">
-                {othersLinks.map((l, i) => (
+                {fd.others.map((l, i) => (
                   <span key={l.name} className="flex items-center">
                     <Link href={l.href} className="text-[12px] text-[#3a1414]/80 hover:text-[#3a1414] transition-colors px-2 py-0.5">{l.name}</Link>
-                    {i < othersLinks.length - 1 && <span className="text-[#3a1414]/40 text-xs select-none">|</span>}
+                    {i < fd.others.length - 1 && <span className="text-[#3a1414]/40 text-xs select-none">|</span>}
                   </span>
                 ))}
               </div>
@@ -840,17 +883,17 @@ export function Footer() {
         {/* ── Disclaimer ── */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8" style={{ borderTop: "1px solid rgba(58,20,20,0.12)", paddingTop: "1.5rem" }}>
           <div className="p-4 rounded-[5px] text-[12px] text-[#3a1414]/80 leading-relaxed" style={{ background: "rgba(0,0,0,0.05)", border: "1px solid rgba(58,20,20,0.1)" }}>
-            <p className="mb-2">
-              <strong className="text-[#3a1414]/95">Disclaimer:</strong> Investments in securities market are subject to market risks. Read all related documents carefully before investing. Brokerage will not exceed the SEBI prescribed limit. Registration granted by SEBI and certification from NISM in no way guarantee performance of the intermediary or provide any assurance of returns to investors.
+            <p className="mb-2 whitespace-pre-line">
+              <strong className="text-[#3a1414]/95">Disclaimer:</strong> {fd.disclaimer.replace(/^Disclaimer:\s*/i, "") || "Investments in securities market are subject to market risks. Read all related documents carefully before investing. Brokerage will not exceed the SEBI prescribed limit. Registration granted by SEBI and certification from NISM in no way guarantee performance of the intermediary or provide any assurance of returns to investors."}
             </p>
             <p>
-              Lakshmishree Investment & Securities Ltd. | SEBI Reg: INZ000215633 | NSE: 14136 | BSE: 6736 | MCX: 46685 | CDSL DP: IN-DP-596-2021 | CIN: U67120MH1993PLC074454
+              {fd.regulatoryLine || "Lakshmishree Investment & Securities Ltd. | SEBI Reg: INZ000215633 | NSE: 14136 | BSE: 6736 | MCX: 46685 | CDSL DP: IN-DP-596-2021 | CIN: U67120MH1993PLC074454"}
             </p>
           </div>
 
           {/* Copyright */}
           <div className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-6 pt-6" style={{ borderTop: "1px solid rgba(58,20,20,0.1)" }}>
-            <p className="text-[13px] text-[#3a1414]/70">© 2026 Shree Varahi | Lakshmishree Investment & Securities Ltd.</p>
+            {fd.copyright !== null && <p className="text-[13px] text-[#3a1414]/70">{fd.copyright || `© ${new Date().getFullYear()} Shree Varahi | Lakshmishree Investment & Securities Ltd.`}</p>}
             <p className="text-[12px] text-[#3a1414]/65 flex items-center gap-1.5">
               Built with
               <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-[#3a1414]/55" style={{ animation: "footer-heartbeat 1.2s ease-in-out infinite" }} aria-hidden="true">

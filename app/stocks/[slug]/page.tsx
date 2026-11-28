@@ -28,6 +28,7 @@ import {
 } from "@/lib/stocks/format"
 import type { CorporateAction, FinancialsRowFormat, StockSummary } from "@/lib/stocks/types"
 import { OpenAccountCard } from "@/components/open-account-card"
+import { MarketDataNotice } from "@/components/market-data-notice"
 
 /* ─── Dummy data (replaced by the CMOTS API; kept for reference) ──────────────
 
@@ -555,9 +556,12 @@ function StockDetail({ slug, stock }: { slug: string; stock: StockSummary }) {
                   </span>
                 )}
               </div>
-              {quote?.updatedAt && (
+              {quote?.updatedAt ? (
                 <div className="text-[11px] text-muted-foreground font-semibold mt-1.5">As of {formatQuoteTime(quote.updatedAt)}</div>
+              ) : !quote && (
+                <div className="text-[11px] text-muted-foreground font-semibold mt-1.5">Price updating…</div>
               )}
+              <MarketDataNotice className="mt-0.5" />
 
               {/* 52-week range */}
               <div className="mt-3 max-w-[340px] lg:ml-auto">

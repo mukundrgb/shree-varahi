@@ -203,15 +203,9 @@ export default function NFOPage() {
                 Discover New Opportunities. Invest Early. Build Your Portfolio With Confidence, with live NFO tracking, research, and a unified fund dashboard.
               </p>
             </div>
-            {/* Actions + trust stats on the right, so the hero stays short */}
-            <div className="flex flex-wrap items-center lg:justify-end gap-3">
-              <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
-                <a href="#explore-nfos">Explore NFOs</a>
-              </Button>
-              <Button asChild variant="outline" className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary">
-                <Link href={OPEN_ACCOUNT_URL}>Open Account</Link>
-              </Button>
-              <div className="flex items-center gap-4 sm:ml-3 sm:pl-5 sm:border-l border-border">
+            {/* Trust stats, with both buttons below them */}
+            <div className="flex flex-col items-start lg:items-end gap-4">
+              <div className="flex items-center gap-5">
                 <div>
                   <div className="text-base font-black text-foreground leading-none">3</div>
                   <div className="text-[10px] text-muted-foreground font-semibold mt-1">Decades of Trust</div>
@@ -220,6 +214,14 @@ export default function NFOPage() {
                   <div className="text-base font-black text-foreground flex items-center gap-1 leading-none">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
                   <div className="text-[10px] text-muted-foreground font-semibold mt-1">App Rating</div>
                 </div>
+              </div>
+              <div className="flex flex-wrap lg:justify-end gap-3">
+                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-6 h-10 font-bold rounded-[5px]">
+                  <a href="#explore-nfos">Explore NFOs</a>
+                </Button>
+                <Button asChild variant="outline" className="border-border bg-white px-6 h-10 font-bold rounded-[5px] hover:bg-secondary">
+                  <Link href={OPEN_ACCOUNT_URL}>Open Account</Link>
+                </Button>
               </div>
             </div>
           </div>

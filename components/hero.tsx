@@ -697,12 +697,30 @@ export function Hero() {
                 Flat ₹17 brokerage on delivery, intraday &amp; F&amp;O.
               </motion.p>
 
+              {/* Trust pills (the buttons sit below them, as on every hero) */}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.18 }}
+                className="flex flex-wrap items-center gap-6 mb-8"
+              >
+                {[
+                  { Icon: Shield, text: "SEBI Registered" },
+                  { Icon: Users, text: "Active Traders" },
+                ].map(({ Icon, text }) => (
+                  <div key={text} className="flex items-center gap-2 text-[13px] font-semibold text-muted-foreground">
+                    <Icon className="w-4 h-4 text-gold-deep" />
+                    {text}
+                  </div>
+                ))}
+              </motion.div>
+
               {/* Buttons */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.18 }}
-                className="flex flex-wrap gap-3 mb-10"
+                transition={{ duration: 0.6, delay: 0.26 }}
+                className="flex flex-wrap gap-3"
               >
                 <Link href={OPEN_ACCOUNT_URL}>
                   <Button
@@ -722,24 +740,6 @@ export function Hero() {
                   <Phone className="mr-2 h-4 w-4" />
                   Call Now
                 </Button>
-              </motion.div>
-
-              {/* Trust pills */}
-              <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.26 }}
-                className="flex flex-wrap items-center gap-6"
-              >
-                {[
-                  { Icon: Shield, text: "SEBI Registered" },
-                  { Icon: Users, text: "Active Traders" },
-                ].map(({ Icon, text }) => (
-                  <div key={text} className="flex items-center gap-2 text-[13px] font-semibold text-muted-foreground">
-                    <Icon className="w-4 h-4 text-gold-deep" />
-                    {text}
-                  </div>
-                ))}
               </motion.div>
             </div>
 

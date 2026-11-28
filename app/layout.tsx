@@ -3,6 +3,8 @@ import localFont from 'next/font/local'
 import { Analytics } from '@vercel/analytics/next'
 import { ScrollProgress } from '@/components/scroll-progress'
 import { EntryPopup } from '@/components/entry-popup'
+import { SiteConfigProvider, type SiteConfig } from '@/components/site-config'
+import { cmsGetOr } from '@/lib/server/cms'
 import './fonts/fonts.css'
 import './globals.css'
 
@@ -17,6 +19,8 @@ const manrope = localFont({
 })
 
 export const metadata: Metadata = {
+  // Canonical links, Open Graph images and the sitemap use this address (NEXT_PUBLIC_SITE_URL).
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://shreevarahi.com'),
   title: 'Shree Varahi | 3 Decades of Trust. One Powerful Platform.',
   description: 'Trade stocks, F&O, mutual funds, IPOs, and US equities with Shree Varahi by Lakshmishree Investment & Securities Ltd. Flat ₹17 brokerage on delivery, intraday & F&O. SEBI registered since 1993.',
   keywords: ['trading platform', 'stocks', 'F&O', 'mutual funds', 'IPO', 'demat account', 'Lakshmishree', 'SEBI registered'],
@@ -36,18 +40,23 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  // Published Masters (navbar, footer, legal text, risk popup). Cached under the site-config tag and
+  // refreshed when something is published in the panel. Without it the site uses its own values.
+  const config = await cmsGetOr<{ sections: SiteConfig }>('/site-config', { sections: {} }, { tags: ['site-config'] })
   return (
     <html lang="en" className={`${manrope.variable} bg-background overflow-x-clip`}>
       {/* Browser extensions (e.g. ColorZilla's cz-shortcut-listen) add attributes to <body>; don't warn about those. */}
       <body className="font-sans antialiased bg-background text-foreground overflow-x-clip" suppressHydrationWarning>
-        <ScrollProgress />
-        {children}
-        <EntryPopup />
+        <SiteConfigProvider value={config.sections ?? {}}>
+          <ScrollProgress />
+          {children}
+          <EntryPopup />
+        </SiteConfigProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

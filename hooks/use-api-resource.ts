@@ -5,6 +5,8 @@ import { ApiError } from "@/lib/api/client"
 
 /** Prices are refreshed this often in the background. */
 export const QUOTE_REFRESH_MS = 30_000
+const PENDING_RETRY_MS = 4_000
+const PENDING_RETRIES = 10
 
 interface Options {
   /** Set to refetch in the background. Failed refreshes keep the current data. */
@@ -59,13 +61,26 @@ export function useApiResource<T>(
     setLoading(true)
     setError(null)
 
-    const settle = (promise: Promise<T>, background: boolean) =>
+    // Background refreshes are separate requests, cancelled straight away on unmount.
+    const refreshController = new AbortController()
+    // The backend answers at once from stored data; when it has nothing yet it says meta.status
+    // "pending" and fetches it in the background, so ask again shortly (up to ~40 s).
+    let pendingTries = 0
+    let pendingTimer: ReturnType<typeof setTimeout> | undefined
+    const isPending = (r: unknown) => !!r && typeof r === "object" && (r as { meta?: { status?: string } }).meta?.status === "pending"
+
+    const settle = (promise: Promise<T>, background: boolean): Promise<void> =>
       promise.then(
         (result) => {
           if (!active) return
           setData(result)
           setError(null)
           setLoading(false)
+          if (isPending(result) && pendingTries < PENDING_RETRIES) {
+            pendingTries++
+            clearTimeout(pendingTimer)
+            pendingTimer = setTimeout(() => void settle(loadRef.current(refreshController.signal), true), PENDING_RETRY_MS)
+          }
         },
         (reason: unknown) => {
           if (!active || background) return
@@ -76,8 +91,6 @@ export function useApiResource<T>(
 
     void settle(current.promise, false)
 
-    // Background refreshes are separate requests, cancelled straight away on unmount.
-    const refreshController = new AbortController()
     const timer = refreshMs
       ? setInterval(() => void settle(loadRef.current(refreshController.signal), true), refreshMs)
       : undefined
@@ -85,6 +98,7 @@ export function useApiResource<T>(
     return () => {
       active = false
       if (timer) clearInterval(timer)
+      clearTimeout(pendingTimer)
       refreshController.abort()
       // Cancel the first request only if nothing picks it up again right away.
       current.abortTimer = setTimeout(() => {

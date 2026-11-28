@@ -6,7 +6,7 @@ import {
   ChevronRight, ChevronDown, Plus, X, Layers, ListChecks, LayoutDashboard, Zap,
   Activity, PieChart, Coins, CircleDollarSign, Flame, Boxes, Box, Gauge,
   TrendingUp, Target, BarChart3, ShieldCheck, RotateCcw,
-  ArrowUpRight, Star, Check, Eye, Layers3, SplitSquareHorizontal, CalendarClock,
+  Star, Check, Eye, Layers3, SplitSquareHorizontal, CalendarClock,
 } from "lucide-react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -36,16 +36,23 @@ const KEY_BENEFITS_1 = [
 
 type Category = "Gold" | "Silver" | "Crude Oil" | "Natural Gas" | "Copper" | "Zinc" | "Aluminium" | "Nickel"
 
-const CATEGORIES: { id: Category; icon: React.ElementType; color: string; price: string; change: number }[] = [
-  { id: "Gold",         icon: Coins,            color: "#8B0D19", price: "72,450",  change: 0.42 },
-  { id: "Silver",       icon: CircleDollarSign, color: "#8B0D19", price: "87,420",  change: 0.65 },
-  { id: "Crude Oil",    icon: Flame,            color: "#8B0D19", price: "6,450",   change: -0.74 },
-  { id: "Natural Gas",  icon: Zap,              color: "#8B0D19", price: "296.80",  change: -1.59 },
-  { id: "Copper",       icon: Box,              color: "#8B0D19", price: "812.35",  change: -0.51 },
-  { id: "Zinc",         icon: Boxes,            color: "#8B0D19", price: "362.95",  change: -0.70 },
-  { id: "Aluminium",    icon: Layers3,          color: "#8B0D19", price: "238.40",  change: 0.28 },
-  { id: "Nickel",       icon: Gauge,            color: "#8B0D19", price: "1,736.40",change: -1.21 },
+// Prices are not shown until live MCX data is connected: this page used to show fixed, made-up
+// prices and changes, which a broker's website must never do (PRD v3.0 ST-08).
+const CATEGORIES: { id: Category; icon: React.ElementType; color: string }[] = [
+  { id: "Gold",         icon: Coins,            color: "#8B0D19" },
+  { id: "Silver",       icon: CircleDollarSign, color: "#8B0D19" },
+  { id: "Crude Oil",    icon: Flame,            color: "#8B0D19" },
+  { id: "Natural Gas",  icon: Zap,              color: "#8B0D19" },
+  { id: "Copper",       icon: Box,              color: "#8B0D19" },
+  { id: "Zinc",         icon: Boxes,            color: "#8B0D19" },
+  { id: "Aluminium",    icon: Layers3,          color: "#8B0D19" },
+  { id: "Nickel",       icon: Gauge,            color: "#8B0D19" },
 ]
+
+/** Shown where a live price will go once MCX data is connected. */
+function PriceSoon({ className = "" }: { className?: string }) {
+  return <span className={`text-[10px] font-semibold text-muted-foreground whitespace-nowrap ${className}`}>Live price soon</span>
+}
 
 type Group = "Bullion" | "Base Metal" | "Energy"
 
@@ -174,7 +181,6 @@ export default function CommodityPage() {
   const [activeCat, setActiveCat] = useState<Category>("Gold")
   const [mobile, setMobile] = useState("")
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null)
-  const activeCatMeta = CATEGORIES.find((c) => c.id === activeCat)!
   const activeGroupMeta = GROUPS.find((g) => g.id === activeGroup)!
 
   const selectGroup = (g: Group) => {
@@ -219,15 +225,7 @@ export default function CommodityPage() {
               <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-lg">
                 Trade Precious Metals, Energy &amp; More With Confidence, backed by option chain analytics, Greeks, pledge margin benefits, and TradingView charts.
               </p>
-              <div className="flex flex-wrap gap-3">
-                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
-                  <a href={OPEN_ACCOUNT_URL}>Open Account</a>
-                </Button>
-                <Button variant="outline" className="border-border px-7 h-11 font-bold rounded-[5px] hover:bg-secondary">
-                  Explore Markets
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-4 pt-1">
+              <div className="flex flex-wrap gap-4">
                 <div>
                   <div className="text-lg font-black text-foreground">3</div>
                   <div className="text-[10px] text-muted-foreground font-semibold">Decades of Trust</div>
@@ -236,6 +234,14 @@ export default function CommodityPage() {
                   <div className="text-lg font-black text-foreground flex items-center gap-1">4.5<Star className="w-3.5 h-3.5 fill-gold text-gold" /></div>
                   <div className="text-[10px] text-muted-foreground font-semibold">App Rating</div>
                 </div>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Button asChild className="bg-burgundy hover:bg-burgundy-deep text-white px-7 h-11 font-bold rounded-[5px]">
+                  <a href={OPEN_ACCOUNT_URL}>Open Account</a>
+                </Button>
+                <Button variant="outline" className="border-border px-7 h-11 font-bold rounded-[5px] hover:bg-secondary">
+                  Explore Markets
+                </Button>
               </div>
             </div>
 
@@ -249,15 +255,12 @@ export default function CommodityPage() {
               >
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-extrabold uppercase tracking-wider text-gold-deep">Top Commodities Today</span>
-                  <span className="text-[9px] font-bold text-muted-foreground">LTP</span>
+                  <span className="text-[9px] font-bold text-muted-foreground">MCX</span>
                 </div>
                 {CATEGORIES.slice(0, 3).map((c) => (
                   <div key={c.id} className="flex items-center justify-between">
                     <span className="text-[11px] font-semibold text-foreground truncate pr-2">{c.id}</span>
-                    <div className="text-right shrink-0">
-                      <div className="text-[12px] font-black text-foreground">₹{c.price}</div>
-                      <div className={`text-[10px] font-bold ${c.change >= 0 ? "text-profit" : "text-loss"}`}>{c.change >= 0 ? "+" : ""}{c.change}%</div>
-                    </div>
+                    <PriceSoon className="shrink-0" />
                   </div>
                 ))}
                 <div className="pt-1 border-t border-border/40">
@@ -342,10 +345,7 @@ export default function CommodityPage() {
                         <div className="text-[11px] text-muted-foreground font-semibold">{CONTRACTS[cat.id].length} contracts</div>
                       </div>
                       <div className="text-right shrink-0">
-                        <span className="text-sm font-black text-foreground block">₹{cat.price}</span>
-                        <span className={`text-[11px] font-bold flex items-center justify-end gap-0.5 ${cat.change >= 0 ? "text-profit" : "text-loss"}`}>
-                          <ArrowUpRight className={`w-3 h-3 ${cat.change < 0 ? "rotate-90" : ""}`} />{cat.change}%
-                        </span>
+                        <PriceSoon />
                       </div>
                       <ChevronDown className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200 ${active ? "rotate-180 text-burgundy" : ""}`} />
                     </button>
@@ -380,10 +380,7 @@ export default function CommodityPage() {
                                     <CalendarClock className="w-3 h-3" />
                                     Exp {contract.expiry}
                                   </span>
-                                  <span className="text-[12px] font-black text-foreground">₹{cat.price}</span>
-                                  <span className={`hidden sm:flex text-[11px] font-bold items-center gap-0.5 ${cat.change >= 0 ? "text-profit" : "text-loss"}`}>
-                                    <ArrowUpRight className={`w-3 h-3 ${cat.change < 0 ? "rotate-90" : ""}`} />{cat.change}%
-                                  </span>
+                                  <PriceSoon />
                                   <Button size="sm" className="bg-burgundy hover:bg-burgundy-deep text-white text-[10px] font-bold h-7 px-3 rounded-[5px]">
                                     Trade
                                   </Button>
@@ -520,9 +517,7 @@ export default function CommodityPage() {
                     <span className="text-[13px] font-extrabold text-foreground">
                       {activeCat} <span className="text-muted-foreground font-semibold">· MCX</span>
                     </span>
-                    <span className={`text-[12px] font-black ${activeCatMeta.change >= 0 ? "text-profit" : "text-loss"}`}>
-                      ₹{activeCatMeta.price} <span className="text-[10px] font-bold">({activeCatMeta.change >= 0 ? "+" : ""}{activeCatMeta.change}%)</span>
-                    </span>
+                    <span className="text-[10px] font-bold text-muted-foreground">Illustration</span>
                   </div>
 
                   {/* Greeks strip */}
@@ -563,9 +558,7 @@ export default function CommodityPage() {
                   <div className="px-3 py-3 space-y-2.5">
                     <div>
                       <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-wide">{activeCat}</p>
-                      <p className="text-[13px] font-black text-foreground">
-                        ₹{activeCatMeta.price} <span className={`text-[9px] ${activeCatMeta.change >= 0 ? "text-profit" : "text-loss"}`}>{activeCatMeta.change >= 0 ? "+" : ""}{activeCatMeta.change}%</span>
-                      </p>
+                      <p className="text-[11px] font-black text-foreground">MCX</p>
                     </div>
                     <div className="space-y-1.5 pt-2 border-t border-border/50">
                       {[

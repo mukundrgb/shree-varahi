@@ -16,6 +16,7 @@ export default function StocksMarketDynamicPage() {
   const slug = typeof params.slug === "string" ? params.slug : params.slug?.[0] ?? ""
   const data = useMemo(() => synthesizeStockList(slug, {
     crumbCategory: "Market Cap",
+    group: "cap",
     titleOverride: TITLES[slug] ?? titleFromSlug(slug),
   }), [slug])
   return <StockListPage data={data} />
